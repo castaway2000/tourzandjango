@@ -10,7 +10,7 @@ class LocationType(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return self.id
+        return "%s" % self.id
 
 
 class Location(models.Model):
@@ -22,7 +22,7 @@ class Location(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return self.id
+        return "%s" % self.id
 
 
 class City(models.Model):
@@ -32,7 +32,7 @@ class City(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return self.id
+        return "%s" % self.name
 
 
 #cities, countries currencies are needed to be remade for using external packages later
@@ -43,6 +43,6 @@ class Currency(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return self.id
+        return "%s" % self.name
 
 

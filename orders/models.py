@@ -12,7 +12,7 @@ class OrderStatus(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return self.name
+        return "%s" % self.name
 
 
 class Order(models.Model):
@@ -41,4 +41,4 @@ class Payment(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return self.name
+        return "%s" % self.name
