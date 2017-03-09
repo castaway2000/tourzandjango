@@ -20,72 +20,72 @@
                     <div class="top-user-area clearfix">
                         <ul class="top-user-area-list list list-horizontal list-border">
                             {% if user.is_anonymous %}
-                                <li><a href="{% url 'login_new' %}">Log In</a>
+                                <li><a href="{% url 'login' %}">Log In</a>
                             {% else %}
                                 <li class="top-user-area-avatar">
-                                    <a href="{% url 'edit_profile_new' %}">
-                                        {% if user.userprofile.image %}
-                                            <img class="origin round"
-                                                 src="{{ user.userprofile.image.url }}"
-                                                 alt="" title="" />
-                                        {% else %}
-                                            <img class="origin round"
-                                                 src="{% static 'img/40x40.png' %}"
-                                                 alt="" title="" />
-                                        {% endif %}
-
-                                        Hi, {{ user }}
-                                    </a>
+{#                                    <a href="{% url 'edit_profile_new' %}">#}
+{#                                        {% if user.userprofile.image %}#}
+{#                                            <img class="origin round"#}
+{#                                                 src="{{ user.userprofile.image.url }}"#}
+{#                                                 alt="" title="" />#}
+{#                                        {% else %}#}
+{#                                            <img class="origin round"#}
+{#                                                 src="{% static 'img/40x40.png' %}"#}
+{#                                                 alt="" title="" />#}
+{#                                        {% endif %}#}
+{##}
+{#                                        Hi, {{ user }}#}
+{#                                    </a>#}
                                 </li>
                                 <li><a href="{% url 'logout' %}">Logout</a>
                                 </li>
                             {% endif %}
-                            <li class="nav-drop"><a href="#">USD $<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
-                                <ul class="list nav-drop-menu">
-                                    <li><a href="#">EUR<span class="right">€</span></a>
-                                    </li>
-                                    <li><a href="#">GBP<span class="right">£</span></a>
-                                    </li>
-                                    <li><a href="#">JPY<span class="right">円</span></a>
-                                    </li>
-                                    <li><a href="#">CAD<span class="right">$</span></a>
-                                    </li>
-                                    <li><a href="#">AUD<span class="right">A$</span></a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="top-user-area-lang nav-drop">
-                                <a href="#">
-                                    <img src="{% static 'img/flags/32/uk.png' %}" alt="Image Alternative text" title="Image Title" />ENG<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i>
-                                </a>
-                                <ul class="list nav-drop-menu">
-                                    <li>
-                                        <a title="German" href="#">
-                                            <img src="{% static 'img/flags/32/de.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">GER</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a title="Japanise" href="#">
-                                            <img src="{% static 'img/flags/32/jp.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">JAP</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a title="Italian" href="#">
-                                            <img src="{% static 'img/flags/32/it.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">ITA</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a title="French" href="#">
-                                            <img src="{% static 'img/flags/32/fr.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">FRE</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a title="Russian" href="#">
-                                            <img src="{% static 'img/flags/32/ru.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">RUS</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+{#                            <li class="nav-drop"><a href="#">USD $<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>#}
+{#                                <ul class="list nav-drop-menu">#}
+{#                                    <li><a href="#">EUR<span class="right">€</span></a>#}
+{#                                    </li>#}
+{#                                    <li><a href="#">GBP<span class="right">£</span></a>#}
+{#                                    </li>#}
+{#                                    <li><a href="#">JPY<span class="right">円</span></a>#}
+{#                                    </li>#}
+{#                                    <li><a href="#">CAD<span class="right">$</span></a>#}
+{#                                    </li>#}
+{#                                    <li><a href="#">AUD<span class="right">A$</span></a>#}
+{#                                    </li>#}
+{#                                </ul>#}
+{#                            </li>#}
+{#                            <li class="top-user-area-lang nav-drop">#}
+{#                                <a href="#">#}
+{#                                    <img src="{% static 'img/flags/32/uk.png' %}" alt="Image Alternative text" title="Image Title" />ENG<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i>#}
+{#                                </a>#}
+{#                                <ul class="list nav-drop-menu">#}
+{#                                    <li>#}
+{#                                        <a title="German" href="#">#}
+{#                                            <img src="{% static 'img/flags/32/de.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">GER</span>#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a title="Japanise" href="#">#}
+{#                                            <img src="{% static 'img/flags/32/jp.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">JAP</span>#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a title="Italian" href="#">#}
+{#                                            <img src="{% static 'img/flags/32/it.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">ITA</span>#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a title="French" href="#">#}
+{#                                            <img src="{% static 'img/flags/32/fr.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">FRE</span>#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a title="Russian" href="#">#}
+{#                                            <img src="{% static 'img/flags/32/ru.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">RUS</span>#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                </ul>#}
+{#                            </li>#}
                         </ul>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
     <div class="container">
         <div class="nav">
             <ul class="slimmenu" id="slimmenu">
-                <li class="active"><a href="index.html">Home</a>
+                <li class="{% if current_page == "home" %}active{% endif %}"><a href="{% url 'home' %}">Home</a>
                     <ul>
                         <li><a href="index.html">Default</a>
                         </li>

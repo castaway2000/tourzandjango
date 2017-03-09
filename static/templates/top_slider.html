@@ -1,41 +1,20 @@
 {% load static %}
 <div class="top-area show-onload">
     <div class="owl-carousel owl-slider owl-carousel-area" id="owl-carousel-slider">
-        <div class="bg-holder full text-center text-white">
-            <div class="bg-mask"></div>
-            <div class="bg-img" style="background-image:url({% static 'img/2048x1365.png' %});"></div>
-            <div class="bg-front full-center">
-                <div class="owl-cap">
-                    <h1 class="owl-cap-title fittext">Paris</h1>
-                    <div class="owl-cap-price"><small>from</small>
-                        <h5>$2700</h5>
-                    </div><a class="btn btn-white btn-ghost" href="#"><i class="fa fa-angle-right"></i> Explore</a>
+        {% for city in cities %}
+            <div class="bg-holder full text-center text-white">
+                <div class="bg-mask"></div>
+                <div class="bg-img" style="background-image:url({% get_media_prefix %}{{ city.image }});"></div>
+                <div class="bg-front full-center">
+                    <div class="owl-cap">
+                        <h1 class="owl-cap-title fittext">{{ city.name }}</h1>
+{#                        <div class="owl-cap-price"><small>from</small>#}
+{#                            <h5>$2700</h5>#}
+{#                        </div>#}
+                        <a class="btn btn-white btn-ghost" href="#"><i class="fa fa-angle-right"></i> Explore</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="bg-holder full text-center text-white">
-            <div class="bg-mask"></div>
-            <div class="bg-img" style="background-image:url({% static 'img/2048x1365.png' %});"></div>
-            <div class="bg-front full-center">
-                <div class="owl-cap">
-                    <h1 class="owl-cap-title fittext">Las Vegas</h1>
-                    <div class="owl-cap-price"><small>from</small>
-                        <h5>$2200</h5>
-                    </div><a class="btn btn-white btn-ghost" href="#"><i class="fa fa-angle-right"></i> Explore</a>
-                </div>
-            </div>
-        </div>
-        <div class="bg-holder full text-center text-white">
-            <div class="bg-mask"></div>
-            <div class="bg-img" style="background-image:url(img/2048x2048.png);"></div>
-            <div class="bg-front full-center">
-                <div class="owl-cap">
-                    <h1 class="owl-cap-title fittext">Budapest</h1>
-                    <div class="owl-cap-price"><small>from</small>
-                        <h5>$1900</h5>
-                    </div><a class="btn btn-white btn-ghost" href="#"><i class="fa fa-angle-right"></i> Explore</a>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>

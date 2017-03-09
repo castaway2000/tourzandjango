@@ -16,11 +16,15 @@ class PaymentType(models.Model):
 
 class Tour(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    image = models.ImageField(upload_to="tours/images", blank=True, null=True, default=None)
+
     user = models.ForeignKey(User)
     city = models.ForeignKey(City, blank=True, null=True, default=None)
     currency = models.ForeignKey(Currency)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    price_hourly = models.DecimalField(max_digits=8, decimal_places=2)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    hours = models.IntegerField(default=0)
+
+    price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     min_hours = models.IntegerField(default=0)
 
     payment_type = models.ForeignKey(PaymentType, blank=True, null=True, default=None)#hourly or fixed price

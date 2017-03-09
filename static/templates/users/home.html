@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -438,297 +439,52 @@
         <div class="gap"></div>
         <div class="row">
             <div class="col-md-4">
-                <h3>Trendy Now <small ><a href="#">view all</a></small></h3>
+                <h3>Best Free Tours <small ><a href="#">view all</a></small></h3>
                 <ul class="booking-list">
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY LIBERDADE" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">Holiday Inn Express Kennedy</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-o"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$387</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="LHOTEL PORTO BAY SAO PAULO lobby" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">JFK Inn</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-half-empty"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$467</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="hotel EDEN MAR suite" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">Club Quarters Grand Central</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-o"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$465</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                    {% for tour in free_tours %}
+                        {% include 'users/tour_items_representation.html' %}
+                    {% endfor %}
                 </ul>
             </div>
             <div class="col-md-4">
-                <h3>Hot Deals <small ><a href="#">view all</a></small></h3>
+                <h3>Best hourly rates <small ><a href="#">view all</a></small></h3>
                 <ul class="booking-list">
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="LHOTEL PORTO BAY SAO PAULO luxury suite" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">Wyndham Garden Chinatown</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-o"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$170</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY SERRA GOLF suite" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">The Kimberly Hotel</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-o"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$190</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="LHOTEL PORTO BAY SAO PAULO suite lhotel living room" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">Bryant Park Hotel</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-half-empty"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$458</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                    {% for tour in hourly_tours %}
+                        {% include 'users/tour_items_representation.html' %}
+                    {% endfor %}
                 </ul>
             </div>
             <div class="col-md-4">
-                <h3>Special for You <small ><a href="#">view all</a></small></h3>
+                <h3>Best fixed rates tours <small ><a href="#">view all</a></small></h3>
                 <ul class="booking-list">
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY RIO INTERNACIONAL rooftop pool" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">Warwick New York Hotel</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$418</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY RIO INTERNACIONAL de luxe" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">The London NYC</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-o"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$316</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="booking-item booking-item-small">
-                            <div class="row">
-                                <div class="col-xs-4">
-                                    <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY SERRA GOLF suite2" />
-                                </div>
-                                <div class="col-xs-5">
-                                    <h5 class="booking-item-title">Affinia Shelburne</h5>
-                                    <ul class="icon-group booking-item-rating-stars">
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star"></i>
-                                        </li>
-                                        <li><i class="fa fa-star-half-empty"></i>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-xs-3"><span class="booking-item-price-from">from</span><span class="booking-item-price">$350</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                    {% for tour in fixed_payment_tours %}
+                        {% include 'users/tour_items_representation.html' %}
+                    {% endfor %}
                 </ul>
             </div>
         </div>
         <div class="gap gap-small"></div>
-        <h2 class="mb20">Explore Our Top Destinations</h2>
+        <h2 class="mb20">Explore Our Top Guides</h2>
         <div class="row row-wrap">
-            <div class="col-md-4">
-                <div class="thumb">
-                    <header class="thumb-header">
-                        <a class="hover-img curved" href="#">
-                            <img src="img/400x300.png" alt="Image Alternative text" title="the journey home" /><i class="fa fa-plus box-icon-white box-icon-border hover-icon-top-right round"></i>
-                        </a>
-                    </header>
-                    <div class="thumb-caption">
-                        <h4 class="thumb-title">Africa</h4>
-                        <p class="thumb-desc">Fusce nascetur proin ligula nisi at scelerisque odio cum accumsan</p>
+
+            {% for guide in guides %}
+                <div class="col-md-4">
+                    <div class="thumb">
+                        <header class="thumb-header">
+                            <a class="hover-img curved" href="#">
+                                <img src="{% get_media_prefix %}{{ guide.profile_image }}"
+                                     alt="Image of {{ guide.user__first_name }} {{ guide.user__last_name }}"
+                                     title="{{ guide.user__first_name }} {{ guid.user__last_name }}" />
+                                <i class="fa fa-plus box-icon-white box-icon-border hover-icon-top-right round"></i>
+                            </a>
+                        </header>
+                        <div class="thumb-caption">
+                            <h4 class="thumb-title">{{ guide.user__first_name }} {{ guide.user__last_name }}</h4>
+                            <p class="thumb-desc">{{ guide.overview|truncatewords:20 }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="thumb">
-                    <header class="thumb-header">
-                        <a class="hover-img curved" href="#">
-                            <img src="img/800x600.png" alt="Image Alternative text" title="people on the beach" /><i class="fa fa-plus box-icon-white box-icon-border hover-icon-top-right round"></i>
-                        </a>
-                    </header>
-                    <div class="thumb-caption">
-                        <h4 class="thumb-title">Australia</h4>
-                        <p class="thumb-desc">Dignissim himenaeos varius vulputate nullam a leo congue feugiat himenaeos</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="thumb">
-                    <header class="thumb-header">
-                        <a class="hover-img curved" href="#">
-                            <img src="img/800x600.png" alt="Image Alternative text" title="Upper Lake in New York Central Park" /><i class="fa fa-plus box-icon-white box-icon-border hover-icon-top-right round"></i>
-                        </a>
-                    </header>
-                    <div class="thumb-caption">
-                        <h4 class="thumb-title">USA</h4>
-                        <p class="thumb-desc">Orci vehicula ac sit vulputate nisl torquent donec litora per</p>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <div class="gap gap-small"></div>
     </div>

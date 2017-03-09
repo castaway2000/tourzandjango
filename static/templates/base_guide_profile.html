@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="page-title">{{ user.username|capfirst }}</h1>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <aside class="user-profile-sidebar">
+                    <div class="user-profile-avatar text-center">
+                        {% if guide.profile_image %}
+                            <img class=""
+                                 src="{{ guide.profile_image.url }}"
+                                 alt="" title="{{ guide.username }}" />
+                        {% else %}
+                            <img src="img/300x300.png" alt="Image Alternative text" title="AMaze" />
+                        {% endif %}
+
+{#                        <h5>{{ guide.user.username }}</h5>#}
+
+                        <p>Member Since {{ guide.user.date_joined|date:"M Y"}}</p>
+                    </div>
+                    <ul class="list user-profile-nav">
+
+                        <li><a href="{% url 'guide' guide.user.username %}"><i class="fa fa-user"></i>Overview</a>
+                        </li>
+                        <li><a href=""><i class="fa fa-camera"></i>Tours</a>
+                        </li>
+
+                    </ul>
+                </aside>
+            </div>
+
+            {% block content_profile %}
+            {% endblock content_profile %}
+
+        </div>
+    </div>
+
+    <div class="gap"></div>
+
+{% endblock content %}
+

@@ -16,13 +16,13 @@ class Profile(models.Model):
 
 
 class GuideProfile(models.Model):
-    user = models.ForeignKey(User)
+    user = models.OneToOneField(User)
     city = models.ForeignKey(City)
 
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     interests = models.TextField(blank=True, null=True, default=None)
-    bio = models.TextField(blank=True, null=True, default=None)
+    overview = models.TextField(blank=True, null=True, default=None)
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
 

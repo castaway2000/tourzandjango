@@ -1,0 +1,13 @@
+{% extends 'base_guide_profile.html' %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-lg-12">
+                <p>
+                    {{ guide.overview|safe }}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock content_profile %}
