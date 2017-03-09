@@ -1,0 +1,55 @@
+{% extends 'base_profile.html' %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-5">
+                <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <h4>General Infomation</h4>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon"></i>
+                        <label>Interests:</label>
+                        <input type="text" name="{{ form.interests.html_name }}" class="form-control"
+                               placeholder='Please separate each interest with a comma (",")'
+                               value="{% if form.interests.value %}{{ form.interests.value }}{% endif %}">
+                    </div>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon"></i>
+                        <label>Accomodation:</label>
+                        <input type="text" name="{{ form.accommodation.html_name }}" class="form-control"
+                               value="{% if form.accommodation.value %}{{ form.accommodation.value }}{% endif %}">
+                    </div>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
+                        <label>About:</label>
+                        <textarea type="text" rows="5" maxlength="50000" placeholder="5000 character limit"
+                                   name="{{ form.about.html_name }}" class="form-control" >{% if form.about.value %}{{ form.about.value }}{% endif %}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload New Avatar Image:</label>
+                        <input type="file" name="{{ form.image.html_name }}">
+                    </div>
+                    <hr>
+                    <input type="submit" class="btn btn-primary" value="Save Changes">
+                </form>
+            </div>
+            <div class="col-md-4 col-md-offset-1">
+                <h4>Change Password</h4>
+                <form>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                        <label>Current Password</label>
+                        <input class="form-control" type="password" />
+                    </div>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                        <label>New Password</label>
+                        <input class="form-control" type="password" />
+                    </div>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                        <label>New Password Again</label>
+                        <input class="form-control" type="password" />
+                    </div>
+                    <hr />
+                    <input class="btn btn-primary" type="submit" value="Change Password" />
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

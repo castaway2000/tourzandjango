@@ -1,0 +1,36 @@
+{% extends 'base_profile.html' %}
+
+{% block content_profile %}
+<div class="col-md-9">
+    {% if my_profile %}
+        <form method="post" class="form-inline mb20" enctype="multipart/form-data">{% csrf_token %}
+            <div class="form-group">
+                 <input type="file" name="{{ form.image.html_name }}">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-plus-circle"></i> Save New Photo
+                </button>
+            </div>
+        </form>
+{#        <a href="#" class="btn btn-primary mb20"><i class="fa fa-plus-circle"></i> Add new photo</a>#}
+    {% endif %}
+
+    {% if not travel_images %}
+        <p>There is no images so far...</p>
+    {% else %}
+        <div id="popup-gallery">
+            <div class="row row-col-gap">
+                {% for travel_image in travel_images %}
+                    <div class="col-md-3">
+                        <a class="hover-img popup-gallery-image" href="{{ travel_image.image.url }}" data-effect="mfp-zoom-out">
+                            <img src="{{ travel_image.image.url }}" alt="" title="" />
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock content_profile %}
