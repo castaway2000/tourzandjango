@@ -68,7 +68,7 @@ def guide(request, username):
     if request.POST:
         data = request.POST
         print (data)
-        if data.get("text"):
+        if data.get("text") and user:
             kwargs = dict()
             kwargs["text"] = data.get("text")
             if data.get("name"):
@@ -76,7 +76,7 @@ def guide(request, username):
 
             kwargs["rating"] = 5
 
-            review, created = Review.objects.update_or_create(user=guide_user, defaults=kwargs)
+            review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
 
             if created:
                 #add messages here
