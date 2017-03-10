@@ -87,7 +87,7 @@ def guide(request, username):
     context = {
         "guide": guide,
         "tours": tours,
-        "reviews": reviews
+        "reviews": reviews,
     }
     return render(request, 'users/guide.html', context)
 
