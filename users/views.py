@@ -3,7 +3,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import LoginForm
 from .models import Profile, GuideProfile
-from tours.models import Tour
+from tours.models import Tour, Review
 from locations.models import City
 from django.contrib.auth.models import User
 
@@ -66,10 +66,13 @@ def guide(request, username):
     guide = user.guideprofile
 
     tours = guide.user.tour_set.filter(is_active=True)
+    tours_ids = [tour.id for tour in tours]
+    reviews = Review.objects.filter(is_active=True)
 
     context = {
         "guide": guide,
-        "tours": tours
+        "tours": tours,
+        "reviews": reviews
     }
     return render(request, 'users/guide.html', context)
 

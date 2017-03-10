@@ -18,3 +18,21 @@ class GuideProfileAdmin(admin.ModelAdmin):
         model = GuideProfile
 
 admin.site.register(GuideProfile, GuideProfileAdmin)
+
+
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Service._meta.fields]
+
+    class Meta:
+        model = Service
+
+admin.site.register(Service, ServiceAdmin)
+
+
+class ServiceGuideAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in ServiceGuide._meta.fields]
+
+    class Meta:
+        model = ServiceGuide
+
+admin.site.register(ServiceGuide, ServiceGuideAdmin)

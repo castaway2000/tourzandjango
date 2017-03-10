@@ -54,6 +54,7 @@ class Review(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     text = models.TextField()
     rating = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
