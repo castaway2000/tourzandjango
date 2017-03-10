@@ -36,7 +36,7 @@ def logout_view(request):
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__first_name", "user__last_name", "profile_image", "overview")[:3]
+        .values("user__first_name", "user__last_name", "user__username", "profile_image", "overview")[:3]
 
     tours = Tour.objects.filter(is_active=True)
     hourly_tours = tours.filter(payment_type_id=1)[:3]
@@ -81,7 +81,7 @@ def guide(request, username):
             if created:
                 #add messages here
                 pass
-            
+
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     context = {
