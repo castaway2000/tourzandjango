@@ -25,8 +25,8 @@
                         <div class="col-md-5">
                             <img src="{{ guide.profile_image.url }}" class="img-responsive">
                             <div class="mt10 text-center">
-                                <a class="btn btn-primary btn-sm">Write Review</a>
-                                <a class="btn btn-default btn-sm">Send Message</a>
+                                <a href="#write_review" class="btn btn-primary btn-sm">Write Review</a>
+                                <a href="/" class="btn btn-default btn-sm">Send Message</a>
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -138,9 +138,10 @@
             </div>
 
             <div class="gap gap-small"></div>
-            <h3 class="mb20">Reviews</h3>
+
             <div class="row row-wrap">
                 <div class="col-md-8">
+                    <h3 class="mb20">Reviews</h3>
                     <ul class="booking-item-reviews list">
                         {% for review in reviews %}
                             {% include 'users/review_representation.html' %}
@@ -176,18 +177,18 @@
                         </div>
                     </div>
                     <div class="gap gap-small"></div>
-                    <div class="box bg-gray">
+                    <div class="box bg-gray" id="write_review">
                         <h3>Write a Review</h3>
-                        <form>
+                        <form method="post">{% csrf_token %}
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="form-group">
                                         <label>Review Title</label>
-                                        <input class="form-control" type="text" />
+                                        <input class="form-control" type="text" name="name" />
                                     </div>
                                     <div class="form-group">
                                         <label>Review Text</label>
-                                        <textarea class="form-control" rows="6"></textarea>
+                                        <textarea class="form-control" rows="6" name="text"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -275,138 +276,11 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <h4>Properties Near</h4>
+                    <h3 class="mb20">Tours</h3>
                     <ul class="booking-list">
-                        <li>
-                            <div class="booking-item booking-item-small">
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <img src="img/800x600.png" alt="Image Alternative text" title="The pool" />
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <h5 class="booking-item-title">The Meatpacking Suites - Luxury Lofts, Hot Location</h5>
-                                        <ul class="icon-group booking-item-rating-stars">
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-xs-3"><span class="booking-item-price">$391</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="booking-item booking-item-small">
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY LIBERDADE" />
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <h5 class="booking-item-title">Midtown Manhattan Oversized</h5>
-                                        <ul class="icon-group booking-item-rating-stars">
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star-o"></i>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-xs-3"><span class="booking-item-price">$314</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="booking-item booking-item-small">
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY SERRA GOLF suite" />
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <h5 class="booking-item-title">Soho Art Gallery Massive Luxurious Loft</h5>
-                                        <ul class="icon-group booking-item-rating-stars">
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star-o"></i>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-xs-3"><span class="booking-item-price">$190</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="booking-item booking-item-small">
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <img src="img/800x600.png" alt="Image Alternative text" title="hotel PORTO BAY RIO INTERNACIONAL rooftop pool" />
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <h5 class="booking-item-title">Styish, Chic, Best of West Village</h5>
-                                        <ul class="icon-group booking-item-rating-stars">
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star-half-empty"></i>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-xs-3"><span class="booking-item-price">$234</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="booking-item booking-item-small">
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <img src="img/800x600.png" alt="Image Alternative text" title="hotel 2" />
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <h5 class="booking-item-title">Duplex Greenwich</h5>
-                                        <ul class="icon-group booking-item-rating-stars">
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star"></i>
-                                            </li>
-                                            <li><i class="fa fa-star-half-empty"></i>
-                                            </li>
-                                            <li><i class="fa fa-star-o"></i>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-xs-3"><span class="booking-item-price">$273</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+                        {% for tour in tours %}
+                            {% include 'users/tour_items_representation.html' %}
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

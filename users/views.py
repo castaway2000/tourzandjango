@@ -50,24 +50,39 @@ def guide(request, username):
     user = request.user
     if username:
         try:
-            user = User.objects.get(username=username)
+            guide_user = User.objects.get(username=username)
         except:
             return HttpResponseRedirect(reverse("home"))
-
-    #if no username is specified in url, it is possible to display info just for current user
-    elif not user.is_anonymous():
-        user = request.user
     else:
         return HttpResponseRedirect(reverse("home"))
 
-    if not user.guideprofile:
+    if not guide_user.guideprofile:
         return HttpResponseRedirect(reverse("home"))
 
-    guide = user.guideprofile
+    guide = guide_user.guideprofile
 
     tours = guide.user.tour_set.filter(is_active=True)
     tours_ids = [tour.id for tour in tours]
     reviews = Review.objects.filter(is_active=True)
+
+    if request.POST:
+        data = request.POST
+        print (data)
+        if data.get("text"):
+            kwargs = dict()
+            kwargs["text"] = data.get("text")
+            if data.get("name"):
+                kwargs["name"] = data.get("name")
+
+            kwargs["rating"] = 5
+
+            review, created = Review.objects.update_or_create(user=guide_user, defaults=kwargs)
+
+            if created:
+                #add messages here
+                pass
+            
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     context = {
         "guide": guide,
