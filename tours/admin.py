@@ -21,6 +21,15 @@ class TourAdmin(admin.ModelAdmin):
 admin.site.register(Tour, TourAdmin)
 
 
+class TourImageAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in TourImage._meta.fields]
+
+    class Meta:
+        model = TourImage
+
+admin.site.register(TourImage, TourImageAdmin)
+
+
 class ReviewAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Review._meta.fields]
 

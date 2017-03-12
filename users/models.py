@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
+from utils.general import random_string_creating
+from django.utils.text import slugify
 
 
 class Profile(models.Model):
@@ -30,12 +32,17 @@ class GuideProfile(models.Model):
     header_image = models.ImageField(upload_to="guides/header_images", blank=True, null=True, default=None)
     profile_image = models.ImageField(upload_to="guides/profile_images", blank=True, null=True, default=None)
     optional_image = models.ImageField(upload_to="guides/optional_images", blank=True, null=True, default=None)
+    slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
 
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
         return "%s" % self.user.username
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.user.username)
+        super(GuideProfile, self).save(*args, **kwargs)
 
 
 class Service(models.Model):

@@ -1,38 +1,40 @@
 {% load static %}
 
 <li>
-    <div class="booking-item booking-item-small">
-        <div class="row">
-            <div class="col-xs-4">
-                <img src="{% get_media_prefix %}{{ tour.image }}" alt="{{ tour.name }}" title="tour.name" />
-            </div>
-            <div class="col-xs-5">
-                <h5 class="booking-item-title">{{ tour.name }}</h5>
-                <span>by <a href="{% url 'guide' tour.user.username %}">{{ tour.user.username }}</a></span>
-                <ul class="icon-group booking-item-rating-stars">
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star-o"></i>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-xs-3 text-center">
-                <span class="booking-item-price">
-                    {% if tour.payment_type_id == 1 %}
-                        {{ tour.price_hourly }} {{ tour.currency.name }}
-                    {% elif tour.payment_type_id == 2 %}
-                        {{ tour.price }} {{ tour.currency.name }}
-                    {% else %}
-                        free!
-                    {% endif %}
-                </span>
+    <a href="{% url 'tour' tour.slug %}">
+        <div class="booking-item booking-item-small">
+            <div class="row">
+                <div class="col-xs-4">
+                    <img src="{% get_media_prefix %}{{ tour.image }}" alt="{{ tour.name }}" title="tour.name" />
+                </div>
+                <div class="col-xs-5">
+                    <h5 class="booking-item-title">{{ tour.name }}</h5>
+                    <span>by <a href="{% url 'guide' tour.guide.username %}">{{ tour.guide.username }}</a></span>
+                    <ul class="icon-group booking-item-rating-stars">
+                        <li><i class="fa fa-star"></i>
+                        </li>
+                        <li><i class="fa fa-star"></i>
+                        </li>
+                        <li><i class="fa fa-star"></i>
+                        </li>
+                        <li><i class="fa fa-star"></i>
+                        </li>
+                        <li><i class="fa fa-star-o"></i>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-xs-3 text-center">
+                    <span class="booking-item-price">
+                        {% if tour.payment_type_id == 1 %}
+                            {{ tour.price_hourly }} {{ tour.currency.name }}
+                        {% elif tour.payment_type_id == 2 %}
+                            {{ tour.price }} {{ tour.currency.name }}
+                        {% else %}
+                            free!
+                        {% endif %}
+                    </span>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 </li>

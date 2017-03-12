@@ -3,6 +3,6 @@ from . import views
 
 urlpatterns = [
     url(r'^tours/$', views.tours, name='tours'),
+    url(r'^tour/(?P<slug>[-\w]+)/$', views.tour, name='tour'),
 
-    url(r'^guides/(?P<username>\w+)/tours/$', views.guide_tours, name='guide_tours'),
 ]

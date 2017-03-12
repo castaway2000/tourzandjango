@@ -63,7 +63,7 @@ def guide(request, username):
 
     tours = guide.user.tour_set.filter(is_active=True)
     tours_ids = [tour.id for tour in tours]
-    reviews = Review.objects.filter(is_active=True)
+    reviews = Review.objects.filter(is_active=True, id__in=tours_ids)
 
     if request.POST:
         data = request.POST

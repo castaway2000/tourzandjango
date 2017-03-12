@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="container">
@@ -30,7 +31,7 @@
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <p>{{ guide.overview|safe }}</p>
+                            <p>{{ guide.overview|linebreaks }}</p>
                         </div>
                      </div>
 
@@ -87,18 +88,18 @@
                         </div>
                     </div>
                     <div class="booking-item-dates-change">
-                        <form method="post">{% csrf_token %}
+                        <form method="post" id="form_tour_scheduling" class="form-horizontal">{% csrf_token %}
                             <div class="input-daterange" data-date-format="MM d, DD">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
-                                            <label>Check in</label>
+                                            <label>Booking a tour date:</label>
                                             <input class="form-control" name="start" type="text" />
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group form-group- form-group-select-plus">
-                                            <label>Adults</label>
+                                            <label>Persons nmb:</label>
                                             <div class="btn-group btn-group-select-num" data-toggle="buttons">
                                                 <label class="btn btn-primary">
                                                     <input type="radio" name="options" />1</label>
@@ -130,6 +131,27 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Select a tour from {{ guide.user.get_full_name }}:</label>
+                                            <select name="tour" class="form-control">
+                                                {% for tour in tours %}
+                                                    <option value="{{ tour.id }}">
+                                                        {{ tour.name }} -
+                                                        {% if tour.payment_type.id == 1 %}
+                                                            {{ tour.price_hourly }} {{ tour.currency.name }}/hour
+                                                        {% elif tour.payment_type.id == 2 %}
+                                                             {{ tour.price }} {{ tour.currency.name }}
+                                                        {% else %}
+                                                            free!
+                                                        {% endif %}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -142,11 +164,16 @@
             <div class="row row-wrap">
                 <div class="col-md-8">
                     <h3 class="mb20">Reviews</h3>
-                    <ul class="booking-item-reviews list">
-                        {% for review in reviews %}
-                            {% include 'users/review_representation.html' %}
-                        {% endfor %}
-                    </ul>
+                    {% if reviews %}
+                        <ul class="booking-item-reviews list">
+                            {% for review in reviews %}
+                                {% include 'users/review_representation.html' %}
+                            {% endfor %}
+                         </ul>
+                    {% else %}
+                        <p>No reviews so far...</p>
+                    {% endif %}
+
                     <div class="row wrap">
                         <div class="col-md-5">
                             <p><small>1358 reviews on this property. &nbsp;&nbsp;Showing 1 to 7</small>
