@@ -5,11 +5,17 @@
         <div class="booking-item booking-item-small">
             <div class="row">
                 <div class="col-xs-4">
-                    <img src="{% get_media_prefix %}{{ tour.image }}" alt="{{ tour.name }}" title="tour.name" />
+                    {% if tour.image %}
+                        <img src="{% get_media_prefix %}{{ tour.image }}" alt="{{ tour.name }}" title="tour.name" />
+                    {% endif %}
                 </div>
                 <div class="col-xs-5">
                     <h5 class="booking-item-title">{{ tour.name }}</h5>
-                    <span>by <a href="{% url 'guide' tour.guide.username %}">{{ tour.guide.username }}</a></span>
+
+                    <span>
+                        by {{ tour.guide.user.username }}
+                    </span>
+
                     <ul class="icon-group booking-item-rating-stars">
                         <li><i class="fa fa-star"></i>
                         </li>

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="/">Home</a>
+            </li>
+            <li class="active">
+                <a href="{% url 'my_bookings' %}">
+                    My Bookings
+                </a>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-md-3">
+                <aside class="booking-filters text-white">
+                    <h3>Filter By:</h3>
+                    <ul class="list booking-filters-list">
+                        <li>
+                            <h5 class="booking-filters-title">City</h5>
+                            {% for city in cities %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="i-check" type="checkbox" />2 {{ city.name }} (11)</label>
+                                </div>
+                            {% endfor %}
+                        </li>
+                        <li>
+                            <h5 class="booking-filters-title">Price </h5>
+                            <input type="text" id="price-slider">
+                        </li>
+                        <li>
+                            <h5 class="booking-filters-title">Guides</h5>
+                            {% for guide in guides %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="i-check" type="checkbox" />{{ guide.user.username }}</label>
+                                </div>
+                            {% endfor %}
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="col-md-9">
+{#                <div class="nav-drop booking-sort">#}
+{#                    <h5 class="booking-sort-title"><a href="#">Sort: Price (low to high)<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a></h5>#}
+{#                    <ul class="nav-drop-menu">#}
+{#                        <li><a href="#">Price (high to low)</a>#}
+{#                        </li>#}
+{#                        <li><a href="#">Car Name (A-Z)</a>#}
+{#                        </li>#}
+{#                        <li><a href="#">Car Name (Z-A)</a>#}
+{#                        </li>#}
+{#                        <li><a href="#">Car Type</a>#}
+{#                        </li>#}
+{#                    </ul>#}
+{#                </div>#}
+                <ul class="booking-list">
+                    {% for order in orders %}
+                    <li>
+                        <a class="booking-item" href="#">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="booking-item-img">
+                                        {% if order.tour.image %}
+                                            <img src="{% get_media_prefix %}{{ order.tour.image }}"/>
+                                        {% endif %}
+                                    </div>
+                                    <br>
+                                    <span>
+                                        <b>Status: </b>{{ order.status.name }}
+                                    </span>
+                                </div>
+                                <div class="col-md-6">
+                                    <h3>
+                                        {{ order.tour.name }} by {{ order.tour.guide.user.username }}
+                                    </h3>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{ order.tour.overview|linebreaks|truncatewords_html:30 }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="booking-item-price tour-booking-price">
+                                        {{ order.price_after_discount }} {{ order.tour.currency.name }}
+                                    </span>
+                                    <p>
+                                        <b>Booked: </b>{{ order.date_ordered|date:"m.d.Y" }}
+                                    </p>
+                                    <p>
+                                        <b>Paid: </b>
+                                        {% if order.date_paid %}
+                                            {{ order.date_paid|date:"m.d.Y" }}
+                                        {% else %}
+                                            No payment yet
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="pagination">
+                            <li class="active"><a href="#">1</a>
+                            </li>
+                            <li><a href="#">2</a>
+                            </li>
+                            <li><a href="#">3</a>
+                            </li>
+                            <li><a href="#">4</a>
+                            </li>
+                            <li><a href="#">5</a>
+                            </li>
+                            <li><a href="#">6</a>
+                            </li>
+                            <li><a href="#">7</a>
+                            </li>
+                            <li class="dots">...</li>
+                            <li><a href="#">43</a>
+                            </li>
+                            <li class="next"><a href="#">Next Page</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 text-right">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gap"></div>
+    </div>
+{% endblock %}

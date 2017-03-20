@@ -6,6 +6,7 @@ from locations.models import Location, Currency, City
 from utils.uploadings import *
 from django.utils.text import slugify
 from utils.general import random_string_creating
+from users.models import GuideProfile
 
 
 class PaymentType(models.Model):
@@ -22,7 +23,7 @@ class Tour(models.Model):
     overview = models.TextField(blank=True, null=True, default=None)
     image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default=None)
 
-    guide = models.ForeignKey(User)
+    guide = models.ForeignKey(GuideProfile)
     city = models.ForeignKey(City, blank=True, null=True, default=None)
     currency = models.ForeignKey(Currency)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -30,6 +31,8 @@ class Tour(models.Model):
 
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     min_hours = models.IntegerField(default=0)
+
+    discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)#in decimals
 
     payment_type = models.ForeignKey(PaymentType, blank=True, null=True, default=None)#hourly or fixed price
     slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, default=random_string_creating)

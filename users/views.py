@@ -61,7 +61,7 @@ def guide(request, username):
 
     guide = guide_user.guideprofile
 
-    tours = guide.user.tour_set.filter(is_active=True)
+    tours = guide.tour_set.filter(is_active=True)
     tours_ids = [tour.id for tour in tours]
     reviews = Review.objects.filter(is_active=True, id__in=tours_ids)
 

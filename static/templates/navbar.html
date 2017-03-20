@@ -191,25 +191,31 @@
                         </li>
                     </ul>
                 </li>
-                <li><a href="feature-typography.html">Features</a>
+                <li><a href="{% url 'my_bookings' %}">My Bookings</a>
                     <ul>
-                        <li><a href="feature-typography.html">Typography</a>
+                        <li><a href="{% url 'my_bookings_status' 'pending' %}">Pending</a>
                         </li>
-                        <li><a href="feature-icons.html">Icons</a>
+                        <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">Waiting for payment</a>
                         </li>
-                        <li><a href="feature-forms.html">Forms</a>
+                        <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
                         </li>
-                        <li><a href="feature-icon-effects.html">Icon Effects</a>
+                        <li><a href="{% url 'my_bookings_status' 'cancelled' %}">Cancelled</a>
                         </li>
-                        <li><a href="feature-elements.html">Elements</a>
+                        <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
                         </li>
-                        <li><a href="feature-grid.html">Grid</a>
+                    </ul>
+                </li>
+                <li><a href="{% url 'orders' %}">Orders</a>
+                    <ul>
+                        <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
                         </li>
-                        <li><a href="feature-hovers.html">Hover effects</a>
+                        <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">Waiting for payment</a>
                         </li>
-                        <li><a href="feature-lightbox.html">Lightbox</a>
+                        <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
                         </li>
-                        <li><a href="feature-media.html">Media</a>
+                        <li><a href="{% url 'orders_status' 'cancelled' %}">Cancelled</a>
+                        </li>
+                        <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
                         </li>
                     </ul>
                 </li>
