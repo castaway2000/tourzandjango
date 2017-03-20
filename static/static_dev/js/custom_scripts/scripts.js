@@ -91,6 +91,10 @@ $(document).ready(function(){
         $(this).closest('.booking-result-message').addClass('hidden');
     });
 
+
+
     priceCalculation();
 
-})
+});
+
+  $('.datepicker').datepicker('setDate', 'today');

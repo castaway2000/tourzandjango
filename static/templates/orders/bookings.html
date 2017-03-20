@@ -19,6 +19,10 @@
                     <h3>Filter By:</h3>
                     <ul class="list booking-filters-list">
                         <li>
+                            <h5 class="booking-filters-title">Price </h5>
+                            <input type="text" id="price-slider">
+                        </li>
+                        <li>
                             <h5 class="booking-filters-title">City</h5>
                             {% for city in cities %}
                                 <div class="checkbox">
@@ -26,10 +30,6 @@
                                         <input class="i-check" type="checkbox" />2 {{ city.name }} (11)</label>
                                 </div>
                             {% endfor %}
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">Price </h5>
-                            <input type="text" id="price-slider">
                         </li>
                         <li>
                             <h5 class="booking-filters-title">Guides</h5>
@@ -91,12 +91,18 @@
                                         <b>Booked: </b>{{ order.date_ordered|date:"m.d.Y" }}
                                     </p>
                                     <p>
+                                        <b>Booked for: </b>{{ order.date_booked_for|date:"m.d.Y" }}
+                                    </p>
+                                    <p>
                                         <b>Paid: </b>
                                         {% if order.date_paid %}
                                             {{ order.date_paid|date:"m.d.Y" }}
                                         {% else %}
                                             No payment yet
                                         {% endif %}
+                                    </p>
+                                    <p>
+                                         <button class="btn btn-danger btn-sm">Cancel</button>
                                     </p>
                                 </div>
                             </div>

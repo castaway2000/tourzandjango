@@ -34,7 +34,7 @@
 {#                                                 alt="" title="" />#}
 {#                                        {% endif %}#}
 {##}
-{#                                        Hi, {{ user }}#}
+                                        Hi, {{ request.user.username }}
 {#                                    </a>#}
                                 </li>
                                 <li><a href="{% url 'logout' %}">Logout</a>
@@ -205,20 +205,22 @@
                         </li>
                     </ul>
                 </li>
-                <li><a href="{% url 'orders' %}">Orders</a>
-                    <ul>
-                        <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
-                        </li>
-                        <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">Waiting for payment</a>
-                        </li>
-                        <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
-                        </li>
-                        <li><a href="{% url 'orders_status' 'cancelled' %}">Cancelled</a>
-                        </li>
-                        <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
-                        </li>
-                    </ul>
-                </li>
+                {% if request.user.guideprofile %}
+                    <li><a href="{% url 'orders' %}">Orders</a>
+                        <ul>
+                            <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
+                            </li>
+                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">Waiting for payment</a>
+                            </li>
+                            <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
+                            </li>
+                            <li><a href="{% url 'orders_status' 'cancelled' %}">Cancelled</a>
+                            </li>
+                            <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
                 <li><a href="hotels.html">Hotels</a>
                     <ul>
                         <li><a href="hotel-details.html">Details</a>

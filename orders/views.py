@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect, reverse
 from django.http import JsonResponse
 from .models import Order
 from locations.models import City
 from users.models import GuideProfile
+from datetime import datetime
 
 
 # Create your views here.
@@ -14,6 +15,12 @@ def tour_booking(request):
         kwargs = dict()
 
         tour_id = data["tour_id"]
+        date_booked_for = data["start"]
+        print (type(date_booked_for))
+        date_booked_for = datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
+        # date_booked_for = date_booked_for.date()
+        print (type(date_booked_for))
+
         hours_nmb = data["booking_hours"]
         price_hourly = data.get("price_hourly", 0)
         if price_hourly:
@@ -34,6 +41,7 @@ def tour_booking(request):
         kwargs["price"] = price
         kwargs["discount"] = discount
         kwargs["price_after_discount"] = price_after_discount
+        kwargs["date_booked_for"] = date_booked_for
 
         Order.objects.create(**kwargs)
         return_dict["status"] = "success"
@@ -46,8 +54,14 @@ def bookings(request, status=None):
     user = request.user
     if not status:
         orders = Order.objects.filter(user=user)
+    elif not user.is_anonymous():
+        orders = Order.objects.filter(user=user, status__name=status)
     else:
-        orders = Order.objects.filter(status__name=status)
+        current_url = request.path
+        print (current_url)
+
+        url = "/login?next=%s" % current_url
+        return HttpResponseRedirect(url)
 
     cities_ids = [item.tour.city.id for item in orders]
     cities = City.objects.filter(id__in=cities_ids, is_active=True)

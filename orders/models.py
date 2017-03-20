@@ -39,8 +39,9 @@ class Order(models.Model):
 
     comment = models.TextField(blank=True, null=True, default=None)
     date_ordered = models.DateTimeField(auto_now_add=True, auto_now=False)
-    date_toured = models.DateField(blank=True, null=True, default=None)
     date_paid = models.DateField(blank=True, null=True, default=None)
+    date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
+    date_toured = models.DateField(blank=True, null=True, default=None)
 
     def __unicode__(self):
         return "%s" % (self.user.username)
