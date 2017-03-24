@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 
@@ -439,7 +440,7 @@
         <div class="gap"></div>
         <div class="row">
             <div class="col-md-4">
-                <h3>Best Free Tours <small ><a href="#">view all</a></small></h3>
+                <h3> {% trans "Best Free Tours" %} <small ><a href="#">{% trans "view all" %}</a></small></h3>
                 <ul class="booking-list">
                     {% for tour in free_tours %}
                         {% include 'users/tour_items_representation.html' %}
