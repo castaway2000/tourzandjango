@@ -15,37 +15,64 @@
             </li>
         </ul>
         <h3 class="booking-title">
-            Hi {{ request.user.username }}! This is your bookings! {{ request.LANGUAGE_CODE }}
-            {% trans "Welcome to my project!" %}
+            {% if bookings_nmb == 0 %}
+                No bookings were found
+            {% elif bookings_nmb == 1 %}
+                {{ bookings_nmb }}  booking was found!
+            {% elif bookings_nmb > 1 %}
+                {{ bookings_nmb }} bookings were found
+            {% else %}
+                No bookings were found
+            {% endif %}
+
         </h3>
         <div class="row">
             <div class="col-md-3">
                 <aside class="booking-filters text-white">
                     <h3>Filter By:</h3>
-                    <ul class="list booking-filters-list">
-                        <li>
-                            <h5 class="booking-filters-title">Price </h5>
-                            <input type="text" id="price-slider">
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">City</h5>
-                            {% for city in cities %}
-                                <div class="checkbox">
-                                    <label>
-                                        <input class="i-check" type="checkbox" />2 {{ city.name }} (11)</label>
-                                </div>
-                            {% endfor %}
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">Guides</h5>
-                            {% for guide in guides %}
-                                <div class="checkbox">
-                                    <label>
-                                        <input class="i-check" type="checkbox" />{{ guide.user.username }}</label>
-                                </div>
-                            {% endfor %}
-                        </li>
-                    </ul>
+                    <form method="get" action="">
+                        <ul class="list booking-filters-list">
+                            <li>
+                                <h5 class="booking-filters-title">Price </h5>
+                                <input type="text" id="price-slider" name="price"
+                                       data-min = "0" data-max="300"
+                                       {% if request.GET.price %}
+                                           value="{{ request.GET.price }}"
+                                       {% endif %}
+                                >
+                            </li>
+                            <li>
+                                <h5 class="booking-filters-title">City</h5>
+                                {% for city in cities %}
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="i-check" type="checkbox" name="city" value="{{ city.name }}"
+                                            {% if city.name in filtered_cities %} checked {% endif %}
+                                            >
+                                            {{ city.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </li>
+                            <li>
+                                <h5 class="booking-filters-title">Guides</h5>
+                            {{ request.GET.guide }}
+                                {% for guide in guides %}
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="i-check" type="checkbox" name="guide" value="{{ guide.user.username }}"
+                                            {% if guide.user.username in filtered_guides %} checked {% endif %}
+                                            >
+                                            {{ guide.user.username }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </li>
+                            <li>
+                                <button type="submit" class="btn btn-primary btn-block">Apply</button>
+                            </li>
+                        </ul>
+                     </form>
                 </aside>
             </div>
             <div class="col-md-9">

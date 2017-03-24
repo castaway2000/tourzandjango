@@ -32,7 +32,7 @@ class Order(models.Model):
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)#has an user on it, who created a tour
 
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    hours_nmb = models.ImageField(default=0)#if an hourly tour was specified
+    hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
