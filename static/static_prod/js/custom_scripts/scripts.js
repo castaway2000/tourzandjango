@@ -55,36 +55,43 @@ $(document).ready(function(){
     }
 
     $('#form_tour_scheduling').on('submit', function(e){
-        e.preventDefault();
-        console.log();
-        var form = $(this);
-        data = gettingFormData(form);
-        console.log(data);
-        var url = '/tour_booking/';
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            cache: true,
-            success: function (data) {
-                if (data.status == "success"){
+        if ($(this).hasClass('user-not-authorized')){
+
+        }else{
+            e.preventDefault();
+            console.log();
+            var form = $(this);
+            data = gettingFormData(form);
+
+            var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+            data["csrfmiddlewaretoken"] = csrf_token;
+
+            console.log(data);
+            var url = '/tour_booking/';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                cache: true,
+                success: function (data) {
+                    if (data.status == "success"){
+                        $('.booking-result-message')
+                            .removeClass('alert-danger hidden').addClass('alert-success');
+                        $('.booking-result-message .message-text').text(data.message);
+                    }else{
+                        $('.booking-result-message')
+                            .removeClass('alert-success hidden').addClass('alert-danger');
+                        $('.booking-result-message .message-text').text("Failed");
+                    }
+                },
+                error: function(){
                     $('.booking-result-message')
-                        .removeClass('alert-danger hidden').addClass('alert-success');
-                    $('.booking-result-message .message-text').text(data.message);
-                }else{
-                    $('.booking-result-message')
-                        .removeClass('alert-success hidden').addClass('alert-danger');
+                            .removeClass('alert-success hidden').addClass('alert-danger');
+
                     $('.booking-result-message .message-text').text("Failed");
                 }
-            },
-            error: function(){
-                $('.booking-result-message')
-                        .removeClass('alert-success hidden').addClass('alert-danger');
-
-                $('.booking-result-message .message-text').text("Failed");
-            }
-        })
-
+            })
+        }
     });
 
     $(document).on('click', '.close-alert', function(){

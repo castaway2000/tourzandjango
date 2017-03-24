@@ -76,8 +76,6 @@ def bookings(request, status=None):
         orders = Order.objects.filter(user=user, status__name=status).order_by('-id')
     else:
         current_url = request.path
-        print (current_url)
-
         url = "/login?next=%s" % current_url
         return HttpResponseRedirect(url)
 

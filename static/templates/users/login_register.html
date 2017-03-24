@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{%  load staticfiles %}
+{% load socialaccount %}
+{% get_providers as socialaccount_providers %}
 
 {% block content %}
     <div class="container">
@@ -12,6 +16,18 @@
             <div class="col-md-4">
                 <h3>Welcome to Tourzan</h3>
                 <p>You may be authenticated, using social networks or sign in/sign up using username and password</p>
+                 {{ request.GET.next }}
+                <div class="text-center">
+                    <a title="Facebook" class="btn btn-default btn-facebook"
+                       {% if request.GET.next  %}
+                           href="{% provider_login_url "facebook" method="oauth2"  next=request.GET.next %}"
+                       {% else %}
+                            href="{% provider_login_url "facebook" method="oauth2" %}"
+                       {% endif %}
+                    >
+                        <i class="fa fa-2x fa-facebook" aria-hidden="true"></i>
+                    </a>
+                </div>
             </div>
             <div class="col-md-4">
                 <h3>Login</h3>

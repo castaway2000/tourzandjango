@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^', include('orders.urls')),
     url(r'^', include('tours.urls')),
     url(r'^', include('users.urls')),
+
+    url(r'^accounts/', include('allauth.urls')),
 ]\
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
               + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
