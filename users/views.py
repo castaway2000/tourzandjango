@@ -17,6 +17,10 @@ def login_view(request):
         if user:
             if user.is_active:
                 login(request, user)
+                if request.GET:
+                    next_url = request.GET.get("next")
+                    if next_url:
+                        return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse("home"))
             else:
                 return HttpResponse("Your is disabled.")

@@ -42,6 +42,12 @@
 
         {% include 'footer.html' %}
 
+        <form id="csrf_getting_form" class="hidden">{% csrf_token %}
+        </form>
+
+    <form id="csrf_getting_form" class="hidden">{% csrf_token %}
+        </form>
+
 {#        <script src="{% static 'js/jquery.js' %}"></script>#}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 

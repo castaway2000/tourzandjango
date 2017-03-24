@@ -95,7 +95,9 @@
                             </button>
                             <div class="message-text"></div>
                         </div>
-                        <form method="post" id="form_tour_scheduling" class="form-horizontal">{% csrf_token %}
+                        <form method="get" id="form_tour_scheduling" action="{% url 'tour_booking' %}"
+                            class="form-horizontal
+                        {% if request.user.is_anonymous %}user-not-authorized{% endif %}">
                             <h3 class="text-center">
                                 Book {{ tour.name }} tour
                             </h3>
