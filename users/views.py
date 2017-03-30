@@ -6,6 +6,10 @@ from .models import Profile, GuideProfile
 from tours.models import Tour, Review
 from locations.models import City
 from django.contrib.auth.models import User
+from django.utils.translation import activate, get_language
+from django.utils import translation
+from django.utils.translation import LANGUAGE_SESSION_KEY
+from django.core.urlresolvers import translate_url
 
 
 def login_view(request):
@@ -177,3 +181,28 @@ def profile_photos(request, username = None):
         messages.success(request, 'New image was successfully added!')
 
     return render(request, 'new_template/users/profile_photos.html', locals())
+
+
+#this view is a based on the code of django view (django.views.i18n.py set_language() ), because there were [roblems with utf-8
+#instruction how to use standard django approach for language changing using that view is described here:
+#http://joaoventura.net/blog/2016/django-translation-4/
+def set_language(request, language):
+    print ("changing language")
+    user_language = language
+    next = request.META.get('HTTP_REFERER')
+    next_trans = translate_url(next, user_language)
+    response = HttpResponseRedirect(next_trans)
+
+    if hasattr(request, 'session'):
+        print ("has session")
+    print (request.LANGUAGE_CODE)
+
+    translation.activate(user_language)
+    request.LANGUAGE_CODE = user_language
+    print (request.LANGUAGE_CODE)
+    request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+    request.session['django_language'] = user_language
+    request.session[LANGUAGE_SESSION_KEY] = user_language
+    print (request.session[LANGUAGE_SESSION_KEY])
+
+    return response

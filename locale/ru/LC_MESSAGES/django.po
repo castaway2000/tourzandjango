@@ -43,8 +43,8 @@ msgstr "смотреть все"
 
 #: .\tourzan\settings.py:142
 msgid "English"
-msgstr ""
+msgstr "English"
 
 #: .\tourzan\settings.py:143
 msgid "Russian"
-msgstr ""
+msgstr "Russian"

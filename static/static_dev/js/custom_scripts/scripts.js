@@ -102,8 +102,14 @@ $(document).ready(function(){
     });
 
 
-
     priceCalculation();
+
+
+    $('.top-user-area-lang a').on('click', function () {
+        console.log("clicked");
+        url = $(this).attr("href");
+        window.location.href = url;
+    })
 
 });
 
