@@ -59,14 +59,25 @@ def tours(request):
         print (filtered_guides)
         base_kwargs["guide__user__username__in"] = filtered_guides
 
+
+    #ordering
+    if order_results:
+        if order_results == "price":
+            order_results = ["-is_free", "price_hourly"]
+            order_results.insert(1, "price")
+            order_results = tuple(order_results)
+
+        elif order_results == "-price":
+            order_results = ["is_free","-price_hourly"]
+            order_results.insert(1, "-price")
+            order_results = tuple(order_results)
+    else:
+        order_results = ("-rating")
+
     #it is needed for displaying of full list of filters
     # even if some filters are not available for the current list of tours
-    tours_initial = Tour.objects.filter(is_active=True).order_by('-id')
+    tours_initial = Tour.objects.filter(is_active=True).order_by(order_results)
 
-    #main variable for tours rendering
-    print ("kwargs: %s" % base_kwargs)
-    print ("hourly priced kwargs: %s" % hourly_price_kwargs)
-    print ("fix priced kwargs: %s" % fixed_price_kwargs)
 
     if hourly_price_kwargs or fixed_price_kwargs or free_price_kwargs:
 
@@ -98,21 +109,12 @@ def tours(request):
             free_price_filters.update(free_price_kwargs)
             q_objects |= Q(**free_price_filters)
 
-        print q_objects
-        tours = tours_initial.filter(q_objects).order_by('-id')
+        tours = tours_initial.filter(q_objects).order_by(*order_results)
         print ("tours: %s" % tours)
     elif request.GET:
         tours = Tour.objects.none()
     else:
         tours = tours_initial
-
-
-    if order_results:
-        print "order results: %s" % order_results
-        tours.order_by(order_results)
-        print (tours)
-
-
 
     tours_nmb = tours.count()
 

@@ -25,6 +25,9 @@ class Tour(models.Model):
 
     guide = models.ForeignKey(GuideProfile)
     city = models.ForeignKey(City, blank=True, null=True, default=None)
+
+    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
     currency = models.ForeignKey(Currency)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours = models.IntegerField(default=0)

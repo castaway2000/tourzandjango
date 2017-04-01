@@ -123,7 +123,7 @@ def bookings(request, status=None):
         bookings_nmb = orders.count()
     elif not user.is_anonymous():
         kwargs["status__name"] = status
-        initial_orders = Order.objects.filter(user=user, status=status)#it is needed for citieas and guides list
+        initial_orders = Order.objects.filter(user=user, status__name=status)#it is needed for citieas and guides list
         orders = initial_orders.filter(**kwargs).order_by('-id')
         bookings_nmb = orders.count()
     else:

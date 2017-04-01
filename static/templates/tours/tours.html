@@ -153,7 +153,7 @@
                     <li>
                         <a class="booking-item" href="#">
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-3 col-sm-3">
                                     <div class="booking-item-img">
                                         {% if tour.image %}
                                             <img src="{% get_media_prefix %}{{ tour.image }}"/>
@@ -163,7 +163,7 @@
                                     </div>
                                     <br>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 col-sm-6">
                                     <div class="tour-name">
                                         {{ tour.name }}
                                     </div>
@@ -176,7 +176,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 col-sm-3">
+                                    <div class="tour-rating">
+                                        <b>Rating: </b> {{ tour.rating }}
+                                    </div>
                                     <span class="tour-price">
                                         <b>Price: </b>
                                         {% if tour.payment_type_id == 1 %}
