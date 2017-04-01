@@ -67,7 +67,10 @@ $(document).ready(function(){
             data["csrfmiddlewaretoken"] = csrf_token;
 
             console.log(data);
-            var url = '/tour_booking/';
+            console.log("123");
+            var url = form.attr("action");
+            console.log(url);
+
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -99,8 +102,14 @@ $(document).ready(function(){
     });
 
 
-
     priceCalculation();
+
+
+    $('.top-user-area-lang a').on('click', function () {
+        console.log("clicked");
+        url = $(this).attr("href");
+        window.location.href = url;
+    })
 
 });
 

@@ -32,3 +32,18 @@
 .booking-item-title{
     font-size: 20px;
 }
+
+.tour-name{
+    font-size: 20px;
+}
+
+.tour-guide-name{
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.tour-price{
+    font-size: 16px;
+}

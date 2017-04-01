@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block content %}
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="/">Home</a>
+            </li>
+            <li class="active">
+                <a href="{% url 'my_bookings' %}">
+                    Tours
+                </a>
+            </li>
+        </ul>
+        <h3 class="booking-title">
+            {% if tours_nmb == 0 %}
+                No tours were found
+            {% elif tours_nmb == 1 %}
+                {{ tours_nmb }}  tours was found!
+            {% elif tours_nmb > 1 %}
+                {{ tours_nmb }} tours were found
+            {% else %}
+                No tours were found
+            {% endif %}
+
+        </h3>
+        <div class="row">
+            <div class="col-md-3">
+                <aside class="booking-filters text-white">
+                    <h3>Filter By:</h3>
+                    <form id="filtering_form" method="get" action="">
+                        <input id="order_results_input" name="order_results" class="hidden"
+                               value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
+                        <ul class="list booking-filters-list">
+                            <li>
+                                <h5 class="booking-filters-title">Price per hour</h5>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="i-check" type="checkbox" name="is_hourly_price_included"
+                                        {% if request.GET.is_hourly_price_included or not request.GET %} checked {% endif %}
+                                        >
+                                        Include hourly price offers
+                                    </label>
+                                </div>
+                                <input type="text" id="price-slider-1" name="hourly_price"
+                                       data-min = "0" data-max="50"
+                                       {% if request.GET.hourly_price %}
+                                           value="{{ request.GET.hourly_price }}"
+                                       {% endif %}
+                                >
+                            </li>
+                            <li>
+                                <h5 class="booking-filters-title">Fixed price </h5>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="i-check" type="checkbox" name="is_fixed_price_included"
+                                        {% if request.GET.is_fixed_price_included or not request.GET %} checked {% endif %}
+                                        >
+                                        Include fixed-prices offers
+                                    </label>
+                                </div>
+                                <input type="text" id="price-slider-2" name="fixed_price"
+                                       data-min = "0" data-max="300"
+                                       {% if request.GET.fixed_price %}
+                                           value="{{ request.GET.fixed_price }}"
+                                       {% endif %}
+                                >
+                            </li>
+                            <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="i-check" type="checkbox" name="is_free_offers_included"
+                                        {% if request.GET.is_free_offers_included or not request.GET %} checked {% endif %}
+                                        >
+                                        Include FREE offers
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <h5 class="booking-filters-title">City</h5>
+                                {% for city in cities %}
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="i-check" type="checkbox" name="city" value="{{ city.name }}"
+                                            {% if city.name in filtered_cities %} checked {% endif %}
+                                            >
+                                            {{ city.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </li>
+                            <li>
+                                <h5 class="booking-filters-title">Guides</h5>
+                                {% for guide in guides %}
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="i-check" type="checkbox" name="guide" value="{{ guide.user.username }}"
+                                            {% if guide.user.username in filtered_guides %} checked {% endif %}
+                                            >
+                                            {{ guide.user.username }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </li>
+                            <li>
+                                <button type="submit" class="btn btn-primary btn-block">Apply</button>
+                            </li>
+                        </ul>
+                     </form>
+                </aside>
+            </div>
+            <div class="col-md-9">
+                {% if tours %}
+                    <div class="nav-drop booking-sort">
+                        {% with request.GET.order_results as order_results %}
+                            <h5 class="booking-sort-title">
+                                {% if not order_results or order_results == "price" %}
+                                    <a href="#">Sort: Price (low to high)<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                {% elif order_results == "-price" %}
+                                    <a href="#">Sort: Price (high to low)<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                {% elif order_results == "ratig" %}
+                                    <a href="#">Sort: Rating (low to high)<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                {% elif order_results == "-ratig" %}
+                                    <a href="#">Sort: Rating (high to low)<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+                                {% endif %}
+                            </h5>
+                            <ul class="nav-drop-menu" id="sorting_area">
+                                {% if order_results and order_results != "price" %}
+                                    <li><a href="#" data-order_value="price">Price (low to high)</a>
+                                    </li>
+                                {% endif %}
+                                {% if order_results != "-price" %}
+                                    <li><a href="#" data-order_value="-price">Price (high to low)</a>
+                                    </li>
+                                {% endif %}
+                                {% if order_results != "rating" %}
+                                    <li><a href="#" data-order_value="-rating">Rating (low to high)</a>
+                                    </li>
+                                {% endif %}
+                                {% if order_results != "-rating" %}
+                                    <li><a href="#" data-order_value="rating">Rating (high to high)</a>
+                                    </li>
+                                {% endif %}
+
+                            </ul>
+                        {% endwith %}
+                    </div>
+                {% endif %}
+                <ul class="booking-list">
+                    {% for tour in tours %}
+                    <li>
+                        <a class="booking-item" href="#">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="booking-item-img">
+                                        {% if tour.image %}
+                                            <img src="{% get_media_prefix %}{{ tour.image }}"/>
+                                        {% else %}
+                                            <img src="{% static 'img/default_tour_image.jpg' %}">
+                                        {% endif %}
+                                    </div>
+                                    <br>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="tour-name">
+                                        {{ tour.name }}
+                                    </div>
+                                    <div class="tour-guide-name">
+                                        by {{ tour.guide.user.username }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{ tour.overview|linebreaks|truncatewords_html:30 }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="tour-price">
+                                        <b>Price: </b>
+                                        {% if tour.payment_type_id == 1 %}
+                                            {{ tour.price_hourly }} {{ tour.currency.name }} / hour
+                                        {% elif tour.payment_type_id == 2 %}
+                                            {{ tour.price }} {{ tour.currency.name }}
+                                        {% elif tour.payment_type_id == 3 %}
+                                            Free!
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="pagination">
+                            <li class="active"><a href="#">1</a>
+                            </li>
+                            <li><a href="#">2</a>
+                            </li>
+                            <li><a href="#">3</a>
+                            </li>
+                            <li><a href="#">4</a>
+                            </li>
+                            <li><a href="#">5</a>
+                            </li>
+                            <li><a href="#">6</a>
+                            </li>
+                            <li><a href="#">7</a>
+                            </li>
+                            <li class="dots">...</li>
+                            <li><a href="#">43</a>
+                            </li>
+                            <li class="next"><a href="#">Next Page</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 text-right">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gap"></div>
+    </div>
+{% endblock %}
+
+{% block js_stuff %}
+    <script>
+        $(document).ready(function(){
+            $('#sorting_area a').on('click', function(){
+                var order_value = $(this).data('order_value');
+                var current_url = window.location.href;
+                var is_get_params = current_url.indexOf('?') != -1;
+
+                //assigning ordering value to the hidden field on filters panel
+                $('#order_results_input').val(order_value);
+                $('#filtering_form').submit();
+            })
+        });
+    </script>
+{% endblock js_stuff %}

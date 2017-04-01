@@ -234,6 +234,26 @@ $("#price-slider").ionRangeSlider({
     hasGrid: true
 });
 
+$("#price-slider-1").ionRangeSlider({
+    min: 130,
+    max: 575,
+    type: 'double',
+    prefix: "$",
+    // maxPostfix: "+",
+    prettify: false,
+    hasGrid: true
+});
+
+$("#price-slider-2").ionRangeSlider({
+    min: 130,
+    max: 575,
+    type: 'double',
+    prefix: "$",
+    // maxPostfix: "+",
+    prettify: false,
+    hasGrid: true
+});
+
 $('.i-check, .i-radio').iCheck({
     checkboxClass: 'i-check',
     radioClass: 'i-radio'
