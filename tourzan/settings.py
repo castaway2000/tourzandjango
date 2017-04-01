@@ -69,7 +69,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'users.force_default_middleware.ForceDefaultLanguageMiddleware',
+    'users.default_language_middleware.ForceDefaultLanguageMiddleware',
 ]
 
 ROOT_URLCONF = 'tourzan.urls'
