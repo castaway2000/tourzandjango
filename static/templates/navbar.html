@@ -236,6 +236,9 @@
                     </li>
                 {% endif %}
                 <li><a href="{% url 'tours' %}">TOURS</a>
+                {% if not user.is_anonymous %}
+                    <li><a href="{% url 'chats' %}">Chats</a>
+                {% endif %}
                 <li><a href="hotels.html">Hotels</a>
                     <ul>
                         <li><a href="hotel-details.html">Details</a>
@@ -313,52 +316,6 @@
                                 <li><a href="flights-search-results-3.html">Layout 3</a>
                                 </li>
                                 <li><a href="flights-search-results-4.html">Layout 4</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><a href="rentals.html">Rentals</a>
-                    <ul>
-                        <li><a href="rentals-details.html">Details</a>
-                            <ul>
-                                <li><a href="rentals-details.html">Layout 1</a>
-                                </li>
-                                <li><a href="rentals-details-2.html">Layout 2</a>
-                                </li>
-                                <li><a href="rentals-details-3.html">Layout 3</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="rental-payment.html">Payment</a>
-                            <ul>
-                                <li><a href="rental-payment.html">Registered</a>
-                                </li>
-                                <li><a href="rental-payment-registered-card.html">Existed Cards</a>
-                                </li>
-                                <li><a href="rental-payment-unregistered.html">Unregistered</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="rentals-search.html">Search</a>
-                            <ul>
-                                <li><a href="rentals-search.html">Layout 1</a>
-                                </li>
-                                <li><a href="rentals-search-2.html">Layout 2</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="rentals.html">Results</a>
-                            <ul>
-                                <li><a href="rentals.html">Layout 1</a>
-                                </li>
-                                <li><a href="rentals-search-results-2.html">Layout 2</a>
-                                </li>
-                                <li><a href="rentals-search-results-3.html">Layout 3</a>
-                                </li>
-                                <li><a href="rentals-search-results-4.html">Layout 4</a>
-                                </li>
-                                <li><a href="rentals-search-results-5.html">Layout 5</a>
                                 </li>
                             </ul>
                         </li>
