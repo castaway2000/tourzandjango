@@ -72,11 +72,13 @@ def tours(request):
             order_results.insert(1, "-price")
             order_results = tuple(order_results)
     else:
-        order_results = ("-rating")
+        order_results = ("-is_free", "price_hourly")
 
     #it is needed for displaying of full list of filters
     # even if some filters are not available for the current list of tours
-    tours_initial = Tour.objects.filter(is_active=True).order_by(order_results)
+
+    #if it is one element in tuple, * is not needed
+    tours_initial = Tour.objects.filter(is_active=True).order_by(*order_results)
 
 
     if hourly_price_kwargs or fixed_price_kwargs or free_price_kwargs:
@@ -109,8 +111,8 @@ def tours(request):
             free_price_filters.update(free_price_kwargs)
             q_objects |= Q(**free_price_filters)
 
+        #if it is one element in tuple, * is not needed
         tours = tours_initial.filter(q_objects).order_by(*order_results)
-        print ("tours: %s" % tours)
     elif request.GET:
         tours = Tour.objects.none()
     else:
