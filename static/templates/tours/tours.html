@@ -151,7 +151,7 @@
                 <ul class="booking-list">
                     {% for tour in tours %}
                     <li>
-                        <a class="booking-item" href="#">
+                        <a class="tour-item" href="{% url 'tour' tour.slug %}">
                             <div class="row">
                                 <div class="col-md-3 col-sm-3">
                                     <div class="booking-item-img">
