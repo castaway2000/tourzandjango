@@ -5,5 +5,48 @@
 
 {% block content %}
     <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+
+                <div class="box bg-gray chat-item single-chat">
+                    <div>
+                        <h3>{{ chat.topic }}</h3>
+                    </div>
+                    <div>
+                        <b>with </b>
+                            {% if request.user != chat.guide %}
+                                {{ chat.guide.username }} (guide)
+                            {% else %}
+                                {{ chat.tourist.username }} (tourist)
+                            {% endif %}
+                             <b>started at: </b> {{ chat.created|date:"m.d.Y" }}
+                    </div>
+                    <br>
+                    {% if chat_messages %}
+                        {% for message in chat_messages %}
+                            <div class="chat-message small">
+                                <div class="message-meta-info">
+                                    {% if request.user.username  == message.user__username %}
+                                        me
+                                    {% else %}
+                                        {{ message.user__username }}
+                                    {% endif %}, {{ message.created|date:"m.d.Y" }}:
+                                </div>
+                                <div class="chat-message-text">
+                                    {{ message.message|linebreaks }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No last message
+                    {% endif %}
+
+                    <div class="text-right">
+                        <a class="btn btn-primary" href="{% url 'chat' chat.uuid %}">Go To Conversation</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 {% endblock content %}

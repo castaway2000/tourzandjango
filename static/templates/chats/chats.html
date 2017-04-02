@@ -7,41 +7,46 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
-                <div class="box bg-gray chat-container" id="chats_list">
+                <div class="chat-container" id="chats_list">
                     {% for chat in chats %}
-                        <div class="chat-item">
+                        <div class="box bg-gray chat-item">
                             <div>
                                 <h3>{{ chat.topic }}</h3>
                             </div>
                             <div>
-                                <b>From: </b>
+                                <b>with </b>
                                     {% if request.user != chat.guide %}
-                                        {{ chat.guide__username }}
+                                        {{ chat.guide__username }} (guide)
                                     {% else %}
-                                        {{ chat.tourist__username }}
+                                        {{ chat.tourist__username }} (tourist)
                                     {% endif %}
-                            </div>
-                            <div>
-                                <b>Started on: </b> {{ chat.created|date:"m.d.Y" }}
+                                     <b>started at: </b> {{ chat.created|date:"m.d.Y" }}
                             </div>
                             <br>
-                            <div>
-                                <b>Last Message:</b>
-                            </div>
-                            <div class="chat-message">
-                                <div class="message-meta-info">
-                                    {{ chat.last_message.from }}, {{ chat.last_message.created|date:"m.d.Y" }}:
+                            {% if chat.last_message.text %}
+                                <div>
+                                    <b>Last Message:</b>
                                 </div>
-                                <div class="chat-message-text">
-                                    {{ chat.last_message.text }}
+                                <div class="chat-message">
+                                    <div class="message-meta-info">
+                                        {% if request.user.username  == chat.last_message.from %}
+                                            me
+                                        {% else %}
+                                            {{ chat.last_message.from }}
+                                        {% endif %}, {{ chat.last_message.created|date:"m.d.Y" }}:
+                                    </div>
+                                    <div class="chat-message-text">
+                                        {{ chat.last_message.text|linebreaks }}
+                                    </div>
                                 </div>
-                            </div>
+                            {% else %}
+                                No last message
+                            {% endif %}
 
                             <div class="text-right">
-                                <a class="btn btn-primary" href="/">Go To Conversation</a>
+                                <a class="btn btn-primary" href="{% url 'chat' chat.uuid %}">Go To Conversation</a>
                             </div>
-
-                        </div>
+                        </div><!-- end of chat-item -->
                     {% endfor %}
                 </div>
             </div>
