@@ -69,11 +69,12 @@
     border-radius: 5px;
     display: inline-block;
     width: 100%;
+    text-align: left!important;
 }
 
-.chat-message.small{
-    width: 40%;
-}
+/*.chat-message.small{*/
+    /*width: 48%;*/
+/*}*/
 
 
 .message-meta-info{
@@ -82,6 +83,16 @@
 }
 
 .chat-message-text{
-    padding-left: 5px;
+    padding-left: 3px;
     font-size: 14px;
+}
+
+#chat_message_form textarea{
+    width: 100%;
+}
+
+#messages_area{
+    overflow-y: scroll;
+    height: 200px;
+    margin-bottom: 10px;
 }

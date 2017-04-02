@@ -1,10 +1,11 @@
-from django.shortcuts import render, HttpResponseRedirect, reverse
+from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
 from .models import Order
 from locations.models import City
 from users.models import GuideProfile
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 
 
 @login_required()

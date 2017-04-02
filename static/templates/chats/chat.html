@@ -21,31 +21,38 @@
                             {% endif %}
                              <b>started at: </b> {{ chat.created|date:"m.d.Y" }}
                     </div>
-                    <br>
-                    {% if chat_messages %}
-                        {% for message in chat_messages %}
-                            <div class="chat-message small">
-                                <div class="message-meta-info">
-                                    {% if request.user.username  == message.user__username %}
-                                        me
-                                    {% else %}
-                                        {{ message.user__username }}
-                                    {% endif %}, {{ message.created|date:"m.d.Y" }}:
-                                </div>
-                                <div class="chat-message-text">
-                                    {{ message.message|linebreaks }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        No last message
-                    {% endif %}
 
-                    <div class="text-right">
-                        <a class="btn btn-primary" href="{% url 'chat' chat.uuid %}">Go To Conversation</a>
+                    <div id="messages_area">
+                        {% if chat_messages %}
+                            {% for message in chat_messages %}
+                                <div class="chat-message small">
+                                    <div class="message-meta-info">
+                                        {% if request.user.username == message.user__username %}
+                                            me
+                                        {% else %}
+                                            {{ message.user__username }}
+                                        {% endif %}, {{ message.created|date:"m.d.Y H:i:s" }}
+                                    </div>
+                                    <div class="chat-message-text">
+                                        {{ message.message|linebreaks }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
-                </div>
+                    <div class="message-input-container">
+                        <form id="chat_message_form" class="form" method="post" action="{% url 'sending_chat_message' %}">{% csrf_token %}
+                            <input class="hidden" value="{{ chat.uuid }}" name="chat_uuid">
+                            <div class="form-group">
+                                <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
+                            </div>
+                            <div class="form-group text-right">
+                                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                            </div>
+                        </form>
+                    </div>
 
+                </div>
             </div>
         </div>
     </div>

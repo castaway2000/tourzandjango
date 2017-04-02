@@ -20,7 +20,7 @@
                                     {% else %}
                                         {{ chat.tourist__username }} (tourist)
                                     {% endif %}
-                                     <b>started at: </b> {{ chat.created|date:"m.d.Y" }}
+                                     <b>started at: </b> {{ chat.created|date:"m.d.Y H:i:s" }}
                             </div>
                             <br>
                             {% if chat.last_message.text %}
@@ -33,7 +33,7 @@
                                             me
                                         {% else %}
                                             {{ chat.last_message.from }}
-                                        {% endif %}, {{ chat.last_message.created|date:"m.d.Y" }}:
+                                        {% endif %}, {{ chat.last_message.created|date:"m.d.Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
                                         {{ chat.last_message.text|linebreaks }}
