@@ -6,14 +6,17 @@ from django.db.models import Q
 from .models import *
 from tours.models import Tour
 from users.models import GuideProfile
+from django.contrib.auth.decorators import login_required
 
 
+@login_required()
 def chats(request):
     user = request.user
     chats = list(Chat.objects.filter(Q(guide=user)|Q(tourist=user))
                  .values("guide__username", "tourist__username", "uuid", "id", "topic", "created").order_by('-id'))
     chat_ids = [item["id"] for item in chats]
-    chat_messages = ChatMessage.objects.filter(id__in=chat_ids).values("chat__id", "message", "created", "user__username").order_by("-created")
+
+    chat_messages = ChatMessage.objects.filter(chat_id__in=chat_ids).values("chat__id", "message", "created", "user__username").order_by("-created")
 
     touched_chat_ids = list()
     last_messages_dict = dict()
@@ -31,6 +34,7 @@ def chats(request):
     return render(request, 'chats/chats.html', locals())
 
 
+@login_required()
 def chat(request, uuid):
     user = request.user
     chat = Chat.objects.get(uuid=uuid)
@@ -41,6 +45,7 @@ def chat(request, uuid):
     return render(request, 'chats/chat.html', locals())
 
 
+@login_required()
 def sending_chat_message(request):
     user = request.user
     return_data = dict()
@@ -58,8 +63,10 @@ def sending_chat_message(request):
     return JsonResponse(return_data)
 
 
+@login_required()
 def chat_creation(request, tour_id=None, guide_id=None):
     user = request.user
+
     if tour_id:
         tour = Tour.objects.get(id=tour_id)
         guide_id = tour.guide.user_id
@@ -67,7 +74,7 @@ def chat_creation(request, tour_id=None, guide_id=None):
         chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user,
                                                    defaults={"guide_id": guide_id,
                                                              "topic": topic})
-    if guide_id:
+    elif guide_id:
         guide = GuideProfile.objects.get(id=guide_id)
         topic = "Chat with %s" % guide.user.username
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide_id=guide_id,defaults={"topic": topic})
