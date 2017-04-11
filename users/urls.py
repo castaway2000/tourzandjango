@@ -8,7 +8,6 @@ urlpatterns = [
 
     url(r'^guides/(?P<username>\w+)/overview/$', views.guide, name='guide'),
 
-    url(r'^profile_settings/$', views.profile_settings, name='edit_profile_new'),
     url(r'^profile_settings/$', views.profile_settings, name='profile_settings'),
     url(r'^profile_overview/$', views.profile_overview, name='profile_overview'),
     url(r'^profile_overview/(?P<username>\w+)/$', views.profile_overview, name='profile_overview'),

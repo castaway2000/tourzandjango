@@ -101,9 +101,10 @@ def guide(request, username):
 
 
 def profile_settings(request):
+    page = "profile_settings"
     user = request.user
-    if user.is_anonymous():
-        return HttpResponseRedirect(reverse("home"))
+    # if user.is_anonymous():
+    #     return HttpResponseRedirect(reverse("home"))
 
 
     # form = ProfileForm(request.POST or None, request.FILES or None, instance=user_profile)
@@ -127,8 +128,7 @@ def profile_settings(request):
     #     'user_profile': user_profile,
     #     'form': form
     # }
-    context = {}
-    return render(request, 'users/profile_settings.html', context)
+    return render(request, 'users/profile_settings.html', locals())
 
 
 def profile_overview(request, username=None):

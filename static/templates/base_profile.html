@@ -16,7 +16,7 @@
                                      src="{{ user.userprofile.image.url }}"
                                      alt="" title="" />
                             {% else %}
-                                <img src="img/300x300.png" alt="Image Alternative text" title="AMaze" />
+                                <img src="img/300x300.png" alt="" title="AMaze" />
                             {% endif %}
 
                             <h5>{{ user.username }}</h5>
@@ -26,15 +26,13 @@
                         <ul class="list user-profile-nav">
 
                             {% if username %}
-                                <li><a href="{% url 'profile_overview' username %}"><i class="fa fa-user"></i>Overview</a>
+                                <li><a href="{% url 'profile_overview' username %}" class="active"><i class="fa fa-user"></i>Overview</a>
                                 </li>
                                 <li><a href="{% url 'profile_photos' username %}"><i class="fa fa-camera"></i>Travel Photos</a>
                                 </li>
                             {% else %}
-                                <li><a href="{% url 'profile_overview' %}"><i class="fa fa-user"></i>Overview</a>
-                                </li>
 
-                                <li><a href="{% url 'profile_settings' %}"><i class="fa fa-cog"></i>Settings</a>
+                                <li {% if page == "profile_settings" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}"><i class="fa fa-cog"></i>Settings</a>
                                 </li>
 
                                 <li><a href="{% url 'profile_photos' %}"><i class="fa fa-camera"></i>My Travel Photos</a>

@@ -30,7 +30,7 @@
                                 <li><a href="{% url 'login' %}">Log In</a>
                             {% else %}
                                 <li class="top-user-area-avatar">
-{#                                    <a href="{% url 'edit_profile_new' %}">#}
+                                    <a href="{% url 'profile_settings' %}">
 {#                                        {% if user.userprofile.image %}#}
 {#                                            <img class="origin round"#}
 {#                                                 src="{{ user.userprofile.image.url }}"#}
@@ -42,7 +42,7 @@
 {#                                        {% endif %}#}
 {##}
                                         Hi, {{ request.user.username }}
-{#                                    </a>#}
+                                    </a>
                                 </li>
                                 <li><a href="{% url 'logout' %}">Logout</a>
                                 </li>

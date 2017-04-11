@@ -16,7 +16,7 @@ def chats(request):
                  .values("guide__username", "tourist__username", "uuid", "id", "topic", "created").order_by('-id'))
     chat_ids = [item["id"] for item in chats]
 
-    chat_messages = ChatMessage.objects.filter(chat_id__in=chat_ids).values("chat__id", "message", "created", "user__username").order_by("-created")
+    chat_messages = ChatMessage.objects.filter(chat_id__in=chat_ids).values("chat__id", "message", "created", "user__username").order_by("id")
 
     touched_chat_ids = list()
     last_messages_dict = dict()
@@ -38,6 +38,9 @@ def chats(request):
 def chat(request, uuid):
     user = request.user
     chat = Chat.objects.get(uuid=uuid)
+    print (chat.guide)
+    print (chat.tourist)
+
     if chat.guide != user and chat.tourist != user:
         return HttpResponseRedirect(reverse("home"))
 
@@ -69,14 +72,14 @@ def chat_creation(request, tour_id=None, guide_id=None):
 
     if tour_id:
         tour = Tour.objects.get(id=tour_id)
-        guide_id = tour.guide.user_id
+        guide_user = tour.guide.user
         topic = "Query about the tour %s" % tour.name
         chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user,
-                                                   defaults={"guide_id": guide_id,
+                                                   defaults={"guide": guide_user,
                                                              "topic": topic})
     elif guide_id:
         guide = GuideProfile.objects.get(id=guide_id)
         topic = "Chat with %s" % guide.user.username
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide_id=guide_id,defaults={"topic": topic})
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
 
     return HttpResponseRedirect(reverse("chat", kwargs={"uuid": chat.uuid} ))

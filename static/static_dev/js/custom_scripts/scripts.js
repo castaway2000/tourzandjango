@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    console.log('12');
 
     function selectingHours(hours){
         $('#booking_hours option').attr('selected', false);
@@ -52,7 +51,7 @@ $(document).ready(function(){
         });
 
         return indexed_array;
-    }
+    };
 
     $('#form_tour_scheduling').on('submit', function(e){
         if ($(this).hasClass('user-not-authorized')){
@@ -111,45 +110,6 @@ $(document).ready(function(){
         window.location.href = url;
     });
 
-
-    //Start of chats area
-
-    function scrolling(){
-        var scroll_container = $('#messages_area');
-        var height = scroll_container[0].scrollHeight;
-        scroll_container.scrollTop(height);
-    };
-
-
-    $('#chat_message_form').on('submit', function (e){
-        e.preventDefault();
-        var data = gettingFormData($(this));
-        var url = $(this).attr("action");
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            cache: true,
-            success: function (data) {
-                if(data.message){
-                    $('#messages_area').append('<div class="chat-message small">' +
-                        '<div class="message-meta-info">' + data.author + ', ' + data.created + '</div>' +
-                        '<div class="chat-message-text">' + data.message + '</div>' +
-                        '</div>');
-                    $('#message_textarea').text("");
-                    scrolling();
-                }
-            },
-            error: function(){
-                console.log("error");
-            }
-        })
-    });
-
-    scrolling();
-
-    //End of chats area
 
 });
 

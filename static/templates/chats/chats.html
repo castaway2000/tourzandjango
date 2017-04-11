@@ -15,7 +15,7 @@
                             </div>
                             <div>
                                 <b>with </b>
-                                    {% if request.user != chat.guide %}
+                                    {% if request.user.username != chat.guide__username %}
                                         {{ chat.guide__username }} (guide)
                                     {% else %}
                                         {{ chat.tourist__username }} (tourist)
