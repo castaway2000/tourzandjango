@@ -25,16 +25,19 @@
                         </div>
                         <ul class="list user-profile-nav">
 
-                            <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
-                                <i class="fa fa-cog"></i>Guide Profile Settings</a>
-                            </li>
+                            {% if user.guideprofile %}
+                                <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                                    <i class="fa fa-cog"></i>Guide Profile Settings</a>
+                                </li>
+                            {% endif %}
 
-                            <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+
+                            <li {% if page == "profile_settings_tourist" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
                                 <i class="fa fa-cog"></i>Tourist Profile Settings</a>
                             </li>
 
 
-                            <li {% if page == "profile_settings" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                            <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
                                 <i class="fa fa-cog"></i>General Settings</a>
                             </li>
 

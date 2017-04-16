@@ -9,6 +9,10 @@ urlpatterns = [
     url(r'^guides/(?P<username>\w+)/overview/$', views.guide, name='guide'),
 
     url(r'^profile_settings/$', views.profile_settings, name='profile_settings'),
+    url(r'^profile_settings/guide/$', views.profile_settings_guide, name='profile_settings_guide'),
+    url(r'^profile_settings/tourist/$', views.profile_settings_tourist, name='profile_settings_tourist'),
+
+    url(r'^general_settings/$', views.general_settings, name='general_settings'),
 
     url(r'^profile_overview/$', views.profile_overview, name='profile_overview'),
     url(r'^profile_overview/(?P<username>\w+)/$', views.profile_overview, name='profile_overview'),
