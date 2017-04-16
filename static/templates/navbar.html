@@ -63,7 +63,7 @@
 {#                            </li>#}
                             <li class="top-user-area-lang nav-drop">
 
-                                <a href="{% url 'set_language' LANGUAGE_CODE %}">
+                                <a href="#" class="change-language-link">
                                     {{ LANGUAGE_CODE }}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i>
                                 </a>
 
@@ -92,12 +92,13 @@
                                     {% for language in languages %}
                                         {% if language.code != LANGUAGE_CODE %}
                                             <li>
-                                                <a href="{% url 'set_language' language.code %}">
+                                                <a href="{% url 'set_language' language.code %}" class="change-language-link">
                                                     <img src=""><span class="right">{{ language.code }}</span>
                                                 </a>
                                             </li>
                                         {% endif %}
                                     {% endfor %}
+
                                 </ul>
                             </li>
                         </ul>

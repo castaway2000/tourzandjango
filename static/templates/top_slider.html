@@ -4,7 +4,7 @@
         {% for city in cities %}
             <div class="bg-holder full text-center text-white">
                 <div class="bg-mask"></div>
-                <div class="bg-img" style="background-image:url({% get_media_prefix %}{{ city.image }});"></div>
+                <div class="bg-img" style="background-image:url({% if city.image %}{% get_media_prefix %}{{ city.image }}{% endif %});"></div>
                 <div class="bg-front full-center">
                     <div class="owl-cap">
                         <h1 class="owl-cap-title fittext">{{ city.name }}</h1>

@@ -104,7 +104,8 @@ $(document).ready(function(){
     priceCalculation();
 
 
-    $('.top-user-area-lang a').on('click', function () {
+    $('.change-language-link').on('click', function (e) {
+        e.preventDefault();
         console.log("clicked");
         url = $(this).attr("href");
         window.location.href = url;

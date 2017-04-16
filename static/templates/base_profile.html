@@ -25,25 +25,29 @@
                         </div>
                         <ul class="list user-profile-nav">
 
-                            {% if username %}
-                                <li><a href="{% url 'profile_overview' username %}" class="active"><i class="fa fa-user"></i>Overview</a>
-                                </li>
-                                <li><a href="{% url 'profile_photos' username %}"><i class="fa fa-camera"></i>Travel Photos</a>
-                                </li>
-                            {% else %}
+                            <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                                <i class="fa fa-cog"></i>Guide Profile Settings</a>
+                            </li>
 
-                                <li {% if page == "profile_settings" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}"><i class="fa fa-cog"></i>Settings</a>
-                                </li>
+                            <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                                <i class="fa fa-cog"></i>Tourist Profile Settings</a>
+                            </li>
 
-                                <li><a href="{% url 'profile_photos' %}"><i class="fa fa-camera"></i>My Travel Photos</a>
-                                </li>
-                                <li><a href="user-profile-booking-history.html"><i class="fa fa-clock-o"></i>Booking History</a>
-                                </li>
-                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
-                                </li>
-                                <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>Wishlist</a>
-                                </li>
-                            {% endif %}
+
+                            <li {% if page == "profile_settings" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                                <i class="fa fa-cog"></i>General Settings</a>
+                            </li>
+
+
+                            <li><a href="{% url 'profile_photos' %}"><i class="fa fa-camera"></i>My Travel Photos</a>
+                            </li>
+                            <li><a href="user-profile-booking-history.html"><i class="fa fa-clock-o"></i>Booking History</a>
+                            </li>
+                            <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
+                            </li>
+                            <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>Wishlist</a>
+                            </li>
+
 
                         </ul>
                     </aside>

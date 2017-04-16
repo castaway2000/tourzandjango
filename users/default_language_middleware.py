@@ -12,3 +12,4 @@ class ForceDefaultLanguageMiddleware(object):
     """
     def process_request(self, request):
         activate('en')
+        pass
