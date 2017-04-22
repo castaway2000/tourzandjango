@@ -7,9 +7,12 @@ from utils.general import random_string_creating
 from django.utils.text import slugify
 
 
+#tourist profile which is created by default for all users
 class Profile(models.Model):
     user = models.OneToOneField(User)
     image = models.ImageField(upload_to="users/images", blank=True, null=True, default=None)
+    interests = models.TextField(max_length=5000, blank=True, null=True, default=None)
+    about = models.TextField(max_length=5000, blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)

@@ -140,17 +140,27 @@ def profile_settings(request):
 
 
 @login_required()
-def profile_settings_tourist(request):
+def profile_settings_guide(request):
     page = "profile_settings_guide"
     user = request.user
     return render(request, 'users/profile_settings.html', locals())
 
 
 @login_required()
-def profile_settings_guide(request):
-    page = "profile_settings_guide"
+def profile_settings_tourist(request):
+    page = "profile_settings_tourist"
     user = request.user
-    return render(request, 'users/profile_settings.html', locals())
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
+    if request.method == 'POST' and form.is_valid():
+        print(request.POST)
+        print(request.FILES)
+
+        new_form_profile = form.save(commit=False)
+        new_form_profile = form.save()
+
+    return render(request, 'users/profile_settings_tourist.html', locals())
 
 
 @login_required()

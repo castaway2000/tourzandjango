@@ -11,9 +11,9 @@
                 <div class="col-md-3">
                     <aside class="user-profile-sidebar">
                         <div class="user-profile-avatar text-center">
-                            {% if user.userprofile.image %}
+                            {% if user.profile.image %}
                                 <img class=""
-                                     src="{{ user.userprofile.image.url }}"
+                                     src="{{ user.profile.image.url }}"
                                      alt="" title="" />
                             {% else %}
                                 <img src="img/300x300.png" alt="" title="AMaze" />
@@ -26,13 +26,13 @@
                         <ul class="list user-profile-nav">
 
                             {% if user.guideprofile %}
-                                <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                                <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings_guide' %}">
                                     <i class="fa fa-cog"></i>Guide Profile Settings</a>
                                 </li>
                             {% endif %}
 
 
-                            <li {% if page == "profile_settings_tourist" %}class="active"{% endif %}><a href="{% url 'profile_settings' %}">
+                            <li {% if page == "profile_settings_tourist" %}class="active"{% endif %}><a href="{% url 'profile_settings_tourist' %}">
                                 <i class="fa fa-cog"></i>Tourist Profile Settings</a>
                             </li>
 
