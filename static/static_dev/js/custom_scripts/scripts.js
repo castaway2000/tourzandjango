@@ -115,3 +115,10 @@ $(document).ready(function(){
 });
 
 $('.datepicker').datepicker('setDate', 'today');
+
+
+window.setTimeout(function() {
+  $(".alert").fadeTo(100, 0).slideUp(100, function(){
+    $(this).remove();
+  });
+}, 2000);

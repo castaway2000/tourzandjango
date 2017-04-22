@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
-from .forms import LoginForm
+from .forms import *
 from .models import Profile, GuideProfile
 from tours.models import Tour, Review
 from locations.models import City
@@ -10,6 +10,10 @@ from django.utils.translation import activate, get_language
 from django.utils import translation
 from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.core.urlresolvers import translate_url
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 
 def login_view(request):
@@ -135,23 +139,44 @@ def profile_settings(request):
     return render(request, 'users/profile_settings.html', locals())
 
 
+@login_required()
 def profile_settings_tourist(request):
     page = "profile_settings_guide"
     user = request.user
     return render(request, 'users/profile_settings.html', locals())
 
 
+@login_required()
 def profile_settings_guide(request):
     page = "profile_settings_guide"
     user = request.user
     return render(request, 'users/profile_settings.html', locals())
 
 
+@login_required()
 def general_settings(request):
     page = "general_settings"
     user = request.user
+    form = PasswordChangeForm(request.POST or None)
+    if request.method == 'POST':
+        print (request.POST)
+        form = PasswordChangeForm(data=request.POST, user=user)
+
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form = form.save()
+            messages.success(request, 'Password was successfully updated!')
+            update_session_auth_hash(request, user)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            print ("else")
+            print (form.errors)
+
+
     return render(request, 'users/general_settings.html', locals())
 
+
+@login_required()
 def profile_overview(request, username=None):
     user = request.user
     if username:
