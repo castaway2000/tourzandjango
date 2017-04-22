@@ -12,12 +12,22 @@
                 <div class="col-md-3">
                     <aside class="user-profile-sidebar">
                         <div class="user-profile-avatar text-center">
-                            {% if user.profile.image %}
-                                <img class=""
-                                     src="{{ user.profile.image.url }}"
-                                     alt="" title="" />
+                            {% if request.session.current_role == "guide" %}
+                                {% if user.guideprofile.profile_image %}
+                                    <img class=""
+                                         src="{{ user.guideprofile.profile_image.url }}"
+                                         alt="" title="" />
+                                {% else %}
+                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                                {% endif %}
                             {% else %}
-                                <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                                {% if user.profile.image %}
+                                    <img class=""
+                                         src="{{ user.profile.image.url }}"
+                                         alt="" title="" />
+                                {% else %}
+                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                                {% endif %}
                             {% endif %}
 
                             <h5>{{ user.username }}</h5>

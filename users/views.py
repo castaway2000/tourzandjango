@@ -306,5 +306,6 @@ def settings_router(request):
     current_role = request.session.get("current_role")
     if current_role == "guide":
         return HttpResponseRedirect(reverse("profile_settings_guide"))
-    elif current_role == "tourist":
+    elif current_role == "tourist" or not current_role:
+        request.session["current_role"] = "tourist"
         return HttpResponseRedirect(reverse("profile_settings_tourist"))
