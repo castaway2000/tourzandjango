@@ -22,34 +22,55 @@
                             <h5>{{ user.username }}</h5>
 
                             <p>Member Since {{ user.date_joined|date:"M Y"}}</p>
+
+                            {% if request.session.current_role == "tourist" and request.user.guideprofile %}
+                                <a href="{% url 'change_role' %}">Switch to Guide Profile</a>
+                            {% elif not request.session.current_role and request.user.guideprofile %}
+                                <a href="{% url 'change_role' %}">Switch to Guide Profile</a>
+                            {% elif request.session.current_role == "guide" %}
+                                 <a href="{% url 'change_role' %}">Switch to Tourist Profile</a>
+                            {% endif %}
+
                         </div>
                         <ul class="list user-profile-nav">
 
-                            {% if user.guideprofile %}
-                                <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings_guide' %}">
-                                    <i class="fa fa-cog"></i>Guide Profile Settings</a>
+
+                            {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                <li {% if page == "profile_settings_tourist" %}class="active"{% endif %}><a href="{% url 'profile_settings_tourist' %}">
+                                    <i class="fa fa-cog"></i>Tourist Profile Settings</a>
+                                </li>
+
+                                <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
+                                    <i class="fa fa-cog"></i>General Settings</a>
+                                </li>
+
+                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
+                                </li>
+
+                                <li><a href="{% url 'profile_photos' %}"><i class="fa fa-camera"></i>My Travel Photos</a>
+                                </li>
+
+                                <li><a href="user-profile-booking-history.html"><i class="fa fa-clock-o"></i>Booking History</a>
+                                </li>
+
+                                <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>Wishlist</a>
                                 </li>
                             {% endif %}
 
 
-                            <li {% if page == "profile_settings_tourist" %}class="active"{% endif %}><a href="{% url 'profile_settings_tourist' %}">
-                                <i class="fa fa-cog"></i>Tourist Profile Settings</a>
-                            </li>
+                            {% if request.session.current_role == "guide" %}
+                                <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings_guide' %}">
+                                    <i class="fa fa-cog"></i>Guide Profile Settings</a>
+                                </li>
 
+                                <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
+                                    <i class="fa fa-cog"></i>General Settings</a>
+                                </li>
 
-                            <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
-                                <i class="fa fa-cog"></i>General Settings</a>
-                            </li>
-
-
-                            <li><a href="{% url 'profile_photos' %}"><i class="fa fa-camera"></i>My Travel Photos</a>
-                            </li>
-                            <li><a href="user-profile-booking-history.html"><i class="fa fa-clock-o"></i>Booking History</a>
-                            </li>
-                            <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
-                            </li>
-                            <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>Wishlist</a>
-                            </li>
+                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
+                                </li>
+                                
+                            {% endif %}
 
 
                         </ul>

@@ -101,6 +101,18 @@
 
                                 </ul>
                             </li>
+
+                            <li>
+                                {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                    <span class="text-white">Tourist</span>
+                                {% else%}
+                                    <span class="text-white">Guide</span>
+                                {% endif %}
+                                <a href="{% url 'change_role' %}">
+                                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>

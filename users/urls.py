@@ -20,4 +20,8 @@ urlpatterns = [
     url(r'^profile_photos/(?P<username>\w+)/$', views.profile_photos, name='profile_photos'),
 
     url(r'^set_language/(?P<language>\w+)/$', views.set_language, name='set_language'),
+    url(r'^change_role/$', views.change_role, name='change_role'),
+
+    url(r'^change_role/(?P<role>\w+)$', views.change_role, name='change_role_settings'),
+
 ]

@@ -260,5 +260,27 @@ def set_language(request, language):
     request.session['django_language'] = user_language
     request.session[LANGUAGE_SESSION_KEY] = user_language
     print (request.session[LANGUAGE_SESSION_KEY])
-
     return response
+
+
+def change_role(request, new_role=None):
+    user = request.user
+    if user.guideprofile:
+        current_role = request.session.get("current_role")
+        if current_role == "tourist":
+            request.session["current_role"] = "guide"
+            messages.success(request, 'Switched to guide profile!')
+        else:
+            request.session["current_role"] = "tourist"
+            messages.success(request, 'Switched to tourist profile!')
+    else:
+        request.session["current_role"] = "tourist"
+        messages.error(request, 'You do not have a guide profile!')
+        pass
+
+    if request.session["current_role"] == "guide":
+        return HttpResponseRedirect(reverse("profile_settings_guide"))
+    elif request.session["current_role"] == "tourist":
+        return HttpResponseRedirect(reverse("profile_settings_tourist"))
+    else:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
