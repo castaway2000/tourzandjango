@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^set_language/(?P<language>\w+)/$', views.set_language, name='set_language'),
     url(r'^change_role/$', views.change_role, name='change_role'),
 
-    url(r'^change_role/(?P<role>\w+)$', views.change_role, name='change_role_settings'),
+    url(r'^change_role/(?P<role>\w+)/$', views.change_role, name='change_role_settings'),
+
+    url(r'^settings/$', views.settings_router, name='settings_router'),
 
 ]

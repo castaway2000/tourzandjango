@@ -144,6 +144,7 @@ def bookings(request, status=None):
 
 def orders(request, status=None):
     user = request.user
+    print "orders"
     if not status:
         orders = Order.objects.filter(user=user)
     else:

@@ -276,11 +276,18 @@ def change_role(request, new_role=None):
     else:
         request.session["current_role"] = "tourist"
         messages.error(request, 'You do not have a guide profile!')
-        pass
 
-    if request.session["current_role"] == "guide":
-        return HttpResponseRedirect(reverse("profile_settings_guide"))
-    elif request.session["current_role"] == "tourist":
-        return HttpResponseRedirect(reverse("profile_settings_tourist"))
+    #new_role option is goes from settings page switching to another user
+    if new_role:
+        return HttpResponseRedirect(reverse("settings_router"))
     else:
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def settings_router(request):
+    current_role = request.session.get("current_role")
+    print ("current_role %s" % current_role)
+    if current_role == "guide":
+        return HttpResponseRedirect(reverse("profile_settings_guide"))
+    elif current_role == "tourist":
+        return HttpResponseRedirect(reverse("profile_settings_tourist"))
