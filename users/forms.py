@@ -15,3 +15,12 @@ class TouristProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ("image", "interests", "about",)
+
+
+class GuideProfileForm(forms.ModelForm):
+    date_of_birth = forms.DateTimeField(input_formats=['%m.%d.%Y'], widget=forms.DateTimeInput(format='%d/%m/%Y %H:%M:%S'))
+    class Meta:
+        model = GuideProfile
+
+        #city is added on form save in view
+        fields = ("name", "interests", "overview", "date_of_birth", "profile_image")

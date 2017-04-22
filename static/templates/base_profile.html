@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -16,7 +17,7 @@
                                      src="{{ user.profile.image.url }}"
                                      alt="" title="" />
                             {% else %}
-                                <img src="img/300x300.png" alt="" title="AMaze" />
+                                <img src="{% static 'img/300x300.png' %}" alt="" title="">
                             {% endif %}
 
                             <h5>{{ user.username }}</h5>

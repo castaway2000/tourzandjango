@@ -104,17 +104,9 @@ def guide(request, username):
     return render(request, 'users/guide.html', context)
 
 
-def profile_settings(request):
-    page = "profile_settings"
-    user = request.user
-    if user.is_anonymous():
-        return HttpResponseRedirect(reverse("home"))
-    elif user.guideprofile:
-        return HttpResponseRedirect(reverse("profile_settings_guide"))
-    else:
-        return HttpResponseRedirect(reverse("profile_settings_tourist"))
-
-
+    """
+    some example for spiltting interests. It need to be reviewed later
+    """
     # form = ProfileForm(request.POST or None, request.FILES or None, instance=user_profile)
     #
     # if request.method == 'POST' and form.is_valid():
@@ -136,14 +128,40 @@ def profile_settings(request):
     #     'user_profile': user_profile,
     #     'form': form
     # }
-    return render(request, 'users/profile_settings.html', locals())
+    # return render(request, 'users/profile_settings.html', locals())
 
 
 @login_required()
 def profile_settings_guide(request):
     page = "profile_settings_guide"
     user = request.user
-    return render(request, 'users/profile_settings.html', locals())
+    guide = user.guideprofile
+    if guide:
+        form = GuideProfileForm(request.POST or None, request.FILES or None, instance=guide)
+    else:
+        form = GuideProfileForm(request.POST or None, request.FILES or None)
+
+    if request.method == 'POST':
+
+        #To review this approach in the future
+        city = request.POST.get("city")
+        if city:
+            city, created = City.objects.get_or_create(name=city)
+
+        if form.is_valid():
+            print(request.POST)
+            print(request.FILES)
+
+            new_form = form.save(commit=False)
+            new_form.city = city
+            new_form = form.save()
+
+            if guide:
+                messages.success(request, 'Profile has been updated!')
+            else:
+                messages.success(request, 'Profile has been created!')
+
+    return render(request, 'users/profile_settings_guide.html', locals())
 
 
 @login_required()

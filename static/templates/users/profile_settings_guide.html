@@ -1,0 +1,86 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>Guide Profile</h4>
+
+                    {% if not guide %}
+                        <p class="text-center">There is no guide account, associated with your account.
+                            Please fill in the form below to create it.
+                        </p>
+                    {% endif %}
+
+                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                        <label>Name:</label>
+                        <span>{{ form.name.errors }}</span>
+                        <input class="form-control" name="{{ form.name.html_name }}" value="{{ form.name.value }}">
+                    </div>
+
+
+                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                        <label>City:</label>
+                        <input class="form-control" name="city" value="{% if guide and guide.city %}{{ guide.city.name}}{% endif %}">
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <i class="fa fa-lock input-icon"></i>
+                        <label>Date of birth:</label>
+                        <span>{{ form.date_of_birth.errors }}</span>
+                        <input class="form-control datepicker"  data-date-format="mm.dd.yyyy"
+                               name="{{ form.date_of_birth.html_name }}"
+                               {% if request.POST.date_of_birth %}
+                                    value="{{ request.POST.date_of_birth }}"
+                               {% else %}
+                                    value="{{ form.date_of_birth.value|date:'m.d.Y' }}"
+                               {% endif %}"
+                        >
+                    </div>
+
+
+                    <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
+                        <label>Interests (comma-separated list):</label>
+                        <span>{{ form.interests.errors }}</span>
+                        <textarea rows="3" maxlength="50000"
+                                  placeholder="Add here your interests"
+                                  name="{{ form.interests.html_name }}" class="form-control" >{% if form.interests.value %}{{ form.interests.value }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
+                        <label>Overview:</label>
+                        <span>{{ form.overview.errors }}</span>
+                        <textarea rows="5" maxlength="50000"
+                                  placeholder="Write here some info about yourself (5000 characters limit)"
+                                  name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
+                    </div>
+
+                </div>
+                <div class="col-md-4 col-md-offset-1">
+                    <h4>Avatar</h4>
+                    {% if user.guideprofile.profile_image %}
+                        <div>
+                            <img src="{{ user.guideprofile.profile_image.url }}" class="img-responsive img-rounded">
+                        </div>
+                    {% else %}
+                        <div>
+                            <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label>Upload New Avatar Image:</label>
+                        <span>{{ form.profile_image.errors }}</span>
+                        <input type="file" name="{{ form.profile_image.html_name }}">
+                    </div>
+
+                    <hr>
+                    <input type="submit" class="btn btn-primary" value="Save Changes">
+
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+

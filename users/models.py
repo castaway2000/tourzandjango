@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
 from utils.general import random_string_creating
 from django.utils.text import slugify
+from datetime import date
 
 
 #tourist profile which is created by default for all users
@@ -25,6 +26,8 @@ class GuideProfile(models.Model):
     user = models.OneToOneField(User)
     city = models.ForeignKey(City)
 
+    name = models.CharField(max_length=256, blank=True, null=True, default=None)
+
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     interests = models.TextField(blank=True, null=True, default=None)
@@ -43,8 +46,14 @@ class GuideProfile(models.Model):
     def __unicode__(self):
         return "%s" % self.user.username
 
+    #add logic to perform calculations only if the value was changed
     def save(self, *args, **kwargs):
         self.slug = slugify(self.user.username)
+
+        today = date.today()
+        date_of_birth = self.date_of_birth
+        age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+        self.age = age
         super(GuideProfile, self).save(*args, **kwargs)
 
 
