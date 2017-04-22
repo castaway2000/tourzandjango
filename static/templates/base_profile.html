@@ -24,11 +24,11 @@
                             <p>Member Since {{ user.date_joined|date:"M Y"}}</p>
 
                             {% if request.session.current_role == "tourist" and request.user.guideprofile %}
-                                <a href="{% url 'change_role' %}">Switch to Guide Profile</a>
+                                <a href="{% url 'change_role_settings' 'guide' %}">Switch to Guide Profile</a>
                             {% elif not request.session.current_role and request.user.guideprofile %}
-                                <a href="{% url 'change_role' %}">Switch to Guide Profile</a>
+                                <a href="{% url 'change_role_settings' 'guide' %}">Switch to Guide Profile</a>
                             {% elif request.session.current_role == "guide" %}
-                                 <a href="{% url 'change_role' %}">Switch to Tourist Profile</a>
+                                 <a href="{% url 'change_role_settings' 'tourist' %}">Switch to Tourist Profile</a>
                             {% endif %}
 
                         </div>

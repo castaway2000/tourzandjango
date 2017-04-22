@@ -286,7 +286,6 @@ def change_role(request, new_role=None):
 
 def settings_router(request):
     current_role = request.session.get("current_role")
-    print ("current_role %s" % current_role)
     if current_role == "guide":
         return HttpResponseRedirect(reverse("profile_settings_guide"))
     elif current_role == "tourist":
