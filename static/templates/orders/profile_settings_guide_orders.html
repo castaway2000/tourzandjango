@@ -1,0 +1,66 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="booking-list">
+                    {% for order in orders %}
+                        <li class="booking-item">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="booking-item-img">
+                                        {% if order.tour.image %}
+                                            <img src="{% get_media_prefix %}{{ order.tour.image }}"/>
+                                        {% endif %}
+                                    </div>
+                                    <br>
+                                    <span>
+                                        <b>Status: </b>{{ order.status.name }}
+                                    </span>
+                                </div>
+                                <div class="col-md-6">
+                                    <h3>
+                                        {{ order.tour.name }} by {{ order.tour.guide.user.username }}
+                                    </h3>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{ order.tour.overview|linebreaks|truncatewords_html:30 }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="booking-item-price tour-booking-price">
+                                        {{ order.price_after_discount }} {{ order.tour.currency.name }}
+                                    </span>
+                                    <p>
+                                        <b>Booked: </b>{{ order.date_ordered|date:"m.d.Y" }}
+                                    </p>
+                                    <p>
+                                        <b>Booked for: </b>{{ order.date_booked_for|date:"m.d.Y" }}
+                                    </p>
+                                    <p>
+                                        <b>Paid: </b>
+                                        {% if order.date_paid %}
+                                            {{ order.date_paid|date:"m.d.Y" }}
+                                        {% else %}
+                                            No payment yet
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        <b>Booked by: </b>{{ order.user.username }}
+                                    </p>
+                                    <a class="btn btn-primary" href="{% url 'tour' order.tour.slug %}">
+                                        Tour details
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

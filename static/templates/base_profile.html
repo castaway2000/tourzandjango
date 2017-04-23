@@ -78,11 +78,10 @@
                                     <i class="fa fa-cog"></i>General Settings</a>
                                 </li>
 
-                                <li {% if page == "settings_tour" %}class="active"{% endif %}><a href="{% url 'guide_settings_tours' %}"><i class="fa fa-cog"></i>Tours</a>
+                                <li {% if page == "settings_tours" %}class="active"{% endif %}><a href="{% url 'guide_settings_tours' %}"><i class="fa fa-cog"></i>Tours</a>
                                 </li>
 
-
-                                <li><a href="{% url 'orders' %}"><i class="fa fa-cog"></i>Orders</a>
+                                <li {% if page == "settings_orders" %}class="active"{% endif %}><a href="{% url 'guide_settings_orders' %}"><i class="fa fa-cog"></i>Orders</a>
                                 </li>
 
                                 <li><a href="user-profile-cards.html"><i class="fa fa-cog"></i>Payments history</a>

@@ -162,7 +162,7 @@ def tour(request, slug):
 
 @login_required()
 def guide_settings_tours(request):
-    page = "settings_tour"
+    page = "settings_tours"
     user = request.user
     tours = Tour.objects.filter(guide=user.guideprofile, is_active=True)
     return render(request, 'tours/profile_settings_guide_tours.html', locals())

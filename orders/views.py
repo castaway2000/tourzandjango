@@ -150,3 +150,11 @@ def orders(request, status=None):
     else:
         orders = Order.objects.filter(status__name=status)
     return render(request, 'orders/orders.html', locals())
+
+
+@login_required()
+def guide_settings_orders(request):
+    page = "settings_orders"
+    user = request.user
+    orders = Order.objects.filter(tour__guide=user.guideprofile)
+    return render(request, 'orders/profile_settings_guide_orders.html', locals())
