@@ -24,13 +24,6 @@
 
                     <div class="checkbox">
                         <label>
-                          <input type="checkbox" name="{{ form.is_free.html_name }}"
-                              {% if form.is_free.value %}checked{% endif %}> Is free
-                        </label>
-                    </div>
-
-                    <div class="checkbox">
-                        <label>
                           <input type="checkbox" name="{{ form.is_active.html_name }}"
                               {% if form.is_active.value %}checked{% endif %}
                           > Is active
@@ -43,6 +36,68 @@
 
                 <div class="col-md-4">
                     <h4>Pricing</h4>
+
+                    <div class="form-group">
+                        <label>Payment type: </label>
+                        <select class="form-control" id="payment_type" name="{{ form.payment_type.html_name }}">
+                            {% for payment_type in payment_types %}
+                                <option value="{{ payment_type.id }}"
+                                        {% if payment_type.id == tour.payment_type.id %}selected{% endif %}>
+                                    {{ payment_type.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="hourly_area" class="hidden">
+                        <div class="form-group">
+                            <label>Currency: </label>
+                            <select class="form-control" id="currency" name="currency">
+                                {% for currency in currencies %}
+                                    <option value="{{ currency.id }}">{{ currency.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>Price Hourly:</label>
+                            <input type="number" step="0.01" class="form-control"
+                                   name="price_hourly" value="{{ tour.price_hourly|safe }}">
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>Minimum Hours duration:</label>
+                            <input type="number" class="form-control"
+                                   name="min_hours" value="{{ tour.min_hours }}">
+                        </div>
+
+                    </div>
+
+                    <div id="fixed_area" class="hidden">
+
+                        <div class="form-group">
+                            <label>Currency: </label>
+                            <select class="form-control" id="currency" name="currency">
+                                {% for currency in currencies %}
+                                    <option value="{{ currency.id }}">{{ currency.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>Price:</label>
+                            <input type="number" step="0.01" class="form-control"
+                                   name="price" value="{{ tour.price|safe }}">
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>Hours duration:</label>
+                            <input type="number" class="form-control"
+                                   name="hours" value="{{ tour.hours }}">
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>

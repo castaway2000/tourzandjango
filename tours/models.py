@@ -53,12 +53,28 @@ class Tour(models.Model):
 
         self.slug = slugify(self.name)
 
-        if self.price_hourly > 0:
-            self.payment_type_id = 1 #hourly
-        elif self.price > 0:
-            self.payment_type_id = 2 #paid
-        elif self.is_free:
-            self.payment_type_id = 3 #free
+        print  self.price_hourly
+        print self.price
+
+        if self.payment_type_id == 1: #hourly
+
+            self.price = 0
+            self.hours = 0
+            self.is_free = False
+
+        if self.payment_type_id == 2: #paid
+
+            self.price_hourly = 0
+            self.min_hours = 0
+            self.is_free = False
+
+        if self.payment_type_id == 3: #free
+            self.is_free = True
+
+            self.price = 0
+            self.hours = 0
+            self.price_hourly = 0
+            self.min_hours = 0
 
         super(Tour, self).save(*args, **kwargs)
 

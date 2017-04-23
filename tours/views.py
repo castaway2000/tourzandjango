@@ -174,6 +174,10 @@ def guide_settings_tours(request):
 def guide_settings_tour_edit(request, slug=None):
     page = "settings_tours"
     user = request.user
+
+    payment_types = PaymentType.objects.all().values("id", "name")
+    currencies = Currency.objects.all().values("id", "name")
+
     if slug:
         tour = Tour.objects.get(slug=slug, guide=user.guideprofile)
         form = TourForm(request.POST or None, instance=tour)
@@ -181,7 +185,31 @@ def guide_settings_tour_edit(request, slug=None):
         form = TourForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
+        print (request.POST)
+        data = request.POST
+
         new_form = form.save(commit=False)
+
+        payment_type = int(data.get(u"payment_type")) if data.get(u"payment_type") else None
+        if payment_type == 1:
+            new_form.currency_id = data.get(u"currency")
+            new_form.price_hourly = data.get(u"price_hourly")
+            new_form.min_hours = data.get(u"min_hours")
+
+        elif payment_type == 2:
+            print ("fixed")
+
+            new_form.currency_id = data.get(u"currency")
+            new_form.price = data.get(u"price")
+            new_form.hours = data.get(u"hours")
+
+            print (data.get(u"price"))
+            print (data.get(u"hours"))
+
+        elif payment_type == 3:
+            pass
+
+
         new_form = form.save()
         if slug:
             messages.success(request, 'Tour details have been successfully updated!')

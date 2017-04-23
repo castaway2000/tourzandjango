@@ -111,11 +111,34 @@ $(document).ready(function(){
         window.location.href = url;
     });
 
+    function changingPaymentType(){
+        var current_payment_type = $('#payment_type').val();
+        console.log(current_payment_type);
+        if (current_payment_type == 1){
+            $('#hourly_area').removeClass('hidden');
+            $('#fixed_area').addClass('hidden');
+        }else if (current_payment_type == 2){
+            $('#hourly_area').addClass('hidden');
+            $('#fixed_area').removeClass('hidden');
+        }else{
+            $('#hourly_area').addClass('hidden');
+            $('#fixed_area').addClass('hidden');
+        }
+    }
+
+    $(document).on('change', '#payment_type', function(){
+        console.log("change");
+        changingPaymentType();
+    });
+
+    changingPaymentType();
 
 });
 
-$('.datepicker').datepicker('setDate', 'today');
+$('.datepicker').datepicker();
 
+//$('.datepicker.today-date').datepicker('setDate', 'today');
+//
 
 window.setTimeout(function() {
   $(".alert").fadeTo(100, 0).slideUp(100, function(){
