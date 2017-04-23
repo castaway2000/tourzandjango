@@ -281,9 +281,10 @@ def set_language(request, language):
     return response
 
 
+@login_required()
 def change_role(request, new_role=None):
     user = request.user
-    if user.guideprofile:
+    if not user.is_anonymous() and user.guideprofile:
         current_role = request.session.get("current_role")
         if current_role == "tourist":
             request.session["current_role"] = "guide"
@@ -302,6 +303,7 @@ def change_role(request, new_role=None):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required()
 def settings_router(request):
     current_role = request.session.get("current_role")
     if current_role == "guide":
