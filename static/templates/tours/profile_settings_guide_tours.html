@@ -1,0 +1,60 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="booking-list">
+                    {% for tour in tours %}
+                        <li>
+                            <a class="booking-item tour-item" href="{% url 'tour' tour.slug %}">
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-3">
+                                        <div class="booking-item-img">
+                                            {% if tour.image %}
+                                                <img src="{% get_media_prefix %}{{ tour.image }}"/>
+                                            {% else %}
+                                                <img src="{% static 'img/default_tour_image.jpg' %}">
+                                            {% endif %}
+                                        </div>
+                                        <br>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="tour-name">
+                                            {{ tour.name }}
+                                        </div>
+                                        <div class="tour-guide-name">
+                                            by {{ tour.guide.user.username }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                {{ tour.overview|linebreaks|truncatewords_html:30 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-3">
+                                        <div class="tour-rating">
+                                            <b>Rating: </b> {{ tour.rating }}
+                                        </div>
+                                        <span class="tour-price">
+                                            <b>Price: </b>
+                                            {% if tour.payment_type_id == 1 %}
+                                                {{ tour.price_hourly }} {{ tour.currency.name }} / hour
+                                            {% elif tour.payment_type_id == 2 %}
+                                                {{ tour.price }} {{ tour.currency.name }}
+                                            {% elif tour.payment_type_id == 3 %}
+                                                Free!
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -78,7 +78,7 @@
                                     <i class="fa fa-cog"></i>General Settings</a>
                                 </li>
 
-                                <li><a href="{% url 'tours' %}"><i class="fa fa-cog"></i>Tours</a>
+                                <li {% if page == "settings_tour" %}class="active"{% endif %}><a href="{% url 'guide_settings_tours' %}"><i class="fa fa-cog"></i>Tours</a>
                                 </li>
 
 

@@ -6,6 +6,7 @@ from .models import Tour
 from locations.models import City
 from users.models import GuideProfile
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
 def tours(request):
@@ -156,5 +157,13 @@ def tour(request, slug):
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     reviews = tour.review_set.filter(is_active=True)
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
-
     return render(request, 'tours/tour.html', locals())
+
+
+@login_required()
+def guide_settings_tours(request):
+    page = "settings_tour"
+    user = request.user
+    tours = Tour.objects.filter(guide=user.guideprofile, is_active=True)
+    return render(request, 'tours/profile_settings_guide_tours.html', locals())
+
