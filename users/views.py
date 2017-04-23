@@ -185,10 +185,8 @@ def profile_settings_tourist(request):
 def general_settings(request):
     page = "general_settings"
     user = request.user
-    form = PasswordChangeForm(request.POST or None)
+    form = PasswordChangeForm(data=request.POST, user=user)
     if request.method == 'POST':
-        print (request.POST)
-        form = PasswordChangeForm(data=request.POST, user=user)
 
         if form.is_valid():
             new_form = form.save(commit=False)
@@ -196,10 +194,6 @@ def general_settings(request):
             messages.success(request, 'Password was successfully updated!')
             update_session_auth_hash(request, user)
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        else:
-            print ("else")
-            print (form.errors)
-
 
     return render(request, 'users/general_settings.html', locals())
 

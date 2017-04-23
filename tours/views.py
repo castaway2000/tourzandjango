@@ -7,6 +7,8 @@ from locations.models import City
 from users.models import GuideProfile
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from .forms import *
+from django.contrib import messages
 
 
 def tours(request):
@@ -164,6 +166,27 @@ def tour(request, slug):
 def guide_settings_tours(request):
     page = "settings_tours"
     user = request.user
-    tours = Tour.objects.filter(guide=user.guideprofile, is_active=True)
+    tours = Tour.objects.filter(guide=user.guideprofile)
     return render(request, 'tours/profile_settings_guide_tours.html', locals())
 
+
+@login_required()
+def guide_settings_tour_edit(request, slug=None):
+    page = "settings_tours"
+    user = request.user
+    if slug:
+        tour = Tour.objects.get(slug=slug, guide=user.guideprofile)
+        form = TourForm(request.POST or None, instance=tour)
+    else:
+        form = TourForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        new_form = form.save(commit=False)
+        new_form = form.save()
+        if slug:
+            messages.success(request, 'Tour details have been successfully updated!')
+        else:
+            messages.success(request, 'Tour details have been successfully created!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'tours/profile_settings_guide_tour_edit.html', locals())
