@@ -29,7 +29,7 @@ class Tour(models.Model):
     rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     #for fixed price tours
-    currency = models.ForeignKey(Currency)
+    currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours = models.IntegerField(default=0)
 

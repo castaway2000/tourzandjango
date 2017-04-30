@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 def tours(request):
@@ -180,11 +181,14 @@ def guide_settings_tour_edit(request, slug=None):
 
     if slug:
         tour = Tour.objects.get(slug=slug, guide=user.guideprofile)
-        form = TourForm(request.POST or None, instance=tour)
+        form = TourForm(request.POST or None, request.FILES or None, instance=tour)
+        tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     else:
-        form = TourForm(request.POST or None)
+        form = TourForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
+        print ("1234")
+        print (request.FILES)
         print (request.POST)
         data = request.POST
 
@@ -210,11 +214,38 @@ def guide_settings_tour_edit(request, slug=None):
             pass
 
 
+        guide = user.guideprofile
+        new_form.guide = guide
+        new_form.city = guide.city
         new_form = form.save()
+
+        if request.FILES.get("new_images"):
+            print (request.FILES)
+            print (request.FILES.getlist("new_images"))
+            for file in request.FILES.getlist("new_images"):
+                print (file)
+                TourImage.objects.create(image=file, tour=new_form)
+                print ("image created")
+
         if slug:
             messages.success(request, 'Tour details have been successfully updated!')
         else:
             messages.success(request, 'Tour details have been successfully created!')
+            return HttpResponseRedirect(reverse("guide_settings_tour_edit", kwargs={"slug": new_form.slug}))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request, 'tours/profile_settings_guide_tour_edit.html', locals())
+
+
+def deactivate_tour_image(request):
+    print (request.POST)
+    if request.POST:
+        data = request.POST
+        tour_id = data.get("tour_id")
+        img_link = data.get("img_link")
+        a = img_link.split("/media/")[1]
+        print (a)
+        b = TourImage.objects.filter(tour_id=tour_id, image=a).update(is_active=False)
+        print (b)
+    response_date = dict()
+    return JsonResponse(response_date)
