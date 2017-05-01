@@ -53,7 +53,7 @@ class Tour(models.Model):
 
         self.slug = slugify(self.name)
 
-        print  self.price_hourly
+        print self.price_hourly
         print self.price
 
         if self.payment_type_id == 1: #hourly

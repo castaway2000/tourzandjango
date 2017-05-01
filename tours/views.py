@@ -187,8 +187,6 @@ def guide_settings_tour_edit(request, slug=None):
         form = TourForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
-        print ("1234")
-        print (request.FILES)
         print (request.POST)
         data = request.POST
 
@@ -196,19 +194,19 @@ def guide_settings_tour_edit(request, slug=None):
 
         payment_type = int(data.get(u"payment_type")) if data.get(u"payment_type") else None
         if payment_type == 1:
+            print ("hour")
+
             new_form.currency_id = data.get(u"currency")
-            new_form.price_hourly = data.get(u"price_hourly")
-            new_form.min_hours = data.get(u"min_hours")
+            new_form.price_hourly = data.get(u"price_hourly") if data.get(u"price_hourly", 25) else 25
+            new_form.min_hours = data.get(u"min_hours") if data.get(u"min_hours") else 2
+
 
         elif payment_type == 2:
             print ("fixed")
 
             new_form.currency_id = data.get(u"currency")
-            new_form.price = data.get(u"price")
-            new_form.hours = data.get(u"hours")
-
-            print (data.get(u"price"))
-            print (data.get(u"hours"))
+            new_form.price = data.get(u"price") if data.get(u"price") else 50
+            new_form.hours = data.get(u"hours") if data.get(u"hours") else 2
 
         elif payment_type == 3:
             pass
@@ -220,12 +218,8 @@ def guide_settings_tour_edit(request, slug=None):
         new_form = form.save()
 
         if request.FILES.get("new_images"):
-            print (request.FILES)
-            print (request.FILES.getlist("new_images"))
             for file in request.FILES.getlist("new_images"):
-                print (file)
                 TourImage.objects.create(image=file, tour=new_form)
-                print ("image created")
 
         if slug:
             messages.success(request, 'Tour details have been successfully updated!')
