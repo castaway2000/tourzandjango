@@ -1,7 +1,7 @@
 {% load static %}
 
 <li>
-    <a href="{% url 'tour' tour.slug %}">
+    <a href="{% url 'tour' tour.slug tour.id %}">
         <div class="booking-item booking-item-small">
             <div class="row">
                 <div class="col-xs-4">
