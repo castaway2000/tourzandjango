@@ -18,6 +18,10 @@ from django.contrib.auth import update_session_auth_hash
 
 def login_view(request):
     form = LoginForm(request.POST or None)
+
+    if not "next" in request.GET:
+        request.GET.next = reverse("home")
+
     if request.method == 'POST' and form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -48,12 +52,12 @@ def logout_view(request):
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__first_name", "user__last_name", "user__username", "profile_image", "overview")[:3]
+        .values("user__first_name", "user__last_name", "user__username", "profile_image", "overview")[:4]
 
-    tours = Tour.objects.filter(is_active=True)
-    hourly_tours = tours.filter(payment_type_id=1)[:3]
-    fixed_payment_tours = tours.filter(payment_type_id=2)[:3]
-    free_tours = tours.filter(is_free=True)[:3]
+    tours = Tour.objects.filter(is_active=True).order_by("-rating")
+    hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
+    fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
+    free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
     cities = City.objects.filter(is_active=True, is_featured=True)[:5]
     return render(request, 'users/home.html', locals())
 

@@ -35,9 +35,9 @@ class GuideProfile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
 
-    header_image = models.ImageField(upload_to="guides/header_images", blank=True, null=True, default=None)
-    profile_image = models.ImageField(upload_to="guides/profile_images", blank=True, null=True, default=None)
-    optional_image = models.ImageField(upload_to="guides/optional_images", blank=True, null=True, default=None)
+    header_image = models.ImageField(upload_to="guides/header_images", blank=True, null=True, default="guides/header_images/300x300.png")
+    profile_image = models.ImageField(upload_to="guides/profile_images", blank=True, null=True, default="guides/profile_images/300x300.png")
+    optional_image = models.ImageField(upload_to="guides/optional_images", blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
 
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -50,10 +50,11 @@ class GuideProfile(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.user.username)
 
-        today = date.today()
-        date_of_birth = self.date_of_birth
-        age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
-        self.age = age
+        if self.date_of_birth:
+            today = date.today()
+            date_of_birth = self.date_of_birth
+            age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+            self.age = age
         super(GuideProfile, self).save(*args, **kwargs)
 
 

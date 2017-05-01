@@ -440,7 +440,7 @@
         <div class="gap"></div>
         <div class="row">
             <div class="col-md-4">
-                <h3> {% trans "Best Free Tours" %} <small ><a href="#">{% trans "view all" %}</a></small></h3>
+                <h3> {% trans "Best Free Tours" %} <small ><a href="{% url 'tours' %}?is_free_offers_included=on">{% trans "view all" %}</a></small></h3>
                 <ul class="booking-list">
                     {% for tour in free_tours %}
                         {% include 'users/tour_items_representation.html' %}
@@ -448,7 +448,7 @@
                 </ul>
             </div>
             <div class="col-md-4">
-                <h3>Best hourly rates <small ><a href="#">view all</a></small></h3>
+                <h3>Best hourly rates <small ><a href="{% url 'tours' %}?is_hourly_price_included=on&hourly_price=0%3B50&fixed_price=0%3B300">view all</a></small></h3>
                 <ul class="booking-list">
                     {% for tour in hourly_tours %}
                         {% include 'users/tour_items_representation.html' %}
@@ -456,7 +456,7 @@
                 </ul>
             </div>
             <div class="col-md-4">
-                <h3>Best fixed rates tours <small ><a href="#">view all</a></small></h3>
+                <h3>Best fixed rates tours <small ><a href="{% url 'tours' %}?is_fixed_price_included=on&fixed_price=0%3B300">view all</a></small></h3>
                 <ul class="booking-list">
                     {% for tour in fixed_payment_tours %}
                         {% include 'users/tour_items_representation.html' %}
@@ -473,7 +473,12 @@
                     <div class="thumb">
                         <header class="thumb-header">
                             <a href="{% url 'guide' guide.user__username %}" class="hover-img curved" href="#">
-                                <img src="{% if guide.profile_image %}{% get_media_prefix %}{{ guide.profile_image }}{% endif %}"
+                                <img
+                                {% if guide.profile_image %}
+                                     src="{% get_media_prefix %}{{ guide.profile_image }}"
+                                {% else %}
+                                     src="{% static 'img/300x300.png' %}"
+                                {% endif %}
                                      alt="Image of {{ guide.user__first_name }} {{ guide.user__last_name }}"
                                      title="{{ guide.user__first_name }} {{ guide.user__last_name }}" />
                                 <i class="fa fa-plus box-icon-white box-icon-border hover-icon-top-right round"></i>
