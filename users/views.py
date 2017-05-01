@@ -185,7 +185,7 @@ def profile_settings_tourist(request):
 def general_settings(request):
     page = "general_settings"
     user = request.user
-    form = PasswordChangeForm(data=request.POST, user=user)
+    form = PasswordChangeForm(data=request.POST or None, user=user)
     if request.method == 'POST':
 
         if form.is_valid():

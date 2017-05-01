@@ -154,8 +154,8 @@ def guide_tours(request, username):
     return render(request, 'tours/guide_tours.html', context)
 
 
-def tour(request, slug):
-    tour = Tour.objects.get(slug=slug)
+def tour(request, slug, tour_id):
+    tour = Tour.objects.get(id=tour_id, slug=slug)
     guide = tour.guide
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     reviews = tour.review_set.filter(is_active=True)
@@ -172,15 +172,15 @@ def guide_settings_tours(request):
 
 
 @login_required()
-def guide_settings_tour_edit(request, slug=None):
+def guide_settings_tour_edit(request, slug=None, tour_id=None):
     page = "settings_tours"
     user = request.user
 
     payment_types = PaymentType.objects.all().values("id", "name")
     currencies = Currency.objects.all().values("id", "name")
 
-    if slug:
-        tour = Tour.objects.get(slug=slug, guide=user.guideprofile)
+    if slug and tour_id:
+        tour = Tour.objects.get(id=tour_id, slug=slug, guide=user.guideprofile)
         form = TourForm(request.POST or None, request.FILES or None, instance=tour)
         tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     else:

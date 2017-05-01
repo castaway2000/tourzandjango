@@ -55,11 +55,11 @@
                                     </span>
                                     <div>
                                         <p>
-                                            <a class="btn btn-primary" href="{% url 'tour' tour.slug %}">
+                                            <a class="btn btn-primary" href="{% url 'tour' tour.slug tour.id %}">
                                                 Tour Page
                                             </a>
                                         </p>
-                                        <a class="btn btn-success" href="{% url 'guide_settings_tour_edit' tour.slug %}">
+                                        <a class="btn btn-success" href="{% url 'guide_settings_tour_edit' tour.slug tour.id %}">
                                             Tour Editing
                                         </a>
                                     </div>
