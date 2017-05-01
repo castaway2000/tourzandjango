@@ -109,3 +109,7 @@
 .user-profile-sidebar .user-profile-nav > li.active > a {
     cursor: pointer;
 }
+
+.guide-image-small{
+    height: 200px;
+}

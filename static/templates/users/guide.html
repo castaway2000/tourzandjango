@@ -16,7 +16,15 @@
             <header class="booking-item-header">
                 <div class="row">
                     <div class="col-md-12">
-                        <h2 class="lh1em">{{ guide.user.first_name }} {{ guide.user.last_name }}</h2>
+                        <h2 class="lh1em">
+                            {{ guide.user.first_name }} {{ guide.user.last_name }} ({{ guide.user.username }})
+                        </h2>
+
+                        {% if guide == request.user.guideprofile and request.session.current_role == "guide"%}
+                            <a href="{% url 'settings_router' %}">
+                                 Go to Settings
+                             </a>
+                        {% endif %}
                     </div>
                 </div>
             </header>
@@ -28,12 +36,24 @@
                                 <img src="{{ guide.profile_image.url }}" class="img-responsive">
                             {% endif %}
                             <div class="mt10 text-center">
-                                <a href="#write_review" class="btn btn-primary btn-sm">Write Review</a>
-                                <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">Send Message</a>
+                                {% if guide == request.user.guideprofile %}
+                                    <a href="#write_review" class="btn btn-primary btn-sm" disabled="">Write Review</a>
+                                    <a href="{% url 'chat_creation_guide' guide.id %}"
+                                       class="btn btn-default btn-sm" disabled="">
+                                        Send Message
+                                    </a>
+                                {% else %}
+                                    <a href="#write_review" class="btn btn-primary btn-sm">Write Review</a>
+                                    <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">Send Message</a>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <p>{{ guide.overview|linebreaks }}</p>
+                            {% if guide.overview %}
+                                <p>{{ guide.overview|linebreaks }}</p>
+                            {% else %}
+                                <p>Some description will be here</p>
+                            {% endif %}
                         </div>
                      </div>
 

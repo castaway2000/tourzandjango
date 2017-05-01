@@ -6,7 +6,16 @@
         <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
             <div class="row">
                 <div class="col-md-5">
-                    <h4>Guide Profile</h4>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <h4>Guide Profile</h4>
+                        </div>
+                        <div class="col-lg-5">
+                             <a href="{% url 'guide' guide.user.username %}">
+                                 See Public Page
+                             </a>
+                        </div>
+                    </div>
 
                     {% if not guide %}
                         <p class="text-center">There is no guide account, associated with your account.
