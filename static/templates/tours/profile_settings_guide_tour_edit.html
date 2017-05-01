@@ -113,26 +113,28 @@
                         <label>Add Image</label>
                         <input type="file" name="new_images" multiple>
                     </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
 
 
                 <div class="col-lg-7">
                     {% if tour %}
                         <div class="form-group">
-                            <button class="btn btn-danger" id="buttom_delete_image" data-action="{% url 'deactivate_tour_image' %}">Delete Image</button>
-                            <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
-                                {% for tour_image in tours_images %}
-                                    <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
-                                         class="img-responsive"
-                                         title="Image for {{ tour.name }}">
-                                {% endfor %}
-                            </div>
+                            {% if tours_images %}
+                                <button class="btn btn-danger" id="buttom_delete_image" data-action="{% url 'deactivate_tour_image' %}">Delete Image</button>
+                                <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                    {% for tour_image in tours_images %}
+                                        <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                             class="img-responsive"
+                                             title="Image for {{ tour.name }}">
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     {% endif %}
-                </div>
-
-                <div class="col-lg-12">
-                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
 
             </div>
@@ -150,9 +152,17 @@
                 var data = fotoramaDiv.data('fotorama').activeFrame;
                 var img_link = data.img;
                 fotoramaDiv.data('fotorama').splice(0, 1);
+{#                console.log(fotoramaDiv.data('fotorama'));#}
+{#                console.log(fotoramaDiv.data('fotorama').size);#}
+
+                if(fotoramaDiv.data('fotorama').size==0) {
+                    $('.fotorama').addClass('hidden');
+                    $('#buttom_delete_image').addClass('hidden');
+                };
+
 
                 var tour_id = $('#tour_id').text();
-                var url = $(this).data("action")
+                var url = $(this).data("action");
 
                 data = {};
                 var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
