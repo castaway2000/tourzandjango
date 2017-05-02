@@ -16,9 +16,13 @@
                             <div>
                                 <b>with </b>
                                     {% if request.user.username != chat.guide__username %}
-                                        {{ chat.guide__username }} (guide)
+                                        <a href="{% url 'guide' chat.guide__username %}">
+                                            {{ chat.guide__username }} (guide)
+                                        </a>
                                     {% else %}
-                                        {{ chat.tourist__username }} (tourist)
+                                        <a href="{% url 'tourist' chat.tourist__username %}">
+                                            {{ chat.tourist__username }} (tourist)
+                                        </a>
                                     {% endif %}
                                      <b>started at: </b> {{ chat.created|date:"m.d.Y H:i:s" }}
                             </div>

@@ -25,4 +25,6 @@ urlpatterns = [
 
     url(r'^settings/$', views.settings_router, name='settings_router'),
 
+    url(r'^tourists/(?P<username>\w+)/overview/$', views.tourist, name='tourist'),
+
 ]

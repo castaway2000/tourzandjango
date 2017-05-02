@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from orders.models import Order
 
 
 def login_view(request):
@@ -37,9 +38,9 @@ def login_view(request):
             else:
                 return HttpResponse("Your is disabled.")
         else:
-            return HttpResponse("Invalid login details supplied.")
-    else:
-        return render(request, 'users/login_register.html', {})
+            messages.error(request, 'Login credentials are incorrect!')
+
+    return render(request, 'users/login_register.html', {})
 
 
 def logout_view(request):
@@ -309,3 +310,19 @@ def settings_router(request):
     elif current_role == "tourist" or not current_role:
         request.session["current_role"] = "tourist"
         return HttpResponseRedirect(reverse("profile_settings_tourist"))
+
+
+@login_required()
+def tourist(request, username):
+    user = request.user
+    tourist = user.profile
+
+    orders = Order.objects.filter(user=user).order_by('-id')
+    order_ids = [item.id for item in orders]
+
+    tours_ids = [item.tour.id for item in orders]
+    tours = Tour.objects.filter(id__in=tours_ids).order_by("-rating")
+
+    reviews = Review.objects.filter(id__in=order_ids, is_from_tourist=True, is_active=True)
+
+    return render(request, 'users/tourist.html', locals())

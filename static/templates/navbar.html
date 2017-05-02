@@ -103,6 +103,7 @@
                             </li>
 
                             <li>
+                                {{ request.session.current_role }}
                                 {% if request.session.current_role == "tourist" or not request.session.current_role %}
                                     <span class="text-white">Tourist</span>
                                 {% else%}
