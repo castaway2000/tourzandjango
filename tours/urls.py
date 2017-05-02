@@ -13,5 +13,6 @@ urlpatterns = [
 
 
     url(r'^deactivate_tour_image/$', views.deactivate_tour_image, name='deactivate_tour_image'),
+    url(r'^make_main_tour_image/$', views.make_main_tour_image, name='make_main_tour_image'),
 
 ]

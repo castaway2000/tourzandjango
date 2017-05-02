@@ -122,6 +122,7 @@ class TourImage(models.Model):
         super(TourImage, self).save(*args, **kwargs)
 
 
+
 class Review(models.Model):
     user = models.ForeignKey(User)
     order = models.ForeignKey('orders.Order', blank=True, null=True, default=None)

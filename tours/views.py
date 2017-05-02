@@ -231,15 +231,29 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
     return render(request, 'tours/profile_settings_guide_tour_edit.html', locals())
 
 
+@login_required()
 def deactivate_tour_image(request):
     print (request.POST)
     if request.POST:
         data = request.POST
         tour_id = data.get("tour_id")
         img_link = data.get("img_link")
-        a = img_link.split("/media/")[1]
-        print (a)
-        b = TourImage.objects.filter(tour_id=tour_id, image=a).update(is_active=False)
-        print (b)
+        img = img_link.split("/media/")[1]
+        TourImage.objects.filter(tour_id=tour_id, image=img).update(is_active=False)
+    response_date = dict()
+    return JsonResponse(response_date)
+
+
+@login_required()
+def make_main_tour_image(request):
+    print (request.POST)
+    if request.POST:
+        data = request.POST
+        tour_id = data.get("tour_id")
+        img_link = data.get("img_link")
+        img = img_link.split("/media/")[1]
+        tour_image = TourImage.objects.get(tour_id=tour_id, image=img)
+        tour_image.is_main = True
+        tour_image.save(force_update=True)
     response_date = dict()
     return JsonResponse(response_date)

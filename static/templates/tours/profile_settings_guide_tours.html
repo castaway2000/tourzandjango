@@ -27,8 +27,16 @@
                                     <br>
                                 </div>
                                 <div class="col-md-6 col-sm-6">
+                                    <div class="tour-rating">
+                                        <b>Rating: </b> {{ tour.rating }}
+                                    </div>
                                     <div class="tour-name">
                                         {{ tour.name }}
+                                        {% if tour.is_active %}
+                                            <span class="label label-primary label-sm">Active</span>
+                                        {% else %}
+                                            <span class="label label-danger label-sm">Not Active</span>
+                                        {% endif %}
                                     </div>
                                     <div class="tour-guide-name">
                                         by {{ tour.guide.user.username }}
@@ -40,9 +48,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-3">
-                                    <div class="tour-rating">
-                                        <b>Rating: </b> {{ tour.rating }}
-                                    </div>
                                     <span class="tour-price">
                                         <b>Price: </b>
                                         {% if tour.payment_type_id == 1 %}
