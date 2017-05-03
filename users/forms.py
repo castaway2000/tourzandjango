@@ -11,7 +11,7 @@ class TouristProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ("image", "interests", "about",)
+        fields = ("image", "about",)
 
 
 class GuideProfileForm(forms.ModelForm):
@@ -20,4 +20,4 @@ class GuideProfileForm(forms.ModelForm):
         model = GuideProfile
 
         #city is added on form save in view
-        fields = ("name", "interests", "overview", "date_of_birth", "profile_image")
+        fields = ("name", "overview", "date_of_birth", "profile_image")

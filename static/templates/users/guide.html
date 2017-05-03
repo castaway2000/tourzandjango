@@ -54,6 +54,17 @@
                             {% else %}
                                 <p>Some description will be here</p>
                             {% endif %}
+                            <div>
+                                <hr>
+                                <b>Interests: </b>
+                                {% if user.userinterest_set.all %}
+                                    {% for item in user.userinterest_set.all %}
+                                        {{ item.interest.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No interests</p>
+                                {% endif %}
+                            </div>
                         </div>
                      </div>
 

@@ -38,8 +38,10 @@
                         </div>
                         <div class="col-md-4">
                             <h3>Interests</h3>
-                            {% if tourist.interests %}
-                                <p>{{ tourist.interests|linebreaks }}</p>
+                            {% if user.userinterest_set.all %}
+                                {% for item in user.userinterest_set.all %}
+                                    {{ item.interest.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
                             {% else %}
                                 <p>No interests</p>
                             {% endif %}

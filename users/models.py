@@ -8,11 +8,31 @@ from django.utils.text import slugify
 from datetime import date
 
 
+
+class Interest(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __unicode__(self):
+        return "%s" % self.name
+
+
+class UserInterest(models.Model):
+    user = models.ForeignKey(User)
+    interest = models.ForeignKey(Interest)
+
+    def __unicode__(self):
+        if self.interest.name:
+            return "%s" % self.interest.name
+        else:
+            return "%s" % self.interest.id
+
+
 #tourist profile which is created by default for all users
 class Profile(models.Model):
     user = models.OneToOneField(User)
     image = models.ImageField(upload_to="users/images", blank=True, null=True, default=None)
-    interests = models.TextField(max_length=5000, blank=True, null=True, default=None)
     about = models.TextField(max_length=5000, blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -30,7 +50,6 @@ class GuideProfile(models.Model):
 
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
-    interests = models.TextField(blank=True, null=True, default=None)
     overview = models.TextField(blank=True, null=True, default=None)
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)

@@ -147,6 +147,21 @@ def profile_settings_guide(request):
         form = GuideProfileForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST':
+        print (request.POST)
+
+        interests = request.POST.getlist("interests")
+        user_interest_list = list()
+        if interests:
+            for interest in interests:
+                interest, created = Interest.objects.get_or_create(name=interest)
+
+                #adding to bulk create list for faster creation all at once
+                user_interest_list.append(UserInterest(interest=interest, user=user))
+
+
+        UserInterest.objects.filter(user=user).delete()
+        UserInterest.objects.bulk_create(user_interest_list)
+
 
         #To review this approach in the future
         city = request.POST.get("city")
@@ -166,6 +181,10 @@ def profile_settings_guide(request):
             else:
                 messages.success(request, 'Profile has been created!')
 
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    user_interests = UserInterest.objects.filter(user=user)
+
     return render(request, 'users/profile_settings_guide.html', locals())
 
 
@@ -180,9 +199,26 @@ def profile_settings_tourist(request):
         print(request.POST)
         print(request.FILES)
 
+
+        interests = request.POST.getlist("interests")
+        user_interest_list = list()
+        if interests:
+            for interest in interests:
+                interest, created = Interest.objects.get_or_create(name=interest)
+
+                #adding to bulk create list for faster creation all at once
+                user_interest_list.append(UserInterest(interest=interest, user=user))
+
+
+        UserInterest.objects.filter(user=user).delete()
+        UserInterest.objects.bulk_create(user_interest_list)
+
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
 
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    user_interests = UserInterest.objects.filter(user=user)
     return render(request, 'users/profile_settings_tourist.html', locals())
 
 
