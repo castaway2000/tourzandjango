@@ -51,7 +51,7 @@
                                     <p>
                                         <b>Booked by: </b>{{ order.user.username }}
                                     </p>
-                                    <a class="btn btn-primary" href="{% url 'tour' order.tour.slug %}">
+                                    <a class="btn btn-primary" href="{% url 'tour' order.tour.slug order.tour.id %}">
                                         Tour details
                                     </a>
                                 </div>
