@@ -74,27 +74,11 @@
                         </div>
                         <div class="col-md-6">
                             <ul class="booking-item-features booking-item-features-expand mb30 clearfix">
-                                <li>
-                                    <i class="im im-wheel-chair"></i><span class="booking-item-feature-title">Wheelchair Access</span>
-                                </li>
-                                <li><i class="im im-smoking"></i><span class="booking-item-feature-title">Smoking Allowed</span>
-                                </li>
-                                <li><i class="im im-children"></i><span class="booking-item-feature-title">For Children</span>
-                                </li>
-                                <li><i class="im im-elder"></i><span class="booking-item-feature-title">Elder Access</span>
-                                </li>
-                                <li><i class="im im-dog"></i><span class="booking-item-feature-title">Pet Allowed</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <ul class="booking-item-features booking-item-features-expand mb30 clearfix">
-                                <li><i class="im im-children"></i><span class="booking-item-feature-title">For Children</span>
-                                </li>
-                                <li><i class="im im-elder"></i><span class="booking-item-feature-title">Elder Access</span>
-                                </li>
-                                <li><i class="im im-dog"></i><span class="booking-item-feature-title">Pet Allowed</span>
-                                </li>
+                                {% for guide_service in guide_services %}
+                                    <li>
+                                        <i class="im im-user-check"></i><span class="booking-item-feature-title">{{ guide_service.service__name }}</span>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </div>
                      </div>

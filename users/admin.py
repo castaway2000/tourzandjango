@@ -11,13 +11,13 @@ class InterestAdmin(admin.ModelAdmin):
 admin.site.register(Interest, InterestAdmin)
 
 
-class UserInterestAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in UserInterest._meta.fields]
-
-    class Meta:
-        model = UserInterest
-
-admin.site.register(UserInterest, UserInterestAdmin)
+# class UserInterestAdmin(admin.ModelAdmin):
+#     list_display = [field.name for field in UserInterest._meta.fields]
+#
+#     class Meta:
+#         model = UserInterest
+#
+# admin.site.register(UserInterest, UserInterestAdmin)
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -47,10 +47,10 @@ class ServiceAdmin(admin.ModelAdmin):
 admin.site.register(Service, ServiceAdmin)
 
 
-class ServiceGuideAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in ServiceGuide._meta.fields]
+class GuideServiceAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in GuideService._meta.fields]
 
     class Meta:
-        model = ServiceGuide
+        model = GuideService
 
-admin.site.register(ServiceGuide, ServiceGuideAdmin)
+admin.site.register(GuideService, GuideServiceAdmin)

@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
-from .models import Profile, GuideProfile
+from .models import *
 from tours.models import Tour, Review
 from locations.models import City
 from django.contrib.auth.models import User
@@ -82,6 +82,8 @@ def guide(request, username):
     tours_ids = [tour.id for tour in tours]
     reviews = Review.objects.filter(is_active=True, id__in=tours_ids)
 
+    guide_services = GuideService.objects.filter(guide=guide).values("service__name")
+
     if request.POST:
         data = request.POST
         print (data)
@@ -105,6 +107,7 @@ def guide(request, username):
         "guide": guide,
         "tours": tours,
         "reviews": reviews,
+        "guide_services": guide_services
     }
     return render(request, 'users/guide.html', context)
 
@@ -163,6 +166,20 @@ def profile_settings_guide(request):
         UserInterest.objects.bulk_create(user_interest_list)
 
 
+        #saving services
+        guide_services_list = list()
+        for name, value in request.POST.items():
+            string_key = "service_"
+            if name.startswith(string_key):
+
+                cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
+                service = Service.objects.get(html_field_name=cleared_name)
+                guide_services_list.append(GuideService(service=service, guide=guide))
+
+        GuideService.objects.filter(guide=guide).delete()
+        GuideService.objects.bulk_create(guide_services_list)
+
+
         #To review this approach in the future
         city = request.POST.get("city")
         if city:
@@ -184,6 +201,11 @@ def profile_settings_guide(request):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
+
+    services = Service.objects.all()
+    guide_services = GuideService.objects.filter(guide=guide)
+    guide_services_ids = [item.service.id for item in guide_services]
+    print (guide_services_ids)
 
     return render(request, 'users/profile_settings_guide.html', locals())
 
@@ -219,6 +241,7 @@ def profile_settings_tourist(request):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
+
     return render(request, 'users/profile_settings_tourist.html', locals())
 
 

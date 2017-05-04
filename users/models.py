@@ -79,6 +79,7 @@ class GuideProfile(models.Model):
 
 class Service(models.Model):
     name = models.CharField(max_length=256)
+    html_field_name = models.CharField(max_length=256, blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -86,8 +87,13 @@ class Service(models.Model):
     def __unicode__(self):
         return "%s" % self.name
 
+    def save(self, *args, **kwargs):
+        name_slashed = self.name.replace(" ", "_").lower()
+        self.html_field_name = "is_%s" % name_slashed
+        super(Service, self).save(*args, **kwargs)
 
-class ServiceGuide(models.Model):
+
+class GuideService(models.Model):
     service = models.ForeignKey(Service, blank=True, null=True, default=None)
     guide = models.ForeignKey(GuideProfile)
     is_active = models.BooleanField(default=True)
