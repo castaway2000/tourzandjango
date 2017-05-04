@@ -91,7 +91,7 @@
                 <ul class="booking-list">
                     {% for order in orders %}
                     <li>
-                        <a class="booking-item" href="{% url 'tour' order.tour.slug %}">
+                        <a class="booking-item" href="{% url 'tour' order.tour.slug order.tour.id %}">
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="booking-item-img">
