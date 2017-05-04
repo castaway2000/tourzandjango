@@ -130,21 +130,22 @@
                     <a href="{% url 'tours' %}">TOURS</a>
                 </li>
 
-                <li><a href="{% url 'my_bookings' %}">My Bookings</a>
-                    <ul>
-                        <li><a href="{% url 'my_bookings_status' 'pending' %}">Pending</a>
-                        </li>
-                        <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">Waiting for payment</a>
-                        </li>
-                        <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
-                        </li>
-                        <li><a href="{% url 'my_bookings_status' 'cancelled' %}">Cancelled</a>
-                        </li>
-                        <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
-                        </li>
-                    </ul>
-                </li>
-                {% if request.user.guideprofile %}
+                {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                    <li><a href="{% url 'my_bookings' %}">My Bookings</a>
+                        <ul>
+                            <li><a href="{% url 'my_bookings_status' 'pending' %}">Pending</a>
+                            </li>
+                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">Waiting for payment</a>
+                            </li>
+                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
+                            </li>
+                            <li><a href="{% url 'my_bookings_status' 'cancelled' %}">Cancelled</a>
+                            </li>
+                            <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
                     <li><a href="{% url 'orders' %}">Orders</a>
                         <ul>
                             <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
