@@ -120,9 +120,9 @@
                                     <a href="#">Sort: Price (low to high)<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-price" %}
                                     <a href="#">Sort: Price (high to low)<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
-                                {% elif order_results == "ratig" %}
+                                {% elif order_results == "rating" %}
                                     <a href="#">Sort: Rating (low to high)<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
-                                {% elif order_results == "-ratig" %}
+                                {% elif order_results == "-rating" %}
                                     <a href="#">Sort: Rating (high to low)<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
                                 {% endif %}
                             </h5>
@@ -136,11 +136,11 @@
                                     </li>
                                 {% endif %}
                                 {% if order_results != "rating" %}
-                                    <li><a href="#" data-order_value="-rating">Rating (low to high)</a>
+                                    <li><a href="#" data-order_value="rating">Rating (low to high)</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-rating" %}
-                                    <li><a href="#" data-order_value="rating">Rating (high to high)</a>
+                                    <li><a href="#" data-order_value="-rating">Rating (high to low)</a>
                                     </li>
                                 {% endif %}
 

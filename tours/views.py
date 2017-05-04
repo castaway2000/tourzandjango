@@ -75,13 +75,26 @@ def tours(request):
             order_results = ["is_free","-price_hourly"]
             order_results.insert(1, "-price")
             order_results = tuple(order_results)
+
+        elif order_results == "rating":
+            order_results = tuple(["rating"])
+
+        elif order_results == "-rating":
+            order_results = tuple(["-rating"])
+
+        else:
+            order_results = ("-is_free", "price_hourly")
+
     else:
         order_results = ("-is_free", "price_hourly")
+
 
     #it is needed for displaying of full list of filters
     # even if some filters are not available for the current list of tours
 
     #if it is one element in tuple, * is not needed
+
+
     tours_initial = Tour.objects.filter(is_active=True).order_by(*order_results)
 
 
