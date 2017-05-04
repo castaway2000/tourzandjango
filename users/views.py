@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from orders.models import Order
+from django.http import JsonResponse
 
 
 def login_view(request):
@@ -385,3 +386,25 @@ def tourist(request, username):
     reviews = Review.objects.filter(id__in=order_ids, is_from_tourist=True, is_active=True)
 
     return render(request, 'users/tourist.html', locals())
+
+
+def search_guide(request):
+    response_data = dict()
+    results = list()
+
+    if request.GET:
+        data = request.GET
+        username = data.get(u"q")
+        guides = GuideProfile.objects.filter(user__username__icontains=username)
+
+        for guide in guides:
+            results.append({
+                "id": guide.user.username,
+                "text": guide.user.username
+            })
+
+    response_data = {
+        "items": results,
+        "more": "false"
+    }
+    return JsonResponse(response_data, safe=False)

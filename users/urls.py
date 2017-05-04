@@ -27,4 +27,6 @@ urlpatterns = [
 
     url(r'^tourists/(?P<username>\w+)/overview/$', views.tourist, name='tourist'),
 
+    url(r'^search_guide/$', views.search_guide, name='search_guide'),
+
 ]

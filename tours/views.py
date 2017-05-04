@@ -28,8 +28,10 @@ def tours(request):
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
     filtered_is_fixed_price_included = request.GET.get('is_fixed_price_included')
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
+    city_input = request.GET.getlist(u'city_input')
+    guide_input = request.GET.getlist(u'guide_input')
 
-    order_results = request.GET.get("order_results")
+    order_results = request.GET.get('order_results')
 
     #for filtering by price type we need to implement 2-levels logic.
     #all other filters except pricing will be based filter and each of 3 types of pricing
@@ -55,14 +57,15 @@ def tours(request):
         free_price_kwargs["is_free"] = True
 
 
-    if filtered_cities:
-        print (filtered_cities)
-        base_kwargs["city__name__in"] = filtered_cities
+    #filtering by cities
+    if city_input:
+        base_kwargs["city__name__in"] = city_input
 
-    if filtered_guides:
-        print (filtered_guides)
-        base_kwargs["guide__user__username__in"] = filtered_guides
+    #filtering by guides
+    if guide_input:
+        base_kwargs["guide__user__username__in"] = guide_input
 
+    print ("guide_input: %s" % guide_input)
 
     #ordering
     if order_results:
@@ -111,6 +114,8 @@ def tours(request):
         z = {**x, **y}
         """
 
+        print (base_kwargs)
+
         q_objects = Q()
 
         if fixed_price_kwargs:
@@ -130,9 +135,13 @@ def tours(request):
 
         #if it is one element in tuple, * is not needed
         tours = tours_initial.filter(q_objects).order_by(*order_results)
-    elif filtered_cities or filtered_guides:
+        print ("12")
+        print (q_objects)
+    elif city_input or guide_input:
+        print ("12345")
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
     elif request.GET:
+        print ("15")
         tours = Tour.objects.none()
     else:
         tours = tours_initial
@@ -146,6 +155,7 @@ def tours(request):
     print ("guides ids: %s" % guides_ids)
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
+    print ("tours: %s" % tours)
     return render(request, 'tours/tours.html', locals())
 
 
