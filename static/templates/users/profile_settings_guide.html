@@ -14,11 +14,13 @@
                         <div class="col-lg-7">
                             <h4>Guide Profile</h4>
                         </div>
-                        <div class="col-lg-5">
-                             <a href="{% url 'guide' guide.user.username %}">
-                                 See Public Page
-                             </a>
-                        </div>
+                        {% if guide %}
+                            <div class="col-lg-5">
+                                 <a href="{% url 'guide' guide.user.username %}">
+                                     See Public Page
+                                 </a>
+                            </div>
+                        {% endif %}
                     </div>
 
                     {% if not guide %}
