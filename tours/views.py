@@ -117,6 +117,8 @@ def tours(request):
 
         #if it is one element in tuple, * is not needed
         tours = tours_initial.filter(q_objects).order_by(*order_results)
+    elif filtered_cities or filtered_guides:
+        tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
     elif request.GET:
         tours = Tour.objects.none()
     else:
