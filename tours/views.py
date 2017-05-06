@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Tour
 from locations.models import City
-from users.models import GuideProfile
+from guides.models import GuideProfile
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .forms import *
@@ -151,7 +151,7 @@ def tours(request):
     cities_ids = list(set([item.city.id for item in tours_initial]))
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
 
-    guides_ids = list(set([item.guide.id for item in tours_initial]))
+    guides_ids = list(set([item.guide.id for item in tours_initial ]))
     print ("guides ids: %s" % guides_ids)
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
@@ -183,7 +183,7 @@ def tour(request, slug, tour_id):
     tour = Tour.objects.get(id=tour_id, slug=slug)
     guide = tour.guide
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
-    reviews = tour.review_set.filter(is_active=True)
+    reviews = guide.user.review_set.filter(is_active=True)
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
     return render(request, 'tours/tour.html', locals())
 

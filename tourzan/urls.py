@@ -30,6 +30,9 @@ urlpatterns = i18n_patterns(
     url(r'^', include('tours.urls')),
     url(r'^', include('users.urls')),
 
+    url(r'^', include('guides.urls')),
+    url(r'^', include('tourists.urls')),
+
     url(r'^accounts/', include('allauth.urls')),
 
 )\

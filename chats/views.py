@@ -5,7 +5,7 @@ from datetime import datetime
 from django.db.models import Q
 from .models import *
 from tours.models import Tour
-from users.models import GuideProfile
+from guides.models import GuideProfile
 from django.contrib.auth.decorators import login_required
 
 

@@ -6,7 +6,7 @@ from locations.models import Location, Currency, City
 from utils.uploadings import *
 from django.utils.text import slugify
 from utils.general import random_string_creating
-from users.models import GuideProfile
+from guides.models import GuideProfile
 
 
 class PaymentType(models.Model):
@@ -47,7 +47,7 @@ class Tour(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return "%s" % self.name
+        return "%s" % self.id
 
     def save(self, *args, **kwargs):
 

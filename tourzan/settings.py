@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'chats',
     'users',
 
+    'guides',
+    'tourists',
+
     #external packages
     'allauth',
     'allauth.account',
