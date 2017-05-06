@@ -3,7 +3,8 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
-from tours.models import Tour, Review
+from tours.models import Tour
+from orders.models import Review
 from locations.models import City
 from django.contrib.auth.models import User
 from django.utils.translation import activate, get_language

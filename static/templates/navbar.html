@@ -126,8 +126,8 @@
                     <a href="{% url 'home' %}">Home</a>
                 </li>
 
-                <li>
-                    <a href="{% url 'tours' %}">TOURS</a>
+                <li class="{% if current_page == "guides" %}active{% endif %}">
+                    <a href="{% url 'guides' %}">GUIDES</a>
                 </li>
 
                 {% if request.session.current_role == "tourist" or not request.session.current_role %}

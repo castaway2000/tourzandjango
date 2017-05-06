@@ -120,23 +120,3 @@ class TourImage(models.Model):
                     self.tour.save(force_update=True)
 
         super(TourImage, self).save(*args, **kwargs)
-
-
-
-class Review(models.Model):
-    user = models.ForeignKey(User)
-    order = models.ForeignKey('orders.Order', blank=True, null=True, default=None)
-    name = models.CharField(max_length=256, blank=True, null=True, default=None)
-    text = models.TextField()
-    rating = models.IntegerField(default=0)
-    is_from_tourist = models.BooleanField(default=False)
-    is_from_guide = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __unicode__(self):
-        if self.order:
-            return "%s" % self.order.tour.name
-        else:
-            return "%s" % self.id

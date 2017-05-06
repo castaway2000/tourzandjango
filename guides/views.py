@@ -5,6 +5,107 @@ from .models import *
 from users.models import Interest, UserInterest
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from orders.models import Review
+
+
+def guides(request):
+    current_page = "guides"
+
+    user = request.user
+
+    base_kwargs = dict()
+    hourly_price_kwargs = dict()
+
+
+    filtered_hourly_prices = request.GET.get('hourly_price')
+    filtered_cities = request.GET.getlist('city')
+    filtered_guides = request.GET.getlist('guide')
+    filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
+
+    city_input = request.GET.getlist(u'city_input')
+    guide_input = request.GET.getlist(u'guide_input')
+
+    order_results = request.GET.get('order_results')
+
+    #for filtering by price type we need to implement 2-levels logic.
+    #all other filters except pricing will be based filter and each of 3 types of pricing
+    # will be combined with the base filters
+    #Hourly price tours filtering
+    if filtered_is_hourly_price_included and filtered_hourly_prices:
+        price = filtered_hourly_prices.split(";")
+        if len(price)==2:
+            hourly_price_kwargs["rate__gte"] = price[0]
+            hourly_price_kwargs["rate__lte"] = price[1]
+
+
+    #filtering by cities
+    if city_input:
+        base_kwargs["city__name__in"] = city_input
+
+    #filtering by guides
+    if guide_input:
+        base_kwargs["user__username__in"] = guide_input
+
+    print ("guide_input: %s" % guide_input)
+
+    #ordering
+    if order_results:
+        if order_results == "price":
+            order_results = ["rate"]
+            order_results = tuple(order_results)
+
+        elif order_results == "-price":
+            order_results = ["-rate"]
+            order_results = tuple(order_results)
+
+        elif order_results == "rating":
+            order_results = tuple(["rating"])
+
+        elif order_results == "-rating":
+            order_results = tuple(["-rating"])
+
+        else:
+            order_results = tuple(["rate"])
+
+    else:
+        order_results = tuple(["rate"])
+
+
+    #it is needed for displaying of full list of filters
+    # even if some filters are not available for the current list of tours
+
+    #if it is one element in tuple, * is not needed
+
+    print (order_results)
+    guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
+
+    print (base_kwargs)
+    if hourly_price_kwargs:
+        print (1)
+        # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
+
+        base_kwargs_mixed = base_kwargs.copy()
+        base_kwargs_mixed.update(hourly_price_kwargs)
+
+        guides = guides_initial.filter(**base_kwargs_mixed)
+
+    elif city_input or guide_input:
+        print (2)
+        # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
+        guides = guides_initial.filter(**base_kwargs)
+
+    elif request.GET:
+        print (3)
+        guides = GuideProfile.objects.none()
+
+    else:
+        print (4)
+        guides = guides_initial
+
+    items_nmb = guides.count()
+
+
+    return render(request, 'guides/guides.html', locals())
 
 
 def guide(request, username):
@@ -22,9 +123,7 @@ def guide(request, username):
 
     guide = guide_user.guideprofile
 
-    tours = guide.tour_set.filter(is_active=True)
-    tours_ids = [tour.id for tour in tours]
-    reviews = Review.objects.filter(is_active=True, id__in=tours_ids)
+    reviews = Review.objects.filter(order__guide=guide, is_from_tourist=True, is_active=True)
 
     guide_services = GuideService.objects.filter(guide=guide).values("service__name")
 
@@ -49,11 +148,10 @@ def guide(request, username):
 
     context = {
         "guide": guide,
-        "tours": tours,
         "reviews": reviews,
         "guide_services": guide_services
     }
-    return render(request, 'users/guide.html', context)
+    return render(request, 'guides/guide.html', locals())
 
 
     """

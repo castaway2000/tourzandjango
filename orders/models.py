@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from tours.models import Tour
 from django.utils.text import slugify
+from guides.models import GuideProfile
+from tourists.models import TouristProfile
 
 
 class OrderStatus(models.Model):
@@ -26,16 +28,18 @@ class OrderStatus(models.Model):
 
 class Order(models.Model):
     status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1)
-    user = models.ForeignKey(User)#who creates an order
 
-    #tour can be defined hourly tour is a default one for every guide
-    tour = models.ForeignKey(Tour, blank=True, null=True, default=None)#has an user on it, who created a tour
+    guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
+    tourist = models.ForeignKey(TouristProfile, blank=True, null=True, default=None)
 
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
+    rating_tourist = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    rating_guide = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     comment = models.TextField(blank=True, null=True, default=None)
     date_ordered = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -44,7 +48,7 @@ class Order(models.Model):
     date_toured = models.DateField(blank=True, null=True, default=None)
 
     def __unicode__(self):
-        return "%s" % (self.user.username)
+        return "%s" % (self.guide.user.username)
 
 
 class Payment(models.Model):
@@ -55,3 +59,24 @@ class Payment(models.Model):
 
     def __unicode__(self):
         return "%s" % self.name
+
+
+class Review(models.Model):
+    order = models.ForeignKey(Order, blank=True, null=True, default=None)
+
+    name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    text = models.TextField(blank=True, null=True, default=None)
+    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
+    is_from_tourist = models.BooleanField(default=False)
+    is_from_guide = models.BooleanField(default=False)
+
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __unicode__(self):
+        if self.order:
+            return "%s" % self.order.tour.name
+        else:
+            return "%s" % self.id

@@ -4,7 +4,6 @@ from django.db import models
 from utils.general import random_string_creating
 from django.utils.text import slugify
 from datetime import date
-
 from django.contrib.auth.models import User
 from locations.models import City
 
@@ -14,6 +13,8 @@ class GuideProfile(models.Model):
     city = models.ForeignKey(City)
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)

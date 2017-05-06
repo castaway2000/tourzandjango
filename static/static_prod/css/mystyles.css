@@ -33,7 +33,7 @@
     font-size: 20px;
 }
 
-.tour-name{
+.tour-name, .item-name{
     font-size: 20px;
 }
 
@@ -44,7 +44,7 @@
     font-weight: 700;
 }
 
-.tour-price, .tour-rating{
+.tour-price, .tour-rating, .guide-rate, .guide-rating{
     font-size: 16px;
     margin-bottom: 5px;
 }
