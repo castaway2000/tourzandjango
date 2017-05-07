@@ -146,7 +146,7 @@ def orders(request, status=None):
     user = request.user
     print "orders"
     if not status:
-        orders = Order.objects.filter(user=user)
+        orders = Order.objects.filter(guide__user=user)
     else:
         orders = Order.objects.filter(status__name=status)
     return render(request, 'orders/orders.html', locals())
