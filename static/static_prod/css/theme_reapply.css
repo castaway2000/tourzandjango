@@ -3,13 +3,25 @@
     border-color: #169e49;
 }
 
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open .dropdown-toggle.btn-primary {
+    background: #4cb173;
+    border-color: #169e49;
+}
+
 .btn-group-select-num > .btn.active, .btn-group-select-num > .btn.active:hover {
     background: #31dc72;
     border-color: #169e49;
 }
 
 .box-icon, [class^="box-icon-"], [class*=" box-icon-"] {
+    background: #7ca88d;
+}
+
+.box-icon:hover,
+[class^="box-icon-"]:hover,
+[class*=" box-icon-"]:hover {
     background: #31dc72;
+    color: #fff;
 }
 
 header#main-header {
