@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-lg-offset-3">
+                <div class="jumbotron mt10">
+                    <h3 class="text-center">
+                        To create Guide Profile click a button bellow.
+                    </h3>
+                    <p>If you click this button you agree with terms and conditions</p>
+                    <div class="text-center">
+                        <a href="{% url 'guide_registration' %}" class="btn btn-primary">
+                            Create Guide Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+

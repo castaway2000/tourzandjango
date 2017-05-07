@@ -119,7 +119,7 @@ def guides(request):
         print (interests_user_ids)
         print (guides)
 
-        guides.filter(user_id__in=interests_user_ids)
+        guides = guides.filter(user_id__in=interests_user_ids)
         print (guides)
 
 
@@ -206,7 +206,15 @@ def guide(request, username):
 def profile_settings_guide(request):
     page = "profile_settings_guide"
     user = request.user
-    guide = user.guideprofile
+
+    try:
+        guide = user.guideprofile
+    except:
+        if not request.POST:
+            return HttpResponseRedirect(reverse("guide_registration_welcome"))
+        else:
+            guide = None
+
     if guide:
         form = GuideProfileForm(request.POST or None, request.FILES or None, instance=guide)
     else:
@@ -249,11 +257,11 @@ def profile_settings_guide(request):
             city, created = City.objects.get_or_create(name=city)
 
         if form.is_valid():
-            print(request.POST)
-            print(request.FILES)
 
             new_form = form.save(commit=False)
             new_form.city = city
+            if not guide:
+                new_form.user = user
             new_form = form.save()
 
             if guide:
@@ -261,7 +269,7 @@ def profile_settings_guide(request):
             else:
                 messages.success(request, 'Profile has been created!')
 
-        # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
 
@@ -293,3 +301,12 @@ def search_guide(request):
         "more": "false"
     }
     return JsonResponse(response_data, safe=False)
+
+
+def guide_registration_welcome(request):
+    return render(request, 'guides/guide_registration_welcome.html', locals())
+
+
+def guide_registration(request):
+    form = GuideProfileForm(request.POST or None, request.FILES or None)
+    return render(request, 'guides/guide_registration.html', locals())
