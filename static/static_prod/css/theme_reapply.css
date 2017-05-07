@@ -1,0 +1,29 @@
+.btn-primary {
+    background: #31dc72;
+    border-color: #169e49;
+}
+
+.btn-group-select-num > .btn.active, .btn-group-select-num > .btn.active:hover {
+    background: #31dc72;
+    border-color: #169e49;
+}
+
+.box-icon, [class^="box-icon-"], [class*=" box-icon-"] {
+    background: #31dc72;
+}
+
+header#main-header {
+    border-bottom: 2px solid #31dc72;
+}
+
+ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
+    background: #31dc72;
+}
+
+.search-tabs-bg > .tabbable > .nav-tabs > li.active > a {
+    background: #169e49;
+}
+
+.search-tabs-bg > .tabbable > .nav-tabs > li > a:hover > .fa {
+    background: #169e49;
+}

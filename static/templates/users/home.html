@@ -437,35 +437,38 @@
                 </div>
             </div>
         </div>
-        <div class="gap"></div>
-        <div class="row">
-            <div class="col-md-4">
-                <h3> {% trans "Best Free Tours" %} <small ><a href="{% url 'tours' %}?is_free_offers_included=on">{% trans "view all" %}</a></small></h3>
-                <ul class="booking-list">
-                    {% for tour in free_tours %}
-                        {% include 'users/tour_items_representation.html' %}
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col-md-4">
-                <h3>Best hourly rates <small ><a href="{% url 'tours' %}?is_hourly_price_included=on&hourly_price=0%3B50&fixed_price=0%3B300">view all</a></small></h3>
-                <ul class="booking-list">
-                    {% for tour in hourly_tours %}
-                        {% include 'users/tour_items_representation.html' %}
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col-md-4">
-                <h3>Best fixed rates tours <small ><a href="{% url 'tours' %}?is_fixed_price_included=on&fixed_price=0%3B300">view all</a></small></h3>
-                <ul class="booking-list">
-                    {% for tour in fixed_payment_tours %}
-                        {% include 'users/tour_items_representation.html' %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+{#        <div class="gap"></div>#}
+{#        <div class="row">#}
+{#            <div class="col-md-4">#}
+{#                <h3> {% trans "Best Free Tours" %} <small ><a href="{% url 'tours' %}?is_free_offers_included=on">{% trans "view all" %}</a></small></h3>#}
+{#                <ul class="booking-list">#}
+{#                    {% for tour in free_tours %}#}
+{#                        {% include 'users/tour_items_representation.html' %}#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <h3>Best hourly rates <small ><a href="{% url 'tours' %}?is_hourly_price_included=on&hourly_price=0%3B50&fixed_price=0%3B300">view all</a></small></h3>#}
+{#                <ul class="booking-list">#}
+{#                    {% for tour in hourly_tours %}#}
+{#                        {% include 'users/tour_items_representation.html' %}#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <h3>Best fixed rates tours <small ><a href="{% url 'tours' %}?is_fixed_price_included=on&fixed_price=0%3B300">view all</a></small></h3>#}
+{#                <ul class="booking-list">#}
+{#                    {% for tour in fixed_payment_tours %}#}
+{#                        {% include 'users/tour_items_representation.html' %}#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#        </div>#}
         <div class="gap gap-small"></div>
-        <h2 class="mb20">Explore Our Top Guides</h2>
+        <h2 class="mb20">
+            Explore Our Top Guides
+            <small ><a href="{% url 'guides' %}">view all</a></small>
+        </h2>
         <div class="row row-wrap">
             {% for guide in guides %}
                 {% include 'users/guides_representation.html' %}

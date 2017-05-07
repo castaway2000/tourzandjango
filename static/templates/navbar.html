@@ -7,23 +7,107 @@
 
 
 <header id="main-header">
-    <div class="header-top">
+    <div class="header-top header-white">
         <div class="container">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-1">
                     <a class="logo" href="/">
-                        <img src="{% static 'img/logo-invert.png' %}" alt="Image Alternative text" title="Image Title" />
+                        <img src="{% static 'img/tourzan_logo_white.jpg' %}" class="navbar-logo"
+                             alt="Tourzan logo" title="Tourzan logo" />
                     </a>
                 </div>
-                <div class="col-md-3 col-md-offset-2">
-                    <form class="main-header-search">
-                        <div class="form-group form-group-icon-left">
-                            <i class="fa fa-search input-icon"></i>
-                            <input type="text" class="form-control">
-                        </div>
-                    </form>
+                <div class="col-md-8">
+                    <div class="nav nav-menu">
+                        <ul class="slimmenu top-menu" id="slimmenu">
+                            <li class="{% if current_page == "home" %}active{% endif %}">
+                                <a href="{% url 'home' %}">Home</a>
+                            </li>
+
+                            <li class="{% if current_page == "guides" %}active{% endif %}">
+                                <a href="{% url 'guides' %}">GUIDES</a>
+                            </li>
+
+                            {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                <li><a href="{% url 'my_bookings' %}">My Bookings</a>
+                                    <ul>
+                                        <li><a href="{% url 'my_bookings_status' 'pending' %}">Pending</a>
+                                        </li>
+                                        <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">Waiting for payment</a>
+                                        </li>
+                                        <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
+                                        </li>
+                                        <li><a href="{% url 'my_bookings_status' 'cancelled' %}">Cancelled</a>
+                                        </li>
+                                        <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li><a href="{% url 'orders' %}">Orders</a>
+                                    <ul>
+                                        <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
+                                        </li>
+                                        <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">Waiting for payment</a>
+                                        </li>
+                                        <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
+                                        </li>
+                                        <li><a href="{% url 'orders_status' 'cancelled' %}">Cancelled</a>
+                                        </li>
+                                        <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                            {% if not user.is_anonymous %}
+                                <li><a href="{% url 'chats' %}">Chats</a>
+                            {% endif %}
+
+
+                            <li>
+                                <a href="{% url 'settings_router' %}">
+                                    {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                        Tourist Settings
+                                    {% else %}
+                                        Guide Settings
+                                    {% endif %}
+                                </a>
+                                <ul>
+                                    {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                        <li><a href="{% url 'profile_settings_tourist' %}">Profile</a>
+                                        </li>
+                                    {% else %}
+                                        <li><a href="{% url 'profile_settings_guide' %}">Profile</a>
+                                        </li>
+                                    {% endif %}
+
+                                    <li><a href="{% url 'general_settings' %}">Account</a>
+                                    </li>
+
+                                    <li>
+                                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                            {% if user.guideprofile %}
+                                                <a href="{% url 'change_role' %}">
+                                                    Switch to Guide
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'profile_settings_guide' %}">
+                                                    Want to be a guide?
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{% url 'change_role' %}">
+                                                Switch to Tourist
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="top-user-area clearfix">
                         <ul class="top-user-area-list list list-horizontal list-border">
                             {% if user.is_anonymous %}
@@ -31,36 +115,13 @@
                             {% else %}
                                 <li class="top-user-area-avatar">
                                     <a href="{% url 'settings_router' %}">
-{#                                        {% if user.userprofile.image %}#}
-{#                                            <img class="origin round"#}
-{#                                                 src="{{ user.userprofile.image.url }}"#}
-{#                                                 alt="" title="" />#}
-{#                                        {% else %}#}
-{#                                            <img class="origin round"#}
-{#                                                 src="{% static 'img/40x40.png' %}"#}
-{#                                                 alt="" title="" />#}
-{#                                        {% endif %}#}
-{##}
                                         Hi, {{ request.user.username }}
                                     </a>
                                 </li>
                                 <li><a href="{% url 'logout' %}">Logout</a>
                                 </li>
                             {% endif %}
-{#                            <li class="nav-drop"><a href="#">USD $<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>#}
-{#                                <ul class="list nav-drop-menu">#}
-{#                                    <li><a href="#">EUR<span class="right">€</span></a>#}
-{#                                    </li>#}
-{#                                    <li><a href="#">GBP<span class="right">£</span></a>#}
-{#                                    </li>#}
-{#                                    <li><a href="#">JPY<span class="right">円</span></a>#}
-{#                                    </li>#}
-{#                                    <li><a href="#">CAD<span class="right">$</span></a>#}
-{#                                    </li>#}
-{#                                    <li><a href="#">AUD<span class="right">A$</span></a>#}
-{#                                    </li>#}
-{#                                </ul>#}
-{#                            </li>#}
+
                             <li class="top-user-area-lang nav-drop">
 
                                 <a href="#" class="change-language-link">
@@ -69,26 +130,6 @@
 
 
                                 <ul class="list nav-drop-menu">
-{#                                    <li>#}
-{#                                        <a title="German" href="#">#}
-{#                                            <img src="{% static 'img/flags/32/de.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">GER</span>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li>#}
-{#                                        <a title="Japanise" href="#">#}
-{#                                            <img src="{% static 'img/flags/32/jp.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">JAP</span>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li>#}
-{#                                        <a title="Italian" href="#">#}
-{#                                            <img src="{% static 'img/flags/32/it.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">ITA</span>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li>#}
-{#                                        <a title="French" href="#">#}
-{#                                            <img src="{% static 'img/flags/32/fr.png' %}" alt="Image Alternative text" title="Image Title" /><span class="right">FRE</span>#}
-{#                                        </a>#}
-{#                                    </li>#}
                                     {% for language in languages %}
                                         {% if language.code != LANGUAGE_CODE %}
                                             <li>
@@ -119,95 +160,5 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="nav">
-            <ul class="slimmenu top-menu" id="slimmenu">
-                <li class="{% if current_page == "home" %}active{% endif %}">
-                    <a href="{% url 'home' %}">Home</a>
-                </li>
 
-                <li class="{% if current_page == "guides" %}active{% endif %}">
-                    <a href="{% url 'guides' %}">GUIDES</a>
-                </li>
-
-                {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                    <li><a href="{% url 'my_bookings' %}">My Bookings</a>
-                        <ul>
-                            <li><a href="{% url 'my_bookings_status' 'pending' %}">Pending</a>
-                            </li>
-                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">Waiting for payment</a>
-                            </li>
-                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
-                            </li>
-                            <li><a href="{% url 'my_bookings_status' 'cancelled' %}">Cancelled</a>
-                            </li>
-                            <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
-                            </li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'orders' %}">Orders</a>
-                        <ul>
-                            <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
-                            </li>
-                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">Waiting for payment</a>
-                            </li>
-                            <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
-                            </li>
-                            <li><a href="{% url 'orders_status' 'cancelled' %}">Cancelled</a>
-                            </li>
-                            <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
-                            </li>
-                        </ul>
-                    </li>
-                {% endif %}
-
-                {% if not user.is_anonymous %}
-                    <li><a href="{% url 'chats' %}">Chats</a>
-                {% endif %}
-
-
-                <li>
-                    <a href="{% url 'settings_router' %}">
-                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                            Tourist Settings
-                        {% else %}
-                            Guide Settings
-                        {% endif %}
-                    </a>
-                    <ul>
-                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                            <li><a href="{% url 'profile_settings_tourist' %}">Profile</a>
-                            </li>
-                        {% else %}
-                            <li><a href="{% url 'profile_settings_guide' %}">Profile</a>
-                            </li>
-                        {% endif %}
-
-                        <li><a href="{% url 'general_settings' %}">Account</a>
-                        </li>
-
-                        <li>
-                            {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                {% if user.guideprofile %}
-                                    <a href="{% url 'change_role' %}">
-                                        Switch to Guide
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'profile_settings_guide' %}">
-                                        Want to be a guide?
-                                    </a>
-                                {% endif %}
-                            {% else %}
-                                <a href="{% url 'change_role' %}">
-                                    Switch to Tourist
-                                </a>
-                            {% endif %}
-                        </li>
-                    </ul>
-                </li>
-
-            </ul>
-        </div>
-    </div>
 </header>
