@@ -21,9 +21,9 @@
                                     <img src="{% static 'img/300x300.png' %}" alt="" title="">
                                 {% endif %}
                             {% else %}
-                                {% if user.profile.image %}
+                                {% if user.touristprofile.image %}
                                     <img class=""
-                                         src="{{ user.profile.image.url }}"
+                                         src="{{ user.touristprofile.image.url }}"
                                          alt="" title="" />
                                 {% else %}
                                     <img src="{% static 'img/300x300.png' %}" alt="" title="">

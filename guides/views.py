@@ -6,6 +6,7 @@ from users.models import Interest, UserInterest
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
+from django.contrib import messages
 
 
 def guides(request):
@@ -14,6 +15,8 @@ def guides(request):
     user = request.user
 
     base_kwargs = dict()
+    base_user_interests_kwargs = dict()
+
     hourly_price_kwargs = dict()
 
 
@@ -24,6 +27,8 @@ def guides(request):
 
     city_input = request.GET.getlist(u'city_input')
     guide_input = request.GET.getlist(u'guide_input')
+    interest_input = request.GET.getlist(u'interest_input')
+    print interest_input
 
     order_results = request.GET.get('order_results')
 
@@ -31,7 +36,7 @@ def guides(request):
     #all other filters except pricing will be based filter and each of 3 types of pricing
     # will be combined with the base filters
     #Hourly price tours filtering
-    if filtered_is_hourly_price_included and filtered_hourly_prices:
+    if filtered_hourly_prices:
         price = filtered_hourly_prices.split(";")
         if len(price)==2:
             hourly_price_kwargs["rate__gte"] = price[0]
@@ -45,6 +50,9 @@ def guides(request):
     #filtering by guides
     if guide_input:
         base_kwargs["user__username__in"] = guide_input
+
+    if interest_input:
+        base_user_interests_kwargs["interest__name__in"] = interest_input
 
     print ("guide_input: %s" % guide_input)
 
@@ -101,6 +109,19 @@ def guides(request):
     else:
         print (4)
         guides = guides_initial
+
+
+    if base_user_interests_kwargs:
+        print ("base_user_interests_kwargs")
+        print (base_user_interests_kwargs)
+        user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)
+        interests_user_ids = [item.user.id for item in user_interests]
+        print (interests_user_ids)
+        print (guides)
+
+        guides.filter(user_id__in=interests_user_ids)
+        print (guides)
+
 
     items_nmb = guides.count()
 
@@ -240,7 +261,7 @@ def profile_settings_guide(request):
             else:
                 messages.success(request, 'Profile has been created!')
 
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
 

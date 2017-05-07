@@ -129,3 +129,13 @@
 .top-menu{
     text-align: center;
 }
+
+.select2-selection.select2-selection--multiple,
+.select2-selection__choice{
+    color: black;
+}
+
+.label-tag{
+    margin-right: 5px;
+}
+

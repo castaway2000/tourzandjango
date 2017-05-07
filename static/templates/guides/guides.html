@@ -48,26 +48,27 @@
                                 </select>
                             </li>
                             <li>
-                                <h5 class="booking-filters-title">Guide</h5>
+                                <h5 class="booking-filters-title">Interests</h5>
+                                <select multiple class="form-control select2" id="interest_input" name="interest_input"
+                                        data-search_url="{% url 'search_interest' %}" value="['1', '2']">
 
+                                        {% for item in interest_input %}
+                                            <option value="{{ item }}" selected>{{ item }}</option>
+                                        {% endfor %}
+
+                                </select>
+                            </li>
+                            <li>
+                                <h5 class="booking-filters-title">Guide</h5>
                                 <select class="form-control select2" id="guide_input" name="guide_input"
                                         data-search_url="{% url 'search_guide' %}">
-                                    {% if request.GET.guide_input %}
+                                    {% if guide_input %}
                                         <option value="{{ request.GET.guide_input }}" selected>{{ request.GET.guide_input }}</option>
                                     {% endif %}
                                 </select>
-
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">Price per hour</h5>
-                                <div class="checkbox">
-                                    <label>
-                                        <input class="i-check" type="checkbox" name="is_hourly_price_included"
-                                        {% if request.GET.is_hourly_price_included or not request.GET %} checked {% endif %}
-                                        >
-                                        Include hourly price offers
-                                    </label>
-                                </div>
                                 <input type="text" id="price-slider-1" name="hourly_price"
                                        data-min = "0" data-max="50"
                                        {% if request.GET.hourly_price %}
@@ -141,6 +142,22 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 {{ guide.overview|linebreaks|truncatewords_html:30 }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div><b>Interests:</b></div>
+                                                {% for user_interest in guide.user.userinterest_set.all %}
+                                                    {% if user_interest.interest.name in interest_input %}
+                                                        <span class="label label-success label-tag">
+                                                            {{ user_interest.interest.name }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="label label-default label-tag">
+                                                            {{ user_interest.interest.name }}
+                                                        </span>
+                                                    {% endif %}
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
@@ -263,6 +280,40 @@
                  minimumInputLength: 1
             });
 
+            var interest_search_url = $('#interest_input').data("search_url");
+            $('#interest_input').select2({
+                tags: true,
+                tokenSeparators: [',', ' '],
+                 ajax: {
+                     url: interest_search_url,
+                     dataType: 'json',
+                     delay: 250,
+                     data: function (params) {
+                         return {
+                             q: params.term, // search term
+                             page: params.page
+                         };
+                     },
+                     processResults: function (data, params) {
+                         // parse the results into the format expected by Select2
+                         // since we are using custom formatting functions we do not need to
+                         // alter the remote JSON data, except to indicate that infinite
+                         // scrolling can be used
+
+                         params.page = params.page || 1;
+
+                         return {
+                             results: data.items,
+                             pagination: {
+                                 more: (params.page * 30) < data.total_count
+                             }
+                         };
+                     },
+                     cache: true
+                 },
+
+                 minimumInputLength: 1
+            });
 
             $('#sorting_area a').on('click', function(){
                 var order_value = $(this).data('order_value');
@@ -272,7 +323,8 @@
                 //assigning ordering value to the hidden field on filters panel
                 $('#order_results_input').val(order_value);
                 $('#filtering_form').submit();
-            })
+            });
+
         });
     </script>
 {% endblock js_stuff %}

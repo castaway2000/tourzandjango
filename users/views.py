@@ -17,6 +17,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from orders.models import Order
 from guides.models import GuideProfile
+from django.http import JsonResponse
 
 
 def login_view(request):
@@ -137,5 +138,28 @@ def settings_router(request):
     elif current_role == "tourist" or not current_role:
         request.session["current_role"] = "tourist"
         return HttpResponseRedirect(reverse("profile_settings_tourist"))
+
+
+@login_required()
+def search_interest(request):
+    response_data = dict()
+    results = list()
+
+    if request.GET:
+        data = request.GET
+        interest_name = data.get(u"q")
+        interests = Interest.objects.filter(name__icontains=interest_name)
+
+        for interest in interests:
+            results.append({
+                "id": interest.name,
+                "text": interest.name
+            })
+
+    response_data = {
+        "items": results,
+        "more": "false"
+    }
+    return JsonResponse(response_data, safe=False)
 
 

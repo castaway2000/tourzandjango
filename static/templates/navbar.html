@@ -176,8 +176,13 @@
                         {% endif %}
                     </a>
                     <ul>
-                        <li><a href="{% url 'profile_settings_tourist' %}">Profile</a>
-                        </li>
+                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                            <li><a href="{% url 'profile_settings_tourist' %}">Profile</a>
+                            </li>
+                        {% else %}
+                            <li><a href="{% url 'profile_settings_guide' %}">Profile</a>
+                            </li>
+                        {% endif %}
 
                         <li><a href="{% url 'general_settings' %}">Account</a>
                         </li>
