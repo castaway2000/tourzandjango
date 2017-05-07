@@ -2,6 +2,10 @@
 {% load static %}
 {% load i18n %}
 
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
 
 {% block content %}
     <div class="container">
@@ -43,29 +47,21 @@
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">City</h5>
-                                {% for city in cities %}
-                                    <div class="checkbox">
-                                        <label>
-                                            <input class="i-check" type="checkbox" name="city" value="{{ city.name }}"
-                                            {% if city.name in filtered_cities %} checked {% endif %}
-                                            >
-                                            {{ city.name }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
+                                <select class="form-control select2" id="city_input" name="city_input"
+                                        data-search_url="{% url 'search_city' %}">
+                                    {% if request.GET.city_input %}
+                                        <option value="{{ request.GET.city_input }}" selected>{{ request.GET.city_input }}</option>
+                                    {% endif %}
+                                </select>
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">Guides</h5>
-                                {% for guide in guides %}
-                                    <div class="checkbox">
-                                        <label>
-                                            <input class="i-check" type="checkbox" name="guide" value="{{ guide.user.username }}"
-                                            {% if guide.user.username in filtered_guides %} checked {% endif %}
-                                            >
-                                            {{ guide.user.username }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
+                                <select class="form-control select2" id="guide_input" name="guide_input"
+                                        data-search_url="{% url 'search_guide' %}">
+                                    {% if guide_input %}
+                                        <option value="{{ request.GET.guide_input }}" selected>{{ request.GET.guide_input }}</option>
+                                    {% endif %}
+                                </select>
                             </li>
                             <li>
                                 <button type="submit" class="btn btn-primary btn-block">Apply</button>
@@ -173,3 +169,78 @@
         <div class="gap"></div>
     </div>
 {% endblock %}
+
+
+{% block js_stuff %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            var city_search_url = $('#city_input').data("search_url");
+            $('#city_input').select2({
+                 ajax: {
+                     url: city_search_url,
+                     dataType: 'json',
+                     delay: 250,
+                     data: function (params) {
+                         return {
+                             q: params.term, // search term
+                             page: params.page
+                         };
+                     },
+                     processResults: function (data, params) {
+                         // parse the results into the format expected by Select2
+                         // since we are using custom formatting functions we do not need to
+                         // alter the remote JSON data, except to indicate that infinite
+                         // scrolling can be used
+
+                         params.page = params.page || 1;
+
+                         return {
+                             results: data.items,
+                             pagination: {
+                                 more: (params.page * 30) < data.total_count
+                             }
+                         };
+                     },
+                     cache: true
+                 },
+
+                 minimumInputLength: 1
+            });
+
+            var guide_search_url = $('#guide_input').data("search_url");
+            $('#guide_input').select2({
+                 ajax: {
+                     url: guide_search_url,
+                     dataType: 'json',
+                     delay: 250,
+                     data: function (params) {
+                         return {
+                             q: params.term, // search term
+                             page: params.page
+                         };
+                     },
+                     processResults: function (data, params) {
+                         // parse the results into the format expected by Select2
+                         // since we are using custom formatting functions we do not need to
+                         // alter the remote JSON data, except to indicate that infinite
+                         // scrolling can be used
+
+                         params.page = params.page || 1;
+
+                         return {
+                             results: data.items,
+                             pagination: {
+                                 more: (params.page * 30) < data.total_count
+                             }
+                         };
+                     },
+                     cache: true
+                 },
+
+                 minimumInputLength: 1
+            });
+        });
+    </script>
+{% endblock js_stuff %}

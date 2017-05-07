@@ -94,7 +94,7 @@ def bookings(request, status=None):
     print ("bookings")
     user = request.user
     kwargs = dict()
-    kwargs["user"] = user
+    # kwargs["user"] = user
 
     print (request.GET)
 
@@ -119,12 +119,12 @@ def bookings(request, status=None):
         kwargs["tour__guide__user__username__in"] = filtered_guides
 
     if not status:
-        initial_orders = Order.objects.filter(user=user)#it is needed for citieas and guides list
+        initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
         orders = initial_orders.filter(**kwargs).order_by('-id')
         bookings_nmb = orders.count()
     elif not user.is_anonymous():
         kwargs["status__name"] = status
-        initial_orders = Order.objects.filter(user=user, status__name=status)#it is needed for citieas and guides list
+        initial_orders = Order.objects.filter(tourist__user=user, status__name=status)#it is needed for citieas and guides list
         orders = initial_orders.filter(**kwargs).order_by('-id')
         bookings_nmb = orders.count()
     else:

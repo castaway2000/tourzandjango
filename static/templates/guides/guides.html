@@ -50,7 +50,7 @@
                             <li>
                                 <h5 class="booking-filters-title">Interests</h5>
                                 <select multiple class="form-control select2" id="interest_input" name="interest_input"
-                                        data-search_url="{% url 'search_interest' %}" value="['1', '2']">
+                                        data-search_url="{% url 'search_interest' %}">
 
                                         {% for item in interest_input %}
                                             <option value="{{ item }}" selected>{{ item }}</option>
