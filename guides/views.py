@@ -41,6 +41,10 @@ def guides(request):
         if len(price)==2:
             hourly_price_kwargs["rate__gte"] = price[0]
             hourly_price_kwargs["rate__lte"] = price[1]
+    else:
+        #default values
+        hourly_price_kwargs["rate__gte"] = 0
+        hourly_price_kwargs["rate__lte"] = 50
 
 
     #filtering by cities

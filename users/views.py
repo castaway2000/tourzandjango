@@ -140,13 +140,14 @@ def settings_router(request):
         return HttpResponseRedirect(reverse("profile_settings_tourist"))
 
 
-@login_required()
 def search_interest(request):
+    print ("search_interest")
     response_data = dict()
     results = list()
 
     if request.GET:
         data = request.GET
+        print (data)
         interest_name = data.get(u"q")
         interests = Interest.objects.filter(name__icontains=interest_name)
 
@@ -160,6 +161,8 @@ def search_interest(request):
         "items": results,
         "more": "false"
     }
+
+    print (response_data)
     return JsonResponse(response_data, safe=False)
 
 

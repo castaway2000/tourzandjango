@@ -66,11 +66,15 @@ $(document).ready(function(){
          minimumInputLength: 1
     });
 
+    console.log("pre interest");
     if ($('#interest_input')){
+        console.log("interest");
         var interest_search_url = $('#interest_input').data("search_url");
+        console.log(interest_search_url);
         $('#interest_input').select2({
             tags: true,
             tokenSeparators: [',', ' '],
+
              ajax: {
                  url: interest_search_url,
                  dataType: 'json',

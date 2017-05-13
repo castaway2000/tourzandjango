@@ -39,3 +39,11 @@ ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
 .search-tabs-bg > .tabbable > .nav-tabs > li > a:hover > .fa {
     background: #169e49;
 }
+
+.user-profile-sidebar .user-profile-nav > li.active > a {
+    background: #31dc72;
+}
+
+.user-profile-sidebar .user-profile-nav > li > a:hover > i {
+  color: #31dc72;
+}
