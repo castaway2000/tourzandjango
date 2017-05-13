@@ -11,10 +11,29 @@ class InterestAdmin(admin.ModelAdmin):
 admin.site.register(Interest, InterestAdmin)
 
 
-# class UserInterestAdmin(admin.ModelAdmin):
-#     list_display = [field.name for field in UserInterest._meta.fields]
-#
-#     class Meta:
-#         model = UserInterest
-#
-# admin.site.register(UserInterest, UserInterestAdmin)
+class UserInterestAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in UserInterest._meta.fields]
+
+    class Meta:
+        model = UserInterest
+
+admin.site.register(UserInterest, UserInterestAdmin)
+
+
+class LanguageLevelAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in LanguageLevel._meta.fields]
+
+    class Meta:
+        model = LanguageLevel
+
+admin.site.register(LanguageLevel, LanguageLevelAdmin)
+
+
+class UserLanguageAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in UserLanguage._meta.fields]
+
+    class Meta:
+        model = UserLanguage
+
+admin.site.register(UserLanguage, UserLanguageAdmin)
+
