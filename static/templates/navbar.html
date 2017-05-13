@@ -134,7 +134,7 @@
                                         {% if language.code != LANGUAGE_CODE %}
                                             <li>
                                                 <a href="{% url 'set_language' language.code %}" class="change-language-link">
-                                                    <img src=""><span class="right">{{ language.code }}</span>
+                                                    {{ language.code }}
                                                 </a>
                                             </li>
                                         {% endif %}
@@ -145,9 +145,9 @@
 
                             <li>
                                 {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                    <span class="text-white">Tourist</span>
+                                    <span class="">Tourist</span>
                                 {% else%}
-                                    <span class="text-white">Guide</span>
+                                    <span class="">Guide</span>
                                 {% endif %}
                                 <a href="{% url 'change_role' %}">
                                     <i class="fa fa-exchange" aria-hidden="true"></i>

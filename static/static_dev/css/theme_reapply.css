@@ -47,3 +47,7 @@ ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
 .user-profile-sidebar .user-profile-nav > li > a:hover > i {
   color: #31dc72;
 }
+
+.nav-drop > .nav-drop-menu > li > a:hover {
+  background: #31dc72;
+}
