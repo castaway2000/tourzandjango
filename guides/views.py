@@ -211,7 +211,7 @@ def guide(request, username):
 def profile_settings_guide(request):
     page = "profile_settings_guide"
     user = request.user
-    
+
     user_languages = UserLanguage.objects.filter(user=user)
     for user_language in user_languages:
         if user_language.level_id == 1:

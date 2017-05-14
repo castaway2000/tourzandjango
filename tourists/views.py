@@ -124,9 +124,9 @@ def profile_photos(request, username = None):
 @login_required()
 def tourist(request, username):
     user = request.user
-    tourist = user.profile
+    tourist = user.touristprofile
 
-    orders = Order.objects.filter(user=user).order_by('-id')
+    orders = Order.objects.filter(tourist=tourist).order_by('-id')
     order_ids = [item.id for item in orders]
 
     tours_ids = [item.tour.id for item in orders]
