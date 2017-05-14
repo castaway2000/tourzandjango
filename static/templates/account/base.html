@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Tourzan</title>
+
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta name="keywords" content="Template, html, premium, themeforest" />
+    <meta name="description" content="Traveler - Premium template for travel companies">
+    <meta name="author" content="Tsoy">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- GOOGLE FONTS -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
+
+    <!-- /GOOGLE FONTS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/theme_reapply.css' %}">
+    <link rel="stylesheet" href="{% static 'css/my_theme_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mystyles.css' %}">
+
+    {% block header_stuff %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- FACEBOOK WIDGET -->
+    <div id="fb-root"></div>
+    <!-- /FACEBOOK WIDGET -->
+
+    <div class="global-wrap">
+
+        {% include 'navbar.html' %}
+
+        {% include 'errors_notification.html' %}
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-lg-offset-3">
+
+                    <div class="gap"></div>
+
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        {% include 'footer.html' %}
+
+        <form id="csrf_getting_form" class="hidden">{% csrf_token %}
+        </form>
+
+
+{#        <script src="{% static 'js/jquery.js' %}"></script>#}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+        <script src="{% static 'js/modernizr.js' %}"></script>
+        <script src="{% static 'js/bootstrap.js' %}"></script>
+        <script src="{% static 'js/slimmenu.js' %}"></script>
+        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+        <script src="{% static 'js/bootstrap-timepicker.js' %}"></script>
+        <script src="{% static 'js/nicescroll.js' %}"></script>
+        <script src="{% static 'js/dropit.js' %}"></script>
+        <script src="{% static 'js/ionrangeslider.js' %}"></script>
+        <script src="{% static 'js/icheck.js' %}"></script>
+        <script src="{% static 'js/fotorama.js' %}"></script>
+{#        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>#}
+        <script src="{% static 'js/typeahead.js' %}"></script>
+        <script src="{% static 'js/card-payment.js' %}"></script>
+        <script src="{% static 'js/magnific.js' %}"></script>
+        <script src="{% static 'js/owl-carousel.js' %}"></script>
+        <script src="{% static 'js/fitvids.js' %}"></script>
+        <script src="{% static 'js/tweet.js' %}"></script>
+{#        <script src="{% static 'js/countdown.js' %}"></script>#}
+        <script src="{% static 'js/gridrotator.js' %}"></script>
+        <script src="{% static 'js/custom.js' %}"></script>
+
+        <script src="{% static 'js/custom_scripts/scripts.js' %}"></script>
+
+        {% block js_stuff %}
+        {% endblock %}
+
+    </div>
+</body>
+
+</html>
+
+
+

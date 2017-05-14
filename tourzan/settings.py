@@ -125,7 +125,7 @@ SITE_ID = 1
 """
 for allauth
 """
-# LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
 # LOGIN_URL = '/'
 
 # Password validation
@@ -161,7 +161,6 @@ LOCALE_PATHS = (
 )
 
 
-
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -169,6 +168,16 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+#Mail settings
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'Django_testing'
+EMAIL_HOST_PASSWORD = 'Testing12#$'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+FROM_EMAIL = "hello@tourzan.com"
 
 
 # Static files (CSS, JavaScript, Images)

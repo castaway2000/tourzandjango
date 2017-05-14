@@ -1,3 +1,27 @@
+{#{% extends "account/base.html" %}#}
+{##}
+{#{% load i18n %}#}
+{##}
+{#{% block head_title %}{% trans "Signup" %}{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#<h1>{% trans "Sign Up" %}</h1>#}
+{##}
+{#<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>#}
+{##}
+{#<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">#}
+{#  {% csrf_token %}#}
+{#  {{ form.as_p }}#}
+{#  {% if redirect_field_value %}#}
+{#  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />#}
+{#  {% endif %}#}
+{#  <button type="submit">{% trans "Sign Up" %} &raquo;</button>#}
+{#</form>#}
+{##}
+{#{% endblock %}#}
+
+
+
 {% extends 'base.html' %}
 {% load i18n %}
 {%  load staticfiles %}
@@ -47,19 +71,29 @@
                 <form method="post" action="{% url 'account_signup' %}">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
                         <label>Username</label>
-                        <input class="form-control" placeholder="e.g. johndoe" type="text" name="username" />
+                        <input class="form-control" placeholder="e.g. johndoe"
+                        type="text" name="username"
+                        value="{{ request.POST.username }}"
+                        />
+                        <span class="form-error-text">{{ form.username.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon input-icon-show"></i>
                         <label>Email</label>
-                        <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text" name="email" />
+                        <input class="form-control" placeholder="e.g. johndoe@gmail.com"
+                        type="text" name="email"
+                        value="{{ request.POST.email }}"
+                        >
+                        <span class="form-error-text">{{ form.email.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
                         <label>Password</label>
                         <input class="form-control" type="password" placeholder="my secret password" name="password1" />
+                        <span class="form-error-text">{{ form.password1.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
                         <label>Password (re-enter)</label>
                         <input class="form-control" type="password" placeholder="my secret password again" name="password2" />
+                        <span class="form-error-text">{{ form.password2.errors }}</span>
                     </div>
                     <input class="btn btn-primary" type="submit" value="Sign Up for OpenStay" />
                 </form>
@@ -68,5 +102,5 @@
     </div>
 
     <div class="gap"></div>
-        
+
 {% endblock content %}

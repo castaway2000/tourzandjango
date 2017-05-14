@@ -163,3 +163,7 @@
 .footer-logo{
     width: 100px!important;
 }
+
+.form-error-text{
+    color: red;
+}
