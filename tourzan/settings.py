@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'crequest',
-    'languages',
+
 ]
 
 MIDDLEWARE_CLASSES = [

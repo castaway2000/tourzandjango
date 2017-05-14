@@ -38,6 +38,29 @@
                                   name="{{ form.about.html_name }}" class="form-control" >{% if form.about.value %}{{ form.about.value }}{% endif %}</textarea>
                     </div>
 
+                    <div class="form-group">
+                        <label>Native Language:</label>
+                        <select class="form-control select2"
+                            id="language_native" name="language_native"
+                            data-search_url="{% url 'search_language' %}"
+                        >
+                            {% if user_language_native %}
+                                <option value="{{ user_language_native.language}}" selected>{{ user_language_native.get_language_display}}</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Second Language:</label>
+                        <select class="form-control select2" id="language_second" name="language_second">
+                            {% if user_language_second %}
+                                <option value="{{ user_language_second.language}}" selected>
+                                    {{ user_language_second.get_language_display}}
+                                </option>
+                            {% endif %}
+                        </select>
+                    </div>
+
                 </div>
                 <div class="col-md-4 col-md-offset-1">
                     <h4>Avatar</h4>
@@ -62,8 +85,8 @@
 
 
 {% block js_stuff %}
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
 
     <script>
         $('.select2').select2({

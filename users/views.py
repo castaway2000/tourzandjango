@@ -18,6 +18,7 @@ from django.contrib.auth import update_session_auth_hash
 from orders.models import Order
 from guides.models import GuideProfile
 from django.http import JsonResponse
+from utils.internalization_wrapper import languages_english
 
 
 def login_view(request):
@@ -164,5 +165,31 @@ def search_interest(request):
 
     print (response_data)
     return JsonResponse(response_data, safe=False)
+
+
+def search_language(request):
+    response_data = dict()
+    results = list()
+
+    if request.GET:
+        data = request.GET
+        language_name = data.get(u"q").lower()
+        languages = [item for item in languages_english]
+        for language in languages:
+            language_name_text = language[1].lower()
+            if language_name in language_name_text:
+                results.append({
+                    "id": language[0],
+                    "text": language[1]
+                })
+
+    response_data = {
+        "items": results,
+        "more": "false"
+    }
+
+    print (response_data)
+    return JsonResponse(response_data, safe=False)
+
 
 

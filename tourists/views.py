@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from users.models import Interest, UserInterest
 from orders.models import *
 from tours.models import *
+from users.models import UserLanguage
 
 
 @login_required()
@@ -14,12 +15,19 @@ def profile_settings_tourist(request):
     user = request.user
     profile, created = TouristProfile.objects.get_or_create(user=user)
 
+    user_languages = UserLanguage.objects.filter(user=user)
+    for user_language in user_languages:
+        if user_language.level_id == 1:
+            user_language_native = user_language
+        elif user_language.level_id == 2:
+            user_language_second = user_language
+
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
         print(request.POST)
         print(request.FILES)
 
-
+        #Interests creation
         interests = request.POST.getlist("interests")
         user_interest_list = list()
         if interests:
@@ -29,9 +37,25 @@ def profile_settings_tourist(request):
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
 
-
         UserInterest.objects.filter(user=user).delete()
         UserInterest.objects.bulk_create(user_interest_list)
+
+
+        #Languages assigning
+        language_native = request.POST.get("language_native")
+        language_second = request.POST.get("language_second")
+        print language_native
+        print language_second
+
+        user_languages_list = list()
+        user_languages_list.append(UserLanguage(language=language_native, user=user, level_id=1))
+        user_languages_list.append(UserLanguage(language=language_second, user=user, level_id=2))
+
+        UserLanguage.objects.filter(user=user).delete()
+        UserLanguage.objects.bulk_create(user_languages_list)
+
+
+
 
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()

@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^settings/$', views.settings_router, name='settings_router'),
 
     url(r'^search_interest/$', views.search_interest, name='search_interest'),
+    url(r'^search_language/$', views.search_language, name='search_language'),
 
 ]
