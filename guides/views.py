@@ -2,11 +2,12 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
-from users.models import Interest, UserInterest
+from users.models import Interest, UserInterest, UserLanguage
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
 from django.contrib import messages
+
 
 
 def guides(request):
@@ -135,6 +136,7 @@ def guides(request):
 
 def guide(request, username):
     user = request.user
+
     if username:
         try:
             guide_user = User.objects.get(username=username)
@@ -154,7 +156,6 @@ def guide(request, username):
 
     if request.POST:
         data = request.POST
-        print (data)
         if data.get("text") and user:
             kwargs = dict()
             kwargs["text"] = data.get("text")
@@ -210,6 +211,13 @@ def guide(request, username):
 def profile_settings_guide(request):
     page = "profile_settings_guide"
     user = request.user
+    
+    user_languages = UserLanguage.objects.filter(user=user)
+    for user_language in user_languages:
+        if user_language.level_id == 1:
+            user_language_native = user_language
+        elif user_language.level_id == 2:
+            user_language_second = user_language
 
     try:
         guide = user.guideprofile
@@ -227,6 +235,7 @@ def profile_settings_guide(request):
     if request.method == 'POST':
         print (request.POST)
 
+        #Interests assigning
         interests = request.POST.getlist("interests")
         user_interest_list = list()
         if interests:
@@ -239,6 +248,20 @@ def profile_settings_guide(request):
 
         UserInterest.objects.filter(user=user).delete()
         UserInterest.objects.bulk_create(user_interest_list)
+
+
+        #Languages assigning
+        language_native = request.POST.get("language_native")
+        language_second = request.POST.get("language_second")
+        print language_native
+        print language_second
+
+        user_languages_list = list()
+        user_languages_list.append(UserLanguage(language=language_native, user=user, level_id=1))
+        user_languages_list.append(UserLanguage(language=language_second, user=user, level_id=2))
+
+        UserLanguage.objects.filter(user=user).delete()
+        UserLanguage.objects.bulk_create(user_languages_list)
 
 
         #saving services

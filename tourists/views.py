@@ -56,7 +56,6 @@ def profile_settings_tourist(request):
 
 
 
-
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
 
