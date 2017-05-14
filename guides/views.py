@@ -261,16 +261,16 @@ def profile_settings_guide(request):
         #Languages assigning
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
-        print language_native
-        print language_second
 
-        user_languages_list = list()
-        user_languages_list.append(UserLanguage(language=language_native, user=user, level_id=1))
-        user_languages_list.append(UserLanguage(language=language_second, user=user, level_id=2))
+        if language_native or language_second:
+            user_languages_list = list()
+            if language_native:
+                user_languages_list.append(UserLanguage(language=language_native, user=user, level_id=1))
+            if language_second:
+                user_languages_list.append(UserLanguage(language=language_second, user=user, level_id=2))
 
-        UserLanguage.objects.filter(user=user).delete()
-        UserLanguage.objects.bulk_create(user_languages_list)
-
+            UserLanguage.objects.filter(user=user).delete()
+            UserLanguage.objects.bulk_create(user_languages_list)
 
         #saving services
         guide_services_list = list()
@@ -303,6 +303,7 @@ def profile_settings_guide(request):
                 messages.success(request, 'Profile has been updated!')
             else:
                 messages.success(request, 'Profile has been created!')
+                return HttpResponse(reverse("profile_settings_guide"))
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -343,5 +344,14 @@ def guide_registration_welcome(request):
 
 
 def guide_registration(request):
+    user = request.user
+
+    try:
+        guide = user.guideprofile
+        return HttpResponseRedirect(reverse("profile_settings_guide"))
+    except:
+        pass
+
+    user_interests = UserInterest.objects.filter(user=user)
     form = GuideProfileForm(request.POST or None, request.FILES or None)
     return render(request, 'guides/guide_registration.html', locals())

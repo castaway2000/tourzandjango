@@ -24,8 +24,11 @@
 
                     <div class="form-group">
                         <label>Interests:</label>
-                        <select multiple class="form-control select2" name="interests">
-                            {% for user_interest in  user_interests %}
+                        <select multiple class="form-control select2"
+                            id="interest_input" name="interests"
+                            data-search_url="{% url 'search_interest' %}"
+                        >
+                            {% for user_interest in user_interests %}
                                 <option value="{{ user_interest.interest.name }}" selected data-select2-tag="true">{{ user_interest.interest.name }}</option>
                             {% endfor %}
                         </select>
@@ -88,11 +91,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
 
-    <script>
-        $('.select2').select2({
-            tags: true,
-            tokenSeparators: [',', ' ']
-        });
-    </script>
 {% endblock js_stuff %}
 
