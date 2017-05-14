@@ -13,6 +13,7 @@ admin.site.register(GuideProfile, GuideProfileAdmin)
 
 class ServiceAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Service._meta.fields]
+    readonly_fields = ["html_field_name"]
 
     class Meta:
         model = Service
