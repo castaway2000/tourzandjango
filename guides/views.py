@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
 from django.contrib import messages
+from utils.internalization_wrapper import languages_english
 
 
 
@@ -29,7 +30,14 @@ def guides(request):
     city_input = request.GET.getlist(u'city_input')
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
-    print interest_input
+
+
+    language_input = request.GET.getlist(u'language_input')
+
+    #a way to filter tuple of tuples
+    languages_english_dict = dict(languages_english)
+    languages = [(x,languages_english_dict[x]) for x in language_input]
+
 
     order_results = request.GET.get('order_results')
 

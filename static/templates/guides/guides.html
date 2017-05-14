@@ -59,6 +59,19 @@
                                 </select>
                             </li>
                             <li>
+                                <h5 class="booking-filters-title">Languages</h5>
+                                <select multiple class="form-control select2" id="language_input" name="language_input"
+                                        data-search_url="{% url 'search_language' %}">
+
+                                        {% for lang in languages %}
+                                            <option value="{{ lang.0}}" selected>
+                                                {{ lang.1}}
+                                            </option>
+                                        {% endfor %}
+
+                                </select>
+                            </li>
+                            <li>
                                 <h5 class="booking-filters-title">Guide</h5>
                                 <select class="form-control select2" id="guide_input" name="guide_input"
                                         data-search_url="{% url 'search_guide' %}">
@@ -145,7 +158,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-12">
+                                            <div class="col-md-12 mb10">
                                                 <div><b>Interests:</b></div>
                                                 {% for user_interest in guide.user.userinterest_set.all %}
                                                     {% if user_interest.interest.name in interest_input %}
@@ -160,6 +173,26 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
+                                        {% with guide.user.userlanguage_set.all as user_languages %}
+                                            {% if user_languages %}
+                                                <div class="row">
+                                                    <div class="col-md-12 mb10">
+                                                        <div><b>Languages:</b></div>
+                                                        {% for user_language in user_languages %}
+                                                            {% if user_language.language in language_input %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ user_language.get_language_display }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="label label-default label-tag">
+                                                                    {{ user_language.get_language_display }}
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                     <div class="col-md-3 col-sm-3">
                                         <div class="guide-rating">
