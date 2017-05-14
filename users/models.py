@@ -4,6 +4,20 @@ from django.db import models
 from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
 from utils.internalization_wrapper import languages_english
+from django.db.models.signals import post_save
+from tourists.models import TouristProfile
+
+
+"""
+creating user profile after user is created (mostly for login with Facebook)
+"""
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        kwargs = dict()
+        kwargs["user"] = instance
+        TouristProfile.objects.create(**kwargs)
+
+post_save.connect(create_user_profile, sender=User)
 
 
 class Interest(models.Model):
