@@ -95,7 +95,7 @@
                             </button>
                             <div class="message-text"></div>
                         </div>
-                        <form method="get" id="form_tour_scheduling" action="{% url 'tour_booking' %}"
+                        <form method="get" id="form_tour_scheduling" action="{% url 'making_booking' %}"
                             class="form-horizontal
                         {% if request.user.is_anonymous %}user-not-authorized{% endif %}">
                             <h3 class="text-center">
@@ -141,7 +141,6 @@
                                                     <option value="13">13</option>
                                                     <option value="14">14</option>
                                                 </select>
-
                                             </div>
                                         {% elif tour.payment_type == 2 %}
                                             {{ tour.price }} {{ tour.currency.name }}

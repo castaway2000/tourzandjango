@@ -2,7 +2,8 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
-    url(r'^tour_booking/$', views.tour_booking, name='tour_booking'),
+    url(r'^making_booking/$', views.making_booking, name='making_booking'),
+
     url(r'^bookings/$', views.bookings, name='my_bookings'),
     url(r'^bookings/(?P<status>\S+)/$', views.bookings, name='my_bookings_status'),
 

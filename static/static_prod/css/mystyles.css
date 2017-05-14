@@ -167,3 +167,7 @@
 .form-error-text{
     color: red;
 }
+
+.alert{
+    z-index: 100;
+}

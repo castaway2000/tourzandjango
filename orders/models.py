@@ -48,7 +48,10 @@ class Order(models.Model):
     date_toured = models.DateField(blank=True, null=True, default=None)
 
     def __unicode__(self):
-        return "%s" % (self.guide.user.username)
+        if self.guide:
+            return "%s" % (self.guide.user.username)
+        else:
+            return "%s" % (self.id)
 
 
 class Payment(models.Model):

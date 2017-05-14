@@ -6,10 +6,11 @@ from guides.models import GuideProfile
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from tourists.models import TouristProfile
 
 
 @login_required()
-def tour_booking(request):
+def making_booking(request):
     print ("tour bookings123")
     print (request.POST)
 
@@ -23,43 +24,49 @@ def tour_booking(request):
     print (data)
 
     kwargs = dict()
-    tour_id = data["tour_id"]
+    tour_id = data.get("tour_id")
+    guide_id = data.get("guide_id")
+
+    guide = GuideProfile.objects.get(id=guide_id)
+    tourist = TouristProfile.objects.get(user=user)
+
     date_booked_for = data["start"]
     date_booked_for = datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
 
     hours_nmb = data.get("booking_hours")
     price_hourly = data.get("price_hourly", 0)
+
     if price_hourly:
         price_hourly = price_hourly.replace(",", ".")
-
-    if hours_nmb and price_hourly:
-        price = int(hours_nmb)*float(price_hourly)
     else:
-        price = data.get("price", 0)
-        if price:
-            price = price.replace(",", ".")
+        price_hourly = guide.rate
 
-    discount = data.get("discount", 0)
-    if discount:
-        price_after_discount = price-discount
-    else:
-        price_after_discount = price
-
-    if hours_nmb:
-        kwargs["hours_nmb"] = hours_nmb
-    else:
-        kwargs["hours_nmb"] = 0
+    # if hours_nmb and price_hourly:
+    #     price = int(hours_nmb)*float(price_hourly)
+    # else:
+    #     price = data.get("price", 0)
+    #     if price:
+    #         price = price.replace(",", ".")
+    #
+    # discount = data.get("discount", 0)
+    # if discount:
+    #     price_after_discount = price-discount
+    # else:
+    #     price_after_discount = price
+    #
+    # if hours_nmb:
+    #     kwargs["hours_nmb"] = hours_nmb
+    # else:
+    #     kwargs["hours_nmb"] = 0
 
     if price_hourly:
         kwargs["price_hourly"] = price_hourly
     else:
         kwargs["price_hourly"] = 0
 
-    kwargs["tour_id"] = tour_id
-    kwargs["user"] = user
-    kwargs["price"] = price
-    kwargs["discount"] = discount
-    kwargs["price_after_discount"] = price_after_discount
+    # kwargs["tour_id"] = tour_id
+    kwargs["tourist"] = tourist
+    kwargs["guide_id"] = guide_id
     kwargs["date_booked_for"] = date_booked_for
 
     print (kwargs)
@@ -74,7 +81,7 @@ def tour_booking(request):
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
         try:
-            Order.objects.create(**kwargs)
+            Order.objects.get_or_create(**kwargs)
         except Exception as e:
             e = e[0]
             text = e.encode('utf-8')
@@ -132,11 +139,10 @@ def bookings(request, status=None):
         url = "/login?next=%s" % current_url
         return HttpResponseRedirect(url)
 
-
-    cities_ids = [item.tour.city.id for item in initial_orders]
+    cities_ids = [item.guide.city.id for item in initial_orders]
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
 
-    guides_ids = [item.tour.guide.id for item in initial_orders]
+    guides_ids = [item.guide.id for item in initial_orders]
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
     return render(request, 'orders/bookings.html', locals())

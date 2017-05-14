@@ -53,7 +53,16 @@ $(document).ready(function(){
         return indexed_array;
     };
 
-    $('#form_tour_scheduling').on('submit', function(e){
+
+    function hidingNotification(){
+         window.setTimeout(function() {
+            $('.booking-result-message').addClass('hidden');
+         }, 2500);
+    };
+
+
+    //$('#form_tour_scheduling').on('submit', function(e){
+    $('#form_guide_scheduling').on('submit', function(e){
         if ($(this).hasClass('user-not-authorized')){
 
         }else{
@@ -76,14 +85,21 @@ $(document).ready(function(){
                 data: data,
                 cache: true,
                 success: function (data) {
+                    console.log(data);
                     if (data.status == "success"){
+
                         $('.booking-result-message')
                             .removeClass('alert-danger hidden').addClass('alert-success');
                         $('.booking-result-message .message-text').text(data.message);
+
+                        hidingNotification();
+
                     }else{
                         $('.booking-result-message')
                             .removeClass('alert-success hidden').addClass('alert-danger');
                         $('.booking-result-message .message-text').text("Failed");
+
+                        hidingNotification();
                     }
                 },
                 error: function(){
@@ -141,7 +157,7 @@ $('.datepicker').datepicker();
 //
 
 window.setTimeout(function() {
-  $(".alert").fadeTo(100, 0).slideUp(100, function(){
-    $(this).remove();
+  $(".alert:not(.booking-result-message)").fadeTo(100, 0).slideUp(100, function(){
+    $(this).addClass('hidden');
   });
-}, 2000);
+}, 2500);

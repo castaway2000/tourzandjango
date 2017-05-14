@@ -157,6 +157,7 @@ def guide(request, username):
         return HttpResponseRedirect(reverse("home"))
 
     guide = guide_user.guideprofile
+    pending_orders = guide.order_set.filter(status_id=1)
 
     reviews = Review.objects.filter(order__guide=guide, is_from_tourist=True, is_active=True)
 

@@ -52,3 +52,19 @@ ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
 .nav-drop > .nav-drop-menu > li > a:hover {
   background: #31dc72;
 }
+
+.irs-diapason {
+    background-color: #31dc72;
+}
+
+.irs-slider {
+    background-color: #169e49;
+}
+
+.booking-item-dates-change {
+    border: 1px solid #169e49;
+}
+
+.booking-item-rating .booking-item-rating-stars {
+    color: #169e49;
+}
