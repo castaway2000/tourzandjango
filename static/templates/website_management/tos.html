@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="page-title">Terms of Service</h1>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="text-bigger">
+                    {{ tos|safe }}
+                </p>
+            </div>
+        </div>
+        <div class="gap"></div>
+    </div>
+{% endblock %}
+
+

@@ -5,3 +5,4 @@ django-crequest==2016.3.16
 django-language-field==0.0.3
 Babel==2.4.0
 django-international==0.0.6
+django-summernote==0.8.7

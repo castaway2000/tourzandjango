@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     'guides',
     'tourists',
+    'website_management',
 
     #external packages
     'allauth',
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'crequest',
+    'django_summernote',
 
 ]
 

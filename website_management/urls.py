@@ -1,0 +1,11 @@
+from django.conf.urls import url, include
+from . import views
+
+urlpatterns = [
+
+    url(r'^privacy_policy/$', views.privacy_policy, name='privacy_policy'),
+    url(r'^about_us/$', views.about_us, name='about_us'),
+    url(r'^tos/$', views.tos, name='tos'),
+    url(r'^contact_us/$', views.contact_us, name='contact_us'),
+
+]

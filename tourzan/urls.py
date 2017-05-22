@@ -33,7 +33,11 @@ urlpatterns = i18n_patterns(
     url(r'^', include('guides.urls')),
     url(r'^', include('tourists.urls')),
 
+    url(r'^', include('website_management.urls')),
+
+
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^summernote/', include('django_summernote.urls')),
 
 )\
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
