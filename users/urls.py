@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'^search_interest/$', views.search_interest, name='search_interest'),
     url(r'^search_language/$', views.search_language, name='search_language'),
 
+    url(r'^accounts/signup/$', views.SignupViewCustom.as_view(), name='account_signup'),
+
 ]

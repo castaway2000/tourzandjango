@@ -19,6 +19,7 @@ from orders.models import Order
 from guides.models import GuideProfile
 from django.http import JsonResponse
 from utils.internalization_wrapper import languages_english
+from allauth.account.views import SignupView
 
 
 def login_view(request):
@@ -187,9 +188,13 @@ def search_language(request):
         "items": results,
         "more": "false"
     }
-
-    print (response_data)
     return JsonResponse(response_data, safe=False)
 
 
-
+#redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
+class SignupViewCustom(SignupView):
+    def post(self, request):
+        if u"login_btn" in request.POST:
+            return HttpResponseRedirect(reverse("login"))
+        else:
+            return render(request, self.template_name, self.get_context_data())
