@@ -192,7 +192,7 @@ def tour(request, slug, tour_id):
 def guide_settings_tours(request):
     page = "settings_tours"
     user = request.user
-    tours = Tour.objects.filter(guide=user.guideprofile)
+    tours = Tour.objects.filter(guide=user.guideprofile, is_deleted = False)
     return render(request, 'tours/profile_settings_guide_tours.html', locals())
 
 
@@ -205,7 +205,8 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
     currencies = Currency.objects.all().values("id", "name")
 
     if slug and tour_id:
-        tour = Tour.objects.get(id=tour_id, slug=slug, guide=user.guideprofile)
+        guide = user.guideprofile
+        tour = Tour.objects.get(id=tour_id, slug=slug, guide=guide)
         form = TourForm(request.POST or None, request.FILES or None, instance=tour)
         tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     else:
