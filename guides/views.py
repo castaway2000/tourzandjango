@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
-from users.models import Interest, UserInterest, UserLanguage
+from users.models import Interest, UserInterest, UserLanguage, LanguageLevel
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
@@ -222,6 +222,8 @@ def profile_settings_guide(request):
     user = request.user
 
     user_languages = UserLanguage.objects.filter(user=user)
+    language_levels = LanguageLevel.objects.all().values()
+
     for user_language in user_languages:
         if user_language.level_id == 1:
             user_language_native = user_language
@@ -262,13 +264,16 @@ def profile_settings_guide(request):
         #Languages assigning
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
+        language_second_proficiency = request.POST.get("language_second_proficiency")
 
         if language_native or language_second:
             user_languages_list = list()
             if language_native:
-                user_languages_list.append(UserLanguage(language=language_native, user=user, level_id=1))
+                user_languages_list.append(UserLanguage(language=language_native, user=user,
+                                                        level_id=1))
             if language_second:
-                user_languages_list.append(UserLanguage(language=language_second, user=user, level_id=2))
+                user_languages_list.append(UserLanguage(language=language_second, user=user,
+                                                        level_id=language_second_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
             UserLanguage.objects.bulk_create(user_languages_list)

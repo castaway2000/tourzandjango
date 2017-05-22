@@ -271,7 +271,6 @@ def deactivate_tour_image(request):
 
 @login_required()
 def make_main_tour_image(request):
-    print (request.POST)
     if request.POST:
         data = request.POST
         tour_id = data.get("tour_id")
@@ -282,3 +281,16 @@ def make_main_tour_image(request):
         tour_image.save(force_update=True)
     response_date = dict()
     return JsonResponse(response_date)
+
+
+@login_required()
+def tour_deleting(request, tour_id):
+    user = request.user
+    try:
+        tour_for_delete = Tour.objects.get(id=tour_id, guide__user=user)
+        tour_for_delete.is_deleted = True
+        tour_for_delete.save(force_update=True)
+        messages.success(request, 'Tour has been successfully deleted!')
+    except:
+        messages.success(request, 'You have no permissions for this action!')
+    return HttpResponseRedirect(reverse("guide_settings_tours"))

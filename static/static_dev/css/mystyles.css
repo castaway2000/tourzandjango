@@ -171,3 +171,18 @@
 .alert{
     z-index: 100;
 }
+
+.navbar-logo{
+    padding: 0;
+}
+
+.no-padding{
+    padding: 0;
+}
+
+.navbar-logo-text{
+    margin-top: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+

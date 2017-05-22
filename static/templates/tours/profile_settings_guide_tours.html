@@ -27,8 +27,10 @@
                                     <br>
                                 </div>
                                 <div class="col-md-6 col-sm-6">
-                                    <div class="tour-rating">
-                                        <b>Rating: </b> {{ tour.rating }}
+                                    <div>
+                                        <span class="tour-rating pull-right">
+                                            <b>Rating: </b> {{ tour.rating }}
+                                        </span>
                                     </div>
                                     <div class="tour-name">
                                         {{ tour.name }}
@@ -41,6 +43,18 @@
                                     <div class="tour-guide-name">
                                         by {{ tour.guide.user.username }}
                                     </div>
+                                    <div>
+                                        <span class="tour-price">
+                                            <b>Price: </b>
+                                            {% if tour.payment_type_id == 1 %}
+                                                {{ tour.price_hourly }} {{ tour.currency.name }} / hour
+                                            {% elif tour.payment_type_id == 2 %}
+                                                {{ tour.price }} {{ tour.currency.name }}
+                                            {% elif tour.payment_type_id == 3 %}
+                                                Free!
+                                            {% endif %}
+                                        </span>
+                                    </div>
                                     <div class="row">
                                         <div class="col-md-12">
                                             {{ tour.overview|linebreaks|truncatewords_html:30 }}
@@ -48,25 +62,20 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-3">
-                                    <span class="tour-price">
-                                        <b>Price: </b>
-                                        {% if tour.payment_type_id == 1 %}
-                                            {{ tour.price_hourly }} {{ tour.currency.name }} / hour
-                                        {% elif tour.payment_type_id == 2 %}
-                                            {{ tour.price }} {{ tour.currency.name }}
-                                        {% elif tour.payment_type_id == 3 %}
-                                            Free!
-                                        {% endif %}
-                                    </span>
                                     <div>
                                         <p>
                                             <a class="btn btn-primary" href="{% url 'tour' tour.slug tour.id %}">
                                                 Tour Page
                                             </a>
                                         </p>
-                                        <a class="btn btn-success" href="{% url 'guide_settings_tour_edit' tour.slug tour.id %}">
-                                            Tour Editing
-                                        </a>
+                                        <p>
+                                            <a class="btn btn-success" href="{% url 'guide_settings_tour_edit' tour.slug tour.id %}">
+                                                Tour Editing
+                                            </a>
+                                        </p>
+                                        <p>
+                                            <a class="btn btn-danger" href="{% url 'tour_deleting' tour.id %}">Delete Tour</a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
