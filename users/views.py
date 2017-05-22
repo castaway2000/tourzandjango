@@ -115,7 +115,7 @@ def change_role(request, new_role=None):
     user = request.user
     if not user.is_anonymous() and user.guideprofile:
         current_role = request.session.get("current_role")
-        if current_role == "tourist":
+        if current_role == "tourist" or not current_role:
             request.session["current_role"] = "guide"
             messages.success(request, 'Switched to guide profile!')
         else:

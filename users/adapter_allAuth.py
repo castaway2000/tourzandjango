@@ -100,9 +100,8 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             print email
             # email_address = EmailAddress.objects.get(email__iexact=email)
             user = User.objects.get(email__iexact=email)
-
-        # if it does not, let allauth take care of this new social account
-        except EmailAddress.DoesNotExist:
+        except:
+            # if it does not, let allauth take care of this new social account
             print 4
             return
 

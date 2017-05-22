@@ -225,6 +225,7 @@ def profile_settings_guide(request):
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
 
+    #dublication of this peace of code below in POST area - remake it later
     for user_language in user_languages:
         if user_language.level_id == 1:
             user_language_native = user_language
@@ -277,7 +278,15 @@ def profile_settings_guide(request):
                                                         level_id=language_second_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
-            UserLanguage.objects.bulk_create(user_languages_list)
+            user_languages = UserLanguage.objects.bulk_create(user_languages_list)
+
+
+            #dublication of the peace of code at the beginning of the function
+            for user_language in user_languages:
+                if user_language.level_id == 1:
+                    user_language_native = user_language
+                elif user_language.level_id == 2:
+                    user_language_second = user_language
 
         #saving services
         guide_services_list = list()
@@ -310,9 +319,9 @@ def profile_settings_guide(request):
                 messages.success(request, 'Profile has been updated!')
             else:
                 messages.success(request, 'Profile has been created!')
-                return HttpResponse(reverse("profile_settings_guide"))
-
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(reverse("profile_settings_guide"))
+        else: #if form is invalid
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
 
