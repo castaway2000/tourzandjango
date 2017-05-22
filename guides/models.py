@@ -64,6 +64,7 @@ class Service(models.Model):
 class GuideService(models.Model):
     service = models.ForeignKey(Service, blank=True, null=True, default=None)
     guide = models.ForeignKey(GuideProfile)
+    rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
