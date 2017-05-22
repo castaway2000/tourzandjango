@@ -13,19 +13,19 @@
             </li>
             <li class="active">
                 <a href="{% url 'my_bookings' %}">
-                    My Bookings
+                    My Orders
                 </a>
             </li>
         </ul>
         <h3 class="booking-title">
-            {% if bookings_nmb == 0 %}
-                No bookings were found
-            {% elif bookings_nmb == 1 %}
-                {{ bookings_nmb }}  booking was found!
-            {% elif bookings_nmb > 1 %}
-                {{ bookings_nmb }} bookings were found
+            {% if orders_nmb == 0 %}
+                No orders were found
+            {% elif orders_nmb == 1 %}
+                {{ orders_nmb }}  order was found!
+            {% elif orders_nmb > 1 %}
+                {{ orders_nmb }} orders were found
             {% else %}
-                No bookings were found
+                No orders were found
             {% endif %}
 
         </h3>
@@ -86,7 +86,7 @@
                 <ul class="booking-list">
                     {% for order in orders %}
                     <li>
-                        <a class="booking-item" href="{% url 'guide' order.guide.user.username %}">
+                        <div class="booking-item">
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="booking-item-img">
@@ -170,11 +170,22 @@
                                         {% endif %}
                                     </p>
                                     <p>
-                                         <button class="btn btn-danger btn-sm">Cancel</button>
+                                        <a href="{% url 'guide' order.guide.user.username %}"
+                                            class="btn btn-success btn-sm">
+                                            Guide page
+                                        </a>
                                     </p>
+                                    {% if order.status.id != 3 and order.status.id != 6 %}
+                                        <p>
+                                            <a href="{% url 'cancel_order' order.id %}"
+                                                class="btn btn-danger btn-sm">
+                                                Cancel
+                                            </a>
+                                        </p>
+                                    {% endif %}
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>

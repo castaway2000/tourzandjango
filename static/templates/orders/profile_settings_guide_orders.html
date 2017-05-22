@@ -7,33 +7,76 @@
             <div class="col-md-12">
                 <ul class="booking-list">
                     {% for order in orders %}
-                        <li class="booking-item">
+                    <li>
+                        <div class="booking-item">
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="booking-item-img">
-                                        {% if order.tour.image %}
-                                            <img src="{% get_media_prefix %}{{ order.tour.image }}"/>
+                                        {% if order.guide.profile_image %}
+                                            <img src="{% get_media_prefix %}{{ order.guide.profile_image }}"/>
                                         {% endif %}
                                     </div>
-                                    <br>
-                                    <span>
-                                        <b>Status: </b>{{ order.status.name }}
-                                    </span>
                                 </div>
                                 <div class="col-md-6">
                                     <h3>
-                                        {{ order.tour.name }} by {{ order.tour.guide.user.username }}
+                                        {{ order.guide.name }}
                                     </h3>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            {{ order.tour.overview|linebreaks|truncatewords_html:30 }}
+                                            {{ order.guide.overview|linebreaks|truncatewords_html:30 }}
                                         </div>
                                     </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 mb10">
+                                            <div><b>Interests:</b></div>
+                                            {% for user_interest in order.guide.user.userinterest_set.all %}
+                                                {% if user_interest.interest.name in interest_input %}
+                                                    <span class="label label-success label-tag">
+                                                        {{ user_interest.interest.name }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="label label-default label-tag">
+                                                        {{ user_interest.interest.name }}
+                                                    </span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% with order.guide.user.userlanguage_set.all as user_languages %}
+                                        {% if user_languages %}
+                                            <div class="row">
+                                                <div class="col-md-12 mb10">
+                                                    <div><b>Languages:</b></div>
+                                                    {% for user_language in user_languages %}
+                                                        {% if user_language.language in language_input %}
+                                                            <span class="label label-success label-tag">
+                                                                {{ user_language.get_language_display }}
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="label label-default label-tag">
+                                                                {{ user_language.get_language_display }}
+                                                            </span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+
                                 </div>
+
                                 <div class="col-md-3">
                                     <span class="booking-item-price tour-booking-price">
-                                        {{ order.price_after_discount }} {{ order.tour.currency.name }}
+                                        {% if order.price_after_discount %}
+                                            {{ order.price_after_discount }} USD
+                                        {% else %}
+                                            {{ order.price_hourly }} USD
+                                        {% endif %}
                                     </span>
+                                    <p>
+                                        <b>Status: </b>{{ order.status.name }}
+                                    </p>
                                     <p>
                                         <b>Booked: </b>{{ order.date_ordered|date:"m.d.Y" }}
                                     </p>
@@ -48,15 +91,18 @@
                                             No payment yet
                                         {% endif %}
                                     </p>
-                                    <p>
-                                        <b>Booked by: </b>{{ order.user.username }}
-                                    </p>
-                                    <a class="btn btn-primary" href="{% url 'tour' order.tour.slug order.tour.id %}">
-                                        Tour details
-                                    </a>
+                                    {% if order.status.id != 3 and order.status.id != 6 %}
+                                        <p>
+                                            <a href="{% url 'cancel_order' order.id %}"
+                                                class="btn btn-danger btn-sm">
+                                                Cancel
+                                            </a>
+                                        </p>
+                                    {% endif %}
                                 </div>
                             </div>
-                        </li>
+                        </div>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>

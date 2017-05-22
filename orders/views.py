@@ -7,6 +7,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from tourists.models import TouristProfile
+from django.contrib import messages
 
 
 @login_required()
@@ -139,6 +140,7 @@ def bookings(request, status=None):
         url = "/login?next=%s" % current_url
         return HttpResponseRedirect(url)
 
+
     cities_ids = [item.guide.city.id for item in initial_orders]
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
 
@@ -148,19 +150,56 @@ def bookings(request, status=None):
     return render(request, 'orders/bookings.html', locals())
 
 
+@login_required()
 def orders(request, status=None):
     user = request.user
-    print "orders"
-    if not status:
-        orders = Order.objects.filter(guide__user=user)
-    else:
-        orders = Order.objects.filter(status__name=status)
-    return render(request, 'orders/orders.html', locals())
+
+    try:
+        guide = user.guideprofile
+
+        if not status:
+            orders = Order.objects.filter(guide=guide)
+        else:
+            orders = Order.objects.filter(guide=guide, status__slug=status)
+
+        orders_nmb = orders.count()
+        return render(request, 'orders/orders.html', locals())
+    except:
+        messages.error(request, 'You have no permissions for this action!')
+        return HttpResponseRedirect(reverse("home"))
 
 
 @login_required()
 def guide_settings_orders(request):
     page = "settings_orders"
     user = request.user
-    orders = Order.objects.filter(tour__guide=user.guideprofile)
+    orders = Order.objects.filter(guide=user.guideprofile)
     return render(request, 'orders/profile_settings_guide_orders.html', locals())
+
+
+@login_required()
+def cancel_order(request, order_id):
+    user = request.user
+
+    try:
+        #check if a user is a guide
+        guide = user.guideprofile
+        order = Order.objects.get(id=order_id, guide=guide)
+        order.status_id = 6
+        order.save(force_update=True)
+        print ("try 1")
+        print (order.status)
+        messages.success(request, 'Order has been successfully cancelled!')
+    except:
+        try:
+            #check if a user is a tourist in an order
+            tourist = user.touristprofile
+            order = Order.objects.filter(id=order_id, tourist=tourist)
+            order.status_id = 3
+            order.save(force_update=True)
+            print ("try 2")
+            messages.success(request, 'Order has been successfully cancelled!')
+        except:
+            messages.error(request, 'You have no permissions for this action!')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

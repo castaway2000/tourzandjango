@@ -46,7 +46,9 @@
                                             </li>
                                             <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
                                             </li>
-                                            <li><a href="{% url 'my_bookings_status' 'cancelled' %}">Cancelled</a>
+                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-tourist' %}">Cancelled by me</a>
+                                            </li>
+                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-guide' %}">Cancelled by guide</a>
                                             </li>
                                             <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
                                             </li>
@@ -61,7 +63,9 @@
                                             </li>
                                             <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
                                             </li>
-                                            <li><a href="{% url 'orders_status' 'cancelled' %}">Cancelled</a>
+                                            <li><a href="{% url 'orders_status' 'cancelled-by-tourist' %}">Cancelled by tourist</a>
+                                            </li>
+                                            <li><a href="{% url 'orders_status' 'cancelled-by-guide' %}">Cancelled by me</a>
                                             </li>
                                             <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
                                             </li>
