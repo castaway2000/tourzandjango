@@ -57,8 +57,8 @@
                             <div>
                                 <hr>
                                 <b>Interests: </b><br>
-                                {% if user.userinterest_set.all %}
-                                    {% for item in user.userinterest_set.all %}
+                                {% if guide.user.userinterest_set.all %}
+                                    {% for item in guide.user.userinterest_set.all %}
                                         <span class="label label-default label-tag">
                                             {{ item.interest.name }}
                                         </span>
