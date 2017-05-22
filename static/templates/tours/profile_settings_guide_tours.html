@@ -53,6 +53,16 @@
                                             {% elif tour.payment_type_id == 3 %}
                                                 Free!
                                             {% endif %}
+
+                                            {% if tour.min_hours %}
+                                                 - min {{ tour.min_hours }}
+                                                {% if tour.min_hours == 1 %}
+                                                    hour
+                                                {% else %}
+                                                    hours
+                                                {% endif %}
+                                            {% endif %}
+
                                         </span>
                                     </div>
                                     <div class="row">

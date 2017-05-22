@@ -251,7 +251,7 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
             messages.success(request, 'Tour details have been successfully updated!')
         else:
             messages.success(request, 'Tour details have been successfully created!')
-            return HttpResponseRedirect(reverse("guide_settings_tour_edit", kwargs={"slug": new_form.slug}))
+            return HttpResponseRedirect(reverse("guide_settings_tour_edit", kwargs={"slug": new_form.slug, "tour_id": new_form.id}))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request, 'tours/profile_settings_guide_tour_edit.html', locals())
