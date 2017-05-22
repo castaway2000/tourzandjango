@@ -17,7 +17,11 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h2 class="lh1em">
-                            {{ guide.user.first_name }} {{ guide.user.last_name }} ({{ guide.user.username }})
+                            {% if guide.user.first_name %}
+                                {{ guide.user.first_name }} {{ guide.user.last_name }} ({{ guide.user.username }})
+                            {% else %}
+                                {{ guide.user.username }}
+                            {% endif %}
                         </h2>
 
                         {% if guide == request.user.guideprofile and request.session.current_role == "guide"%}
@@ -76,13 +80,17 @@
                             <h3>Services</h3>
                         </div>
                         <div class="col-md-6">
-                            <ul class="booking-item-features booking-item-features-expand mb30 clearfix">
-                                {% for guide_service in guide_services %}
-                                    <li>
-                                        <i class="im im-user-check"></i><span class="booking-item-feature-title">{{ guide_service.service__name }}</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                            {% if guide_services %}
+                                <ul class="booking-item-features booking-item-features-expand mb30 clearfix">
+                                    {% for guide_service in guide_services %}
+                                        <li>
+                                            <i class="im im-user-check"></i><span class="booking-item-feature-title">{{ guide_service.service__name }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No additional services...</p>
+                            {% endif %}
                         </div>
                      </div>
                 </div>
@@ -234,35 +242,36 @@
                         <p>No reviews so far...</p>
                     {% endif %}
 
-                    <div class="row wrap">
-                        <div class="col-md-5">
-                            <p><small>1358 reviews on this property. &nbsp;&nbsp;Showing 1 to 7</small>
-                            </p>
-                        </div>
-                        <div class="col-md-7">
-                            <ul class="pagination">
-                                <li class="active"><a href="#">1</a>
-                                </li>
-                                <li><a href="#">2</a>
-                                </li>
-                                <li><a href="#">3</a>
-                                </li>
-                                <li><a href="#">4</a>
-                                </li>
-                                <li><a href="#">5</a>
-                                </li>
-                                <li><a href="#">6</a>
-                                </li>
-                                <li><a href="#">7</a>
-                                </li>
-                                <li class="dots">...</li>
-                                <li><a href="#">43</a>
-                                </li>
-                                <li class="next"><a href="#">Next Page</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+{#                    <div class="row wrap">#}
+{#                        <div class="col-md-5">#}
+{#                            <p><small>1358 reviews on this property. &nbsp;&nbsp;Showing 1 to 7</small>#}
+{#                            </p>#}
+{#                        </div>#}
+{#                        <div class="col-md-7">#}
+{#                            <ul class="pagination">#}
+{#                                <li class="active"><a href="#">1</a>#}
+{#                                </li>#}
+{#                                <li><a href="#">2</a>#}
+{#                                </li>#}
+{#                                <li><a href="#">3</a>#}
+{#                                </li>#}
+{#                                <li><a href="#">4</a>#}
+{#                                </li>#}
+{#                                <li><a href="#">5</a>#}
+{#                                </li>#}
+{#                                <li><a href="#">6</a>#}
+{#                                </li>#}
+{#                                <li><a href="#">7</a>#}
+{#                                </li>#}
+{#                                <li class="dots">...</li>#}
+{#                                <li><a href="#">43</a>#}
+{#                                </li>#}
+{#                                <li class="next"><a href="#">Next Page</a>#}
+{#                                </li>#}
+{#                            </ul>#}
+{#                        </div>#}
+{#                    </div>#}
+
                     <div class="gap gap-small"></div>
                     <div class="box bg-gray" id="write_review">
                         {% if not user.is_authenticated %}
