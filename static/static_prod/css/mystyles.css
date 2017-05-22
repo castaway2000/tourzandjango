@@ -184,5 +184,10 @@
     margin-top: 10px;
     padding-left: 10px;
     font-size: 20px;
+    font-weight: 700;
 }
 
+.navbar-logo-text a,
+.navbar-logo-text a:hover{
+    color: #31dc72;
+}
