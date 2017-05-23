@@ -20,6 +20,15 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Order, OrderAdmin)
 
 
+class ServiceInOrderAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in ServiceInOrder._meta.fields]
+
+    class Meta:
+        model = ServiceInOrder
+
+admin.site.register(ServiceInOrder, ServiceInOrderAdmin)
+
+
 class PaymentAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Payment._meta.fields]
 

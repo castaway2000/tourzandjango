@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.contrib import messages
 from django.http import JsonResponse
+from orders.models import Review
 
 
 def tours(request):
@@ -183,7 +184,7 @@ def tour(request, slug, tour_id):
     tour = Tour.objects.get(id=tour_id, slug=slug)
     guide = tour.guide
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
-    reviews = guide.user.review_set.filter(is_active=True)
+    reviews = Review.objects.filter(order__guide=guide, is_active=True, is_from_tourist=True)
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
     return render(request, 'tours/tour.html', locals())
 

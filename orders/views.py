@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from tourists.models import TouristProfile
 from django.contrib import messages
+from tours.models import Tour
 
 
 @login_required()
@@ -27,6 +28,10 @@ def making_booking(request):
     kwargs = dict()
     tour_id = data.get("tour_id")
     guide_id = data.get("guide_id")
+    if tour_id:
+        tour = Tour.objects.get(id=tour_id)
+        guide = tour.guide
+        guide_id = guide.id
 
     guide = GuideProfile.objects.get(id=guide_id)
     tourist = TouristProfile.objects.get(user=user)

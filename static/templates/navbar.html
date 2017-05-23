@@ -38,6 +38,10 @@
                                 <a href="{% url 'guides' %}">GUIDES</a>
                             </li>
 
+                            <li class="{% if current_page == "tours" %}active{% endif %}">
+                                <a href="{% url 'tours' %}">TOURS</a>
+                            </li>
+
                             {% if not user.is_anonymous %}
                                 {% if request.session.current_role == "tourist" or not request.session.current_role %}
                                     <li><a href="{% url 'my_bookings' %}">My Bookings</a>
@@ -159,16 +163,18 @@
                                 </ul>
                             </li>
 
-                            <li>
-                                {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                    <span class="">Tourist</span>
-                                {% else%}
-                                    <span class="">Guide</span>
-                                {% endif %}
-                                <a href="{% url 'change_role' %}">
-                                    <i class="fa fa-exchange" aria-hidden="true"></i>
-                                </a>
-                            </li>
+                            {% if not user.is_anonymous %}
+                                <li>
+                                    {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                        <span class="">Tourist</span>
+                                    {% else%}
+                                        <span class="">Guide</span>
+                                    {% endif %}
+                                    <a href="{% url 'change_role' %}">
+                                        <i class="fa fa-exchange" aria-hidden="true"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
 
                         </ul>
                     </div>
