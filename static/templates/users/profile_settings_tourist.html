@@ -54,14 +54,34 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Second Language:</label>
-                        <select class="form-control select2" id="language_second" name="language_second">
-                            {% if user_language_second %}
-                                <option value="{{ user_language_second.language}}" selected>
-                                    {{ user_language_second.get_language_display}}
-                                </option>
-                            {% endif %}
-                        </select>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Second Language:</label>
+                                <select class="form-control select2" id="language_second" name="language_second">
+                                    {% if user_language_second %}
+                                        <option value="{{ user_language_second.language}}" selected>
+                                            {{ user_language_second.get_language_display}}
+                                        </option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Proficiency:</label>
+                                <select class="form-control select2"
+                                    id="language_second_proficiency" name="language_second_proficiency"
+                                >
+                                    <option selected>Select level</option>
+                                    {% for language_level in language_levels %}
+                                        <option value="{{ language_level.id }}"
+                                                {% if language_level.id == user_language_second.level.id %}selected="selected"{% endif %}
+                                        >
+                                            {{ language_level.name }}
+                                        </option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

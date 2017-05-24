@@ -228,10 +228,11 @@ def profile_settings_guide(request):
     language_levels = LanguageLevel.objects.all().values()
 
     #dublication of this peace of code below in POST area - remake it later
+    user_language_native = None
     for user_language in user_languages:
-        if user_language.level_id == 1:
+        if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
-        elif user_language.level_id == 2:
+        else:
             user_language_second = user_language
 
     try:
@@ -265,7 +266,7 @@ def profile_settings_guide(request):
         UserInterest.objects.bulk_create(user_interest_list)
 
 
-        #Languages assigning
+        # Languages assigning
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
         language_second_proficiency = request.POST.get("language_second_proficiency")
@@ -284,10 +285,11 @@ def profile_settings_guide(request):
 
 
             #dublication of the peace of code at the beginning of the function
+            user_language_native = None
             for user_language in user_languages:
-                if user_language.level_id == 1:
+                if user_language.level_id == 1 and not user_language_native:
                     user_language_native = user_language
-                elif user_language.level_id == 2:
+                else:
                     user_language_second = user_language
 
         #saving services
