@@ -139,13 +139,15 @@ def bookings(request, status=None):
 
     if filtered_cities:
         print (filtered_cities)
-        kwargs["tour__city__name__in"] = filtered_cities
+        kwargs["guide__city__name__in"] = filtered_cities
 
     if filtered_guides:
         print (filtered_guides)
-        kwargs["tour__guide__user__username__in"] = filtered_guides
+        kwargs["guide__user__username__in"] = filtered_guides
 
     if not status:
+        print (kwargs)
+
         initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
         orders = initial_orders.filter(**kwargs).order_by('-id')
         bookings_nmb = orders.count()

@@ -149,7 +149,7 @@
                 <ul class="booking-list">
                     {% for tour in tours %}
                     <li>
-                        <a class="booking-item tour-item" href="{% url 'tour' tour.slug tour.id %}">
+                        <div class="tour-item">
                             <div class="row">
                                 <div class="col-md-3 col-sm-3">
                                     <div class="booking-item-img">
@@ -178,7 +178,7 @@
                                     <div class="tour-rating">
                                         <b>Rating: </b> {{ tour.rating }}
                                     </div>
-                                    <span class="tour-price">
+                                    <p class="tour-price">
                                         <b>Price: </b>
                                         {% if tour.payment_type_id == 1 %}
                                             {{ tour.price_hourly }} {{ tour.currency.name }} / hour
@@ -187,43 +187,49 @@
                                         {% elif tour.payment_type_id == 3 %}
                                             Free!
                                         {% endif %}
-                                    </span>
-                                    {% if tour.min_hours %}
-                                         <b>Min hours:</b> {{ tour.min_hours }}
-                                    {% endif %}
+                                        <br>
+                                        {% if tour.min_hours %}
+                                             <b>Min hours:</b> {{ tour.min_hours }}
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary">
+                                            Go to Tour
+                                        </a>
+                                    </p>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="pagination">
-                            <li class="active"><a href="#">1</a>
-                            </li>
-                            <li><a href="#">2</a>
-                            </li>
-                            <li><a href="#">3</a>
-                            </li>
-                            <li><a href="#">4</a>
-                            </li>
-                            <li><a href="#">5</a>
-                            </li>
-                            <li><a href="#">6</a>
-                            </li>
-                            <li><a href="#">7</a>
-                            </li>
-                            <li class="dots">...</li>
-                            <li><a href="#">43</a>
-                            </li>
-                            <li class="next"><a href="#">Next Page</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 text-right">
-                    </div>
-                </div>
+{#                <div class="row">#}
+{#                    <div class="col-md-6">#}
+{#                        <ul class="pagination">#}
+{#                            <li class="active"><a href="#">1</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">2</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">3</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">4</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">5</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">6</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">7</a>#}
+{#                            </li>#}
+{#                            <li class="dots">...</li>#}
+{#                            <li><a href="#">43</a>#}
+{#                            </li>#}
+{#                            <li class="next"><a href="#">Next Page</a>#}
+{#                            </li>#}
+{#                        </ul>#}
+{#                    </div>#}
+{#                    <div class="col-md-6 text-right">#}
+{#                    </div>#}
+{#                </div>#}
             </div>
         </div>
         <div class="gap"></div>

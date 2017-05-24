@@ -35,12 +35,12 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group form-group-lg form-group-icon-left">
 {#                                                <i class="fa fa-book input-icon input-icon-highlight"></i>#}
-                                                <label>Should guide meet your interests?</label>
+                                                <label>Which of your interests should the guide meet?</label>
                                                 <select multiple class="form-control select2" id="interest_input" name="interest_input"
                                                     data-search_url="{% url 'search_interest' %}"
                                                     placeholder="Interests, hobbys"
@@ -400,6 +400,7 @@
 {#            </div>#}
 {#        </div>#}
         <div class="gap gap-small"></div>
+
         <h2 class="mb20">
             Explore Our Top Guides
             <small ><a href="{% url 'guides' %}">view all</a></small>
@@ -407,6 +408,17 @@
         <div class="row row-wrap">
             {% for guide in guides %}
                 {% include 'users/guides_representation.html' %}
+            {% endfor %}
+        </div>
+        <div class="gap gap-small"></div>
+
+        <h2 class="mb20">
+            Explore Our Top Tours
+            <small ><a href="{% url 'tours' %}">view all</a></small>
+        </h2>
+        <div class="row row-wrap">
+            {% for tour in all_tours %}
+                {% include 'users/tour_representation.html' %}
             {% endfor %}
         </div>
         <div class="gap gap-small"></div>

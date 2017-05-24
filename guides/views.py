@@ -158,7 +158,7 @@ def guide(request, username):
 
     guide = guide_user.guideprofile
     tourist = user.touristprofile
-    pending_orders = guide.order_set.filter(status_id=1, tourist=tourist)
+    current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
 
     reviews = Review.objects.filter(order__guide=guide, is_from_tourist=True, is_active=True)
 

@@ -61,6 +61,7 @@ def home(request):
         .values("user__first_name", "user__last_name", "user__username", "profile_image", "overview")[:4]
 
     tours = Tour.objects.filter(is_active=True).order_by("-rating")
+    all_tours = tours.order_by("-rating")[:4]
     hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
     fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
     free_tours = tours.filter(is_free=True).order_by("-rating")[:4]

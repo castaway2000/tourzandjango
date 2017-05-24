@@ -191,3 +191,22 @@
 .navbar-logo-text a:hover{
     color: #31dc72;
 }
+
+.booking-item,
+.booking-item:hover,
+.tour-item,
+.tour-item:hover{
+    cursor: auto;
+    border: 1px solid #31dc72;
+}
+
+.tour-item{
+    display: block;
+    position: relative;
+    padding: 17px;
+    color: #737373;
+}
+
+.booking-item.booking-item-small .booking-item-price {
+    font-size: 15px;
+}
