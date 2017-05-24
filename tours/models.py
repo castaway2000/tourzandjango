@@ -48,14 +48,13 @@ class Tour(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return "%s" % self.id
+        if self.name:
+            return "%s" % self.name
+        else:
+            return "%s" % self.id
 
     def save(self, *args, **kwargs):
-
         self.slug = slugify(self.name)
-
-        print self.price_hourly
-        print self.price
 
         if self.payment_type_id == 1: #hourly
 

@@ -90,7 +90,7 @@ def tours(request):
             order_results = ("-is_free", "price_hourly")
 
     else:
-        order_results = ("-is_free", "price_hourly")
+        order_results = ("-rating", "-is_free", "price_hourly")
 
 
     #it is needed for displaying of full list of filters

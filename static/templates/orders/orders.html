@@ -145,6 +145,16 @@
                                 </div>
 
                                 <div class="col-md-3">
+                                    <p>
+                                        {% if order.tour %}
+                                            Booked
+                                            <a href="{% url 'tour' order.tour.slug order.tour.id %}">
+                                                {{ order.tour.name }}
+                                            </a>
+                                        {% else %}
+                                            Booked hourly
+                                        {% endif %}
+                                    </p>
                                     <span class="booking-item-price tour-booking-price">
                                         {% if order.price_after_discount %}
                                             {{ order.price_after_discount }} USD

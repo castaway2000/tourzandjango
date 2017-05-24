@@ -34,8 +34,13 @@ class Order(models.Model):
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
     tourist = models.ForeignKey(TouristProfile, blank=True, null=True, default=None)
 
+    tour = models.ForeignKey(Tour, blank=True, null=True, default=False)
+
+    #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
+
+    #if a fixed-price tour is ordered, its price goes here
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)

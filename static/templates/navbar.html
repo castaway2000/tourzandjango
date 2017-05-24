@@ -8,7 +8,7 @@
 
 <header id="main-header">
     <div class="header-top header-white">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-md-2">
                     <div class="navbar-header">
@@ -34,13 +34,15 @@
                                 <a href="{% url 'home' %}">Home</a>
                             </li>
 
-                            <li class="{% if current_page == "guides" %}active{% endif %}">
-                                <a href="{% url 'guides' %}">GUIDES</a>
-                            </li>
+                            {% if request.session.current_role == "tourist" %}
+                                <li class="{% if current_page == "guides" %}active{% endif %}">
+                                    <a href="{% url 'guides' %}">GUIDES</a>
+                                </li>
 
-                            <li class="{% if current_page == "tours" %}active{% endif %}">
-                                <a href="{% url 'tours' %}">TOURS</a>
-                            </li>
+                                <li class="{% if current_page == "tours" %}active{% endif %}">
+                                    <a href="{% url 'tours' %}">TOURS</a>
+                                </li>
+                            {% endif %}
 
                             {% if not user.is_anonymous %}
                                 {% if request.session.current_role == "tourist" or not request.session.current_role %}

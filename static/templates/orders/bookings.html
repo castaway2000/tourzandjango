@@ -87,7 +87,7 @@
                 <ul class="booking-list">
                     {% for order in orders %}
                     <li>
-                        <a class="booking-item" href="{% url 'guide' order.guide.user.username %}">
+                        <div class="booking-item">
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="booking-item-img">
@@ -146,13 +146,30 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <span class="booking-item-price tour-booking-price">
-                                        {% if order.price_after_discount %}
-                                            {{ order.price_after_discount }} USD
+                                    <p>
+                                        {% if order.tour %}
+                                            <b>Booked tour:</b><br>
+                                            <a href="{% url 'tour' order.tour.slug order.tour.id %}">
+                                                {{ order.tour.name }}
+                                            </a>
                                         {% else %}
-                                            {{ order.price_hourly }} USD
+                                            <b>Booked hourly:</b><br>
                                         {% endif %}
-                                    </span>
+                                    </p>
+
+                                    <p>
+                                        {% if order.tour %}
+                                            <b>Price:</b><br>
+                                            <span class="booking-item-price tour-booking-price">
+                                                {{ order.price_after_discount }} USD
+                                            </span>
+                                        {% else %}
+                                            <span class="booking-item-price tour-booking-price">
+                                                {{ order.price_hourly }} USD/hour
+                                            </span>
+                                        {% endif %}
+                                    </p>
+
                                     <p>
                                         <b>Status: </b>{{ order.status.name }}
                                     </p>
@@ -175,7 +192,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>

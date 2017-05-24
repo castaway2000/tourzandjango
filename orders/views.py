@@ -28,12 +28,16 @@ def making_booking(request):
     kwargs = dict()
     tour_id = data.get("tour_id")
     guide_id = data.get("guide_id")
+
     if tour_id:
         tour = Tour.objects.get(id=tour_id)
         guide = tour.guide
         guide_id = guide.id
+        kwargs["tour_id"] = tour_id
+    else:
+        guide = GuideProfile.objects.get(id=guide_id)
 
-    guide = GuideProfile.objects.get(id=guide_id)
+
     tourist = TouristProfile.objects.get(user=user)
 
     date_booked_for = data["start"]
@@ -44,6 +48,16 @@ def making_booking(request):
 
     if price_hourly:
         price_hourly = price_hourly.replace(",", ".")
+    elif tour_id:
+        if tour.payment_type.id==1:
+            print "1"
+            price_hourly = 0
+        elif tour.payment_type.id == 2:
+            print "2"
+            kwargs["price"] = tour.price
+        else:
+            print "3"
+            price_hourly = 0
     else:
         price_hourly = guide.rate
 
