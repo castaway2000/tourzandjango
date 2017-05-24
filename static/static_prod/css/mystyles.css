@@ -26,7 +26,7 @@
 }
 
 .tour-booking-price{
-    font-size: 20px;
+    font-size: 14px;
 }
 
 .booking-item-title{
@@ -169,7 +169,7 @@
 }
 
 .alert{
-    z-index: 100;
+    z-index: 1000;
 }
 
 .navbar-logo{

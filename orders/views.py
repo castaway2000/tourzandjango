@@ -175,11 +175,21 @@ def orders(request, status=None):
 
     try:
         guide = user.guideprofile
+        data = request.GET
+
+        kwargs = dict()
+
+        tour_id = data.get("tour_id")
+        if tour_id:
+            kwargs["tour_id"] = tour_id
 
         if not status:
-            orders = Order.objects.filter(guide=guide)
+            kwargs["guide"] = guide
+            orders = Order.objects.filter(**kwargs).order_by("-id")
         else:
-            orders = Order.objects.filter(guide=guide, status__slug=status)
+            kwargs["guide"] = guide
+            kwargs["status__slug"] = status
+            orders = Order.objects.filter(**kwargs).order_by("-id")
 
         orders_nmb = orders.count()
         return render(request, 'orders/orders.html', locals())
@@ -200,25 +210,31 @@ def guide_settings_orders(request):
 def cancel_order(request, order_id):
     user = request.user
 
-    try:
-        #check if a user is a guide
-        guide = user.guideprofile
-        order = Order.objects.get(id=order_id, guide=guide)
-        order.status_id = 6
-        order.save(force_update=True)
-        print ("try 1")
-        print (order.status)
-        messages.success(request, 'Order has been successfully cancelled!')
-    except:
+    current_role = request.session.get("current_role")
+    if current_role == "tourist" or not current_role:
+        #check if a user is a tourist in an order
         try:
-            #check if a user is a tourist in an order
             tourist = user.touristprofile
-            order = Order.objects.filter(id=order_id, tourist=tourist)
+            order = Order.objects.get(id=order_id, tourist=tourist)
             order.status_id = 3
             order.save(force_update=True)
             print ("try 2")
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')
+    else:
+        #check if a user is a guide
+        try:
+            guide = user.guideprofile
+            order = Order.objects.get(id=order_id, guide=guide)
+            order.status_id = 6
+            order.save(force_update=True)
+            print ("try 1")
+            print (order.status)
+            messages.success(request, 'Order has been successfully cancelled!')
+        except:
+            messages.error(request, 'You have no permissions for this action!')
+
+
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

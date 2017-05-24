@@ -149,6 +149,12 @@ $(document).ready(function(){
 
     changingPaymentType();
 
+
+    $('#book_more').on('click', function(e){
+        e.preventDefault();
+        $('#booking_form_area').removeClass('hidden');
+    });
+
 });
 
 $('.datepicker').datepicker();

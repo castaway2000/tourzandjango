@@ -101,72 +101,87 @@
                             <h3 class="text-center">
                                 Book {{ tour.name }} tour
                             </h3>
-                            <div class="input-daterange" data-date-format="yyyy, MM d, DD">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
-                                            <label>Booking a tour date:</label>
-                                            <input class="form-control" name="start" type="text" />
+
+                            {% if current_booking %}
+                                <div id="current_booking_area" class="text-center">
+                                    You have already booked this tour
+                                    <a href="" id="book_more">book more</a>
+                                    or
+                                    <a href="{% url 'orders' %}?tour_id={{ tour.id }}">Edit</a>
+                                </div>
+                            {% endif %}
+
+                            <div id="booking_form_area" class="{% if current_booking %}hidden{% endif %}">
+
+                                <div class="input-daterange" data-date-format="yyyy, MM d, DD">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
+                                                <label>Booking a tour date:</label>
+                                                <input class="form-control" name="start" type="text" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5 text-center">
+                                            {% if tour.payment_type.id == 1 %}
+                                                <div class="form-group form-group- form-group-select-plus">
+                                                    <label>Hours nmb:</label>
+                                                    <div class="btn-group btn-group-select-num" data-toggle="buttons">
+                                                        <label class="btn btn-primary hours-nmb">
+                                                            <input type="radio" name="options" value="1"/>1</label>
+                                                        <label class="btn btn-primary hours-nmb active">
+                                                            <input type="radio" name="options" value="2" />2</label>
+                                                        <label class="btn btn-primary hours-nmb">
+                                                            <input type="radio" name="options" value="3" />3</label>
+                                                        <label class="btn btn-primary hours-nmb">
+                                                            <input type="radio" name="options" value="4" />4</label>
+                                                        <label class="btn btn-primary hours-nmb">
+                                                            <input type="radio" name="options" />4+</label>
+                                                    </div>
+                                                    <select class="form-control hidden" id="booking_hours" name="booking_hours">
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5" selected="selected">5</option>
+                                                        <option value="6">6</option>
+                                                        <option value="7">7</option>
+                                                        <option value="8">8</option>
+                                                        <option value="9">9</option>
+                                                        <option value="10">10</option>
+                                                        <option value="11">11</option>
+                                                        <option value="12">12</option>
+                                                        <option value="13">13</option>
+                                                        <option value="14">14</option>
+                                                    </select>
+                                                </div>
+                                            {% elif tour.payment_type == 2 %}
+                                                {{ tour.price }} {{ tour.currency.name }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <label> </label>
+                                            <button class="btn btn-primary btn-lg btn-booking">Book Now</button>
                                         </div>
                                     </div>
-                                    <div class="col-md-5 text-center">
-                                        {% if tour.payment_type.id == 1 %}
-                                            <div class="form-group form-group- form-group-select-plus">
-                                                <label>Hours nmb:</label>
-                                                <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                    <label class="btn btn-primary hours-nmb">
-                                                        <input type="radio" name="options" value="1"/>1</label>
-                                                    <label class="btn btn-primary hours-nmb active">
-                                                        <input type="radio" name="options" value="2" />2</label>
-                                                    <label class="btn btn-primary hours-nmb">
-                                                        <input type="radio" name="options" value="3" />3</label>
-                                                    <label class="btn btn-primary hours-nmb">
-                                                        <input type="radio" name="options" value="4" />4</label>
-                                                    <label class="btn btn-primary hours-nmb">
-                                                        <input type="radio" name="options" />4+</label>
-                                                </div>
-                                                <select class="form-control hidden" id="booking_hours" name="booking_hours">
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
-                                                    <option value="5" selected="selected">5</option>
-                                                    <option value="6">6</option>
-                                                    <option value="7">7</option>
-                                                    <option value="8">8</option>
-                                                    <option value="9">9</option>
-                                                    <option value="10">10</option>
-                                                    <option value="11">11</option>
-                                                    <option value="12">12</option>
-                                                    <option value="13">13</option>
-                                                    <option value="14">14</option>
-                                                </select>
+
+                                    <input class="hidden" id="tour_id" value="{{ tour.id }}" name="tour_id">
+
+                                    {% if tour.payment_type.id == 1 %}
+                                        <div class="row">
+                                            <div class="col-md-12 text-center">
+                                                <input class="hidden" id="hourly_rate" value="{{ tour.price_hourly }}" name="price_hourly">
+                                                <p id="amount_container" class="lead hidden">
+                                                    Price: <b><span id="amount"></span> {{ tour.currency.name }}</b>
+                                                </p>
                                             </div>
-                                        {% elif tour.payment_type == 2 %}
-                                            {{ tour.price }} {{ tour.currency.name }}
-                                        {% endif %}
-                                    </div>
-                                    <div class="col-md-3 text-center">
-                                        <label> </label>
-                                        <button class="btn btn-primary btn-lg btn-booking">Book Now</button>
-                                    </div>
+                                        </div>
+                                    {% else %}
+                                        <input class="hidden" value="{{ tour.price }}" name="price">
+                                    {% endif %}
                                 </div>
 
-                                <input class="hidden" id="tour_id" value="{{ tour.id }}" name="tour_id">
+                            </div><!--end of booking area -->
 
-                                {% if tour.payment_type.id == 1 %}
-                                    <div class="row">
-                                        <div class="col-md-12 text-center">
-                                            <input class="hidden" id="hourly_rate" value="{{ tour.price_hourly }}" name="price_hourly">
-                                            <p id="amount_container" class="lead hidden">
-                                                Price: <b><span id="amount"></span> {{ tour.currency.name }}</b>
-                                            </p>
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <input class="hidden" value="{{ tour.price }}" name="price">
-                                {% endif %}
-                            </div>
                         </form>
                     </div>
 
