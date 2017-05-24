@@ -34,7 +34,7 @@
                                 <a href="{% url 'home' %}">Home</a>
                             </li>
 
-                            {% if request.session.current_role == "tourist" %}
+                            {% if request.session.current_role != "guide"  %}
                                 <li class="{% if current_page == "guides" %}active{% endif %}">
                                     <a href="{% url 'guides' %}">GUIDES</a>
                                 </li>
