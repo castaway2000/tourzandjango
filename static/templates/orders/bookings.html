@@ -188,10 +188,17 @@
                                         {% endif %}
                                     </p>
                                     <p>
-                                        <a href="{% url 'guide' order.guide.user.username %}"
-                                            class="btn btn-success btn-sm">
-                                            Guide page
-                                        </a>
+                                        {% if order.tour %}
+                                            <a href="{% url 'tour' order.tour.slug order.tour.id %}"
+                                                class="btn btn-success btn-sm">
+                                                Tour page
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'guide' order.guide.user.username %}"
+                                                class="btn btn-success btn-sm">
+                                                Guide page
+                                            </a>
+                                        {% endif %}
                                     </p>
                                     <p>
                                          <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger btn-sm">

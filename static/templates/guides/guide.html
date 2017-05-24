@@ -123,7 +123,16 @@
                             <div class="message-text"></div>
                         </div>
 
-                        {% if not pending_orders and not request.session.bookings %}
+                        <div class="text-center">
+                            <h4 class="text-center">
+                                You have already booked this guide
+                            </h4>
+                            <a href="" id="book_more">book more</a>
+                            or
+                            <a href="{% url 'my_bookings' %}?guide={{ guide.user.username}}">Edit</a>
+                        </div>
+
+                        <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
                             <form method="post" id="form_guide_scheduling"
                                 class="form-horizontal"
                                 action="{% url 'making_booking' %}"
@@ -210,19 +219,12 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="form-group text-right">
                                      <button type="submit" class="btn btn-primary btn-lg">Book Now</button>
                                 </div>
                             </form>
-                        {% else %}
-                            <h4 class="text-center">You have existing booking</h4>
-                            <div class="text-center">
-                                {% for pending_order in pending_orders %}
-                                    <a href="{% url 'my_bookings' %}">Go to bookings</a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
+                        </div>
+
                     </div>
                 </div>
             </div>

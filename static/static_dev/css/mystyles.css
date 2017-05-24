@@ -191,3 +191,13 @@
 .navbar-logo-text a:hover{
     color: #31dc72;
 }
+
+.booking-item,
+.booking-item:hover{
+    cursor: auto;
+    border: 1px solid #31dc72;
+}
+
+.booking-item.booking-item-small .booking-item-price {
+    font-size: 15px;
+}

@@ -191,7 +191,7 @@ def tour(request, slug, tour_id):
     reviews = Review.objects.filter(order__guide=guide, is_active=True, is_from_tourist=True)
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
 
-    current_booking = Order.objects.filter(tourist=tourist, tour_id=tour_id).last()
+    current_order = Order.objects.filter(tourist=tourist, tour_id=tour_id).last()
     return render(request, 'tours/tour.html', locals())
 
 

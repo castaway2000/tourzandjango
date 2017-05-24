@@ -77,3 +77,11 @@ ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
 .booking-item-rating .booking-item-rating-stars {
     color: #169e49;
 }
+
+.booking-item.booking-item-small .booking-item-rating-stars {
+    color: #169e49;
+}
+
+.booking-item-raiting-summary-list.stats-list-select > li .booking-item-rating-stars > li.selected {
+    color: #169e49;
+}

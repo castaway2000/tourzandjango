@@ -151,8 +151,10 @@ $(document).ready(function(){
 
 
     $('#book_more').on('click', function(e){
+        console.log("123");
         e.preventDefault();
         $('#booking_form_area').removeClass('hidden');
+        console.log($('#booking_form_area'));
     });
 
 });

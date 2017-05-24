@@ -99,19 +99,19 @@
                             class="form-horizontal
                         {% if request.user.is_anonymous %}user-not-authorized{% endif %}">
                             <h3 class="text-center">
-                                Book {{ tour.name }} tour
+                                Book {{ tour.name }}
                             </h3>
 
-                            {% if current_booking %}
+                            {% if current_order %}
                                 <div id="current_booking_area" class="text-center">
                                     You have already booked this tour
                                     <a href="" id="book_more">book more</a>
                                     or
-                                    <a href="{% url 'orders' %}?tour_id={{ tour.id }}">Edit</a>
+                                    <a href="{% url 'my_bookings' %}?tour_id={{ tour.id }}">Edit</a>
                                 </div>
                             {% endif %}
 
-                            <div id="booking_form_area" class="{% if current_booking %}hidden{% endif %}">
+                            <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
 
                                 <div class="input-daterange" data-date-format="yyyy, MM d, DD">
                                     <div class="row">
