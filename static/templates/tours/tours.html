@@ -149,85 +149,87 @@
                 <ul class="booking-list">
                     {% for tour in tours %}
                     <li>
-                        <div class="row">
-                            <div class="col-md-3 col-sm-3">
-                                <div class="booking-item-img">
-                                    {% if tour.image %}
-                                        <img src="{% get_media_prefix %}{{ tour.image }}"/>
-                                    {% else %}
-                                        <img src="{% static 'img/default_tour_image.jpg' %}">
-                                    {% endif %}
+                        <div class="tour-item">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-3">
+                                    <div class="booking-item-img">
+                                        {% if tour.image %}
+                                            <img src="{% get_media_prefix %}{{ tour.image }}"/>
+                                        {% else %}
+                                            <img src="{% static 'img/default_tour_image.jpg' %}">
+                                        {% endif %}
+                                    </div>
+                                    <br>
                                 </div>
-                                <br>
-                            </div>
-                            <div class="col-md-6 col-sm-6">
-                                <div class="tour-name">
-                                    {{ tour.name }}
-                                </div>
-                                <div class="tour-guide-name">
-                                    by {{ tour.guide.user.username }}
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        {{ tour.overview|linebreaks|truncatewords_html:30 }}
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="tour-name">
+                                        {{ tour.name }}
+                                    </div>
+                                    <div class="tour-guide-name">
+                                        by {{ tour.guide.user.username }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{ tour.overview|linebreaks|truncatewords_html:30 }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3 col-sm-3">
-                                <div class="tour-rating">
-                                    <b>Rating: </b> {{ tour.rating }}
+                                <div class="col-md-3 col-sm-3">
+                                    <div class="tour-rating">
+                                        <b>Rating: </b> {{ tour.rating }}
+                                    </div>
+                                    <p class="tour-price">
+                                        <b>Price: </b>
+                                        {% if tour.payment_type_id == 1 %}
+                                            {{ tour.price_hourly }} {{ tour.currency.name }} / hour
+                                        {% elif tour.payment_type_id == 2 %}
+                                            {{ tour.price }} {{ tour.currency.name }}
+                                        {% elif tour.payment_type_id == 3 %}
+                                            Free!
+                                        {% endif %}
+                                        <br>
+                                        {% if tour.min_hours %}
+                                             <b>Min hours:</b> {{ tour.min_hours }}
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary">
+                                            Go to Tour
+                                        </a>
+                                    </p>
                                 </div>
-                                <p class="tour-price">
-                                    <b>Price: </b>
-                                    {% if tour.payment_type_id == 1 %}
-                                        {{ tour.price_hourly }} {{ tour.currency.name }} / hour
-                                    {% elif tour.payment_type_id == 2 %}
-                                        {{ tour.price }} {{ tour.currency.name }}
-                                    {% elif tour.payment_type_id == 3 %}
-                                        Free!
-                                    {% endif %}
-                                    <br>
-                                    {% if tour.min_hours %}
-                                         <b>Min hours:</b> {{ tour.min_hours }}
-                                    {% endif %}
-                                </p>
-                                <p>
-                                    <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary">
-                                        Go to Tour
-                                    </a>
-                                </p>
                             </div>
                         </div>
                     </li>
                     {% endfor %}
                 </ul>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="pagination">
-                            <li class="active"><a href="#">1</a>
-                            </li>
-                            <li><a href="#">2</a>
-                            </li>
-                            <li><a href="#">3</a>
-                            </li>
-                            <li><a href="#">4</a>
-                            </li>
-                            <li><a href="#">5</a>
-                            </li>
-                            <li><a href="#">6</a>
-                            </li>
-                            <li><a href="#">7</a>
-                            </li>
-                            <li class="dots">...</li>
-                            <li><a href="#">43</a>
-                            </li>
-                            <li class="next"><a href="#">Next Page</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 text-right">
-                    </div>
-                </div>
+{#                <div class="row">#}
+{#                    <div class="col-md-6">#}
+{#                        <ul class="pagination">#}
+{#                            <li class="active"><a href="#">1</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">2</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">3</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">4</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">5</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">6</a>#}
+{#                            </li>#}
+{#                            <li><a href="#">7</a>#}
+{#                            </li>#}
+{#                            <li class="dots">...</li>#}
+{#                            <li><a href="#">43</a>#}
+{#                            </li>#}
+{#                            <li class="next"><a href="#">Next Page</a>#}
+{#                            </li>#}
+{#                        </ul>#}
+{#                    </div>#}
+{#                    <div class="col-md-6 text-right">#}
+{#                    </div>#}
+{#                </div>#}
             </div>
         </div>
         <div class="gap"></div>
