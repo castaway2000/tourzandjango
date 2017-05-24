@@ -23,6 +23,8 @@ def guides(request):
 
 
     filtered_hourly_prices = request.GET.get('hourly_price')
+
+    # Review these 2 variables if they can be deleted, because they are replaced bellow
     filtered_cities = request.GET.getlist('city')
     filtered_guides = request.GET.getlist('guide')
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
