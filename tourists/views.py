@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from users.models import Interest, UserInterest
 from orders.models import *
 from tours.models import *
-from users.models import UserLanguage
+from users.models import UserLanguage, LanguageLevel
 
 
 @login_required()
@@ -16,10 +16,13 @@ def profile_settings_tourist(request):
     profile, created = TouristProfile.objects.get_or_create(user=user)
 
     user_languages = UserLanguage.objects.filter(user=user)
+    language_levels = LanguageLevel.objects.all().values()
+
+    user_language_native = None
     for user_language in user_languages:
-        if user_language.level_id == 1:
+        if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
-        elif user_language.level_id == 2:
+        else:
             user_language_second = user_language
 
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
@@ -41,18 +44,32 @@ def profile_settings_tourist(request):
         UserInterest.objects.bulk_create(user_interest_list)
 
 
-        #Languages assigning
+        # Languages assigning
+        # it is the same peace of code as at guide view - maybe to remake this in the future
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
-        print language_native
-        print language_second
+        language_second_proficiency = request.POST.get("language_second_proficiency")
 
-        user_languages_list = list()
-        user_languages_list.append(UserLanguage(language=language_native, user=user, level_id=1))
-        user_languages_list.append(UserLanguage(language=language_second, user=user, level_id=2))
+        if language_native or language_second:
+            user_languages_list = list()
+            if language_native:
+                user_languages_list.append(UserLanguage(language=language_native, user=user,
+                                                        level_id=1))
+            if language_second:
+                user_languages_list.append(UserLanguage(language=language_second, user=user,
+                                                        level_id=language_second_proficiency))
 
-        UserLanguage.objects.filter(user=user).delete()
-        UserLanguage.objects.bulk_create(user_languages_list)
+            UserLanguage.objects.filter(user=user).delete()
+            user_languages = UserLanguage.objects.bulk_create(user_languages_list)
+
+
+            #dublication of the peace of code at the beginning of the function
+            user_language_native = None
+            for user_language in user_languages:
+                if user_language.level_id == 1 and not user_language_native:
+                    user_language_native = user_language
+                else:
+                    user_language_second = user_language
 
 
 
