@@ -31,94 +31,94 @@
                     <div class="nav nav-menu">
                         <ul class="slimmenu top-menu" id="slimmenu">
                             <li class="{% if current_page == "home" %}active{% endif %}">
-                                <a href="{% url 'home' %}">Home</a>
+                                <a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
                             </li>
 
                             {% if request.session.current_role != "guide"  %}
                                 <li class="{% if current_page == "guides" %}active{% endif %}">
-                                    <a href="{% url 'guides' %}">GUIDES</a>
+                                    <a href="{% url 'guides' %}">{% blocktrans %}GUIDES{% endblocktrans %}</a>
                                 </li>
 
                                 <li class="{% if current_page == "tours" %}active{% endif %}">
-                                    <a href="{% url 'tours' %}">TOURS</a>
+                                    <a href="{% url 'tours' %}">{% blocktrans %}TOURS{% endblocktrans %}</a>
                                 </li>
                             {% endif %}
 
                             {% if not user.is_anonymous %}
                                 {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                    <li><a href="{% url 'my_bookings' %}">My Bookings</a>
+                                    <li><a href="{% url 'my_bookings' %}">{% blocktrans %}My Bookings{% endblocktrans %}</a>
                                         <ul>
-                                            <li><a href="{% url 'my_bookings_status' 'pending' %}">Pending</a>
+                                            <li><a href="{% url 'my_bookings_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">Waiting for payment</a>
+                                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">Agreed</a>
+                                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-tourist' %}">Cancelled by me</a>
+                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-guide' %}">Cancelled by guide</a>
+                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by guide{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'my_bookings_status' 'completed' %}">Completed</a>
+                                            <li><a href="{% url 'my_bookings_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>
                                             </li>
                                         </ul>
                                     </li>
                                 {% else %}
-                                    <li><a href="{% url 'orders' %}">Orders</a>
+                                    <li><a href="{% url 'orders' %}">{% blocktrans %}Orders{% endblocktrans %}</a>
                                         <ul>
-                                            <li><a href="{% url 'orders_status' 'pending' %}">Pending</a>
+                                            <li><a href="{% url 'orders_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">Waiting for payment</a>
+                                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'orders_status' 'agreed' %}">Agreed</a>
+                                            <li><a href="{% url 'orders_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'orders_status' 'cancelled-by-tourist' %}">Cancelled by tourist</a>
+                                            <li><a href="{% url 'orders_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by tourist{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'orders_status' 'cancelled-by-guide' %}">Cancelled by me</a>
+                                            <li><a href="{% url 'orders_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>
                                             </li>
-                                            <li><a href="{% url 'orders_status' 'completed' %}">Completed</a>
+                                            <li><a href="{% url 'orders_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>
                                             </li>
                                         </ul>
                                     </li>
                                 {% endif %}
 
 
-                                <li><a href="{% url 'chats' %}">Chats</a>
+                                <li><a href="{% url 'chats' %}">{% blocktrans %}Chats{% endblocktrans %}</a>
 
 
                                 <li>
                                     <a href="{% url 'settings_router' %}">
                                         {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                            Tourist Settings
+                                            {% blocktrans %}Tourist Settings{% endblocktrans %}
                                         {% else %}
-                                            Guide Settings
+                                            {% blocktrans %}Guide Settings{% endblocktrans %}
                                         {% endif %}
                                     </a>
                                     <ul>
                                         {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                            <li><a href="{% url 'profile_settings_tourist' %}">Profile</a>
+                                            <li><a href="{% url 'profile_settings_tourist' %}">{% blocktrans %}Profile{% endblocktrans %}</a>
                                             </li>
                                         {% else %}
-                                            <li><a href="{% url 'profile_settings_guide' %}">Profile</a>
+                                            <li><a href="{% url 'profile_settings_guide' %}">{% blocktrans %}Profile{% endblocktrans %}</a>
                                             </li>
                                         {% endif %}
 
-                                        <li><a href="{% url 'general_settings' %}">Account</a>
+                                        <li><a href="{% url 'general_settings' %}">{% blocktrans %}Account{% endblocktrans %}</a>
                                         </li>
 
                                         <li>
                                             {% if request.session.current_role == "tourist" or not request.session.current_role %}
                                                 {% if user.guideprofile %}
                                                     <a href="{% url 'change_role' %}">
-                                                        Switch to Guide
+                                                        {% blocktrans %}Switch to Guide{% endblocktrans %}
                                                     </a>
                                                 {% else %}
                                                     <a href="{% url 'profile_settings_guide' %}">
-                                                        Want to be a guide?
+                                                        {% blocktrans %}Want to be a guide?{% endblocktrans %}
                                                     </a>
                                                 {% endif %}
                                             {% else %}
                                                 <a href="{% url 'change_role' %}">
-                                                    Switch to Tourist
+                                                    {% blocktrans %}Switch to Tourist{% endblocktrans %}
                                                 </a>
                                             {% endif %}
                                         </li>
@@ -133,14 +133,14 @@
                     <div class="top-user-area clearfix">
                         <ul class="top-user-area-list list list-horizontal list-border">
                             {% if user.is_anonymous %}
-                                <li><a href="{% url 'login' %}">Log In</a>
+                                <li><a href="{% url 'login' %}">{% blocktrans %}Log In{% endblocktrans %}</a>
                             {% else %}
                                 <li class="top-user-area-avatar">
                                     <a href="{% url 'settings_router' %}">
                                         Hi, {{ request.user.username }}
                                     </a>
                                 </li>
-                                <li><a href="{% url 'logout' %}">Logout</a>
+                                <li><a href="{% url 'logout' %}">{% blocktrans %}Logout{% endblocktrans %}</a>
                                 </li>
                             {% endif %}
 
@@ -168,9 +168,9 @@
                             {% if not user.is_anonymous %}
                                 <li>
                                     {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                        <span class="">Tourist</span>
+                                        <span class="">{% blocktrans %}Tourist{% endblocktrans %}</span>
                                     {% else%}
-                                        <span class="">Guide</span>
+                                        <span class="">{% blocktrans %}Guide{% endblocktrans %}</span>
                                     {% endif %}
                                     <a href="{% url 'change_role' %}">
                                         <i class="fa fa-exchange" aria-hidden="true"></i>
