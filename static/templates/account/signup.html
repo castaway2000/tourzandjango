@@ -30,7 +30,7 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="page-title">Login/Register on Tourzan</h1>
+        <h1 class="page-title">{% blocktrans %}Login/Register on Tourzan{% endblocktrans %}</h1>
     </div>
 
     <div class="gap-small"></div>
@@ -38,8 +38,8 @@
     <div class="container">
         <div class="row" data-gutter="60">
             <div class="col-md-4">
-                <h3>Welcome to Tourzan</h3>
-                <p>You may be authenticated, using social networks or sign in/sign up using username and password</p>
+                <h3>{% blocktrans %}Welcome to Tourzan{% endblocktrans %}</h3>
+                <p>{% blocktrans %}You may be authenticated, using social networks or sign in/sign up using username and password{% endblocktrans %}</p>
                 <div class="text-center">
                     <a title="Facebook" class="btn btn-default btn-facebook"
                        {% if request.GET.next  %}
@@ -53,25 +53,25 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <h3>Login</h3>
+                <h3>{% blocktrans %}Login{% endblocktrans %}</h3>
                 <form method="post" action="">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>Username or email</label>
+                        <label>{% blocktrans %}Username or email{% endblocktrans %}</label>
                         <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text" name="username" />
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>Password</label>
+                        <label>{% blocktrans %}Password{% endblocktrans %}</label>
                         <input class="form-control" type="password" placeholder="my secret password" name="password" />
                     </div>
                     <input class="btn btn-primary" type="submit" name="login_btn" value="Log In" />
                 </form>
             </div>
             <div class="col-md-4">
-                <h3>New To Traveler?</h3>
+                <h3>{% blocktrans %}New To Traveler?{% endblocktrans %}</h3>
                 {{ form.errors }}
                 <form method="post" action="{% url 'account_signup' %}">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>Username</label>
+                        <label>{% blocktrans %}Username{% endblocktrans %}</label>
                         <input class="form-control" placeholder="e.g. johndoe"
                         type="text" name="username"
                         value="{{ request.POST.username }}"
@@ -79,7 +79,7 @@
                         <span class="form-error-text">{{ form.username.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon input-icon-show"></i>
-                        <label>Email</label>
+                        <label>{% blocktrans %}Email{% endblocktrans %}</label>
                         <input class="form-control" placeholder="e.g. johndoe@gmail.com"
                         type="text" name="email"
                         value="{{ request.POST.email }}"
@@ -87,12 +87,12 @@
                         <span class="form-error-text">{{ form.email.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>Password</label>
+                        <label>{% blocktrans %}Password{% endblocktrans %}</label>
                         <input class="form-control" type="password" placeholder="my secret password" name="password1" />
                         <span class="form-error-text">{{ form.password1.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>Password (re-enter)</label>
+                        <label>{% blocktrans %}Password (re-enter){% endblocktrans %}</label>
                         <input class="form-control" type="password" placeholder="my secret password again" name="password2" />
                         <span class="form-error-text">{{ form.password2.errors }}</span>
                     </div>

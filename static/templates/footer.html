@@ -10,7 +10,7 @@
                 </a>
                 <h4>Tourzan</h4>
                 <p class="mb20">
-                    Book local guide, while travelling!
+                    {% blocktrans %}Book local guides, while travelling!{% endblocktrans %}
                 </p>
                 <ul class="list list-horizontal list-space">
                     <li>
@@ -29,32 +29,32 @@
             </div>
 
             <div class="col-md-3">
-                <h4>Newsletter</h4>
+                <h4>{% blocktrans %}Newsletter{% endblocktrans %}</h4>
                 <form>
-                    <label>Enter your E-mail Address</label>
+                    <label>{% blocktrans %}Enter your E-mail Address{% endblocktrans %}</label>
                     <input type="text" class="form-control">
-                    <p class="mt5"><small>*We Never Send Spam</small>
+                    <p class="mt5"><small>*{% blocktrans %}We Never Send Spam{% endblocktrans %}</small>
                     </p>
                     <input type="submit" class="btn btn-primary" value="Subscribe">
                 </form>
             </div>
             <div class="col-md-2">
                 <ul class="list list-footer">
-                    <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                    <li><a href="{% url 'privacy_policy' %}">{% blocktrans %}Privacy Policy{% endblocktrans %}</a>
                     </li>
-                    <li><a href="{% url 'tos' %}">Terms of Service</a>
+                    <li><a href="{% url 'tos' %}">{% blocktrans %}Terms of Service{% endblocktrans %}</a>
                     </li>
-                    <li><a href="{% url 'about_us' %}">About Us</a>
+                    <li><a href="{% url 'about_us' %}">{% blocktrans %}About Us{% endblocktrans %}</a>
                     </li>
-                    <li><a href="{% url 'contact_us' %}">Contact US</a>
+                    <li><a href="{% url 'contact_us' %}">{% blocktrans %}Contact US{% endblocktrans %}</a>
                     </li>
                 </ul>
             </div>
             <div class="col-md-4">
-                <h4>Have Questions?</h4>
+                <h4>{% blocktrans %}Have Questions?{% endblocktrans %}</h4>
                 <h4 class="text-color">+1-202-555-0173</h4>
                 <h4><a href="#" class="text-color">support@tourzan.com</a></h4>
-                <p>24/7 Dedicated Customer Support</p>
+                <p>{% blocktrans %}24/7 Dedicated Customer Support{% endblocktrans %}</p>
             </div>
 
         </div>
