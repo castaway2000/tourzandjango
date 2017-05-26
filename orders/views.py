@@ -214,7 +214,7 @@ def tourist_settings_orders(request):
     user = request.user
     tourist = user.touristprofile
     orders = Order.objects.filter(tourist=tourist)
-    return render(request, 'orders/profile_settings_guide_orders.html', locals())
+    return render(request, 'orders/profile_settings_tourist_bookings.html', locals())
 
 
 @login_required()
