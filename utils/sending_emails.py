@@ -74,14 +74,14 @@ class SendingEmail(object):
         elif order.status.id == 2:# agreed
             self.subject = 'Tour %s was aggreed!' % order_naming
         elif order.status.id == 3: # cancelled by tourist
-            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.tourist.user.first_name)
+            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.tourist.user.username)
 
         elif order.status.id == 4: # completed
             self.subject = 'Tour %s was completed!' % order_naming
         elif order.status.id == 5: # waiting for payment
             self.subject = 'Tour %s is waiting for payment!' % order_naming
         elif order.status.id == 6: # cancelled by guide
-            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.guide.user.first_name)
+            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.guide.user.username)
 
         self.message = self.subject
 
