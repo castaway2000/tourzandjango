@@ -8,6 +8,7 @@ from guides.models import GuideProfile, Service
 from tourists.models import TouristProfile
 from django.db.models.signals import post_save
 from django.db.models import Sum
+from utils.sending_emails import SendingEmail
 
 
 class OrderStatus(models.Model):
@@ -71,6 +72,10 @@ class Order(models.Model):
         self.price_after_discount = price_after_discount
 
         self.total_price = price_after_discount + self.additional_services_price
+
+        data = {"order": self}
+        a = SendingEmail(data)
+
         super(Order, self).save(*args, **kwargs)
 
 

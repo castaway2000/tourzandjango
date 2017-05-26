@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'guides',
     'tourists',
     'website_management',
+    'emails',
 
     #external packages
     'allauth',
