@@ -3,11 +3,6 @@ from django.template import Context
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 
-from PIL import Image
-from StringIO import StringIO
-import requests
-import os
-import sys
 from tourzan.settings import FROM_EMAIL
 from emails.models import EmailMessage as OwnEmailMessage
 
@@ -28,14 +23,8 @@ class SendingEmail(object):
 
 
     def sending_email(self):
-        print "enter to sending email"
-
         for index, email in enumerate(self.bcc_emails):
-            print email
-            print index
-
             user = self.users[index]
-
             vars = {
                 'message': self.message,
                 'user': user
@@ -43,7 +32,6 @@ class SendingEmail(object):
 
             print ("before sending emails")
             message = get_template('emails/notification_email.html').render(vars)
-
 
             msg = EmailMessage(
                             self.subject, self.message, from_email=self.from_email,
@@ -59,7 +47,6 @@ class SendingEmail(object):
 
 
     def email_for_order(self):
-        print "email type one"
         self.email_type = 1 #order info
 
         order = self.order

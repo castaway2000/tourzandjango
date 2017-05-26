@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
 from .models import Order
@@ -50,13 +52,10 @@ def making_booking(request):
         price_hourly = price_hourly.replace(",", ".")
     elif tour_id:
         if tour.payment_type.id==1:
-            print "1"
             price_hourly = 0
         elif tour.payment_type.id == 2:
-            print "2"
             kwargs["price"] = tour.price
         else:
-            print "3"
             price_hourly = 0
     else:
         price_hourly = guide.rate
