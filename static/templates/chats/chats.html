@@ -18,19 +18,19 @@
                                     <b>with </b>
                                         {% if request.user.username != chat.guide__username %}
                                             <a href="{% url 'guide' chat.guide__username %}">
-                                                {{ chat.guide__username }} (guide)
+                                                {{ chat.guide__username }} {% blocktrans %}(guide){% endblocktrans %}
                                             </a>
                                         {% else %}
                                             <a href="{% url 'tourist' chat.tourist__username %}">
-                                                {{ chat.tourist__username }} (tourist)
+                                                {{ chat.tourist__username }} {% blocktrans %}(tourist){% endblocktrans %}
                                             </a>
                                         {% endif %}
-                                         <b>started at: </b> {{ chat.created|date:"m.d.Y H:i:s" }}
+                                         <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y H:i:s" }}
                                 </div>
                                 <br>
                                 {% if chat.last_message.text %}
                                     <div>
-                                        <b>Last Message:</b>
+                                        <b>{% blocktrans %}Last Message:{% endblocktrans %}</b>
                                     </div>
                                     <div class="chat-message">
                                         <div class="message-meta-info">
@@ -45,18 +45,18 @@
                                         </div>
                                     </div>
                                 {% else %}
-                                    No last message
+                                    {% blocktrans %}No last message{% endblocktrans %}
                                 {% endif %}
 
                                 <div class="text-right">
-                                    <a class="btn btn-primary" href="{% url 'chat' chat.uuid %}">Go To Conversation</a>
+                                    <a class="btn btn-primary" href="{% url 'chat' chat.uuid %}">{% blocktrans %}Go To Conversation{% endblocktrans %}</a>
                                 </div>
                             </div><!-- end of chat-item -->
                         {% endfor %}
                     </div>
                 {% else %}
                     <div class="chat-container">
-                        <h3>There are no chats so far...</h3>
+                        <h3>{% blocktrans %}There are no chats so far...{% endblocktrans %}</h3>
                     </div>
                 {% endif %}
             </div>

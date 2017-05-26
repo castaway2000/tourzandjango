@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="{% url 'home' %}">Home</a>
+            <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li><a href="/">Some country</a>
             <li><a href="/">{{ tour.city.name }}</a>
@@ -25,8 +26,8 @@
             </header>
             <div class="row">
                 <div class="col-md-8 mb10">
-                    <a href="#write_review" class="btn btn-primary btn-sm">Write Review</a>
-                    <a href="{% url 'chat_creation_tour' tour.id %}" class="btn btn-default btn-sm">Send Message</a>
+                    <a href="#write_review" class="btn btn-primary btn-sm">{% blocktrans %}Write Review{% endblocktrans %}</a>
+                    <a href="{% url 'chat_creation_tour' tour.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
                 </div>
                 <div class="col-md-8">
                     <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
@@ -77,7 +78,7 @@
                         {% if tour.overview  %}
                             {{ tour.overview|linebreaks }}
                         {% else %}
-                            <p class="lead">No tour overview so far...</p>
+                            <p class="lead">{% blocktrans %}No tour overview so far...{% endblocktrans %}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -99,15 +100,15 @@
                             class="form-horizontal
                         {% if request.user.is_anonymous %}user-not-authorized{% endif %}">
                             <h3 class="text-center">
-                                Book {{ tour.name }}
+                                {% blocktrans %}Book{% endblocktrans %} {{ tour.name }}
                             </h3>
 
                             {% if current_order %}
                                 <div id="current_booking_area" class="text-center">
-                                    You have already booked this tour
-                                    <a href="" id="book_more">book more</a>
+                                    {% blocktrans %}You have already booked this tour{% endblocktrans %}
+                                    <a href="" id="book_more">{% blocktrans %}book more{% endblocktrans %}</a>
                                     or
-                                    <a href="{% url 'my_bookings' %}?tour_id={{ tour.id }}">Edit</a>
+                                    <a href="{% url 'my_bookings' %}?tour_id={{ tour.id }}">{% blocktrans %}Edit{% endblocktrans %}</a>
                                 </div>
                             {% endif %}
 
@@ -117,14 +118,14 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
-                                                <label>Booking a tour date:</label>
+                                                <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
                                                 <input class="form-control" name="start" type="text" />
                                             </div>
                                         </div>
                                         <div class="col-md-5 text-center">
                                             {% if tour.payment_type.id == 1 %}
                                                 <div class="form-group form-group- form-group-select-plus">
-                                                    <label>Hours nmb:</label>
+                                                    <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
                                                     <div class="btn-group btn-group-select-num" data-toggle="buttons">
                                                         <label class="btn btn-primary hours-nmb">
                                                             <input type="radio" name="options" value="1"/>1</label>
@@ -160,7 +161,7 @@
                                         </div>
                                         <div class="col-md-3 text-center">
                                             <label> </label>
-                                            <button class="btn btn-primary btn-lg btn-booking">Book Now</button>
+                                            <button class="btn btn-primary btn-lg btn-booking">{% blocktrans %}Book Now{% endblocktrans %}</button>
                                         </div>
                                     </div>
 
@@ -186,7 +187,7 @@
                     </div>
 
                     <div class="review-container">
-                        <h3 class="mb20">Reviews</h3>
+                        <h3 class="mb20">{% blocktrans %}Reviews{% endblocktrans %}</h3>
 
                         {% if reviews %}
                             <ul class="booking-item-reviews list">
@@ -195,7 +196,7 @@
                                 {% endfor %}
                              </ul>
                         {% else %}
-                            <p>No reviews so far...</p>
+                            <p>{% blocktrans %}No reviews so far...{% endblocktrans %}</p>
                         {% endif %}
 
 {#                        <div class="row wrap">#}
@@ -232,16 +233,16 @@
                             {% if not user.is_authenticated %}
                                <p>Please  <a href="/login?next={{ request.path }}">login </a> to leave a review</p>
                             {% else %}
-                                <h3>Write a Review</h3>
+                                <h3>{% blocktrans %}Write a Review{% endblocktrans %}</h3>
                                 <form method="post">{% csrf_token %}
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="form-group">
-                                                <label>Review Title</label>
+                                                <label>{% blocktrans %}Review Title{% endblocktrans %}</label>
                                                 <input class="form-control" type="text" name="name" />
                                             </div>
                                             <div class="form-group">
-                                                <label>Review Text</label>
+                                                <label>{% blocktrans %}Review Text{% endblocktrans %}</label>
                                                 <textarea class="form-control" rows="6" name="text"></textarea>
                                             </div>
                                         </div>
@@ -333,7 +334,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <h3 class="mb20">Other Tours of {{ guide.get_full_name }}</h3>
+                    <h3 class="mb20">{% blocktrans %}Other Tours of{% endblocktrans %} {{ guide.get_full_name }}</h3>
                     <ul class="booking-list">
                         {% for tour in other_tours %}
                             {% include 'users/tour_items_representation.html' %}

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load i18n %}
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 {% endblock %}
@@ -48,7 +48,7 @@
                                             value="{{ request.POST.date_of_birth }}"
                                        {% else %}
                                             value="{{ form.date_of_birth.value|date:'m.d.Y' }}"
-                                       {% endif %}"
+                                       {% endif %}
                                 >
                             </div>
 

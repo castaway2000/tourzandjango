@@ -9,23 +9,23 @@
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="/">Home</a>
+            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
                 <a href="{% url 'my_bookings' %}">
-                    My Orders
+                    {% blocktrans %}My Orders{% endblocktrans %}
                 </a>
             </li>
         </ul>
         <h3 class="booking-title">
             {% if orders_nmb == 0 %}
-                No orders were found
+                {% blocktrans %}No orders were found{% endblocktrans %}
             {% elif orders_nmb == 1 %}
-                {{ orders_nmb }}  order was found!
+                {{ orders_nmb }}  {% blocktrans %}order was found!{% endblocktrans %}
             {% elif orders_nmb > 1 %}
-                {{ orders_nmb }} orders were found
+                {{ orders_nmb }} {% blocktrans %}orders were found{% endblocktrans %}
             {% else %}
-                No orders were found
+                {% blocktrans %}No orders were found{% endblocktrans %}
             {% endif %}
 
         </h3>
@@ -36,7 +36,7 @@
                     <form method="get" action="">
                         <ul class="list booking-filters-list">
                             <li>
-                                <h5 class="booking-filters-title">Price </h5>
+                                <h5 class="booking-filters-title">{% blocktrans %}Price {% endblocktrans %}</h5>
                                 <input type="text" id="price-slider" name="price"
                                        data-min = "0" data-max="300"
                                        {% if request.GET.price %}
@@ -45,7 +45,7 @@
                                 >
                             </li>
                             <li>
-                                <button type="submit" class="btn btn-primary btn-block">Apply</button>
+                                <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
                             </li>
                         </ul>
                      </form>
@@ -89,7 +89,7 @@
 
                                     <div class="row">
                                         <div class="col-md-12 mb10">
-                                            <div><b>Interests:</b></div>
+                                            <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
                                             {% for user_interest in order.guide.user.userinterest_set.all %}
                                                 {% if user_interest.interest.name in interest_input %}
                                                     <span class="label label-success label-tag">
@@ -107,7 +107,7 @@
                                         {% if user_languages %}
                                             <div class="row">
                                                 <div class="col-md-12 mb10">
-                                                    <div><b>Languages:</b></div>
+                                                    <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
                                                     {% for user_language in user_languages %}
                                                         {% if user_language.language in language_input %}
                                                             <span class="label label-success label-tag">
@@ -129,7 +129,7 @@
                                 <div class="col-md-3">
                                     <p>
                                         {% if order.tour %}
-                                            <b>Booked tour:</b><br>
+                                            <b>{% blocktrans %}Booked tour:{% endblocktrans %}</b><br>
                                             <a href="{% url 'tour' order.tour.slug order.tour.id %}">
                                                 {{ order.tour.name }}
                                             </a>
@@ -137,12 +137,12 @@
                                     </p>
                                     <p>
                                         {% if order.tour %}
-                                            <b>Price:</b><br>
+                                            <b>{% blocktrans %}Price:{% endblocktrans %}</b><br>
                                             <span class="booking-item-price tour-booking-price">
                                                 {{ order.price_after_discount }} USD
                                             </span>
                                         {% else %}
-                                            <b>Booked hourly:</b><br>
+                                            <b>{% blocktrans %}Booked hourly:{% endblocktrans %}</b><br>
                                             <span class="booking-item-price tour-booking-price">
                                                 {{ order.price_hourly }} USD/hour
                                             </span>
@@ -152,27 +152,27 @@
 
                                 <div class="col-md-3">
                                     <p>
-                                        <b>Status: </b>{{ order.status.name }}
+                                        <b>{% blocktrans %}Status: {% endblocktrans %}</b>{{ order.status.name }}
                                     </p>
                                     <p>
-                                        <b>Booked: </b>{{ order.date_ordered|date:"m.d.Y" }}
+                                        <b>{% blocktrans %}Booked: {% endblocktrans %}</b>{{ order.date_ordered|date:"m.d.Y" }}
                                     </p>
                                     <p>
-                                        <b>Booked for: </b>{{ order.date_booked_for|date:"m.d.Y" }}
+                                        <b>{% blocktrans %}Booked for: {% endblocktrans %}</b>{{ order.date_booked_for|date:"m.d.Y" }}
                                     </p>
                                     <p>
-                                        <b>Paid: </b>
+                                        <b>{% blocktrans %}Paid: {% endblocktrans %}</b>
                                         {% if order.date_paid %}
                                             {{ order.date_paid|date:"m.d.Y" }}
                                         {% else %}
-                                            No payment yet
+                                            {% blocktrans %}No payment yet{% endblocktrans %}
                                         {% endif %}
                                     </p>
                                     {% if order.status.id != 3 and order.status.id != 6 %}
                                         <p>
                                             <a href="{% url 'cancel_order' order.id %}"
                                                 class="btn btn-danger btn-sm">
-                                                Cancel
+                                                {% blocktrans %}Cancel{% endblocktrans %}
                                             </a>
                                         </p>
                                     {% endif %}
