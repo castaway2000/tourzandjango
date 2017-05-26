@@ -61,7 +61,11 @@
                                 <li><a href="/"><i class="fa fa-camera"></i>My Travel Photos</a>
                                 </li>
 
-                                <li><a href="user-profile-booking-history.html"><i class="fa fa-clock-o"></i>Booking History</a>
+                                <li {% if page == "settings_orders" %}class="active"{% endif %}>
+                                    <a href="{% url 'tourist_settings_orders' %}">
+                                        <i class="fa fa-cog"></i>
+                                        Bookings history
+                                    </a>
                                 </li>
 
                                 <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>Wishlist</a>

@@ -203,7 +203,17 @@ def orders(request, status=None):
 def guide_settings_orders(request):
     page = "settings_orders"
     user = request.user
-    orders = Order.objects.filter(guide=user.guideprofile)
+    guide = user.guideprofile
+    orders = Order.objects.filter(guide=guide)
+    return render(request, 'orders/profile_settings_guide_orders.html', locals())
+
+
+@login_required()
+def tourist_settings_orders(request):
+    page = "settings_orders"
+    user = request.user
+    tourist = user.touristprofile
+    orders = Order.objects.filter(tourist=tourist)
     return render(request, 'orders/profile_settings_guide_orders.html', locals())
 
 
