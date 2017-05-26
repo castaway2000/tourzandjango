@@ -24,4 +24,4 @@ class EmailMessage(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return "%s" % self.name
+        return "%s" % self.email
