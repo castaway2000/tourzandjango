@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load i18n %}
 {% block content %}
 
         <div class="container">
@@ -61,15 +61,11 @@
                                 <li><a href="/"><i class="fa fa-camera"></i>{% blocktrans %}My Travel Photos{% endblocktrans %}</a>
                                 </li>
 
-<<<<<<< HEAD
-                                <li><a href="user-profile-booking-history.html"><i class="fa fa-clock-o"></i>{% blocktrans %}Booking History{% endblocktrans %}</a>
-=======
                                 <li {% if page == "settings_orders" %}class="active"{% endif %}>
                                     <a href="{% url 'tourist_settings_orders' %}">
                                         <i class="fa fa-cog"></i>
                                         Bookings history
                                     </a>
->>>>>>> 452349b6a2dc4a56545d575631851bc910a8eeff
                                 </li>
 
                                 <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>{% blocktrans %}Wishlist{% endblocktrans %}</a>

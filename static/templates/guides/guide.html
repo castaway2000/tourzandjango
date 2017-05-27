@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="{% url 'home' %}">Home</a>
+            <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li><a href="/">Some country</a>
             <li><a href="/">{{ guide.city.name }}</a>
@@ -26,7 +26,7 @@
 
                         {% if guide == request.user.guideprofile and request.session.current_role == "guide"%}
                             <a href="{% url 'settings_router' %}">
-                                 Go to Settings
+                                 {% blocktrans %}Go to Settings{% endblocktrans %}
                              </a>
                         {% endif %}
                     </div>
@@ -41,14 +41,14 @@
                             {% endif %}
                             <div class="mt10 text-center">
                                 {% if guide == request.user.guideprofile %}
-                                    <a href="#write_review" class="btn btn-primary btn-sm" disabled="">Write Review</a>
+                                    <a href="#write_review" class="btn btn-primary btn-sm" disabled="">{% blocktrans %}Write Review{% endblocktrans %}</a>
                                     <a href="{% url 'chat_creation_guide' guide.id %}"
                                        class="btn btn-default btn-sm" disabled="">
-                                        Send Message
+                                        {% blocktrans %}Send Message{% endblocktrans %}
                                     </a>
                                 {% else %}
-                                    <a href="#write_review" class="btn btn-primary btn-sm">Write Review</a>
-                                    <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">Send Message</a>
+                                    <a href="#write_review" class="btn btn-primary btn-sm">{% blocktrans %}Write Review</a>
+                                    <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -56,11 +56,11 @@
                             {% if guide.overview %}
                                 <p>{{ guide.overview|linebreaks }}</p>
                             {% else %}
-                                <p>Some description will be here</p>
+                                <p>{% blocktrans %}Some description will be here{% endblocktrans %}</p>
                             {% endif %}
                             <div>
                                 <hr>
-                                <b>Interests: </b><br>
+                                <b>{% blocktrans %}Interests: {% endblocktrans %}</b><br>
                                 {% if guide.user.userinterest_set.all %}
                                     {% for item in guide.user.userinterest_set.all %}
                                         <span class="label label-default label-tag">
@@ -69,7 +69,7 @@
 {#                                        {{ item.interest.name }}{% if not forloop.last %}, {% endif %}#}
                                     {% endfor %}
                                 {% else %}
-                                    <p>No interests</p>
+                                    <p>{% blocktrans %}No interests{% endblocktrans %}</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -77,7 +77,7 @@
 
                      <div class="row mt20">
                         <div class="col-md-12">
-                            <h3>Services</h3>
+                            <h3>{% blocktrans %}Services{% endblocktrans %}</h3>
                         </div>
                         <div class="col-md-6">
                             {% if guide_services %}
@@ -89,15 +89,15 @@
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p>No additional services...</p>
+                                <p>{% blocktrans %}No additional services...{% endblocktrans %}</p>
                             {% endif %}
                         </div>
                      </div>
                 </div>
                 <div class="col-md-5">
                     <div class="booking-item-meta">
-                        <h2 class="lh1em">Exeptional!</h2>
-                        <h3>97% <small >of guests recommend</small></h3>
+                        <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
+                        <h3>97% <small >{% blocktrans %}of guests recommend{% endblocktrans %}</small></h3>
                         <div class="booking-item-rating">
                             <ul class="icon-list icon-group booking-item-rating-stars">
                                 <li><i class="fa fa-star"></i>
@@ -110,8 +110,8 @@
                                 </li>
                                 <li><i class="fa fa-star"></i>
                                 </li>
-                            </ul><span class="booking-item-rating-number"><b >4.7</b> of 5 <small class="text-smaller">guest rating</small></span>
-                            <p><a class="text-default" href="#">based on 1535 reviews</a>
+                            </ul><span class="booking-item-rating-number"><b >4.7</b> of 5 <small class="text-smaller">{% blocktrans %}guest rating{% endblocktrans %}</small></span>
+                            <p><a class="text-default" href="#">{% blocktrans %}based on{% endblocktrans %} 1535 {% blocktrans %}reviews{% endblocktrans %}</a>
                             </p>
                         </div>
                     </div>
@@ -126,11 +126,11 @@
                         {% if current_order %}
                             <div class="text-center">
                                 <h4 class="text-center">
-                                    You have already booked this guide
+                                    {% blocktrans %}You have already booked this guide{% endblocktrans %}
                                 </h4>
-                                <a href="" id="book_more">book more</a>
+                                <a href="" id="book_more">{% blocktrans %}book more{% endblocktrans %}</a>
                                 or
-                                <a href="{% url 'my_bookings' %}?guide={{ guide.user.username}}">Edit</a>
+                                <a href="{% url 'my_bookings' %}?guide={{ guide.user.username}}">{% blocktrans %}Edit{% endblocktrans %}</a>
                             </div>
                         {% endif %}
 
@@ -146,7 +146,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
-                                                <label>Booking a tour date:</label>
+                                                <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
                                                 <input class="form-control" name="start" type="text" />
                                             </div>
                                         </div>
@@ -156,7 +156,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group form-group- form-group-select-plus">
-                                            <label>Persons nmb:</label>
+                                            <label>{% blocktrans %}Persons nmb:{% endblocktrans %}</label>
                                             <div class="btn-group btn-group-select-num" data-toggle="buttons">
                                                 <label class="btn btn-primary">
                                                     <input type="radio" name="options" />1</label>
@@ -189,7 +189,7 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group form-group- form-group-select-plus">
-                                            <label>Hours nmb:</label>
+                                            <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
                                             <div class="btn-group btn-group-select-num" data-toggle="buttons">
                                                 <label class="btn btn-primary hours-nmb">
                                                     <input type="radio" name="options" value="1"/>1</label>
@@ -222,7 +222,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group text-right">
-                                     <button type="submit" class="btn btn-primary btn-lg">Book Now</button>
+                                     <button type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Book Now{% endblocktrans %}</button>
                                 </div>
                             </form>
                         </div>
@@ -235,7 +235,7 @@
 
             <div class="row row-wrap">
                 <div class="col-md-8">
-                    <h3 class="mb20">Reviews</h3>
+                    <h3 class="mb20">{% blocktrans %}Reviews{% endblocktrans %}</h3>
                     {% if reviews %}
                         <ul class="booking-item-reviews list">
                             {% for review in reviews %}
@@ -243,7 +243,7 @@
                             {% endfor %}
                          </ul>
                     {% else %}
-                        <p>No reviews so far...</p>
+                        <p>{% blocktrans %}No reviews so far...{% endblocktrans %}</p>
                     {% endif %}
 
 {#                    <div class="row wrap">#}
@@ -279,18 +279,18 @@
                     <div class="gap gap-small"></div>
                     <div class="box bg-gray" id="write_review">
                         {% if not user.is_authenticated %}
-                           <p>Please  <a href="/login?next={{ request.path }}">login </a> to leave a review</p>
+                           <p>Please  <a href="/login?next={{ request.path }}">{% blocktrans %}login {% endblocktrans %}</a> {% blocktrans %}to leave a review{% endblocktrans %}</p>
                         {% else %}
-                            <h3>Write a Review</h3>
+                            <h3>{% blocktrans %}Write a Review{% endblocktrans %}</h3>
                             <form method="post">{% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="form-group">
-                                            <label>Review Title</label>
+                                            <label>{% blocktrans %}Review Title{% endblocktrans %}</label>
                                             <input class="form-control" type="text" name="name" />
                                         </div>
                                         <div class="form-group">
-                                            <label>Review Text</label>
+                                            <label>{% blocktrans %}Review Text{% endblocktrans %}</label>
                                             <textarea class="form-control" rows="6" name="text"></textarea>
                                         </div>
                                     </div>
@@ -380,7 +380,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <h3 class="mb20">Tours</h3>
+                    <h3 class="mb20">{% blocktrans %}Tours{% endblocktrans %}</h3>
                     <ul class="booking-list">
                         {% for tour in tours %}
                             {% include 'users/tour_items_representation.html' %}

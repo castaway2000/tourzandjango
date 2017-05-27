@@ -33,7 +33,7 @@
         <div class="row">
             <div class="col-md-3">
                 <aside class="booking-filters text-white">
-                    <h3>{% blocktrans %}Filter By:</h3>
+                    <h3>{% blocktrans %}Filter By:{% endblocktrans %}</h3>
                     <form id="filtering_form" method="get" action="">
                         <input id="order_results_input" name="order_results" class="hidden"
                                value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
