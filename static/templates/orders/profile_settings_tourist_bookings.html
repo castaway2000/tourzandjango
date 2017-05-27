@@ -1,0 +1,20 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <h4>My Bookings</h4>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="booking-list">
+                    {% for order in orders %}
+                        {% include 'orders/booking_representation.html' %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
