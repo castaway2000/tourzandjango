@@ -148,6 +148,8 @@ def tourist(request, username):
     orders = Order.objects.filter(tourist=tourist).order_by('-id')
     tours = tourist.order_set.all().order_by("-id")
 
+    travel_photos = user.touristtravelphoto_set.all().order_by("-id")
+
     reviews = Review.objects.all()
     return render(request, 'tourists/tourist.html', locals())
 

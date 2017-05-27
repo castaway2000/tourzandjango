@@ -4,19 +4,19 @@
     <div class="booking-item booking-item-small">
         <div class="row">
             <div class="col-xs-4">
-                <img {% if tour.image %}
-                        src="{% get_media_prefix %}{{ tour.image }}"
+                <img {% if order.tour and order.tour.image %}
+                        src="{% get_media_prefix %}{{ order.tour.image }}"
                      {% else %}
                         src="{% static 'img/300x300.png' %}"
                      {% endif %}
-                     alt="{{ tour.name }}" title="{{ tour.name }}" />
-                Rating: {{ tour.rating }}
+                     alt="{{ order.tour.name }}" title="{{ order.tour.name }}" />
+                Rating: {{ order.tour.rating }}
             </div>
             <div class="col-xs-4">
-                <h5 class="booking-item-title">{{ tour.name }}</h5>
+                <h5 class="booking-item-title">{{ order.tour.name }}</h5>
 
                 <span>
-                    by {{ tour.guide.user.username }}
+                    by {{ order.guide.user.username }}
                 </span>
 
                 <ul class="icon-group booking-item-rating-stars">
@@ -34,18 +34,24 @@
             </div>
             <div class="col-xs-4 text-center">
                 <p class="booking-item-price">
-                    {% if tour.payment_type_id == 1 %}
-                        {{ tour.price_hourly }} {{ tour.currency.name }} / hour
-                    {% elif tour.payment_type_id == 2 %}
-                        {{ tour.price }} {{ tour.currency.name }}
+                    {% if order.price_hourly %}
+                        {{ order.price_hourly }} {{ order.guide.currency.name }} / hour
+                    {% elif order.price > 0 %}
+                        {{ order.price }} {{ order.price }}
                     {% else %}
                         free!
                     {% endif %}
                 </p>
                 <p>
-                    <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary btn-xs">
-                        Go to Tour
-                    </a>
+                    {% if order.tour %}
+                        <a href="{% url 'tour' order.tour.slug order.tour.id %}" class="btn btn-primary btn-xs">
+                            Go to Tour
+                        </a>
+                    {% elif order.guide %}
+                        <a href="{% url 'guide' order.guide.user.username %}" class="btn btn-primary btn-xs">
+                            Go to Guide
+                        </a>
+                    {% endif %}
                 </p>
             </div>
         </div>
