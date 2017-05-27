@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
@@ -7,6 +8,7 @@ from users.models import Interest, UserInterest
 from orders.models import *
 from tours.models import *
 from users.models import UserLanguage, LanguageLevel
+from django.contrib import messages
 
 
 @login_required()
@@ -144,11 +146,39 @@ def tourist(request, username):
     tourist = user.touristprofile
 
     orders = Order.objects.filter(tourist=tourist).order_by('-id')
-    order_ids = [item.id for item in orders]
+    tours = tourist.order_set.all().order_by("-id")
 
-    tours_ids = [item.tour.id for item in orders]
-    tours = Tour.objects.filter(id__in=tours_ids).order_by("-rating")
+    travel_photos = user.touristtravelphoto_set.all().order_by("-id")
 
-    reviews = Review.objects.filter(id__in=order_ids, is_from_tourist=True, is_active=True)
+    reviews = Review.objects.all()
+    return render(request, 'tourists/tourist.html', locals())
 
-    return render(request, 'users/tourist.html', locals())
+
+@login_required()
+def travel_photos(request):
+    page = "profile_travel_photos"
+    user = request.user
+    profile, created = TouristProfile.objects.get_or_create(user=user)
+    travel_photos = user.touristtravelphoto_set.all().order_by("-id")
+    form = TouristTravelPhotoForm(request.POST or None, request.FILES or None)
+
+    if request.POST:
+        images = request.FILES.getlist('image')
+        for image in images:
+            TouristTravelPhoto.objects.create(user=user, image=image)
+        travel_photos = user.touristtravelphoto_set.all().order_by("-id")
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'tourists/travel_photos.html', locals())
+
+
+def deleting_travel_photo(request, photo_id):
+    user = request.user
+    try:
+        TouristTravelPhoto.objects.filter(id=photo_id, user=user).delete()
+        messages.success(request, 'Successfully deleted!')
+    except Exception as e:
+        print (e)
+        messages.error(request, 'You do not have permissions to perform this action!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

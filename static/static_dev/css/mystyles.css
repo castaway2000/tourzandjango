@@ -210,3 +210,8 @@
 .booking-item.booking-item-small .booking-item-price {
     font-size: 15px;
 }
+
+.profile-info-top {
+    padding: 20px;
+    margin-top: 15px;
+}

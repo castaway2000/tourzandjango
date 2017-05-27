@@ -1,0 +1,51 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <h4>Travel Photos</h4>
+        <div id="popup-gallery">
+            <div class="row row-col-gap">
+                {% if travel_photos %}
+
+                    <div class="col-md-12">
+                        <a class="btn btn-primary popup-text" href="#managing_photo_modal"
+                            data-effect="mfp-zoom-out">
+                            Add Photo
+                        </a>
+                    </div>
+
+                    {% for travel_photo in travel_photos %}
+                        <div class="col-md-3">
+                            <a class="hover-img popup-gallery-image" href="{% get_media_prefix %}{{ travel_photo.image }}"
+                               data-effect="mfp-zoom-out">
+                                <img src="{% get_media_prefix %}{{ travel_photo.image }}"
+                                     alt="Image Alternative text"
+                                     title="Gaviota en el Top" />
+                                <i class="fa fa-plus round box-icon-small hover-icon i round"></i>
+                            </a>
+                            <div class="hover-inner hover-inner-block hover-inner-bottom hover-inner-bg-black
+                                hover-inner-sm hover-hold">
+                                <div class="text-small">
+                                    <a href="{% url 'deleting_travel_photo' travel_photo.id %}" rel="tooltip" data-placement="top"
+                                       title="delete this photo"
+                                       data-original-title="remove">
+                                       <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <a class="btn btn-primary popup-text" href="#managing_photo_modal"
+                        data-effect="mfp-zoom-out">
+                        Add Your First Photo
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% include 'tourists/modals/new_photo_modal.html' %}
+
+{% endblock content_profile %}

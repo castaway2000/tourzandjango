@@ -8,6 +8,10 @@ urlpatterns = [
     # url(r'^profile_photos/(?P<username>\w+)/$', views.profile_photos, name='profile_photos'),
 
     url(r'^profile_settings/tourist/$', views.profile_settings_tourist, name='profile_settings_tourist'),
+    url(r'^profile_settings/travel_photos/$', views.travel_photos, name='travel_photos'),
+    url(r'^profile_settings/deleting_travel_photo/(?P<photo_id>\w+)/$', views.deleting_travel_photo,
+        name='deleting_travel_photo'),
+
     url(r'^tourists/(?P<username>\w+)/overview/$', views.tourist, name='tourist'),
 
 ]

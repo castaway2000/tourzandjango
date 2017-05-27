@@ -58,13 +58,16 @@
                                 <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>{% blocktrans %}Credit/Debit Cards{% endblocktrans %}</a>
                                 </li>
 
-                                <li><a href="/"><i class="fa fa-camera"></i>{% blocktrans %}My Travel Photos{% endblocktrans %}</a>
+                                <li {% if page == "profile_travel_photos" %}class="active"{% endif %}>
+                                    <a href="{% url 'travel_photos' %}"><i class="fa fa-camera"></i>
+                                        {% blocktrans %}My Travel Photos{% endblocktrans %}
+                                    </a>
                                 </li>
 
                                 <li {% if page == "settings_orders" %}class="active"{% endif %}>
                                     <a href="{% url 'tourist_settings_orders' %}">
                                         <i class="fa fa-cog"></i>
-                                        Bookings history
+                                        {% blocktrans %}Bookings history{% endblocktrans %}
                                     </a>
                                 </li>
 

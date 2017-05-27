@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-27 10:09+0000\n"
+"POT-Creation-Date: 2017-05-27 10:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,22 +16,18 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: localization_explanation.txt:11
 msgid "Welcome to my project!"
-msgstr "Добро пожаловать в проект!"
+msgstr ""
 
 #: localization_explanation.txt:15
-#, fuzzy
-#| msgid "Welcome to my project!"
 msgid ""
 "\n"
 "            \"Welcome to my project!\"\n"
 "        "
-msgstr "Добро пожаловать в проект!"
+msgstr ""
 
 #: static/templates/account/account_inactive.html:5
 #: static/templates/account/account_inactive.html:8
@@ -321,10 +317,8 @@ msgid "Login/Register on Tourzan"
 msgstr ""
 
 #: static/templates/account/signup.html:41
-#, fuzzy
-#| msgid "Welcome to my project!"
 msgid "Welcome to Tourzan"
-msgstr "Добро пожаловать в проект!"
+msgstr ""
 
 #: static/templates/account/signup.html:42
 msgid ""
@@ -660,10 +654,8 @@ msgid "Write a Review"
 msgstr ""
 
 #: static/templates/guides/guide.html:289 static/templates/tours/tour.html:241
-#, fuzzy
-#| msgid "view all"
 msgid "Review Title"
-msgstr "смотреть все"
+msgstr ""
 
 #: static/templates/guides/guide.html:293 static/templates/tours/tour.html:245
 msgid "Review Text"
@@ -1142,10 +1134,8 @@ msgid "Make main"
 msgstr ""
 
 #: static/templates/tours/profile_settings_guide_tours.html:12
-#, fuzzy
-#| msgid "Best Free Tours"
 msgid "Create Tour"
-msgstr "Лучшие бесплатные экскурсии"
+msgstr ""
 
 #: static/templates/tours/profile_settings_guide_tours.html:41
 msgid "Active"
@@ -1177,10 +1167,8 @@ msgid "Tour Editing"
 msgstr ""
 
 #: static/templates/tours/profile_settings_guide_tours.html:90
-#, fuzzy
-#| msgid "Best Free Tours"
 msgid "Delete Tour"
-msgstr "Лучшие бесплатные экскурсии"
+msgstr ""
 
 #: static/templates/tours/tour.html:81
 msgid "No tour overview so far..."
@@ -1272,7 +1260,7 @@ msgstr ""
 
 #: static/templates/users/home.html:406 static/templates/users/home.html:417
 msgid "view all"
-msgstr "смотреть все"
+msgstr ""
 
 #: static/templates/users/home.html:416
 msgid " Explore Our Top Tours"
@@ -1312,7 +1300,7 @@ msgstr ""
 
 #: tourzan/settings.py:158
 msgid "English"
-msgstr "English"
+msgstr ""
 
 #: tourzan/settings.py:159
 msgid "Spanish"
@@ -1332,4 +1320,4 @@ msgstr ""
 
 #: tourzan/settings.py:163
 msgid "Russian"
-msgstr "Russian"
+msgstr ""
