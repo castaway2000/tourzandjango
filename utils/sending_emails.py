@@ -47,10 +47,14 @@ class SendingEmail(object):
 
 
     def email_for_order(self):
+        print ("email_for_order")
         self.email_type = 1 #order info
 
         order = self.order
-        tour = order.tour
+
+        tour = order.tour if order.tour_id else None
+        print (tour)
+
         if tour:
             order_naming = '"%s"' % order.tour.name
         else:

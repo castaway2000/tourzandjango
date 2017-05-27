@@ -91,11 +91,22 @@
                         </a>
                     {% endif %}
                 </p>
-                <p>
-                     <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger btn-sm">
-                         Cancel
-                    </a>
-                </p>
+                {% if order.status.id != 3 and order.status.id != 6 %}
+                    <p>
+                        <a href="{% url 'cancel_order' order.id %}"
+                            class="btn btn-danger btn-sm">
+                            Cancel
+                        </a>
+                    </p>
+                {% endif %}
+                {% if order.status.id == 4 or  order.status.id == 2 %}
+                     <p>
+                        <a href="{% url 'change_order_status' order.id 7 %}"
+                            class="btn btn-danger btn-sm">
+                            Mark as Payed
+                        </a>
+                    </p>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -103,10 +103,26 @@
                 </p>
                 <p>
                     <a href="{% url 'tourist' order.tourist.user.username %}"
-                        class="btn btn-primary btn-sm">
+                        class="btn btn-default btn-sm">
                         Go to Tourist Profile
                     </a>
                 </p>
+                {% if order.status.id == 1 %}
+                     <p>
+                        <a href="{% url 'change_order_status' order.id 2 %}"
+                            class="btn btn-success btn-sm">
+                            Agree Order
+                        </a>
+                    </p>
+                {% endif %}
+                {% if order.status.id == 4 or  order.status.id == 2 %}
+                     <p>
+                        <a href="{% url 'change_order_status' order.id 5 %}"
+                            class="btn btn-success btn-sm">
+                            Mark as Payed
+                        </a>
+                    </p>
+                {% endif %}
                 {% if order.status.id != 3 and order.status.id != 6 %}
                     <p>
                         <a href="{% url 'cancel_order' order.id %}"

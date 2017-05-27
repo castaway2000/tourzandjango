@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from tourists.models import TouristProfile
 from django.contrib import messages
 from tours.models import Tour
+from utils.statuses_changing_rules import checking_statuses
 
 
 @login_required()
@@ -247,5 +248,54 @@ def cancel_order(request, order_id):
             messages.error(request, 'You have no permissions for this action!')
 
 
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def change_order_status(request, order_id, status_id):
+    print ("change order status")
+    user = request.user
+
+    current_role = request.session.get("current_role")
+    if current_role == "tourist" or not current_role:
+        #check if a user is a tourist in an order
+        try:
+            tourist = user.touristprofile
+            order = Order.objects.get(id=order_id, tourist=tourist)
+
+            # checking status transition consistancy for preventing hacking
+            checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
+            print (checking)
+            if checking == False:
+                messages.error(request, 'You have no permissions for this action!')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            order.status_id = status_id
+            order.save(force_update=True)
+            messages.success(request, 'Order has been successfully cancelled!')
+        except:
+            messages.error(request, 'You have no permissions for this action!')
+    else:
+        #check if a user is a guide
+        try:
+            guide = user.guideprofile
+            order = Order.objects.get(id=order_id, guide=guide)
+
+            # checking status transition consistancy for preventing hacking
+            checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
+            print (checking)
+            if checking == False:
+                messages.error(request, 'You have no permissions for this action!')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            print ("3")
+            print (status_id)
+            order.status_id = status_id
+            print ("4")
+            order.save(force_update=True)
+            messages.success(request, 'Order has been successfully cancelled!')
+        except Exception as e:
+            print (e)
+            messages.error(request, 'You have no permissions for this action!')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
