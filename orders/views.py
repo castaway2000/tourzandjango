@@ -205,7 +205,7 @@ def guide_settings_orders(request):
     page = "settings_orders"
     user = request.user
     guide = user.guideprofile
-    orders = Order.objects.filter(guide=guide)
+    orders = Order.objects.filter(guide=guide).order_by("-id")
     return render(request, 'orders/profile_settings_guide_orders.html', locals())
 
 
@@ -214,7 +214,7 @@ def tourist_settings_orders(request):
     page = "settings_orders"
     user = request.user
     tourist = user.touristprofile
-    orders = Order.objects.filter(tourist=tourist)
+    orders = Order.objects.filter(tourist=tourist).order_by("-id")
     return render(request, 'orders/profile_settings_tourist_bookings.html', locals())
 
 

@@ -123,11 +123,19 @@
                         </a>
                     </p>
                 {% endif %}
-                {% if order.status.id != 3 and order.status.id != 6 %}
+                {% if order.status.id == 1 and order.status.id == 2 %}
                     <p>
                         <a href="{% url 'cancel_order' order.id %}"
                             class="btn btn-danger btn-sm">
                             Cancel
+                        </a>
+                    </p>
+                {% endif %}
+                {% if order.status.id == 5 %}
+                    <p>
+                        <a class="btn btn-primary btn-sm popup-text" href="#writing_feedback_modal"
+                        data-effect="mfp-zoom-out">
+                            Write feedback
                         </a>
                     </p>
                 {% endif %}
