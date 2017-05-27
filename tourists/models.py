@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 #tourist profile which is created by default for all users
 class TouristProfile(models.Model):
     user = models.OneToOneField(User)
+    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     image = models.ImageField(upload_to="users/images", blank=True, null=True, default=None)
     about = models.TextField(max_length=5000, blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)

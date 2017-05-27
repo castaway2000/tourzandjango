@@ -12,7 +12,6 @@ urlpatterns = [
     url(r'^profile_settings/deleting_travel_photo/(?P<photo_id>\w+)/$', views.deleting_travel_photo,
         name='deleting_travel_photo'),
 
-
     url(r'^tourists/(?P<username>\w+)/overview/$', views.tourist, name='tourist'),
 
 ]
