@@ -16,7 +16,7 @@ class TouristProfile(models.Model):
         return "%s" % self.user.username
 
 
-class TouristTravelPhotos(models.Model):
+class TouristTravelPhoto(models.Model):
     user = models.ForeignKey(User)
     image = models.ImageField(upload_to="tourist/travel_photos")
     order = models.ForeignKey("orders.Order", blank=True, null=True, default=None)

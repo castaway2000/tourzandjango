@@ -58,7 +58,10 @@
                                 <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
                                 </li>
 
-                                <li><a href="/"><i class="fa fa-camera"></i>My Travel Photos</a>
+                                <li {% if page == "profile_travel_photos" %}class="active"{% endif %}>
+                                    <a href="{% url 'travel_photos' %}"><i class="fa fa-camera"></i>
+                                        My Travel Photos
+                                    </a>
                                 </li>
 
                                 <li {% if page == "settings_orders" %}class="active"{% endif %}>
