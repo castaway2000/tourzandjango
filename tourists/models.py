@@ -14,3 +14,17 @@ class TouristProfile(models.Model):
 
     def __unicode__(self):
         return "%s" % self.user.username
+
+
+class TouristTravelPhotos(models.Model):
+    user = models.ForeignKey(User)
+    image = models.ImageField(upload_to="tourist/travel_photos")
+    order = models.ForeignKey("orders.Order", blank=True, null=True, default=None)
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __unicode__(self):
+        return "%s" % self.user.username
+
+
