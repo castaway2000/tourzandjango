@@ -10,36 +10,36 @@
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="/">Home</a>
+            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
                 <a href="{% url 'my_bookings' %}">
-                    Tours
+                    {% blocktrans %}Tours{% endblocktrans %}
                 </a>
             </li>
         </ul>
         <h3 class="booking-title">
             {% if tours_nmb == 0 %}
-                No tours were found
+                {% blocktrans %}No tours were found{% endblocktrans %}
             {% elif tours_nmb == 1 %}
-                {{ tours_nmb }}  tours was found!
+                {{ tours_nmb }}  {% blocktrans %}tours was found!{% endblocktrans %}
             {% elif tours_nmb > 1 %}
-                {{ tours_nmb }} tours were found
+                {{ tours_nmb }} {% blocktrans %}tours were found{% endblocktrans %}
             {% else %}
-                No tours were found
+                {% blocktrans %}No tours were found{% endblocktrans %}
             {% endif %}
 
         </h3>
         <div class="row">
             <div class="col-md-3">
                 <aside class="booking-filters text-white">
-                    <h3>Filter By:</h3>
+                    <h3>{% blocktrans %}Filter By:{% endblocktrans %}</h3>
                     <form id="filtering_form" method="get" action="">
                         <input id="order_results_input" name="order_results" class="hidden"
                                value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
                         <ul class="list booking-filters-list">
                             <li>
-                                <h5 class="booking-filters-title">City</h5>
+                                <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
 
                                 <select class="form-control select2" id="city_input" name="city_input"
                                         data-search_url="{% url 'search_city' %}">
@@ -49,7 +49,7 @@
                                 </select>
                             </li>
                             <li>
-                                <h5 class="booking-filters-title">Guide</h5>
+                                <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
 
                                 <select class="form-control select2" id="guide_input" name="guide_input"
                                         data-search_url="{% url 'search_guide' %}">
@@ -59,13 +59,13 @@
                                 </select>
                             </li>
                             <li>
-                                <h5 class="booking-filters-title">Price per hour</h5>
+                                <h5 class="booking-filters-title">{% blocktrans %}Price per hour{% endblocktrans %}</h5>
                                 <div class="checkbox">
                                     <label>
                                         <input class="i-check" type="checkbox" name="is_hourly_price_included"
                                         {% if request.GET.is_hourly_price_included or not request.GET %} checked {% endif %}
                                         >
-                                        Include hourly price offers
+                                        {% blocktrans %}Include hourly price offers{% endblocktrans %}
                                     </label>
                                 </div>
                                 <input type="text" id="price-slider-1" name="hourly_price"
@@ -76,13 +76,13 @@
                                 >
                             </li>
                             <li>
-                                <h5 class="booking-filters-title">Fixed price </h5>
+                                <h5 class="booking-filters-title">{% blocktrans %}Fixed price {% endblocktrans %}</h5>
                                 <div class="checkbox">
                                     <label>
                                         <input class="i-check" type="checkbox" name="is_fixed_price_included"
                                         {% if request.GET.is_fixed_price_included or not request.GET %} checked {% endif %}
                                         >
-                                        Include fixed-prices offers
+                                        {% blocktrans %}Include fixed-prices offers{% endblocktrans %}
                                     </label>
                                 </div>
                                 <input type="text" id="price-slider-2" name="fixed_price"
@@ -98,12 +98,12 @@
                                         <input class="i-check" type="checkbox" name="is_free_offers_included"
                                         {% if request.GET.is_free_offers_included or not request.GET %} checked {% endif %}
                                         >
-                                        Include FREE offers
+                                        {% blocktrans %}Include FREE offers{% endblocktrans %}
                                     </label>
                                 </div>
                             </li>
                             <li>
-                                <button type="submit" class="btn btn-primary btn-block">Apply</button>
+                                <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
                             </li>
                         </ul>
                      </form>
@@ -115,30 +115,30 @@
                         {% with request.GET.order_results as order_results %}
                             <h5 class="booking-sort-title">
                                 {% if not order_results or order_results == "price" %}
-                                    <a href="#">Sort: Price (low to high)<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-price" %}
-                                    <a href="#">Sort: Price (high to low)<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "rating" %}
-                                    <a href="#">Sort: Rating (low to high)<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-rating" %}
-                                    <a href="#">Sort: Rating (high to low)<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+                                    <a href="#">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
                                 {% endif %}
                             </h5>
                             <ul class="nav-drop-menu" id="sorting_area">
                                 {% if order_results and order_results != "price" %}
-                                    <li><a href="#" data-order_value="price">Price (low to high)</a>
+                                    <li><a href="#" data-order_value="price">{% blocktrans %}Price (low to high){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-price" %}
-                                    <li><a href="#" data-order_value="-price">Price (high to low)</a>
+                                    <li><a href="#" data-order_value="-price">{% blocktrans %}Price (high to low){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "rating" %}
-                                    <li><a href="#" data-order_value="rating">Rating (low to high)</a>
+                                    <li><a href="#" data-order_value="rating">{% blocktrans %}Rating (low to high){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-rating" %}
-                                    <li><a href="#" data-order_value="-rating">Rating (high to low)</a>
+                                    <li><a href="#" data-order_value="-rating">{% blocktrans %}Rating (high to low){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
 
@@ -176,25 +176,25 @@
                                 </div>
                                 <div class="col-md-3 col-sm-3">
                                     <div class="tour-rating">
-                                        <b>Rating: </b> {{ tour.rating }}
+                                        <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
                                     </div>
                                     <p class="tour-price">
-                                        <b>Price: </b>
+                                        <b>{% blocktrans %}Price: {% endblocktrans %}</b>
                                         {% if tour.payment_type_id == 1 %}
                                             {{ tour.price_hourly }} {{ tour.currency.name }} / hour
                                         {% elif tour.payment_type_id == 2 %}
                                             {{ tour.price }} {{ tour.currency.name }}
                                         {% elif tour.payment_type_id == 3 %}
-                                            Free!
+                                            {% blocktrans %}Free!{% endblocktrans %}
                                         {% endif %}
                                         <br>
                                         {% if tour.min_hours %}
-                                             <b>Min hours:</b> {{ tour.min_hours }}
+                                             <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}
                                         {% endif %}
                                     </p>
                                     <p>
                                         <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary">
-                                            Go to Tour
+                                            {% blocktrans %}Go to Tour{% endblocktrans %}
                                         </a>
                                     </p>
                                 </div>

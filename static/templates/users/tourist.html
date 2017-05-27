@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <div class="container">
+
+        <div class="booking-item-details">
+            <header class="booking-item-header">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h2 class="lh1em">
+                            {{ tourist.user.first_name }} {{ guide.user.last_name }} ({{ tourist.user.username }})
+                        </h2>
+
+                        {% if tourist == request.user.profile and request.session.current_role != "touris" %}
+                            <a href="{% url 'settings_router' %}">
+                                 {% blocktrans %}Go to Settings{% endblocktrans %}
+                             </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </header>
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                     <div class="row">
+                        <div class="col-md-4">
+                            {% if tourist.image %}
+                                <img src="{{ tourist.image.url }}" class="img-responsive">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h3>About</h3>
+                            {% if tourist.about %}
+                                <p>{{ tourist.about|linebreaks }}</p>
+                            {% else %}
+                                <p>Some description will be here</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h3>{% blocktrans %}Interests{% endblocktrans %}</h3>
+                            {% if user.userinterest_set.all %}
+                                {% for item in user.userinterest_set.all %}
+                                    {{ item.interest.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <p>{% blocktrans %}No interests{% endblocktrans %}</p>
+                            {% endif %}
+                        </div>
+                     </div>
+
+                    <div class="gap gap-small"></div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3 class="mb20">{% blocktrans %}Reviews{% endblocktrans %}</h3>
+                            {% if reviews %}
+                                <ul class="booking-item-reviews list">
+                                    {% for review in reviews %}
+                                        {% include 'users/review_representation.html' %}
+                                    {% endfor %}
+                                </ul>
+
+                                <div class="row wrap">
+                                    <div class="col-md-5">
+                                        <p><small>1358 reviews on this property. &nbsp;&nbsp;Showing 1 to 7</small>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <ul class="pagination">
+                                            <li class="active"><a href="#">1</a>
+                                            </li>
+                                            <li><a href="#">2</a>
+                                            </li>
+                                            <li><a href="#">3</a>
+                                            </li>
+                                            <li><a href="#">4</a>
+                                            </li>
+                                            <li><a href="#">5</a>
+                                            </li>
+                                            <li><a href="#">6</a>
+                                            </li>
+                                            <li><a href="#">7</a>
+                                            </li>
+                                            <li class="dots">...</li>
+                                            <li><a href="#">43</a>
+                                            </li>
+                                            <li class="next"><a href="#">{% blocktrans %}Next Page{% endblocktrans %}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p>{% blocktrans %}No reviews so far...{% endblocktrans %}</p>
+                            {% endif %}
+
+                        </div>
+                        <div class="col-md-4">
+                            <h3 class="mb20">Tours</h3>
+                            {% if tours %}
+                                <ul class="booking-list">
+                                    {% for tour in tours %}
+                                        {% include 'users/tour_items_representation.html' %}
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No tours so far...</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="gap gap-small"></div>
+    </div>
+
+{% endblock %}
+
+

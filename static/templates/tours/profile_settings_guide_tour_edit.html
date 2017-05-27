@@ -1,5 +1,6 @@
 {% extends 'base_profile.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content_profile %}
     <div class="col-md-9">
@@ -7,12 +8,12 @@
             <div class="row">
 
                 <div class="col-md-8">
-                    <h4>Tour Editing page</h4>
+                    <h4>{% blocktrans %}Tour Editing page{% endblocktrans %}</h4>
 
                     <span id="tour_id" class="hidden">{{ tour.id }}</span>
 
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                        <label>Name:</label>
+                        <label>{% blocktrans %}Name:{% endblocktrans %}</label>
                         <span>{{ form.name.errors }}</span>
                         <input class="form-control" name="{{ form.name.html_name }}"
                             {% if form.name.value %}
@@ -22,7 +23,7 @@
                     </div>
 
                     <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
-                        <label>Overview</label>
+                        <label>{% blocktrans %}Overview{% endblocktrans %}</label>
                         <textarea rows="7" maxlength="50000"
                                   placeholder="Add here tour overview"
                                   name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
@@ -32,17 +33,17 @@
                         <label>
                           <input type="checkbox" name="{{ form.is_active.html_name }}"
                               {% if form.is_active.value %}checked{% endif %}
-                          > Is active
+                          >{% blocktrans %} Is active{% endblocktrans %}
                         </label>
                     </div>
 
                 </div>
 
                 <div class="col-md-4">
-                    <h4>Pricing</h4>
+                    <h4>{% blocktrans %}Pricing{% endblocktrans %}</h4>
 
                     <div class="form-group">
-                        <label>Payment type: </label>
+                        <label>{% blocktrans %}Payment type: {% endblocktrans %}</label>
                         <select class="form-control" id="payment_type" name="{{ form.payment_type.html_name }}">
                             {% for payment_type in payment_types %}
                                 <option value="{{ payment_type.id }}"
@@ -55,7 +56,7 @@
 
                     <div id="hourly_area" class="hidden">
                         <div class="form-group">
-                            <label>Currency: </label>
+                            <label>{% blocktrans %}Currency: {% endblocktrans %}</label>
                             <select class="form-control" id="currency" name="currency">
                                 {% for currency in currencies %}
                                     <option value="{{ currency.id }}">{{ currency.name }}</option>
@@ -64,13 +65,13 @@
                         </div>
 
                         <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                            <label>Price Hourly:</label>
+                            <label>{% blocktrans %}Price Hourly:{% endblocktrans %}</label>
                             <input type="number" step="0.01" class="form-control"
                                    name="price_hourly" value="{{ tour.price_hourly|safe }}">
                         </div>
 
                         <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                            <label>Minimum Hours duration:</label>
+                            <label>{% blocktrans %}Minimum Hours duration:{% endblocktrans %}</label>
                             <input type="number" class="form-control"
                                    name="min_hours" value="{{ tour.min_hours }}">
                         </div>
@@ -80,7 +81,7 @@
                     <div id="fixed_area" class="hidden">
 
                         <div class="form-group">
-                            <label>Currency: </label>
+                            <label>{% blocktrans %}Currency: {% endblocktrans %}</label>
                             <select class="form-control" id="currency" name="currency">
                                 {% for currency in currencies %}
                                     <option value="{{ currency.id }}">{{ currency.name }}</option>
@@ -89,13 +90,13 @@
                         </div>
 
                         <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                            <label>Price:</label>
+                            <label>{% blocktrans %}Price:{% endblocktrans %}</label>
                             <input type="number" step="0.01" class="form-control"
                                    name="price" value="{{ tour.price|safe }}">
                         </div>
 
                         <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                            <label>Hours duration:</label>
+                            <label>{% blocktrans %}Hours duration:{% endblocktrans %}</label>
                             <input type="number" class="form-control"
                                    name="hours" value="{{ tour.hours }}">
                         </div>
@@ -103,19 +104,19 @@
                     </div>
 
                     <div>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
                     </div>
 
                 </div>
 
                 <div class="col-lg-12">
                     <div class="form-group">
-                        <label>Add Image</label>
+                        <label>{% blocktrans %}Add Image{% endblocktrans %}</label>
                         <input type="file" name="new_images" multiple>
                     </div>
 
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
                     </div>
                 </div>
 
@@ -123,8 +124,8 @@
                     {% if tour %}
                         <div class="form-group">
                             {% if tours_images %}
-                                <button class="btn btn-danger" id="button_delete_image" data-action="{% url 'deactivate_tour_image' %}">Delete Image</button>
-                                <button class="btn btn-success" id="button_make_main_image" data-action="{% url 'make_main_tour_image' %}">Make main</button>
+                                <button class="btn btn-danger" id="button_delete_image" data-action="{% url 'deactivate_tour_image' %}">{% blocktrans %}Delete Image{% endblocktrans %}</button>
+                                <button class="btn btn-success" id="button_make_main_image" data-action="{% url 'make_main_tour_image' %}">{% blocktrans %}Make main{% endblocktrans %}</button>
                                 <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                                     {% for tour_image in tours_images %}
                                         <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"

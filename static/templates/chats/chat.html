@@ -13,13 +13,13 @@
                         <h3>{{ chat.topic }}</h3>
                     </div>
                     <div>
-                        <b>with </b>
+                        <b>{% blocktrans %}with {% endblocktrans %}</b>
                             {% if request.user != chat.guide %}
-                                {{ chat.guide.username }} (guide)
+                                {{ chat.guide.username }} {% blocktrans %}(guide){% endblocktrans %}
                             {% else %}
-                                {{ chat.tourist.username }} (tourist)
+                                {{ chat.tourist.username }} {% blocktrans %}(tourist){% endblocktrans %}
                             {% endif %}
-                             <b>started at: </b> {{ chat.created|date:"m.d.Y" }}
+                             <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
                     </div>
 
                     <div id="messages_area">
@@ -47,7 +47,7 @@
                                 <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
                             </div>
                             <div class="form-group text-right">
-                                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                                <button type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Submit{% endblocktrans %}</button>
                             </div>
                         </form>
                     </div>

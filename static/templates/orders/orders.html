@@ -9,23 +9,28 @@
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="/">Home</a>
+            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
+<<<<<<< HEAD
+                <a href="{% url 'my_bookings' %}">
+                    {% blocktrans %}My Orders{% endblocktrans %}
+=======
                 <a href="{% url 'orders' %}">
                     My Orders
+>>>>>>> 9a5279053861396aac97ffe1f3df43a324206bd8
                 </a>
             </li>
         </ul>
         <h3 class="booking-title">
             {% if orders_nmb == 0 %}
-                No orders were found
+                {% blocktrans %}No orders were found{% endblocktrans %}
             {% elif orders_nmb == 1 %}
-                {{ orders_nmb }}  order was found!
+                {{ orders_nmb }}  {% blocktrans %}order was found!{% endblocktrans %}
             {% elif orders_nmb > 1 %}
-                {{ orders_nmb }} orders were found
+                {{ orders_nmb }} {% blocktrans %}orders were found{% endblocktrans %}
             {% else %}
-                No orders were found
+                {% blocktrans %}No orders were found{% endblocktrans %}
             {% endif %}
 
         </h3>
@@ -36,7 +41,7 @@
                     <form method="get" action="">
                         <ul class="list booking-filters-list">
                             <li>
-                                <h5 class="booking-filters-title">Price </h5>
+                                <h5 class="booking-filters-title">{% blocktrans %}Price {% endblocktrans %}</h5>
                                 <input type="text" id="price-slider" name="price"
                                        data-min = "0" data-max="300"
                                        {% if request.GET.price %}
@@ -45,7 +50,7 @@
                                 >
                             </li>
                             <li>
-                                <button type="submit" class="btn btn-primary btn-block">Apply</button>
+                                <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
                             </li>
                         </ul>
                      </form>

@@ -1,5 +1,6 @@
 {% extends 'base_profile.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content_profile %}
     <div class="col-md-9">
@@ -8,7 +9,7 @@
 
                 <div class="text-left mb10">
                     <a href="{% url 'guide_settings_tour_create' %}" class="btn btn-primary">
-                        Create Tour
+                        {% blocktrans %}Create Tour{% endblocktrans %}
                     </a>
                 </div>
 
@@ -31,15 +32,15 @@
                                 <div class="col-md-6 col-sm-6">
                                     <div>
                                         <span class="tour-rating pull-right">
-                                            <b>Rating: </b> {{ tour.rating }}
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
                                         </span>
                                     </div>
                                     <div class="tour-name">
                                         {{ tour.name }}
                                         {% if tour.is_active %}
-                                            <span class="label label-primary label-sm">Active</span>
+                                            <span class="label label-primary label-sm">{% blocktrans %}Active{% endblocktrans %}</span>
                                         {% else %}
-                                            <span class="label label-danger label-sm">Not Active</span>
+                                            <span class="label label-danger label-sm">{% blocktrans %}Not Active{% endblocktrans %}</span>
                                         {% endif %}
                                     </div>
                                     <div class="tour-guide-name">
@@ -47,21 +48,21 @@
                                     </div>
                                     <div>
                                         <span class="tour-price">
-                                            <b>Price: </b>
+                                            <b>{% blocktrans %}Price: {% endblocktrans %}</b>
                                             {% if tour.payment_type_id == 1 %}
                                                 {{ tour.price_hourly }} {{ tour.currency.name }} / hour
                                             {% elif tour.payment_type_id == 2 %}
                                                 {{ tour.price }} {{ tour.currency.name }}
                                             {% elif tour.payment_type_id == 3 %}
-                                                Free!
+                                                {% blocktrans %}Free!{% endblocktrans %}
                                             {% endif %}
 
                                             {% if tour.min_hours %}
                                                  - min {{ tour.min_hours }}
                                                 {% if tour.min_hours == 1 %}
-                                                    hour
+                                                    {% blocktrans %}hour{% endblocktrans %}
                                                 {% else %}
-                                                    hours
+                                                    {% blocktrans %}hours{% endblocktrans %}
                                                 {% endif %}
                                             {% endif %}
 
@@ -77,16 +78,16 @@
                                     <div>
                                         <p>
                                             <a class="btn btn-primary" href="{% url 'tour' tour.slug tour.id %}">
-                                                Tour Page
+                                                {% blocktrans %}Tour Page{% endblocktrans %}
                                             </a>
                                         </p>
                                         <p>
                                             <a class="btn btn-success" href="{% url 'guide_settings_tour_edit' tour.slug tour.id %}">
-                                                Tour Editing
+                                                {% blocktrans %}Tour Editing{% endblocktrans %}
                                             </a>
                                         </p>
                                         <p>
-                                            <a class="btn btn-danger" href="{% url 'tour_deleting' tour.id %}">Delete Tour</a>
+                                            <a class="btn btn-danger" href="{% url 'tour_deleting' tour.id %}">{% blocktrans %}Delete Tour{% endblocktrans %}</a>
                                         </p>
                                     </div>
                                 </div>

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load i18n %}
 {% block content %}
 
         <div class="container">
-            <h1 class="page-title">Account Settings</h1>
+            <h1 class="page-title">{% blocktrans %}Account Settings{% endblocktrans %}</h1>
         </div>
 
         <div class="container">
@@ -35,11 +35,11 @@
                             <p>Member Since {{ user.date_joined|date:"M Y"}}</p>
 
                             {% if request.session.current_role == "tourist" and request.user.guideprofile %}
-                                <a href="{% url 'change_role_settings' 'guide' %}">Switch to Guide Profile</a>
+                                <a href="{% url 'change_role_settings' 'guide' %}">{% blocktrans %}Switch to Guide Profile{% endblocktrans %}</a>
                             {% elif not request.session.current_role and request.user.guideprofile %}
-                                <a href="{% url 'change_role_settings' 'guide' %}">Switch to Guide Profile</a>
+                                <a href="{% url 'change_role_settings' 'guide' %}">{% blocktrans %}Switch to Guide Profile{% endblocktrans %}</a>
                             {% elif request.session.current_role == "guide" %}
-                                 <a href="{% url 'change_role_settings' 'tourist' %}">Switch to Tourist Profile</a>
+                                 <a href="{% url 'change_role_settings' 'tourist' %}">{% blocktrans %}Switch to Tourist Profile{% endblocktrans %}</a>
                             {% endif %}
 
                         </div>
@@ -48,60 +48,55 @@
 
                             {% if request.session.current_role == "tourist" or not request.session.current_role %}
                                 <li {% if page == "profile_settings_tourist" %}class="active"{% endif %}><a href="{% url 'profile_settings_tourist' %}">
-                                    <i class="fa fa-cog"></i>Tourist Profile Settings</a>
+                                    <i class="fa fa-cog"></i>{% blocktrans %}Tourist Profile Settings{% endblocktrans %}</a>
                                 </li>
 
                                 <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
-                                    <i class="fa fa-cog"></i>General Settings</a>
+                                    <i class="fa fa-cog"></i>{% blocktrans %}General Settings{% endblocktrans %}</a>
                                 </li>
 
-                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
+                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>{% blocktrans %}Credit/Debit Cards{% endblocktrans %}</a>
                                 </li>
 
                                 <li {% if page == "profile_travel_photos" %}class="active"{% endif %}>
                                     <a href="{% url 'travel_photos' %}"><i class="fa fa-camera"></i>
-                                        My Travel Photos
+                                        {% blocktrans %}My Travel Photos{% endblocktrans %}
                                     </a>
                                 </li>
 
                                 <li {% if page == "settings_orders" %}class="active"{% endif %}>
                                     <a href="{% url 'tourist_settings_orders' %}">
                                         <i class="fa fa-cog"></i>
-                                        Bookings history
+                                        {% blocktrans %}Bookings history{% endblocktrans %}
                                     </a>
                                 </li>
 
-                                <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>Wishlist</a>
+                                <li><a href="user-profile-wishlist.html"><i class="fa fa-heart-o"></i>{% blocktrans %}Wishlist{% endblocktrans %}</a>
                                 </li>
                             {% endif %}
 
 
                             {% if request.session.current_role == "guide" %}
                                 <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings_guide' %}">
-                                    <i class="fa fa-cog"></i>Guide Profile Settings</a>
+                                    <i class="fa fa-cog"></i>{% blocktrans %}Guide Profile Settings{% endblocktrans %}</a>
                                 </li>
 
                                 <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
-                                    <i class="fa fa-cog"></i>General Settings</a>
+                                    <i class="fa fa-cog"></i>{% blocktrans %}General Settings{% endblocktrans %}</a>
                                 </li>
 
-                                <li {% if page == "settings_tours" %}class="active"{% endif %}><a href="{% url 'guide_settings_tours' %}"><i class="fa fa-cog"></i>Tours</a>
+                                <li {% if page == "settings_tours" %}class="active"{% endif %}><a href="{% url 'guide_settings_tours' %}"><i class="fa fa-cog"></i>{% blocktrans %}Tours{% endblocktrans %}</a>
                                 </li>
 
-                                <li {% if page == "settings_orders" %}class="active"{% endif %}><a href="{% url 'guide_settings_orders' %}"><i class="fa fa-cog"></i>Orders</a>
+                                <li {% if page == "settings_orders" %}class="active"{% endif %}><a href="{% url 'guide_settings_orders' %}"><i class="fa fa-cog"></i>{% blocktrans %}Orders{% endblocktrans %}</a>
                                 </li>
 
-                                <li><a href="user-profile-cards.html"><i class="fa fa-cog"></i>Payments history</a>
+                                <li><a href="user-profile-cards.html"><i class="fa fa-cog"></i>{% blocktrans %}Payments history{% endblocktrans %}</a>
                                 </li>
-
-
-                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>Credit/Debit Cards</a>
+                                
+                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>{% blocktrans %}Credit/Debit Cards{% endblocktrans %}</a>
                                 </li>
-
-
                             {% endif %}
-
-
                         </ul>
                     </aside>
                 </div>

@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load i18n %}
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-lg-offset-3">
                 <div class="jumbotron mt10">
                     <h3 class="text-center">
-                        To create Guide Profile click a button bellow.
+                        {% blocktrans %}To create Guide Profile click a button bellow.{% endblocktrans %}
                     </h3>
-                    <p>If you click this button you agree with terms and conditions</p>
+                    <p>{% blocktrans %}If you click this button you agree with terms and conditions{% endblocktrans %}</p>
 
                     <div class="text-center mb10">
                         <img src="{% static 'img/tourzan_logo_white.jpg' %}" class="logo-md">
@@ -17,7 +17,7 @@
 
                     <div class="text-center">
                         <a href="{% url 'guide_registration' %}" class="btn btn-primary">
-                            Create Guide Profile
+                            {% blocktrans %}Create Guide Profile{% endblocktrans %}
                         </a>
                     </div>
                 </div>
