@@ -41,7 +41,6 @@
                             {% endif %}
                             <div class="mt10 text-center">
                                 {% if guide == request.user.guideprofile %}
-                                    <a href="#write_review" class="btn btn-primary btn-sm" disabled="">{% blocktrans %}Write Review{% endblocktrans %}</a>
                                     <a href="{% url 'chat_creation_guide' guide.id %}"
                                        class="btn btn-default btn-sm" disabled="">
                                         {% blocktrans %}Send Message{% endblocktrans %}
@@ -92,8 +91,17 @@
                 </div>
                 <div class="col-md-5">
                     <div class="booking-item-meta">
-                        <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
-                        <h3>97% <small >{% blocktrans %}of guests recommend{% endblocktrans %}</small></h3>
+                        <h2 class="lh1em">{% blocktrans %}Great!{% endblocktrans %}</h2>
+                        <h3>
+                            {% if guide.orders_with_review_rate == 100.00 %}
+                                {{ guide.orders_with_review_rate|floatformat }}%
+                            {% else %}
+                                {{ guide.orders_with_review_rate }}%
+                            {% endif %}
+                            <small>
+                                {% blocktrans %}of tours were reviewed {% endblocktrans %}
+                            </small>
+                        </h3>
                         <div class="booking-item-rating">
                             <ul class="icon-list icon-group booking-item-rating-stars">
                                 <li><i class="fa fa-star"></i>
@@ -106,8 +114,21 @@
                                 </li>
                                 <li><i class="fa fa-star"></i>
                                 </li>
-                            </ul><span class="booking-item-rating-number"><b >4.7</b> of 5 <small class="text-smaller">{% blocktrans %}guest rating{% endblocktrans %}</small></span>
-                            <p><a class="text-default" href="#">{% blocktrans %}based on{% endblocktrans %} 1535 {% blocktrans %}reviews{% endblocktrans %}</a>
+                            </ul>
+                            <span class="booking-item-rating-number">
+                                <b>{{ guide.rating }}</b>
+                                of 5
+                                <small class="text-smaller">{% blocktrans %}tourist rating{% endblocktrans %}</small>
+                            </span>
+                            <p>
+                                <a class="text-default" href="#">
+                                    {% blocktrans %}based on{% endblocktrans %} {{ guide.orders_with_review_nmb }}
+                                    {% if guide.orders_with_review_nmb == 1 %}
+                                        {% blocktrans %}review{% endblocktrans %}
+                                    {% else %}
+                                        {% blocktrans %}reviews{% endblocktrans %}
+                                    {% endif %}
+                                </a>
                             </p>
                         </div>
                     </div>

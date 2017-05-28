@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from guides.models import GuideProfile, Service
 from tourists.models import TouristProfile
 from django.db.models.signals import post_save
-from django.db.models import Sum
+from django.db.models import Sum, Count, Avg
 from crequest.middleware import CrequestMiddleware
 from utils.sending_emails import SendingEmail
 
@@ -82,6 +82,23 @@ class Order(models.Model):
         a = SendingEmail(data)
 
         super(Order, self).save(*args, **kwargs)
+
+
+"""
+saving ratings from review to Order object
+"""
+def order_post_save(sender, instance, created, **kwargs):
+    guide = instance.guide
+
+    statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
+        .aggregate(rating=Avg("rating_guide"), reviews_nmb=Count("id"))
+    print (statistic_info)
+
+    guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
+    guide.rating = statistic_info["rating"]
+    guide.save(force_update=True)
+
+post_save.connect(order_post_save, sender=Order)
 
 
 
@@ -163,7 +180,6 @@ def review_post_save(sender, instance, created, **kwargs):
     order = instance.order
     order.rating_tourist = instance.guide_rating
     order.rating_guide = instance.tourist_rating
-    print ("rating_tourist: %s" % instance.guide_rating)
     order.save(force_update=True)
 
 post_save.connect(review_post_save, sender=Review)

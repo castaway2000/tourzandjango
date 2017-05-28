@@ -14,7 +14,6 @@ class GuideProfile(models.Model):
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
@@ -26,6 +25,17 @@ class GuideProfile(models.Model):
     profile_image = models.ImageField(upload_to="guides/profile_images", blank=True, null=True, default="guides/profile_images/300x300.png")
     optional_image = models.ImageField(upload_to="guides/optional_images", blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
+
+    #statistic data
+    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
+    orders_nmb = models.IntegerField(default=0)
+    orders_completed_nmb = models.IntegerField(default=0)
+    orders_with_review_nmb = models.IntegerField(default=0)
+    orders_with_review_rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)# from total orders_completed_nmb
+
+    orders_reviewed_nmb = models.IntegerField(default=0)
+
 
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -42,6 +52,9 @@ class GuideProfile(models.Model):
             date_of_birth = self.date_of_birth
             age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
             self.age = age
+
+        self.orders_with_review_rate = (self.orders_with_review_nmb/self.orders_completed_nmb)*100
+
         super(GuideProfile, self).save(*args, **kwargs)
 
 

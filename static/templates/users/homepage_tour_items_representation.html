@@ -1,0 +1,26 @@
+{% load static %}
+
+<div class="col-md-3">
+    <div class="thumb">
+        <header class="thumb-header">
+            <a href="{% url 'tour' tour.slug tour.id %}" class="hover-img curved">
+                <img class="guide-image-small"
+                {% if tour.image %}
+                     src="{% get_media_prefix %}{{ tour.image }}"
+                {% else %}
+                     src="{% static 'img/300x300.png' %}"
+                {% endif %}
+                     alt="Image of {{ tour.name }}"
+                     title="{{ tour.name }}" />
+            </a>
+        </header>
+        <div class="thumb-caption">
+            <h4 class="thumb-title">{{ tour.name }}</h4>
+            {% if tour.overview %}
+                <p class="thumb-desc">{{ tour.overview|truncatewords:20 }}</p>
+            {% else %}
+                <p>Some decription will be here</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
