@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
@@ -168,6 +174,18 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <select multiple class="form-control" id="addtional_services_select">
+                                        <option>Select additional services</option>
+                                        {% for guide_service in guide_services %}
+                                            <option value="{{ guide_service.id }}">
+                                                {{ guide_service.service__name }}
+                                            </option>
+                                        {% endfor %}
+
+                                     </select>
                                 </div>
 
                                 <div class="row">
@@ -410,3 +428,10 @@
     </div>
 
 {% endblock %}
+
+{% block js_stuff %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script>
+        $('#addtional_services_select').select2();
+    </script>
+{% endblock js_stuff %}

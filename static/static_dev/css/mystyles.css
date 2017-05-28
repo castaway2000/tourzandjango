@@ -219,3 +219,12 @@
 #feedback_form #rating{
     width: 100px;
 }
+
+.select2-selection{
+    min-height: 35px;
+    border: solid black 1px;
+}
+
+.select2-selection__arrow{
+    display: none;
+}
