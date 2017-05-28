@@ -8,7 +8,10 @@
                 <a class="booking-item-review-person-avatar round" href="#">
                     <img src="{% get_media_prefix %}{{ review.order.guide.profile_image }}"/>
                 </a>
-                <p class="booking-item-review-person-name"><a href="#">{{ review.order.guide.user.username }}</a>
+                <p class="booking-item-review-person-name">
+                    <a href="{% url 'guide' review.order.guide.user.username %}">
+                        {{ review.order.guide.user.username }}
+                    </a>
                 </p>
                 <p class="booking-item-review-person-loc">{{ review.order.guide.city.name }}</p>
                 <small>
