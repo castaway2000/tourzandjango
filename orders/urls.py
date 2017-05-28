@@ -16,4 +16,6 @@ urlpatterns = [
     url(r'^cancel_order/(?P<order_id>\w+)/$', views.cancel_order, name='cancel_order'),
     url(r'^change_order_status/(?P<order_id>\w+)/(?P<status_id>\w+)/$', views.change_order_status,
         name='change_order_status'),
+
+    url(r'^saving_review/$', views.saving_review, name='saving_review'),
 ]

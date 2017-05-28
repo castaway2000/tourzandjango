@@ -157,6 +157,35 @@ $(document).ready(function(){
         console.log($('#booking_form_area'));
     });
 
+
+    $(".btn-order-review").magnificPopup({
+            type: 'inline', // set source type (image default)
+            removalDelay: 500, // delay removal by X to allow out-animation,
+            midClick: true, // Allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source in href
+            callbacks: {
+                //beforeOpen: function(e) {
+                //  // Set Magnific Animation
+                //  var Animation = "mfp-rotateLeft";
+                //  this.st.mainClass = Animation;
+                //
+                //  // Inform content container there is an animation
+                //  this.contentContainer.addClass('mfp-with-anim');
+                //},
+
+                open: function(){
+
+                    console.log("open");
+                    var $triggerEl = $(this.st.el);
+                    var order_id = $triggerEl.data("order_id");
+                    console.log(order_id);
+
+                    var self = $.magnificPopup.instance;
+                    self.contentContainer.find('#order_id').val(order_id)
+
+                }
+            }
+    });
+
 });
 
 $('.datepicker').datepicker();

@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
-from .models import Order
+from .models import Order, Review
 from locations.models import City
 from guides.models import GuideProfile
 from datetime import datetime
@@ -12,6 +12,7 @@ from tourists.models import TouristProfile
 from django.contrib import messages
 from tours.models import Tour
 from utils.statuses_changing_rules import checking_statuses
+import datetime
 
 
 @login_required()
@@ -195,7 +196,8 @@ def orders(request, status=None):
 
         orders_nmb = orders.count()
         return render(request, 'orders/orders.html', locals())
-    except:
+    except Exception as e:
+        print (e)
         messages.error(request, 'You have no permissions for this action!')
         return HttpResponseRedirect(reverse("home"))
 
@@ -297,5 +299,54 @@ def change_order_status(request, order_id, status_id):
         except Exception as e:
             print (e)
             messages.error(request, 'You have no permissions for this action!')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def saving_review(request):
+    if request.POST:
+        user = request.user
+        data = request.POST
+
+        order_id = data.get("order_id")
+        name = data.get("title")
+        text = data.get("feedback")
+        rating = data.get("rating")
+
+        #for adding a possibility to edit a review later
+        review_id = data.get("review_id")
+
+        if order_id:
+            order = Order.objects.get(id=order_id)
+
+            kwargs = {}
+            dt_now = datetime.datetime.utcnow()
+            if order.guide.user == user or order.tourist.user == user:
+                if order.guide.user == user:
+                    guide_kwargs = {
+                        "guide_feedback_name": name,
+                        "guide_feedback": text,
+                        "guide_rating": rating,
+                        "is_guide_feedback": True,
+                        "guide_review_created": dt_now,
+                        "guide_review_updated": dt_now
+                    }
+                    kwargs = dict(kwargs, **guide_kwargs)
+                if order.tourist.user == user:
+                    tourist_kwargs = {
+                        "tourist_feedback_name": name,
+                        "tourist_feedback": text,
+                        "tourist_rating": rating,
+                        "is_tourist_feedback": True,
+                        "tourist_review_created": dt_now,
+                        "tourist_review_updated": dt_now
+                    }
+                    kwargs = dict(kwargs, **tourist_kwargs)
+            else:
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            Review.objects.update_or_create(order_id=order_id, defaults=kwargs)
+            messages.success(request, 'Review has been successfully created!')
+
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -36,3 +36,12 @@ class PaymentAdmin(admin.ModelAdmin):
         model = Payment
 
 admin.site.register(Payment, PaymentAdmin)
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Review._meta.fields]
+
+    class Meta:
+        model = Review
+
+admin.site.register(Review, ReviewAdmin)

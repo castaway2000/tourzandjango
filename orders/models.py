@@ -8,6 +8,7 @@ from guides.models import GuideProfile, Service
 from tourists.models import TouristProfile
 from django.db.models.signals import post_save
 from django.db.models import Sum
+from crequest.middleware import CrequestMiddleware
 from utils.sending_emails import SendingEmail
 
 
@@ -67,6 +68,10 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
 
+        #preventing creating of the order if guide and tourist is the same user
+        # if not self.pk and self.guide.user == self.tourist.user:
+        #     return False
+
         #calculating tour price
         price_after_discount = self.price - self.discount
         self.price_after_discount = price_after_discount
@@ -125,19 +130,40 @@ class Payment(models.Model):
 class Review(models.Model):
     order = models.ForeignKey(Order, blank=True, null=True, default=None)
 
-    name = models.CharField(max_length=256, blank=True, null=True, default=None)
-    text = models.TextField(blank=True, null=True, default=None)
-    rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    guide_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    guide_feedback = models.TextField(blank=True, null=True, default=None)
+    guide_rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    is_guide_feedback = models.BooleanField(default=False)
+    guide_review_created = models.DateTimeField(blank=True, null=True, default=None)
+    guide_review_updated = models.DateTimeField(blank=True, null=True, default=None)
 
-    is_from_tourist = models.BooleanField(default=False)
-    is_from_guide = models.BooleanField(default=False)
 
-    is_active = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    tourist_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    tourist_feedback = models.TextField(blank=True, null=True, default=None)
+    tourist_rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    is_tourist_feedback = models.BooleanField(default=False)
+    tourist_review_created = models.DateTimeField(blank=True, null=True, default=None)
+    tourist_review_updated = models.DateTimeField(blank=True, null=True, default=None)
 
     def __unicode__(self):
         if self.order:
             return "%s" % self.order.tour.name
         else:
             return "%s" % self.id
+
+
+    def save(self, *args, **kwargs):
+        super(Review, self).save(*args, **kwargs)
+
+
+"""
+saving ratings from review to Order object
+"""
+def review_post_save(sender, instance, created, **kwargs):
+    order = instance.order
+    order.rating_tourist = instance.guide_rating
+    order.rating_guide = instance.tourist_rating
+    print ("rating_tourist: %s" % instance.guide_rating)
+    order.save(force_update=True)
+
+post_save.connect(review_post_save, sender=Review)
