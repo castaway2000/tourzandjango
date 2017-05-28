@@ -107,6 +107,14 @@
                         </a>
                     </p>
                 {% endif %}
+                {% if order.status.id == 5 %}
+                    <p>
+                        <a class="btn btn-primary btn-sm popup-text btn-order-review" href="#writing_feedback_modal"
+                        data-effect="mfp-zoom-out" data-order_id="{{ order.id }}">
+                            Write feedback
+                        </a>
+                    </p>
+                {% endif %}
             </div>
         </div>
     </div>
