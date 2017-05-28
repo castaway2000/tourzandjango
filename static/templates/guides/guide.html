@@ -72,27 +72,23 @@
                                     <p>{% blocktrans %}No interests{% endblocktrans %}</p>
                                 {% endif %}
                             </div>
+
+                            <div class="services_area">
+                                <hr>
+                                <b>{% blocktrans %}Services: {% endblocktrans %}</b><br>
+                                {% if guide_services %}
+                                    {% for guide_service in guide_services %}
+                                        <span class="label label-default label-tag">
+                                            {{ guide_service.service__name }}
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>{% blocktrans %}No additional services...{% endblocktrans %}</p>
+                                {% endif %}
+                            </div>
                         </div>
                      </div>
 
-                     <div class="row mt20">
-                        <div class="col-md-12">
-                            <h3>{% blocktrans %}Services{% endblocktrans %}</h3>
-                        </div>
-                        <div class="col-md-6">
-                            {% if guide_services %}
-                                <ul class="booking-item-features booking-item-features-expand mb30 clearfix">
-                                    {% for guide_service in guide_services %}
-                                        <li>
-                                            <i class="im im-user-check"></i><span class="booking-item-feature-title">{{ guide_service.service__name }}</span>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>{% blocktrans %}No additional services...{% endblocktrans %}</p>
-                            {% endif %}
-                        </div>
-                     </div>
                 </div>
                 <div class="col-md-5">
                     <div class="booking-item-meta">
@@ -383,7 +379,7 @@
                     <h3 class="mb20">{% blocktrans %}Tours{% endblocktrans %}</h3>
                     <ul class="booking-list">
                         {% for tour in tours %}
-                            {% include 'users/tour_items_representation.html' %}
+                            {% include 'guides/tour_items_representation.html' %}
                         {% endfor %}
                     </ul>
                 </div>
