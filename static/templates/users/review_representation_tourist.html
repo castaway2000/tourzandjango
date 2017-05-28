@@ -1,0 +1,47 @@
+{% load static %}
+{% load i18n %}
+
+<li>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="booking-item-review-person">
+                <a class="booking-item-review-person-avatar round" href="#">
+                    <img src="{% get_media_prefix %}{{ review.order.guide.profile_image }}"/>
+                </a>
+                <p class="booking-item-review-person-name"><a href="#">{{ review.order.guide.user.username }}</a>
+                </p>
+                <p class="booking-item-review-person-loc">{{ review.order.guide.city }}</p>
+                <small>
+                    <a href="#">
+                        14 Reviews
+                    </a>
+                </small>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="booking-item-review-content">
+                <ul class="icon-group booking-item-rating-stars">
+                    <li><i class="fa fa-star"></i>
+                    </li>
+                    <li><i class="fa fa-star"></i>
+                    </li>
+                    <li><i class="fa fa-star"></i>
+                    </li>
+                    <li><i class="fa fa-star"></i>
+                    </li>
+                    <li><i class="fa fa-star"></i>
+                    </li>
+                </ul>
+                <h5>{{ review.guide_feedback_name }}</h5>
+                <p>
+                    {{ review.guide_feedback_text|safe }}
+                </p>
+
+{#                <p class="booking-item-review-rate">{% blocktrans %}Was this review helpful?{% endblocktrans %}#}
+{#                    <a class="fa fa-thumbs-o-up box-icon-inline round" href="#"></a><b class="text-color"> 18</b>#}
+{#                </p>#}
+
+            </div>
+        </div>
+    </div>
+</li>

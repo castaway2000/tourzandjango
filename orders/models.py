@@ -131,7 +131,7 @@ class Review(models.Model):
     order = models.ForeignKey(Order, blank=True, null=True, default=None)
 
     guide_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
-    guide_feedback = models.TextField(blank=True, null=True, default=None)
+    guide_feedback_text = models.TextField(blank=True, null=True, default=None)
     guide_rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_guide_feedback = models.BooleanField(default=False)
     guide_review_created = models.DateTimeField(blank=True, null=True, default=None)
@@ -139,7 +139,7 @@ class Review(models.Model):
 
 
     tourist_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
-    tourist_feedback = models.TextField(blank=True, null=True, default=None)
+    tourist_feedback_text = models.TextField(blank=True, null=True, default=None)
     tourist_rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_tourist_feedback = models.BooleanField(default=False)
     tourist_review_created = models.DateTimeField(blank=True, null=True, default=None)

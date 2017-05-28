@@ -150,7 +150,7 @@ def tourist(request, username):
 
     travel_photos = user.touristtravelphoto_set.all().order_by("-id")
 
-    reviews = Review.objects.all()
+    reviews = Review.objects.filter(order__tourist=tourist, is_guide_feedback=True)
     return render(request, 'tourists/tourist.html', locals())
 
 

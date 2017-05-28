@@ -325,7 +325,7 @@ def saving_review(request):
                 if order.guide.user == user:
                     guide_kwargs = {
                         "guide_feedback_name": name,
-                        "guide_feedback": text,
+                        "guide_feedback_text": text,
                         "guide_rating": rating,
                         "is_guide_feedback": True,
                         "guide_review_created": dt_now,
@@ -335,7 +335,7 @@ def saving_review(request):
                 if order.tourist.user == user:
                     tourist_kwargs = {
                         "tourist_feedback_name": name,
-                        "tourist_feedback": text,
+                        "tourist_feedback_text": text,
                         "tourist_rating": rating,
                         "is_tourist_feedback": True,
                         "tourist_review_created": dt_now,
