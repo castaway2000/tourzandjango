@@ -22,9 +22,9 @@
             {% if items_nmb == 0 %}
                {% blocktrans %}No guides were found{% endblocktrans %}
             {% elif items_nmb == 1 %}
-                {{ items_nmb }}  guide was found!{% endblocktrans %}
+                {{ items_nmb }}  {% blocktrans %}guide was found!{% endblocktrans %}
             {% elif items_nmb > 1 %}
-                {{ items_nmb }} guides were found{% endblocktrans %}
+                {{ items_nmb }} {% blocktrans %}guides were found{% endblocktrans %}
             {% else %}
                 {% blocktrans %}No guides were found{% endblocktrans %}
             {% endif %}
