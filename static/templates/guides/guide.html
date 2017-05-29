@@ -84,7 +84,7 @@
                                 {% if guide_services %}
                                     {% for guide_service in guide_services %}
                                         <span class="label label-default label-tag">
-                                            {{ guide_service.service__name }}
+                                            {{ guide_service.service.name }}
                                         </span>
                                     {% endfor %}
                                 {% else %}
@@ -177,15 +177,24 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <select multiple class="form-control" id="addtional_services_select">
-                                        <option>Select additional services</option>
-                                        {% for guide_service in guide_services %}
-                                            <option value="{{ guide_service.id }}">
-                                                {{ guide_service.service__name }}
-                                            </option>
-                                        {% endfor %}
-
-                                     </select>
+                                    <div class="row">
+                                        <div class="col-lg-7">
+                                            <label>Select additional services</label>
+                                            <select multiple class="form-control" id="addtional_services_select">
+                                                <option>Select additional services</option>
+                                                {% for guide_service in guide_services %}
+                                                    <option value="{{ guide_service.id }}">
+                                                        {{ guide_service.service.name }} -
+                                                        {% if guide_service.price == 0 %}
+                                                            free
+                                                        {% else %}
+                                                            {{ guide_service.price }}USD
+                                                        {% endif %}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">

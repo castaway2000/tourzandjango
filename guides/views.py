@@ -166,7 +166,7 @@ def guide(request, username):
 
     reviews = Review.objects.filter(order__guide=guide, is_tourist_feedback=True)
 
-    guide_services = GuideService.objects.filter(guide=guide).values("service__name")
+    guide_services = GuideService.objects.filter(guide=guide)
 
     if request.POST:
         data = request.POST
