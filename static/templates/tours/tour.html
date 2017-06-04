@@ -192,7 +192,7 @@
                         {% if reviews %}
                             <ul class="booking-item-reviews list">
                                 {% for review in reviews %}
-                                    {% include 'users/review_representation.html' %}
+                                    {% include 'users/review_representation_guide.html' %}
                                 {% endfor %}
                              </ul>
                         {% else %}
@@ -231,7 +231,7 @@
                         <div class="gap gap-small"></div>
                         <div class="box bg-gray" id="write_review">
                             {% if not user.is_authenticated %}
-                               <p>Please  <a href="/login?next={{ request.path }}">login </a> to leave a review</p>
+                               <p>Please  <a href="{% url 'login' %}?next={{ request.path }}">login </a> to leave a review</p>
                             {% else %}
                                 <h3>{% blocktrans %}Write a Review{% endblocktrans %}</h3>
                                 <form method="post">{% csrf_token %}
@@ -337,7 +337,7 @@
                     <h3 class="mb20">{% blocktrans %}Other Tours of{% endblocktrans %} {{ guide.get_full_name }}</h3>
                     <ul class="booking-list">
                         {% for tour in other_tours %}
-                            {% include 'users/tour_items_representation.html' %}
+                            {% include 'guides/tour_items_representation.html' %}
                         {% endfor %}
                     </ul>
                 </div>

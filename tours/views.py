@@ -185,13 +185,18 @@ def tour(request, slug, tour_id):
 
     tour = Tour.objects.get(id=tour_id, slug=slug)
     guide = tour.guide
-    tourist = user.touristprofile
+
+    try:
+        tourist = user.touristprofile
+        current_order = Order.objects.filter(tourist=tourist, tour_id=tour_id).last()
+    except:
+        pass
 
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
-    reviews = Review.objects.filter(order__guide=guide, is_active=True, is_from_tourist=True)
+    reviews = Review.objects.filter(order__tour=tour, is_tourist_feedback=True)
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
 
-    current_order = Order.objects.filter(tourist=tourist, tour_id=tour_id).last()
+
     return render(request, 'tours/tour.html', locals())
 
 

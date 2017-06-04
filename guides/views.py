@@ -161,8 +161,11 @@ def guide(request, username):
     guide = guide_user.guideprofile
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
 
-    tourist = user.touristprofile
-    current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
+    try:
+        tourist = user.touristprofile
+        current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
+    except:
+        pass
 
     reviews = Review.objects.filter(order__guide=guide, is_tourist_feedback=True)
 

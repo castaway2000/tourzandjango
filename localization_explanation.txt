@@ -50,7 +50,7 @@ Changes for urls.py file in a base project folder:
         from django.conf.urls.i18n import i18n_patterns
 
     change:
-        urlpatterns = i18n_patterns(
+        urlpatterns = (
             some urls here
         )
     to:
