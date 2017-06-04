@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
-from .models import Order, Review
+from .models import Order, Review, ServiceInOrder
 from locations.models import City
 from guides.models import GuideProfile
 from datetime import datetime
@@ -13,6 +13,7 @@ from django.contrib import messages
 from tours.models import Tour
 from utils.statuses_changing_rules import checking_statuses
 import datetime
+from guides.models import GuideService
 
 
 @login_required()
@@ -45,7 +46,7 @@ def making_booking(request):
     tourist = TouristProfile.objects.get(user=user)
 
     date_booked_for = data["start"]
-    date_booked_for = datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
+    date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
 
     hours_nmb = data.get("booking_hours")
     price_hourly = data.get("price_hourly", 0)
@@ -102,11 +103,22 @@ def making_booking(request):
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
         try:
-            Order.objects.get_or_create(**kwargs)
+            print ("try")
+            order, created = Order.objects.get_or_create(**kwargs)
+            services_ids = data.getlist("additional_services_select[]")
+            print ("services ids: %s" % services_ids)
+            guide_services = GuideService.objects.filter(id__in=services_ids)
+
+            services_in_order=[]
+            for guide_service in guide_services:
+                service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
+                                                  price=guide_service.price, price_after_discount=guide_service.price)
+                services_in_order.append(service_in_order)
+
+            ServiceInOrder.objects.bulk_create(services_in_order)
+
         except Exception as e:
-            e = e[0]
-            text = e.encode('utf-8')
-            print (text)
+            print (e)
 
         return_dict["status"] = "success"
         return_dict["message"] = "Request has been submitted! Please waite for confirmation!"

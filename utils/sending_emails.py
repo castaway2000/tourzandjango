@@ -42,7 +42,7 @@ class SendingEmail(object):
             msg.send()
 
             email_message = OwnEmailMessage.objects.create(type_id=self.email_type, email=email,
-                                                           order=self.order, user=user)
+                                                           order_id=self.order.id, user=user)
             print ('Email was sent successfully!')
 
 

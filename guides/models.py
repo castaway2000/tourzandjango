@@ -45,6 +45,7 @@ class GuideProfile(models.Model):
 
     #add logic to perform calculations only if the value was changed
     def save(self, *args, **kwargs):
+        print ("saving guide")
         self.slug = slugify(self.user.username)
 
         if self.date_of_birth:
@@ -53,7 +54,10 @@ class GuideProfile(models.Model):
             age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
             self.age = age
 
-        self.orders_with_review_rate = (self.orders_with_review_nmb/self.orders_completed_nmb)*100
+        try:
+            self.orders_with_review_rate = (self.orders_with_review_nmb/self.orders_completed_nmb)*100
+        except Exception as e:
+            print (e)
 
         super(GuideProfile, self).save(*args, **kwargs)
 

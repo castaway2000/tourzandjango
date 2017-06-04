@@ -47,7 +47,20 @@ $(document).ready(function(){
         var indexed_array = {};
 
         $.map(unindexed_array, function(n, i){
-            indexed_array[n['name']] = n['value'];
+            //console.log(n['name']);
+            //console.log(n['value']);
+            //
+            //indexed_array[n['name']] = n['value'];
+
+            if (indexed_array[n['name']] ) {
+                if ( typeof(indexed_array[n['name']]) === "string" ) {
+                    indexed_array[n['name']] = [indexed_array[n['name']]];
+                }
+                indexed_array[n['name']].push(n['value']);
+            } else {
+                indexed_array[n['name']] = n['value'];
+            }
+
         });
 
         return indexed_array;

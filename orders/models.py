@@ -94,12 +94,12 @@ def order_post_save(sender, instance, created, **kwargs):
         .aggregate(rating=Avg("rating_guide"), reviews_nmb=Count("id"))
     print (statistic_info)
 
-    guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
-    guide.rating = statistic_info["rating"]
-    guide.save(force_update=True)
+    if statistic_info["rating"] and statistic_info["reviews_nmb"]:
+        guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
+        guide.rating = statistic_info["rating"]
+        guide.save(force_update=True)
 
 post_save.connect(order_post_save, sender=Order)
-
 
 
 class ServiceInOrder(models.Model):
@@ -118,6 +118,9 @@ class ServiceInOrder(models.Model):
         else:
             return "%s" % (self.id)
 
+    def save(self, *args, **kwargs):
+        self.price_after_discount = self.discount
+        super(ServiceInOrder, self).save(*args, **kwargs)
 
 """
 saving sum of all additional services to order
@@ -153,7 +156,6 @@ class Review(models.Model):
     is_guide_feedback = models.BooleanField(default=False)
     guide_review_created = models.DateTimeField(blank=True, null=True, default=None)
     guide_review_updated = models.DateTimeField(blank=True, null=True, default=None)
-
 
     tourist_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
     tourist_feedback_text = models.TextField(blank=True, null=True, default=None)
