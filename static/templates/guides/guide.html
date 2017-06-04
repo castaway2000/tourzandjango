@@ -52,7 +52,12 @@
                                         {% blocktrans %}Send Message{% endblocktrans %}
                                     </a>
                                 {% else %}
-                                    <a href="#write_review" class="btn btn-primary btn-sm">{% blocktrans %}Write Review{% endblocktrans %}</a>
+                                    {% if current_order.status.id == 5 %}
+                                        <a class="btn btn-primary btn-sm popup-text btn-order-review" href="#writing_feedback_modal"
+                                        data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">
+                                            {% blocktrans %}Write Review{% endblocktrans %}
+                                        </a>
+                                    {% endif %}
                                     <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
                                 {% endif %}
                             </div>
@@ -425,11 +430,17 @@
                 </div>
                 <div class="col-md-4">
                     <h3 class="mb20">{% blocktrans %}Tours{% endblocktrans %}</h3>
-                    <ul class="booking-list">
-                        {% for tour in tours %}
-                            {% include 'guides/tour_items_representation.html' %}
-                        {% endfor %}
-                    </ul>
+                    {% if tours %}
+                        <ul class="booking-list">
+                            {% for tour in tours %}
+                                {% include 'guides/tour_items_representation.html' %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>
+                            No tours so far...
+                        </p>
+                    {% endif %}
                 </div>
             </div>
         </div>

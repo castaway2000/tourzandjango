@@ -26,8 +26,15 @@
             </header>
             <div class="row">
                 <div class="col-md-8 mb10">
-                    <a href="#write_review" class="btn btn-primary btn-sm">{% blocktrans %}Write Review{% endblocktrans %}</a>
-                    <a href="{% url 'chat_creation_tour' tour.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
+                    {% if current_order.status.id == 5 %}
+                        <a class="btn btn-primary btn-sm popup-text btn-order-review" href="#writing_feedback_modal"
+                        data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">
+                            {% blocktrans %}Write Review{% endblocktrans %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'chat_creation_tour' tour.id %}" class="btn btn-default btn-sm">
+                        {% blocktrans %}Send Message{% endblocktrans %}
+                    </a>
                 </div>
                 <div class="col-md-8">
                     <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
@@ -187,6 +194,8 @@
                     </div>
 
                     <div class="review-container">
+                        <div class="gap gap-small"></div>
+
                         <h3 class="mb20">{% blocktrans %}Reviews{% endblocktrans %}</h3>
 
                         {% if reviews %}
@@ -229,117 +238,125 @@
 {#                            </div>#}
 {#                        </div>#}
                         <div class="gap gap-small"></div>
-                        <div class="box bg-gray" id="write_review">
-                            {% if not user.is_authenticated %}
-                               <p>Please  <a href="{% url 'login' %}?next={{ request.path }}">login </a> to leave a review</p>
-                            {% else %}
-                                <h3>{% blocktrans %}Write a Review{% endblocktrans %}</h3>
-                                <form method="post">{% csrf_token %}
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="form-group">
-                                                <label>{% blocktrans %}Review Title{% endblocktrans %}</label>
-                                                <input class="form-control" type="text" name="name" />
-                                            </div>
-                                            <div class="form-group">
-                                                <label>{% blocktrans %}Review Text{% endblocktrans %}</label>
-                                                <textarea class="form-control" rows="6" name="text"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <ul class="list booking-item-raiting-summary-list stats-list-select">
-                                                <li>
-                                                    <div class="booking-item-raiting-list-title">Sleep</div>
-                                                    <ul class="icon-group booking-item-rating-stars">
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <div class="booking-item-raiting-list-title">Location</div>
-                                                    <ul class="icon-group booking-item-rating-stars">
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <div class="booking-item-raiting-list-title">Service</div>
-                                                    <ul class="icon-group booking-item-rating-stars">
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <div class="booking-item-raiting-list-title">Clearness</div>
-                                                    <ul class="icon-group booking-item-rating-stars">
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <div class="booking-item-raiting-list-title">Rooms</div>
-                                                    <ul class="icon-group booking-item-rating-stars">
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                        <li><i class="fa fa-smile-o"></i>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                            <input class="btn btn-primary" type="submit" value="Leave a Review" />
-                                        </div>
-                                    </div>
-                                </form>
-                            {% endif %}
-                        </div>
+{#                        <div class="box bg-gray" id="write_review">#}
+{#                            {% if not user.is_authenticated %}#}
+{#                               <p>Please  <a href="{% url 'login' %}?next={{ request.path }}">login </a> to leave a review</p>#}
+{#                            {% else %}#}
+{#                                <h3>{% blocktrans %}Write a Review{% endblocktrans %}</h3>#}
+{#                                <form method="post">{% csrf_token %}#}
+{#                                    <div class="row">#}
+{#                                        <div class="col-md-8">#}
+{#                                            <div class="form-group">#}
+{#                                                <label>{% blocktrans %}Review Title{% endblocktrans %}</label>#}
+{#                                                <input class="form-control" type="text" name="name" />#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>{% blocktrans %}Review Text{% endblocktrans %}</label>#}
+{#                                                <textarea class="form-control" rows="6" name="text"></textarea>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-md-4">#}
+{#                                            <ul class="list booking-item-raiting-summary-list stats-list-select">#}
+{#                                                <li>#}
+{#                                                    <div class="booking-item-raiting-list-title">Sleep</div>#}
+{#                                                    <ul class="icon-group booking-item-rating-stars">#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                    </ul>#}
+{#                                                </li>#}
+{#                                                <li>#}
+{#                                                    <div class="booking-item-raiting-list-title">Location</div>#}
+{#                                                    <ul class="icon-group booking-item-rating-stars">#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                    </ul>#}
+{#                                                </li>#}
+{#                                                <li>#}
+{#                                                    <div class="booking-item-raiting-list-title">Service</div>#}
+{#                                                    <ul class="icon-group booking-item-rating-stars">#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                    </ul>#}
+{#                                                </li>#}
+{#                                                <li>#}
+{#                                                    <div class="booking-item-raiting-list-title">Clearness</div>#}
+{#                                                    <ul class="icon-group booking-item-rating-stars">#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                    </ul>#}
+{#                                                </li>#}
+{#                                                <li>#}
+{#                                                    <div class="booking-item-raiting-list-title">Rooms</div>#}
+{#                                                    <ul class="icon-group booking-item-rating-stars">#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                        <li><i class="fa fa-smile-o"></i>#}
+{#                                                        </li>#}
+{#                                                    </ul>#}
+{#                                                </li>#}
+{#                                            </ul>#}
+{#                                            <input class="btn btn-primary" type="submit" value="Leave a Review" />#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </form>#}
+{#                            {% endif %}#}
+{#                        </div>#}
                     </div>
                 </div>
 
                 <div class="col-md-4">
-                    <h3 class="mb20">{% blocktrans %}Other Tours of{% endblocktrans %} {{ guide.get_full_name }}</h3>
-                    <ul class="booking-list">
-                        {% for tour in other_tours %}
-                            {% include 'guides/tour_items_representation.html' %}
-                        {% endfor %}
-                    </ul>
+                    <h3 class="mb20">
+                        {% blocktrans %}Other Tours of{% endblocktrans %} {{ guide.get_full_name }}
+                    </h3>
+                    {% if other_tours %}
+                        <ul class="booking-list">
+                            {% for tour in other_tours %}
+                                {% include 'guides/tour_items_representation.html' %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>
+                            No tours so far...
+                        </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
