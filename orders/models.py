@@ -71,6 +71,10 @@ class Order(models.Model):
         #preventing creating of the order if guide and tourist is the same user
         # if not self.pk and self.guide.user == self.tourist.user:
         #     return False
+        if self.hours_nmb and self.price_hourly:
+            print (self.hours_nmb)
+            print (self.price_hourly)
+            self.price = int(self.hours_nmb) * float(self.price_hourly)
 
         #calculating tour price
         price_after_discount = self.price - self.discount

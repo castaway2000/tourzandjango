@@ -62,6 +62,7 @@ def making_booking(request):
             price_hourly = 0
     else:
         price_hourly = guide.rate
+        kwargs["hours_nmb"] = hours_nmb
 
     # if hours_nmb and price_hourly:
     #     price = int(hours_nmb)*float(price_hourly)
@@ -110,12 +111,17 @@ def making_booking(request):
             guide_services = GuideService.objects.filter(id__in=services_ids)
 
             services_in_order=[]
+            additional_services_price = 0
             for guide_service in guide_services:
+                additional_services_price += float(guide_service.price)
                 service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
                                                   price=guide_service.price, price_after_discount=guide_service.price)
                 services_in_order.append(service_in_order)
 
             ServiceInOrder.objects.bulk_create(services_in_order)
+
+            order.additional_services_price = additional_services_price
+            order.save(force_update=True)
 
         except Exception as e:
             print (e)
