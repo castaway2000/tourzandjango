@@ -114,7 +114,7 @@ def set_language(request, language):
 @login_required()
 def change_role(request, new_role=None):
     user = request.user
-    if not user.is_anonymous() and user.guideprofile:
+    if not user.is_anonymous() and hasattr(user, 'guideprofile'):
         current_role = request.session.get("current_role")
         if current_role == "tourist" or not current_role:
             request.session["current_role"] = "guide"
@@ -124,7 +124,7 @@ def change_role(request, new_role=None):
             messages.success(request, 'Switched to tourist profile!')
     else:
         request.session["current_role"] = "tourist"
-        messages.error(request, 'You do not have a guide profile!')
+        return HttpResponseRedirect(reverse("guide_registration_welcome"))
 
     #new_role option is goes from settings page switching to another user
     if new_role:
