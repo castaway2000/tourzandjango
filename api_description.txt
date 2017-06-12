@@ -1,0 +1,27 @@
+API is build with Django Restful Framework (DRF)
+API is currently v1 - so all the urls for api starts with "api/v1/"
+Default url for web access for APIs is here: http://localhost:8000/ru/api/v1/
+
+Every application has its own "api" folder with the needed files
+
+There is a custom router for API - which is defined on "tourzan/api_router.py" which allows to combine all
+the urls from different applications API folders.
+
+In the file "tourzan/settings.py" you can find REST_FRAMEWORK with
+DEFAULT_PERMISSION_CLASSES and DEFAULT_AUTHENTICATION_CLASSES
+
+I plan to use jwt authentication for mobile app and and token authentication for clients API access.
+Urls for generating tokens for both of them are added to "tourzan/urls.py":
+
+    url(r'^api/v1/api-token-auth/', obtain_jwt_token),
+    url(r'^login_client/$', login_api_view, name='login_client'),
+
+    for jwt token add such header to API request:
+        Authorization       JWT jwt_token_value_here
+
+    fot token (original):
+        Authorization      Token token_value_here
+
+
+Difference between them is jwt_token is not stored in the db, but it is being generated based on secret key of
+the project. Original toke is stored in the db and you can assign it manually for users.

@@ -19,5 +19,4 @@ router.register(r'user_languages', views.UserLanguageViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^login_client/$', views.login_client, name='login_client'),
 ]

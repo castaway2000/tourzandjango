@@ -20,6 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 
+from users.api.views import login_api_view
+
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
 from .api_router import SharedAPIRootRouter
@@ -60,6 +62,8 @@ urlpatterns = i18n_patterns(
     #http://polyglot.ninja/django-rest-framework-json-web-tokens-jwt/
     url(r'^api/v1/api-token-auth/', obtain_jwt_token),
     url(r'^api/v1/api-token-verify/', verify_jwt_token),
+
+    url(r'^api/v1/login_client/$', login_api_view, name='login_client'),
 
     url(r'^api/v1/', include('chats.api.urls')),
     url(r'^api/v1/', include('tourists.api.urls')),

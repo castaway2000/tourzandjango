@@ -44,7 +44,7 @@ class UserLanguageViewSet(viewsets.ModelViewSet):
 ##Reference http://polyglot.ninja/django-rest-framework-authentication-permissions/
 ##use this for clients token creation
 @api_view(["POST"])
-def login_client(request):
+def login_api_view(request):
     username = request.data.get("username")
     password = request.data.get("password")
 

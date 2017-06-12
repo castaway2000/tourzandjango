@@ -155,6 +155,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 #Django Restful API settings
 REST_FRAMEWORK = {
+    #commented out for testin purpose
+
     # 'DEFAULT_PERMISSION_CLASSES': (
     #     'rest_framework.permissions.IsAuthenticated',
     # ),
