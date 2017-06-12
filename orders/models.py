@@ -59,9 +59,9 @@ class Order(models.Model):
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.guide:
-            return "%s" % (self.guide.user.username)
+            return "%s %s" % (self.id, self.guide.user.username)
         else:
             return "%s" % (self.id)
 
@@ -116,7 +116,7 @@ class ServiceInOrder(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.guide:
             return "%s" % (self.service.name)
         else:
@@ -147,7 +147,7 @@ class Payment(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.name
 
 
@@ -168,12 +168,11 @@ class Review(models.Model):
     tourist_review_created = models.DateTimeField(blank=True, null=True, default=None)
     tourist_review_updated = models.DateTimeField(blank=True, null=True, default=None)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.order:
             return "%s" % self.order.tour.name
         else:
             return "%s" % self.id
-
 
     def save(self, *args, **kwargs):
         super(Review, self).save(*args, **kwargs)

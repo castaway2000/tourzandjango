@@ -20,6 +20,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
+from rest_framework.schemas import get_schema_view
+from .api_router import SharedAPIRootRouter
+
+schema_view = get_schema_view(title='Pastebin API')
+
+
+
+
+#returning of all the SharedAPIRootRouter urls (which are added there in each app.api.url file)
+#before returning of them they are being imported dynamically here
+def api_urls():
+    return SharedAPIRootRouter.shared_router.urls
+
 
 #added here i18n_patterns for localization
 urlpatterns = i18n_patterns(
@@ -39,9 +53,28 @@ urlpatterns = i18n_patterns(
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),
 
+
+    #for mobiles
+    #to access protected api urls you must include the Authorization: JWT <your_token> header.
+    #https://getblimp.github.io/django-rest-framework-jwt/
+    #http://polyglot.ninja/django-rest-framework-json-web-tokens-jwt/
+    url(r'^api/v1/api-token-auth/', obtain_jwt_token),
+    url(r'^api/v1/api-token-verify/', verify_jwt_token),
+
+    url(r'^api/v1/', include('chats.api.urls')),
+    url(r'^api/v1/', include('tourists.api.urls')),
+    url(r'^api/v1/', include('guides.api.urls')),
+    url(r'^api/v1/', include('tours.api.urls')),
+    url(r'^api/v1/', include('orders.api.urls')),
+    url(r'^api/v1/', include('locations.api.urls')),
+    url(r'^api/v1/', include('users.api.urls')),
+
+    url(r'^api/v1/', include(api_urls())),#for the main representation page of Django Rest Framework
+
+    url(r'^api/v1/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    url(r'^api/v1/schema/$', schema_view),
+
 )\
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-              + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
+              + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\

@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from django.utils.translation import gettext_lazy as _
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,6 +61,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'crequest',
     'django_summernote',
+    'rest_framework',
+    'rest_framework.authtoken'
 
 ]
 
@@ -148,6 +151,24 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+#Django Restful API settings
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+}
+
 
 
 # Internationalization
