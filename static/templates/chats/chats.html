@@ -12,20 +12,25 @@
                         {% for chat in chats %}
                             <div class="box bg-gray chat-item">
                                 <div>
-                                    <h3>{{ chat.topic }}</h3>
-                                </div>
-                                <div>
-                                    <b>with </b>
+{#                                    <h3>{{ chat.topic }}</h3>#}
+                                    <h3>
+                                        {% blocktrans %}Chat {% endblocktrans %}
+                                        {% blocktrans %}with {% endblocktrans %}
                                         {% if request.user.username != chat.guide__username %}
                                             <a href="{% url 'guide' chat.guide__username %}">
-                                                {{ chat.guide__username }} {% blocktrans %}(guide){% endblocktrans %}
+                                                {{ chat.guide__username }}
                                             </a>
+                                            {% blocktrans %}(guide){% endblocktrans %}
                                         {% else %}
                                             <a href="{% url 'tourist' chat.tourist__username %}">
-                                                {{ chat.tourist__username }} {% blocktrans %}(tourist){% endblocktrans %}
+                                                {{ chat.tourist__username }}
                                             </a>
+                                            {% blocktrans %}(tourist){% endblocktrans %}
                                         {% endif %}
-                                         <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y H:i:s" }}
+                                    </h3>
+                                </div>
+                                <div>
+                                     <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y H:i:s" }}
                                 </div>
                                 <br>
                                 {% if chat.last_message.text %}

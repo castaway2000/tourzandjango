@@ -1,6 +1,7 @@
 # ACCOUNT_ADAPTER = 'external_pages.adapter_allAuth.MyAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter_allAuth.MySocialAccountAdapter'
 SOCIALACCOUNT_AUTOMATICALLY_CONNECT = True
+PRESERVE_USERNAME_CASING = True
 
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"

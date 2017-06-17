@@ -44,6 +44,14 @@
                     </div>
 
                     <div class="form-group form-group-icon-left">
+                        <i class="fa fa-money input-icon"></i>
+                        <label>Hourly rate, USD/hour:</label>
+                        <input type="number" step="0.1" name="rate" class="form-control w100"
+                               value="{{ guide.rate|safe }}"
+                        >
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
                         <i class="fa fa-lock input-icon"></i>
                         <label>Date of birth:</label>
                         <span>{{ form.date_of_birth.errors }}</span>

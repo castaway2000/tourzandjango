@@ -10,16 +10,26 @@
 
                 <div class="box bg-gray chat-item single-chat">
                     <div>
-                        <h3>{{ chat.topic }}</h3>
+{#                        <h3>{{ chat.topic }}</h3>#}
+                        <h3>
+                            {% blocktrans %}Chat {% endblocktrans %}
+                            {% blocktrans %}with {% endblocktrans %}
+                            {% if request.user != chat.guide %}
+                                <a href="{% url 'guide' chat.guide.username %}">
+                                    {{ chat.guide.username }}
+                                </a>
+                                {% blocktrans %}(guide){% endblocktrans %}
+                            {% else %}
+                                 <a href="{% url 'tourist' chat.tourist.username %}">
+                                    {{ chat.tourist.username }}
+                                </a>
+                                {% blocktrans %}(tourist){% endblocktrans %}
+                            {% endif %}
+                        </h3>
                     </div>
                     <div>
-                        <b>{% blocktrans %}with {% endblocktrans %}</b>
-                            {% if request.user != chat.guide %}
-                                {{ chat.guide.username }} {% blocktrans %}(guide){% endblocktrans %}
-                            {% else %}
-                                {{ chat.tourist.username }} {% blocktrans %}(tourist){% endblocktrans %}
-                            {% endif %}
-                             <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
+{#                        <b>{% blocktrans %}with {% endblocktrans %}</b>#}
+                         <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
                     </div>
 
                     <div id="messages_area">

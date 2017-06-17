@@ -228,3 +228,7 @@
 .select2-selection__arrow{
     display: none;
 }
+
+.w100{
+    width: 100px
+}
