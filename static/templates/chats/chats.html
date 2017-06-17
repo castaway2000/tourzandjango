@@ -30,7 +30,7 @@
                                     </h3>
                                 </div>
                                 <div>
-                                     <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y H:i:s" }}
+                                     <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
                                 </div>
                                 <br>
                                 {% if chat.last_message.text %}

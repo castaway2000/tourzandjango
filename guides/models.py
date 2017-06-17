@@ -40,7 +40,7 @@ class GuideProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.user.username
 
     #add logic to perform calculations only if the value was changed
@@ -69,7 +69,7 @@ class Service(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.name
 
     def save(self, *args, **kwargs):
@@ -86,6 +86,6 @@ class GuideService(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.service.name
 
