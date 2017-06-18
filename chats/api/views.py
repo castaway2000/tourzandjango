@@ -21,12 +21,10 @@ class ChatViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     http_method_names = ['get', 'create']
 
-
     def get_queryset(self):
         user = self.request.user
         qs = Chat.objects.filter(Q(guide=user)|Q(tourist=user))
         return qs
-
 
     @list_route()
     def get_guide_representation(self, request):
@@ -40,7 +38,6 @@ class ChatViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
-
 
     @list_route()
     def get_tourist_representation(self, request):
@@ -67,7 +64,6 @@ class ChatMessageViewSet(viewsets.ModelViewSet):
         qs = ChatMessage.objects.filter(Q(chat__guide=user)|Q(chat__tourist=user))
         return qs
 
-
     @list_route()
     def get_guide_representation(self, request):
         user = request.user
@@ -80,7 +76,6 @@ class ChatMessageViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
-
 
     @list_route()
     def get_tourist_representation(self, request):

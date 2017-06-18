@@ -11,34 +11,36 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.authtoken.models import Token
 
-
 from rest_framework import viewsets
 from ..models import *
 from .serializers import *
+from .permissions import IsUserOwnerOrReadOnly
 
 
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
     permission_classes = (AllowAny,)
+    http_method_names = ('get',)
 
 
 class UserInterestViewSet(viewsets.ModelViewSet):
     queryset = UserInterest.objects.all()
     serializer_class = UserInterestSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsUserOwnerOrReadOnly,)
 
 
 class LanguageLevelViewSet(viewsets.ModelViewSet):
     queryset = LanguageLevel.objects.all()
     serializer_class = LanguageLevelSerializer
     permission_classes = (AllowAny,)
+    http_method_names = ('get',)
 
 
 class UserLanguageViewSet(viewsets.ModelViewSet):
     queryset = UserLanguage.objects.all()
     serializer_class = UserLanguageSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsUserOwnerOrReadOnly,)
 
 
 ##Reference http://polyglot.ninja/django-rest-framework-authentication-permissions/
