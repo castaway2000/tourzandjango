@@ -11,6 +11,7 @@ from rest_framework.response import Response
 
 from ..models import *
 from .serializers import *
+from .permissions import IsParticipant
 from django.db.models import Q
 
 
@@ -18,11 +19,12 @@ class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
     permission_classes = (IsAuthenticated,)
+    http_method_names = ['get', 'create']
 
 
     def get_queryset(self):
         user = self.request.user
-        qs = ChatMessage.objects.filter(Q(guide=user)|Q(tourist=user))
+        qs = Chat.objects.filter(Q(guide=user)|Q(tourist=user))
         return qs
 
 
@@ -57,7 +59,8 @@ class ChatViewSet(viewsets.ModelViewSet):
 class ChatMessageViewSet(viewsets.ModelViewSet):
     queryset = ChatMessage.objects.all()
     serializer_class = ChatMessageSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
+    http_method_names = ['get', 'create']
 
     def get_queryset(self):
         user = self.request.user

@@ -27,7 +27,7 @@ from rest_framework.permissions import (
     )
 
 from .pagination import PostLimitOffsetPagination, PostPageNumberPagination
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsGuideOwnerOrReadOnly
 
 from .serializers import *
 from rest_framework import viewsets
@@ -38,7 +38,7 @@ from guides.models import *
 class GuideProfileViewSet(viewsets.ModelViewSet):
     queryset = GuideProfile.objects.all()
     serializer_class = GuideProfileSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
 
     # def perform_create(self, serializer):
     #     serializer.save(owner=self.request.user)
@@ -48,13 +48,13 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['get',]
+    http_method_names = ('get',)
 
 
 class GuideServiceViewSet(viewsets.ModelViewSet):
     queryset = GuideService.objects.all()
     serializer_class = GuideServiceSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, IsGuideOwnerOrReadOnly,)
 
 
 """

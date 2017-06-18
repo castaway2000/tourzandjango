@@ -28,14 +28,14 @@ class GuideServiceSerializer(serializers.ModelSerializer):
 
 
 class GuideProfileSerializer(serializers.ModelSerializer):
-    guide_services = GuideServiceSerializer(source='guideservice_set', many=True)
+    guide_services = GuideServiceSerializer(source='guideservice_set', many=True, required=False)
     tours = TourSerializer(source='tour_set', many=True)#specify source if it is different from field name
-    interests = UserInterestSerializer(source='user.userinterest_set', many=True)
-    languages = UserLanguageSerializer(source='user.userlanguage_set', many=True)
+    interests = UserInterestSerializer(source='user.userinterest_set', many=True, required=False)
+    languages = UserLanguageSerializer(source='user.userlanguage_set', many=True, required=False)
 
-    orders = OrderSerializer(source='order_set', many=True)
-    reviews = serializers.SerializerMethodField()#this field searches for the function "get_"+field_name
-    chats = ChatSerializer(source='user.guide', many=True)
+    orders = OrderSerializer(source='order_set', many=True, required=False)
+    reviews = serializers.SerializerMethodField(required=False)#this field searches for the function "get_"+field_name
+    chats = ChatSerializer(source='user.guide', many=True, required=False)
 
     class Meta:
         model = GuideProfile

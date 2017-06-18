@@ -14,21 +14,25 @@ class LocationTypeViewSet(viewsets.ModelViewSet):
     queryset = LocationType.objects.all()
     serializer_class = LocationTypeSerializer
     permission_classes = (AllowAny,)
+    http_method_names = ('get',)
 
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
     permission_classes = (AllowAny,)
+    http_method_names = ('get', 'create',)
 
 
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = (AllowAny,)
+    http_method_names = ('get', 'create',)
 
 
 class CurrencyViewSet(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
     permission_classes = (AllowAny,)
+    http_method_names = ('get',)

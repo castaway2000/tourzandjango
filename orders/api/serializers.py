@@ -37,6 +37,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+    def update(self, instance, validated_data):
+
+        if instance.order.tourist.user:
+            print ("USER: %s" % instance.order.tourist.user)
+            # instance.email = validated_data.get('email', instance.email)
+            # instance.content = validated_data.get('content', instance.content)
+            # instance.created = validated_data.get('created', instance.created)
+        return instance
+
+
 class OrderSerializer(serializers.ModelSerializer):
     services = ServiceInOrderSerializer(source='serviceinorder_set', many=True)
     payments = PaymentSerializer(source='payment_set', many=True)

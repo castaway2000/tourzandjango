@@ -17,8 +17,9 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    messages = ChatMessageSerializer(source='chatmessage_set', many=True)
+    messages = ChatMessageSerializer(source='chatmessage_set', many=True, required=False)
 
     class Meta:
         model = Chat
         fields = '__all__'
+        read_only_fields = ('messages',)
