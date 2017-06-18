@@ -34,16 +34,16 @@ class ServiceInOrderViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class PaymentViewSet(viewsets.ModelViewSet):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
-    permission_classes = (IsAuthenticated,)
-    http_method_names = ('get',)
-
-    def get_queryset(self):
-        user = self.request.user
-        qs = ServiceInOrder.objects.filter(Q(order__guide__user=user)|Q(order__tourist__user=user))
-        return qs
+# class PaymentViewSet(viewsets.ModelViewSet):
+#     queryset = Payment.objects.all()
+#     serializer_class = PaymentSerializer
+#     permission_classes = (IsAuthenticated,)
+#     http_method_names = ('get',)
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         qs = ServiceInOrder.objects.filter(Q(order__guide__user=user)|Q(order__tourist__user=user))
+#         return qs
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

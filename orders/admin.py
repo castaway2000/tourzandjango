@@ -29,15 +29,6 @@ class ServiceInOrderAdmin(admin.ModelAdmin):
 admin.site.register(ServiceInOrder, ServiceInOrderAdmin)
 
 
-class PaymentAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Payment._meta.fields]
-
-    class Meta:
-        model = Payment
-
-admin.site.register(Payment, PaymentAdmin)
-
-
 class ReviewAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Review._meta.fields]
 

@@ -14,7 +14,7 @@ from tourzan.api_router import SharedAPIRootRouter
 router = SharedAPIRootRouter()
 router.register(r'order_statuses', views.OrderStatusViewSet)
 router.register(r'services_in_order', views.ServiceInOrderViewSet)
-router.register(r'payments', views.PaymentViewSet)
+# router.register(r'payments', views.PaymentViewSet)
 router.register(r'reviews', views.ReviewViewSet)
 router.register(r'orders', views.OrderViewSet)
 

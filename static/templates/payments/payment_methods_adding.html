@@ -1,0 +1,46 @@
+{% extends 'base_profile.html' %}
+{% load i18n %}
+
+{% block content_profile %}
+    <div class="col-md-9" xmlns="http://www.w3.org/1999/html">
+        <div class="row">
+
+            <div class="col-md-5">
+                <h4>{% blocktrans %}Adding new payment method{% endblocktrans %}</h4>
+
+                <p>
+                    Enter testing card number 4111111111111111 and any expire date
+                </p>
+                <form id="braintree_form" method="post">{% csrf_token %}
+                    <div id="payment_form"></div>
+                    <button type="submit" class="btn btn-primary">Save Payment Method</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js_stuff %}
+
+    <script src="https://js.braintreegateway.com/js/braintree-2.32.1.min.js"></script>
+
+    <script type="text/javascript">
+
+        braintree.setup(
+            "{{ request.session.braintree_client_token }}",
+            "dropin", {
+                container: "payment_form",
+{#                onPaymentMethodReceived: function (obj) {#}
+{#                    // Do some logic in here.#}
+{#                    // When you're ready to submit the form:#}
+{#                    $('#payment_form').submit();#}
+{#                },#}
+            }
+        );
+
+    </script>
+
+{% endblock %}
+

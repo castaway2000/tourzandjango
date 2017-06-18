@@ -29,8 +29,6 @@ from .api_router import SharedAPIRootRouter
 schema_view = get_schema_view(title='Pastebin API')
 
 
-
-
 #returning of all the SharedAPIRootRouter urls (which are added there in each app.api.url file)
 #before returning of them they are being imported dynamically here
 def api_urls():
@@ -48,6 +46,7 @@ urlpatterns = i18n_patterns(
 
     url(r'^', include('guides.urls')),
     url(r'^', include('tourists.urls')),
+    url(r'^', include('payments.urls')),
 
     url(r'^', include('website_management.urls')),
 

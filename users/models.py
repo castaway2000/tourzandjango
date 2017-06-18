@@ -6,6 +6,7 @@ from locations.models import Location, Currency, City
 from utils.internalization_wrapper import languages_english
 from django.db.models.signals import post_save
 from tourists.models import TouristProfile
+import uuid
 
 
 """
@@ -45,7 +46,7 @@ class LanguageLevel(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.name
 
 
@@ -56,5 +57,5 @@ class UserLanguage(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.language

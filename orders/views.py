@@ -267,8 +267,6 @@ def cancel_order(request, order_id):
         except:
             messages.error(request, 'You have no permissions for this action!')
 
-
-
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
@@ -285,15 +283,24 @@ def change_order_status(request, order_id, status_id):
 
             # checking status transition consistancy for preventing hacking
             checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
-            print (checking)
+            print ("checking: %s" % checking)
             if checking == False:
+                print("False")
                 messages.error(request, 'You have no permissions for this action!')
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-            order.status_id = status_id
-            order.save(force_update=True)
-            messages.success(request, 'Order has been successfully cancelled!')
-        except:
+            elif status_id == "4":
+                print("four")
+                order.status_id = status_id
+                order.save(force_update=True)
+                messages.success(request, 'Order has been successfully marked as completed!')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                print("else")
+                order.status_id = status_id
+                order.save(force_update=True)
+                messages.success(request, 'Order has been successfully cancelled!')
+        except Exception as e:
+            print(e)
             messages.error(request, 'You have no permissions for this action!')
     else:
         #check if a user is a guide

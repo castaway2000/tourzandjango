@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'tourists',
     'website_management',
     'emails',
+    'payments',
 
     #external packages
     'allauth',
@@ -171,6 +172,11 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
 }
 
+
+#Braintree integration info - sandbox credentials (not Production)
+BRAINTREE_MERCHANT_ID = 'gvpn8m8xqgvcgn8p'
+BRAINTREE_PUBLIC_KEY = 'j4sgkjtvnfvw37tf'
+BRAINTREE_PRIVATE_KEY = '91d31ae4f229d38b0186b4353bd91dd1'
 
 
 # Internationalization

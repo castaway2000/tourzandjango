@@ -91,11 +91,25 @@
                         </a>
                     {% endif %}
                 </p>
+
+                {% if order.status.id != 4 %}
+                    <p>
+                        <span>For making a payment</span><br>
+                        <a href="{% url 'change_order_status' order.id 4 %}"
+                            class="btn btn-primary btn-sm">
+                            Mark as Completed
+                        </a>
+                    </p>
+                {% endif %}
+
                 {% if order.status.id == 4 or  order.status.id == 2 %}
                      <p>
-                        <a href="{% url 'change_order_status' order.id 5 %}"
-                            class="btn btn-success btn-sm">
-                            Mark as Payed
+{#                        <a href="{% url 'change_order_status' order.id 5 %}"#}
+{#                            class="btn btn-success btn-sm">#}
+{#                            Mark as Payed#}
+{#                        </a>#}
+                        <a href="{% url 'making_order_payment' order.id %}" class="btn btn-danger">
+                            Make Payment
                         </a>
                     </p>
                 {% endif %}

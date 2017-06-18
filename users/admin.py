@@ -37,3 +37,5 @@ class UserLanguageAdmin(admin.ModelAdmin):
 
 admin.site.register(UserLanguage, UserLanguageAdmin)
 
+
+

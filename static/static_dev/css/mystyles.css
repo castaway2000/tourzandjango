@@ -232,3 +232,8 @@
 .w100{
     width: 100px
 }
+
+.table-center th,
+.table-center td{
+    text-align: center;
+}

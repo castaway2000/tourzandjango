@@ -23,11 +23,11 @@ class ServiceInOrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class PaymentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Payment
-        fields = '__all__'
+# class PaymentSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Payment
+#         fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -49,7 +49,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     services = ServiceInOrderSerializer(source='serviceinorder_set', many=True)
-    payments = PaymentSerializer(source='payment_set', many=True)
+    # payments = PaymentSerializer(source='payment_set', many=True)
     reviews = ReviewSerializer(source='review_set', many=True)
 
     class Meta:

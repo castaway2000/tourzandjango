@@ -77,10 +77,10 @@ class Order(models.Model):
             self.price = int(self.hours_nmb) * float(self.price_hourly)
 
         #calculating tour price
-        price_after_discount = self.price - self.discount
+        price_after_discount = float(self.price) - float(self.discount)
         self.price_after_discount = price_after_discount
 
-        self.total_price = price_after_discount + self.additional_services_price
+        self.total_price = price_after_discount + float(self.additional_services_price)
 
         data = {"order": self}
         a = SendingEmail(data)
@@ -140,15 +140,6 @@ def service_in_order_post_save(sender, instance, created, **kwargs):
 
 post_save.connect(service_in_order_post_save, sender=ServiceInOrder)
 
-
-class Payment(models.Model):
-    order = models.ForeignKey(Order, blank=True, null=True, default=None)#maybe it can be a payment without an order
-    payment_system_id = models.CharField(max_length=128, blank=True, null=True, default=None)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        return "%s" % self.name
 
 
 class Review(models.Model):

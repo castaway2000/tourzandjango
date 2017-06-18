@@ -55,7 +55,11 @@
                                     <i class="fa fa-cog"></i>{% blocktrans %}General Settings{% endblocktrans %}</a>
                                 </li>
 
-                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>{% blocktrans %}Credit/Debit Cards{% endblocktrans %}</a>
+                                <li {% if page == "payment_methods" %}class="active"{% endif %}>
+                                    <a href="{% url 'payment_methods' %}">
+                                        <i class="fa fa-credit-card"></i>
+                                        {% blocktrans %}Credit/Debit Cards{% endblocktrans %}
+                                    </a>
                                 </li>
 
                                 <li {% if page == "profile_travel_photos" %}class="active"{% endif %}>
@@ -68,6 +72,13 @@
                                     <a href="{% url 'tourist_settings_orders' %}">
                                         <i class="fa fa-cog"></i>
                                         {% blocktrans %}Bookings history{% endblocktrans %}
+                                    </a>
+                                </li>
+
+                                <li {% if page == "payments" %}class="active"{% endif %}>
+                                    <a href="{% url 'payments' %}">
+                                        <i class="fa fa-cog"></i>
+                                        {% blocktrans %}Payments{% endblocktrans %}
                                     </a>
                                 </li>
 
@@ -94,7 +105,11 @@
                                 <li><a href="user-profile-cards.html"><i class="fa fa-cog"></i>{% blocktrans %}Payments history{% endblocktrans %}</a>
                                 </li>
                                 
-                                <li><a href="user-profile-cards.html"><i class="fa fa-credit-card"></i>{% blocktrans %}Credit/Debit Cards{% endblocktrans %}</a>
+                                <li {% if page == "payment_methods" %}class="active"{% endif %}>
+                                    <a href="{% url 'payment_methods' %}">
+                                        <i class="fa fa-credit-card"></i>
+                                        {% blocktrans %}Credit/Debit Cards{% endblocktrans %}
+                                    </a>
                                 </li>
                             {% endif %}
                         </ul>

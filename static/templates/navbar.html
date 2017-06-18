@@ -102,8 +102,15 @@
                                             </li>
                                         {% endif %}
 
-                                        <li><a href="{% url 'general_settings' %}">{% blocktrans %}Account{% endblocktrans %}</a>
+                                        <li>
+                                            <a href="{% url 'general_settings' %}">{% blocktrans %}Account{% endblocktrans %}</a>
                                         </li>
+
+                                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                            <li>
+                                                <a href="{% url 'payments' %}">{% blocktrans %}Payments{% endblocktrans %}</a>
+                                            </li>
+                                        {% endif %}
 
                                         <li>
                                             {% if request.session.current_role == "tourist" or not request.session.current_role %}
