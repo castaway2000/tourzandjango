@@ -47,7 +47,20 @@ $(document).ready(function(){
         var indexed_array = {};
 
         $.map(unindexed_array, function(n, i){
-            indexed_array[n['name']] = n['value'];
+            //console.log(n['name']);
+            //console.log(n['value']);
+            //
+            //indexed_array[n['name']] = n['value'];
+
+            if (indexed_array[n['name']] ) {
+                if ( typeof(indexed_array[n['name']]) === "string" ) {
+                    indexed_array[n['name']] = [indexed_array[n['name']]];
+                }
+                indexed_array[n['name']].push(n['value']);
+            } else {
+                indexed_array[n['name']] = n['value'];
+            }
+
         });
 
         return indexed_array;
@@ -62,54 +75,64 @@ $(document).ready(function(){
 
 
     //$('#form_tour_scheduling').on('submit', function(e){
-    $('#form_guide_scheduling').on('submit', function(e){
-        if ($(this).hasClass('user-not-authorized')){
+    $('#form_guide_scheduling .submit-button').on('click', function(e){
+        e.preventDefault();
+        var booked_hours = $('.hours-nmb.active input').val();
+        console.log(booked_hours);
 
-        }else{
-            e.preventDefault();
-            console.log();
-            var form = $(this);
-            data = gettingFormData(form);
-
-            var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
-            data["csrfmiddlewaretoken"] = csrf_token;
-
-            console.log(data);
-            console.log("123");
-            var url = form.attr("action");
-            console.log(url);
-
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: data,
-                cache: true,
-                success: function (data) {
-                    console.log(data);
-                    if (data.status == "success"){
-
-                        $('.booking-result-message')
-                            .removeClass('alert-danger hidden').addClass('alert-success');
-                        $('.booking-result-message .message-text').text(data.message);
-
-                        hidingNotification();
-
-                    }else{
-                        $('.booking-result-message')
-                            .removeClass('alert-success hidden').addClass('alert-danger');
-                        $('.booking-result-message .message-text').text("Failed");
-
-                        hidingNotification();
-                    }
-                },
-                error: function(){
-                    $('.booking-result-message')
-                            .removeClass('alert-success hidden').addClass('alert-danger');
-
-                    $('.booking-result-message .message-text').text("Failed");
-                }
-            })
+        if (booked_hours>0){
+            $('#form_guide_scheduling').find('#booking_hours ').val(booked_hours);
         }
+
+        $('#form_guide_scheduling').submit();
+
+        //if ($(this).hasClass('user-not-authorized')){
+        //
+        //}else{
+        //    e.preventDefault();
+        //    console.log();
+        //    var form = $(this);
+        //    data = gettingFormData(form);
+        //
+        //    var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+        //    data["csrfmiddlewaretoken"] = csrf_token;
+        //
+        //    console.log(data);
+        //    console.log("123");
+        //    var url = form.attr("action");
+        //    console.log(url);
+        //
+        //    $.ajax({
+        //        url: url,
+        //        type: 'POST',
+        //        data: data,
+        //        cache: true,
+        //        success: function (data) {
+        //            console.log(data);
+        //            if (data.status == "success"){
+        //
+        //                $('.booking-result-message')
+        //                    .removeClass('alert-danger hidden').addClass('alert-success');
+        //                $('.booking-result-message .message-text').text(data.message);
+        //
+        //                hidingNotification();
+        //
+        //            }else{
+        //                $('.booking-result-message')
+        //                    .removeClass('alert-success hidden').addClass('alert-danger');
+        //                $('.booking-result-message .message-text').text("Failed");
+        //
+        //                hidingNotification();
+        //            }
+        //        },
+        //        error: function(){
+        //            $('.booking-result-message')
+        //                    .removeClass('alert-success hidden').addClass('alert-danger');
+        //
+        //            $('.booking-result-message .message-text').text("Failed");
+        //        }
+        //    })
+        //}
     });
 
     $(document).on('click', '.close-alert', function(){
@@ -151,10 +174,11 @@ $(document).ready(function(){
 
 
     $('#book_more').on('click', function(e){
-        console.log("123");
         e.preventDefault();
         $('#booking_form_area').removeClass('hidden');
-        console.log($('#booking_form_area'));
+        $('#booking_form_area #additional_services_select').select2({
+            placeholder: 'Select additional services'
+        });
     });
 
 

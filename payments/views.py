@@ -143,6 +143,7 @@ def payments(request):
 def order_payment_checkout(request, order_id):
     user = request.user
     order = Order.objects.get(id=order_id)
+    services_in_order = order.serviceinorder_set.all()
 
     #check for preventing unauthorized access
     if order.tourist.user != user and order.guide.user != user:

@@ -109,14 +109,51 @@
                         <table width="100%">
                             <thead>
                                 <tr>
-                                    <th width="50%"></th>
-                                    <th width="50%"></th>
+                                    <th width="40%"></th>
+                                    <th width="60%"></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr class="tr-mb20">
+                                    <td>
+                                        <b>
+                                            {% blocktrans %}
+                                                Description
+                                            {% endblocktrans %}
+                                        </b>
+                                    </td>
+                                    <td>
+                                        {% if order.tour %}
+                                            A tour "{{ order.tour.name }}" with {{ order.guide.name }}
+                                        {% else %}
+                                            A tour with {{ order.guide.name }} -
+                                            {{ order.hours_nmb|safe }} hours *
+                                            {{ order.price_hourly|safe }} {{ order.currency.name }} per hour
+                                        {% endif %}
+                                        {% if services_in_order %}
+                                            <div class="mt10">
+                                                <b>Additional services:</b><br>
+                                                <ul class="list-unstyled">
+                                                    {% for service_in_order in services_in_order %}
+                                                        <li>
+                                                            {{ service_in_order.service.name }} -
+                                                            {{ service_in_order.price_after_discount|safe }}
+                                                            {{ order.currency.name }}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>
-                                        <b>Base Charge</b>
+                                        <b>
+                                            {% blocktrans %}
+                                                Base Charge
+                                            {% endblocktrans %}
+                                        </b>
                                     </td>
                                     <td>
                                         {{ order.total_price_before_fees|safe }} {{ order.currency.name }}
@@ -124,7 +161,11 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <b>Service Fee</b>
+                                        <b>
+                                            {% blocktrans %}
+                                                Service Fee
+                                            {% endblocktrans %}
+                                        </b>
                                     </td>
                                     <td>
                                         {{ order.fees_tourist|safe }} {{ order.currency.name }}
@@ -132,7 +173,11 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <b>Tax</b>
+                                        <b>
+                                            {% blocktrans %}
+                                                Tax
+                                            {% endblocktrans %}
+                                        </b>
                                     </td>
                                     <td>
                                         0 {{ order.currency.name }}
@@ -141,7 +186,11 @@
 
                                 <tr class="tr-last">
                                     <td>
-                                        <b>Total</b>
+                                        <b>
+                                            {% blocktrans %}
+                                                Total
+                                            {% endblocktrans %}
+                                        </b>
                                     </td>
                                     <td>
                                         {{ order.total_price|safe }} {{ order.currency.name }}

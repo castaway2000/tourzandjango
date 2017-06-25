@@ -397,6 +397,7 @@ def saving_review(request):
 def order_completing(request, order_id):
     user = request.user
     order = Order.objects.get(id=order_id)
+    services_in_order = order.serviceinorder_set.filter()
 
     if order.guide.user == user:
         is_guide = True
