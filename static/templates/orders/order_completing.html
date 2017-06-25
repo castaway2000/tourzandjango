@@ -129,9 +129,15 @@
                                     </td>
                                     <td>
                                         {% if order.tour %}
-                                            A tour "{{ order.tour.name }}" with {{ order.guide.name }}
+                                            <b>
+                                                A tour "{{ order.tour.name }}" with {{ order.guide.name }}
+                                             </b>
+                                                at {{ order.date_booked_for|date:"m.d.Y" }}
                                         {% else %}
-                                            A tour with {{ order.guide.name }} -
+                                            <b>
+                                                A tour with {{ order.guide.name }}
+                                                at {{ order.date_booked_for|date:"m.d.Y" }}:
+                                            </b>
                                             {{ order.hours_nmb|safe }} hours *
                                             {{ order.price_hourly|safe }} {{ order.currency.name }} per hour
                                         {% endif %}
