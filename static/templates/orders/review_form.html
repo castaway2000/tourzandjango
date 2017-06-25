@@ -1,0 +1,44 @@
+{% load i18n %}
+
+<div class="gap gap-small"></div>
+<h3 class="text-center">
+    Write your review here
+</h3>
+<form id="feedback_form" class="" method="post" action="">
+    {% csrf_token %}
+
+    <input id="order_id" class="hidden" name="order_id">
+
+    <div class="form-group">
+        <label>Review Title</label>
+        <input class="form-control" name="title">
+    </div>
+
+    <div class="form-group">
+        <label>Review Text</label>
+        <textarea rows="5" class="form-control" name="feedback"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Put your score here</label>
+        <input type="number" step="0.1" value="5" required
+                id="rating" class="form-control"
+               name="rating">
+    </div>
+
+
+    <div class="form-group text-right">
+        <button class="btn btn-primary" type="submit">
+            {% if is_guide %}
+                {% blocktrans %}
+                    Save
+                {% endblocktrans %}
+            {% elif is_tourist %}
+                {% blocktrans %}
+                    Save and Finalize Payment
+                {% endblocktrans %}
+            {% endif %}
+        </button>
+    </div>
+
+</form>

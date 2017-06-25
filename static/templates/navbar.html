@@ -108,7 +108,11 @@
 
                                         {% if request.session.current_role == "tourist" or not request.session.current_role %}
                                             <li>
-                                                <a href="{% url 'payments' %}">{% blocktrans %}Payments{% endblocktrans %}</a>
+                                                <a href="{% url 'payments' %}">{% blocktrans %}My Payments{% endblocktrans %}</a>
+                                            </li>
+                                        {% elif  request.session.current_role == "guide" %}
+                                            <li>
+                                                <a href="{% url 'earnings' %}">{% blocktrans %}My Earnings{% endblocktrans %}</a>
                                             </li>
                                         {% endif %}
 

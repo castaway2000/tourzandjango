@@ -13,9 +13,10 @@ def checking_statuses(current_status_id, new_status_id):
         return True
 
 
-    elif new_status_id == 2 and current_status_id != 1:
+    elif new_status_id == 2 and current_status_id != 5:
         return False
-    elif new_status_id in [3, 6] and not current_status_id in [1, 2]:
+
+    elif new_status_id in [3, 6] and not current_status_id in [1, 2, 5]:
         return False
     elif new_status_id == 4 and current_status_id != 2:
         return False

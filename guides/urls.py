@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^guide/registration/welcome/$', views.guide_registration_welcome, name='guide_registration_welcome'),
     url(r'^guide/registration/$', views.guide_registration, name='guide_registration'),
 
+    url(r'^earnings/$', views.earnings, name='earnings'),
+
 ]

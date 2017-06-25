@@ -246,6 +246,7 @@
 .payment-summary{
     border: 1px solid black;
     padding: 20px 20px 30px 20px;
+    position: relative;
 }
 
 .tr-last td{
@@ -253,11 +254,14 @@
 }
 
 .is-paid-container{
-    font-size: 24px;
+    text-align: center;
+    font-size: 18px;
     color: #169e49;
     border: 2px dashed #169e49;
     position: absolute;
-    right: 10%;
+
+    top: 7%;
+    right: 4%;
     padding: 15px;
     letter-spacing: 5px;
 

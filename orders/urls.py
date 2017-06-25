@@ -18,4 +18,6 @@ urlpatterns = [
         name='change_order_status'),
 
     url(r'^saving_review/$', views.saving_review, name='saving_review'),
+
+    url(r'^order_completing_page/(?P<order_id>\w+)/$', views.order_completing, name='order_completing'),
 ]

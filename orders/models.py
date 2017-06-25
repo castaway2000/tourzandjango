@@ -174,8 +174,8 @@ class Order(models.Model):
             Payment.objects.create(order=order, payment_method=payment_method,
                                    uuid=payment_uuid, amount=amount, currency=currency)
 
-            order.status_id = 5 #paid
-            order.payment_status_id = 2 #paid
+            order.status_id = 5 # payment reserved
+            order.payment_status_id = 2 #full payment reserverd
 
             order.save(force_update=True)
 
@@ -240,7 +240,7 @@ post_save.connect(service_in_order_post_save, sender=ServiceInOrder)
 
 
 class Review(models.Model):
-    order = models.ForeignKey(Order, blank=True, null=True, default=None)
+    order = models.OneToOneField(Order, blank=True, null=True, default=None)
 
     guide_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
     guide_feedback_text = models.TextField(blank=True, null=True, default=None)

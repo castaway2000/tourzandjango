@@ -1,0 +1,145 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block content_profile %}
+    <div class="col-md-9" xmlns="http://www.w3.org/1999/html">
+        <div class="row">
+
+            <div class="col-md-12">
+                <h4>
+                    {% blocktrans %}Your Earnings{% endblocktrans %}
+                </h4>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="gap"></div>
+            </div>
+            {% if orders %}
+{#                <div class="mb20">#}
+{#                    <form method="get" class="form-inline">#}
+{#                        <div class="form-group">#}
+{#                            <label>Date start:</label>#}
+{#                            <input type="date" name="date_start">#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label>Date end:</label>#}
+{#                            <input type="date" name="date_end">#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <button type="submit" class="btn btn-primary">#}
+{#                                {% blocktrans %}#}
+{#                                    Submit#}
+{#                                {% endblocktrans %}#}
+{#                            </button>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                </div>#}
+                <div class="col-lg-12">
+                    <table id="earnings_table" class="table table-bordered table-center" width="100%">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Order
+                                </th>
+                                <th>
+                                    Client
+                                </th>
+                                <th>
+                                    Total amount
+                                </th>
+                                <th>
+                                    Fees amount
+                                </th>
+                                <th>
+                                    Paid amount
+                                </th>
+                                <th>
+                                    Currency
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>
+                                        <span class="hidden">{{ order.payment.dt_paid|date:"YmdHi" }}</span>
+                                        {{ order.payment.dt_paid|date:"m.d.Y H:i" }}
+                                    </td>
+                                    <td>
+                                        {% if order.tour %}
+                                            <a href="{% url 'tour' order.tour.slug payment.order.tour.id %}">
+                                                {{ order.tour.name }}
+                                            </a>
+                                                 {% blocktrans %}by{% endblocktrans %}
+
+                                            <a href="{% url 'guide' order.guide.user.username %}">
+                                                {{ order.guide.user.username }}
+                                            </a>
+
+                                        {% else %}
+                                            Tour with
+                                            <a href="{% url 'guide' order.guide.user.username %}">
+                                                {{ order.guide.user.username }}
+                                            </a>
+
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'tourist' order.tourist.user.username %}">
+                                            {% if order.tourist.name %}
+                                                {{ order.tourist.name }}
+                                            {% else %}
+                                                {{ order.tourist.user.username }}
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ order.total_price|safe }}
+                                    </td>
+                                    <td>
+                                        {{ order.fees_guide|safe }}
+                                    </td>
+                                    <td>
+                                        {{ order.guide_payment|safe }}
+                                    </td>
+                                    <td>
+                                        {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="col-lg-12">
+                    <p>
+                        You have no earning for this period
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block js_stuff %}
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#earnings_table").DataTable();
+        })
+    </script>
+{% endblock %}
+

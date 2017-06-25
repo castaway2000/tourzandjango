@@ -2,10 +2,6 @@
 {% load static %}
 {% load i18n %}
 
-{% block header_stuff %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-{% endblock %}
-
 
 {% block content %}
 
@@ -18,7 +14,7 @@
 
                 {% if order.payment_status.id == 2 %}
                     <h3 class="text-center">Thank you!</h3>
-                    <h5 class="text-center">Your order has been successfully paid</h5>
+                    <h5 class="text-center">The payment has been successfully reserved</h5>
 
                     <div class="row">
                         <div class="col-lg-6">
@@ -31,7 +27,7 @@
                         <div class="col-lg-6">
                             <div class="text-center">
                                 <a href="{% url 'payments' %}">
-                                    Go to Payments
+                                    Go to Payments Page
                                 </a>
                             </div>
                         </div>
@@ -51,12 +47,12 @@
                             what interests you most about the city they live in?
                         </li>
                     </ul>
-                    <form class="form-horizontal"  method="post">{% csrf_token %}
+                    <form class="" method="post">{% csrf_token %}
 
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <textarea class="form-control"></textarea>
+                                    <textarea class="form-control" name="message"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +70,15 @@
 
                     {% if order.payment_status.id == 2 %}
                         <div class="is-paid-container">
-                            PAID
+                            {% blocktrans %}
+                                PAYMENT <br> RESERVED
+                            {% endblocktrans %}
+                        </div>
+                    {% elif order.payment_status.id == 4 %}
+                        <div class="is-paid-container">
+                            {% blocktrans %}
+                                PAID
+                            {% endblocktrans %}
                         </div>
                     {% endif %}
 

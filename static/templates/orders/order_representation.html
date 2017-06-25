@@ -1,4 +1,6 @@
 {% load static %}
+{% load i18n %}
+
 
 <li>
     <div class="booking-item">
@@ -94,11 +96,25 @@
                     <b>Booked for: </b>{{ order.date_booked_for|date:"m.d.Y" }}
                 </p>
                 <p>
-                    <b>Paid: </b>
-                    {% if order.date_paid %}
-                        {{ order.date_paid|date:"m.d.Y" }}
+                    <b>Payment: </b>
+                    {% if order.payment_status.id == 1 %}
+                        no payment yet
+                    {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
+                        {% if order.payment %}
+                            {{ order.payment.amount }} {{ order.payment.currency.name }}
+                        {% else %}
+                            0 {{ order.currency.name }}
+                        {% endif %}
+                        (reserved)
+                    {% elif order.payment_status.id == 4 %}
+                        {% if order.payment %}
+                            {{ order.payment.amount }} {{ order.payment.currency.name }}
+                        {% else %}
+                            0 {{ order.currency.name }}
+                        {% endif %}
+                        (paid)
                     {% else %}
-                        No payment yet
+                        no payment yet
                     {% endif %}
                 </p>
                 <p>
@@ -107,23 +123,34 @@
                         Tourist Profile
                     </a>
                 </p>
-                {% if order.status.id == 1 %}
+
+                {% if order.status.id == 5 %}
                      <p>
                         <a href="{% url 'change_order_status' order.id 2 %}"
                             class="btn btn-success btn-sm">
-                            Agree Order
+                            Confirm booking
                         </a>
                     </p>
                 {% endif %}
-                {% if order.status.id == 4 or  order.status.id == 2 %}
-                     <p>
-                        <a href="{% url 'change_order_status' order.id 5 %}"
-                            class="btn btn-success btn-sm">
-                            Mark as Payed
+
+                {% if order.status.id == 2 or order.status.id == 4 %}
+                    <p>
+                        <a href="{% url 'order_completing' order.id %}"
+                            class="btn btn-primary btn-sm">
+                            {% if not order.review.is_guide_feedback %}
+                                {% blocktrans %}
+                                    Write a feedback
+                                {% endblocktrans %}
+                            {% else %}
+                                {% blocktrans %}
+                                    View final details
+                                {% endblocktrans %}
+                            {% endif %}
                         </a>
                     </p>
                 {% endif %}
-                {% if order.status.id == 1 and order.status.id == 2 %}
+
+                {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5 %}
                     <p>
                         <a href="{% url 'cancel_order' order.id %}"
                             class="btn btn-danger btn-sm">
@@ -131,14 +158,7 @@
                         </a>
                     </p>
                 {% endif %}
-                {% if order.status.id == 5 %}
-                    <p>
-                        <a class="btn btn-primary btn-sm popup-text btn-order-review" href="#writing_feedback_modal"
-                        data-effect="mfp-zoom-out" data-order_id="{{ order.id }}">
-                            Write feedback
-                        </a>
-                    </p>
-                {% endif %}
+
             </div>
         </div>
     </div>

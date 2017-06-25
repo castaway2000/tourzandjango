@@ -80,7 +80,7 @@
                         {% else %}
                             0 {{ order.currency.name }}
                         {% endif %}
-                        (booked)
+                        (reserved)
                     {% elif order.payment_status.id == 4 %}
                         {% if order.payment %}
                             {{ order.payment.amount }} {{ order.payment.currency.name }}
@@ -101,34 +101,37 @@
                     {% else %}
                         <a href="{% url 'guide' order.guide.user.username %}"
                             class="btn btn-success btn-sm">
-                            Guide Profile
+                            {% blocktrans %}
+                                Guide Profile
+                            {% endblocktrans %}
                         </a>
                     {% endif %}
                 </p>
 
-                {% if order.status.id == 2 %}
+                {% if order.status.id == 2 or order.status.id == 4 %}
                     <p>
-                        <span>For making a payment</span><br>
-                        <a href="{% url 'change_order_status' order.id 4 %}"
+                        <a href="{% url 'order_completing' order.id %}"
                             class="btn btn-primary btn-sm">
-                            Mark as Completed
+                            {% if not order.payment.dt_paid %}
+                                {% blocktrans %}
+                                    Write a Review and Pay
+                                {% endblocktrans %}
+                            {% else %}
+                                {% blocktrans %}
+                                    View final details
+                                {% endblocktrans %}
+                            {% endif %}
                         </a>
                     </p>
                 {% endif %}
 
-                {% if order.status.id == 1 and order.status.id == 2 %}
+                {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5 %}
                     <p>
                         <a href="{% url 'cancel_order' order.id %}"
                             class="btn btn-danger btn-sm">
-                            Cancel
-                        </a>
-                    </p>
-                {% endif %}
-                {% if order.status.id == 5 %}
-                    <p>
-                        <a class="btn btn-primary btn-sm popup-text btn-order-review" href="#writing_feedback_modal"
-                        data-effect="mfp-zoom-out" data-order_id="{{ order.id }}">
-                            Write feedback
+                            {% blocktrans %}
+                                Cancel
+                            {% endblocktrans %}
                         </a>
                     </p>
                 {% endif %}

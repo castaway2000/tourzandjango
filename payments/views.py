@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import *
 from orders.models import Order
+from chats.models import Chat, ChatMessage
 
 
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
@@ -112,8 +113,8 @@ def making_order_payment(request, order_id):
             Payment.objects.create(order=order, payment_method=payment_method,
                                    uuid=payment_uuid, amount=amount, currency=currency)
 
-            order.status_id = 5 #paid
-            order.payment_status_id = 2 #paid
+            order.status_id = 5 #payment reserved
+            order.payment_status_id = 2 #payment reserved
 
             order.save(force_update=True)
 
@@ -149,11 +150,26 @@ def order_payment_checkout(request, order_id):
 
     if request.POST:
         print(request.POST)
+        data = request.POST
+
+        guide = order.guide
+        topic = "Chat with %s" % guide.user.username
+
+        print(user)
+        print(guide.user)
+
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+
+        message = data.get("message")
+        if message:
+            chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
+
+
         payment_processed = order.making_order_payment()
         if payment_processed == False:
             messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
-            messages.success(request, 'A Payment was successfully completed!')
+            messages.success(request, 'The payment has been successfully reserved!')
 
     return render(request, 'payments/order_payment_checkout.html', locals())

@@ -16,6 +16,16 @@ import datetime
 from guides.models import GuideService
 
 
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+import braintree
+
+braintree.Configuration.configure(braintree.Environment.Sandbox,
+    merchant_id=BRAINTREE_MERCHANT_ID,
+    public_key=BRAINTREE_PUBLIC_KEY,
+    private_key=BRAINTREE_PRIVATE_KEY
+    )
+
+
 #both guide and tour
 @login_required()
 def making_booking(request):
@@ -109,7 +119,7 @@ def making_booking(request):
     else:
         try:
             print ("try")
-            order, created = Order.objects.get_or_create(**kwargs)
+            order = Order.objects.create(**kwargs)
             services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
             print ("services ids: %s" % services_ids)
             guide_services = GuideService.objects.filter(id__in=services_ids)
@@ -381,3 +391,80 @@ def saving_review(request):
             messages.success(request, 'Review has been successfully created!')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required()
+def order_completing(request, order_id):
+    user = request.user
+    order = Order.objects.get(id=order_id)
+
+    if order.guide.user == user:
+        is_guide = True
+    if order.tourist.user == user:
+        is_tourist = True
+
+
+    if request.POST:
+        data = request.POST
+
+        name = data.get("title")
+        text = data.get("feedback")
+        rating = data.get("rating")
+
+        kwargs = {}
+        dt_now = datetime.datetime.utcnow()
+        if order.guide.user == user or order.tourist.user == user:
+
+            if order.guide.user == user:
+                guide_kwargs = {
+                    "guide_feedback_name": name,
+                    "guide_feedback_text": text,
+                    "guide_rating": rating,
+                    "is_guide_feedback": True,
+                    "guide_review_created": dt_now,
+                    "guide_review_updated": dt_now
+                }
+                kwargs = dict(kwargs, **guide_kwargs)
+
+                order.status_id = 4 #completed
+                order.save(force_update=True)
+                print("ORDER with id %s WAS UPDATED %s" % (order.id, order.status.id))
+
+            if order.tourist.user == user:
+                tourist_kwargs = {
+                    "tourist_feedback_name": name,
+                    "tourist_feedback_text": text,
+                    "tourist_rating": rating,
+                    "is_tourist_feedback": True,
+                    "tourist_review_created": dt_now,
+                    "tourist_review_updated": dt_now
+                }
+                kwargs = dict(kwargs, **tourist_kwargs)
+
+                #completing payment
+                print("111111111")
+                if order.status.id in [2, 4] and order.payment_status.id in [2, 3]:
+                    print("in")
+                    transaction_id = order.payment.uuid
+                    result = braintree.Transaction.submit_for_settlement(transaction_id)
+                    print("result: %s" % result)
+                    if result.is_success:
+                        order.status_id = 4 #completed
+                        order.payment_status_id = 4 #fully paid
+                        order.save(force_update=True)
+
+                        order.payment.dt_paid = dt_now
+                        order.payment.save(force_update=True)
+
+                    else:
+                      print(result.errors)
+
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        Review.objects.update_or_create(order=order, defaults=kwargs)
+        messages.success(request, 'Review has been successfully created!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+    return render(request, 'orders/order_completing.html', locals())

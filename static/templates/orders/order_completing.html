@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="gap"></div>
+            </div>
+
+            <div class="col-lg-6 col-lg-offset-1">
+                <h3 class="text-center">Feedback Area</h3>
+
+                {% if order.review.is_guide_feedback %}
+                    {% if is_guide or order.review.is_tourist_feedback %}
+                        <h3>
+                            Guide Review
+                        </h3>
+
+                        <p>
+                            <b>Score: </b>{{ order.review.guide_rating }}
+                        </p>
+                        <p>
+                            {% if order.review.guide_feedback_name %}
+                                <b>{{ order.review.guide_feedback_name }}</b><br>
+                            {% endif %}
+                            {{ order.review.guide_feedback_text|safe }}
+                        </p>
+                    {% endif %}
+                {% endif %}
+
+                {% if order.review.is_tourist_feedback %}
+                    {% if is_tourist or order.review.is_guide_feedback %}
+                        <h3>
+                            Tourist Review
+                        </h3>
+                        <p>
+                            <b>Score: </b>{{ order.review.tourist_rating }}
+                        </p>
+                        <p>
+                            {% if order.review.tourist_feedback_name %}
+                                <b>{{ order.review.tourist_feedback_name }}</b><br>
+                            {% endif %}
+                            {{ order.review.tourist_feedback_text|safe }}
+                        </p>
+                    {% endif %}
+                {% endif %}
+
+                {% if is_guide and not order.review.is_guide_feedback %}
+                    {% include 'orders/review_form.html' %}
+                {% elif is_tourist and not order.review.is_tourist_feedback%}
+                     {% include 'orders/review_form.html' %}
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4 col-lg-offset-1">
+
+                <div class="payment-summary">
+                    {% if order.payment_status.id == 2 %}
+                        <div class="is-paid-container">
+                            {% blocktrans %}
+                                PAYMENT <br> RESERVED
+                            {% endblocktrans %}
+                        </div>
+                    {% elif order.payment_status.id == 4 %}
+                        <div class="is-paid-container">
+                            {% blocktrans %}
+                                PAID
+                            {% endblocktrans %}
+                        </div>
+                    {% endif %}
+
+                    <div class="text-center">
+                        {% if is_tourist and order.guide.profile_image %}
+                            <img class="img-circle avatar-image-x-small"
+                                 src="{{ order.guide.profile_image.url }}"
+                                 alt="" title="" />
+                        {% elif is_tourist and order.tourist.image %}
+                            <img class="img-circle avatar-image-x-small"
+                                 src="{{ order.tourist.image.url }}"
+                                 alt="" title="" />
+                        {% else %}
+                            <img class="img-circle avatar-image-x-small"
+                                 src="{% static 'img/300x300.png' %}" alt="" title="">
+                        {% endif %}
+                    </div>
+
+                    <h5 class="text-center">
+                        {% if is_tourist %}
+                            <a href="{% url 'guide' order.guide.user.username %}">
+                                {{ order.guide.name }}
+                            </a>
+                        {% elif is_guide %}
+                            <a href="{% url 'tourist' order.tourist.user.username %}">
+                                {% if order.tourist.name %}
+                                    {{ order.tourist.name }}
+                                {% else %}
+                                    {{ order.tourist.user.username }}
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </h5>
+
+                    <div class="gap gap-small"></div>
+
+                    <h3 class="text-center">
+                        Payment Summary
+                    </h3>
+
+                    <div class="payment-summary-details">
+                        <table width="100%">
+                            <thead>
+                                <tr>
+                                    <th width="50%"></th>
+                                    <th width="50%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>Base Charge</b>
+                                    </td>
+                                    <td>
+                                        {{ order.total_price_before_fees|safe }} {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Service Fee</b>
+                                    </td>
+                                    <td>
+                                        {% if is_tourist %}
+                                            {{ order.fees_tourist|safe }}
+                                        {% elif is_guide %}
+                                            {{ order.fees_guide|safe }}
+                                        {% endif %}
+                                        {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Tax</b>
+                                    </td>
+                                    <td>
+                                        0 {{ order.currency.name }}
+                                    </td>
+                                </tr>
+
+                                <tr class="tr-last">
+                                    <td>
+                                        <b>Total</b>
+                                    </td>
+                                    <td>
+                                        {% if is_tourist %}
+                                            {{ order.total_price|safe }}
+                                        {% elif is_guide %}
+                                            {{ order.guide_payment|safe }}
+                                        {% endif %}
+                                        {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="gap"></div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_stuff %}
+{% endblock js_stuff %}

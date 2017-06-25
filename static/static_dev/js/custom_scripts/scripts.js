@@ -80,7 +80,10 @@ $(document).ready(function(){
         var booked_hours = $('.hours-nmb.active input').val();
         console.log(booked_hours);
 
-        $('#form_guide_scheduling').find('#booking_hours ').val(booked_hours);
+        if (booked_hours>0){
+            $('#form_guide_scheduling').find('#booking_hours ').val(booked_hours);
+        }
+
         $('#form_guide_scheduling').submit();
 
         //if ($(this).hasClass('user-not-authorized')){

@@ -380,3 +380,29 @@ def guide_registration(request):
     user_interests = UserInterest.objects.filter(user=user)
     form = GuideProfileForm(request.POST or None, request.FILES or None)
     return render(request, 'guides/guide_registration.html', locals())
+
+
+def earnings(request):
+    user = request.user
+    try:
+        guide = user.guideprofile
+
+        if request.session.get("current_role") != "guide":
+            return HttpResponseRedirect(reverse("home"))
+
+        kwargs = dict()
+        kwargs["payment_status_id"] = 4
+
+        if request.GET:
+            data = request.GET
+            date_start = data.get("date_start")
+            date_end = data.get("date_end")
+            if date_start:
+                kwargs["dt_paid__gte"] = date_start
+            if date_end:
+                kwargs["dt_paid__lte"] = date_end
+
+        orders = guide.order_set.filter(**kwargs).order_by("-id")
+    except:
+        return HttpResponseRedirect(reverse("home"))
+    return render(request, 'guides/earnings.html', locals())

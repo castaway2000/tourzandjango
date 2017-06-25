@@ -2,6 +2,11 @@
 {% load static %}
 {% load i18n %}
 
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+{% endblock %}
+
 {% block content_profile %}
     <div class="col-md-9" xmlns="http://www.w3.org/1999/html">
         <div class="row">
@@ -50,7 +55,8 @@
                             {% for payment in payments %}
                                 <tr>
                                     <td>
-                                        <span class="hidden">{{ payment }}</span>{{ payment.created|date:"m.d.Y" }}
+                                        <span class="hidden">{{ payment }}</span>
+                                        {{ payment.created|date:"m.d.Y H:i" }}
                                     </td>
                                     <td>
                                         <a href="{% url 'order_payment_checkout' payment.order.id %}">
@@ -107,6 +113,11 @@
 
 
 {% block js_stuff %}
-
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#earnings_table").DataTable();
+        })
+    </script>
 {% endblock %}
 
