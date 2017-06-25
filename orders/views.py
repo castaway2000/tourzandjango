@@ -16,6 +16,7 @@ import datetime
 from guides.models import GuideService
 
 
+#both guide and tour
 @login_required()
 def making_booking(request):
     print ("tour bookings123")
@@ -46,7 +47,10 @@ def making_booking(request):
     tourist = TouristProfile.objects.get(user=user)
 
     date_booked_for = data["start"]
-    date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
+    try:
+        date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
+    except:
+        date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
 
     hours_nmb = data.get("booking_hours")
     price_hourly = data.get("price_hourly", 0)
@@ -106,7 +110,7 @@ def making_booking(request):
         try:
             print ("try")
             order, created = Order.objects.get_or_create(**kwargs)
-            services_ids = data.getlist("additional_services_select[]")
+            services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
             print ("services ids: %s" % services_ids)
             guide_services = GuideService.objects.filter(id__in=services_ids)
 
@@ -129,10 +133,11 @@ def making_booking(request):
         return_dict["status"] = "success"
         return_dict["message"] = "Request has been submitted! Please waite for confirmation!"
 
-    if request.POST:
+    if request.POST:#it means that it is ajax request
         return JsonResponse(return_dict)
-    else:
-        return HttpResponseRedirect(reverse("my_bookings"))
+    else:#it means that it is creation of the new order with redirect tot checkout page
+        # return HttpResponseRedirect(reverse("my_bookings"))
+        return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
 
 
 @login_required
@@ -270,6 +275,7 @@ def cancel_order(request, order_id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required()
 def change_order_status(request, order_id, status_id):
     print ("change order status")
     user = request.user
@@ -328,6 +334,7 @@ def change_order_status(request, order_id, status_id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required()
 def saving_review(request):
     if request.POST:
         user = request.user
@@ -372,6 +379,5 @@ def saving_review(request):
 
             Review.objects.update_or_create(order_id=order_id, defaults=kwargs)
             messages.success(request, 'Review has been successfully created!')
-
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

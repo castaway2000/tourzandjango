@@ -5,7 +5,7 @@ from utils.general import random_string_creating
 from django.utils.text import slugify
 from datetime import date
 from django.contrib.auth.models import User
-from locations.models import City
+from locations.models import City, Currency
 
 
 class GuideProfile(models.Model):
@@ -14,6 +14,7 @@ class GuideProfile(models.Model):
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
 
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
@@ -35,7 +36,6 @@ class GuideProfile(models.Model):
     orders_with_review_rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)# from total orders_completed_nmb
 
     orders_reviewed_nmb = models.IntegerField(default=0)
-
 
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)

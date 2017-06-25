@@ -115,6 +115,11 @@
     width: auto;
 }
 
+.avatar-image-x-small{
+    height: 100px;
+    width: auto;
+}
+
 .label-sm {
   font-size: 12px;
 }
@@ -236,4 +241,29 @@
 .table-center th,
 .table-center td{
     text-align: center;
+}
+
+.payment-summary{
+    border: 1px solid black;
+    padding: 20px 20px 30px 20px;
+}
+
+.tr-last td{
+    padding-top: 20px;
+}
+
+.is-paid-container{
+    font-size: 24px;
+    color: #169e49;
+    border: 2px dashed #169e49;
+    position: absolute;
+    right: 10%;
+    padding: 15px;
+    letter-spacing: 5px;
+
+    -moz-transform: rotate(-15deg); /* Firefox */
+    -ms-transform: rotate(-15deg); /* IE */
+    -webkit-transform: rotate(-15deg); /* Safari, Chrome, iOS */
+    -o-transform: rotate(-15deg); /* Opera */
+    transform: rotate(-15deg);
 }

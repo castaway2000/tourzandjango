@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
-from orders.models import Order
 from locations.models import Currency
+
 
 
 class PaymentCustomer(models.Model):
@@ -45,11 +45,12 @@ class PaymentMethod(models.Model):
 
 
 class Payment(models.Model):
-    order = models.ForeignKey(Order, blank=True, null=True, default=None)#maybe it can be a payment without an order
+    order = models.OneToOneField('orders.Order', blank=True, null=True, default=None)#maybe it can be a payment without an order
     payment_method = models.ForeignKey(PaymentMethod)
     uuid = models.CharField(max_length=36, blank=True, null=True, default=None)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=None)
+    date_paid = models.DateField(blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 

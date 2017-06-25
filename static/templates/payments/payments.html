@@ -27,7 +27,7 @@
                                     Date
                                 </th>
                                 <th>
-                                    Uuid
+                                    Payment Uuid
                                 </th>
                                 <th>
                                     Order
@@ -41,16 +41,21 @@
                                 <th>
                                     Payment method
                                 </th>
+                                <th>
+                                    Status
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for payment in payments %}
                                 <tr>
                                     <td>
-                                        {{ payment.created|date:"m.d.Y" }}
+                                        <span class="hidden">{{ payment }}</span>{{ payment.created|date:"m.d.Y" }}
                                     </td>
                                     <td>
-                                        {{ payment.uuid }}
+                                        <a href="{% url 'order_payment_checkout' payment.order.id %}">
+                                            {{ payment.uuid }}
+                                        </a>
                                     </td>
                                     <td>
                                         {% if payment.order.tour %}
@@ -62,21 +67,26 @@
                                             <a href="{% url 'guide' payment.order.guide.user.username %}">
                                                 {{ payment.order.guide.user.username }}
                                             </a>
+
                                         {% else %}
                                             Tour with
                                             <a href="{% url 'guide' payment.order.guide.user.username %}">
                                                 {{ payment.order.guide.user.username }}
                                             </a>
+
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {{ payment.amount }}
+                                        {{ payment.amount|safe }}
                                     </td>
                                     <td>
                                         {{ payment.currency.name }}
                                     </td>
                                     <td>
                                         {{ payment.payment_method.card_number }}
+                                    </td>
+                                    <td>
+                                        {{ payment.order.payment_status.name }}
                                     </td>
                                 </tr>
                             {% endfor %}

@@ -163,14 +163,14 @@
                         {% endif %}
 
                         <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
-                            <form method="post" id="form_guide_scheduling"
+                            <form method="get" id="form_guide_scheduling"
                                 class="form-horizontal"
                                 action="{% url 'making_booking' %}"
                             >{% csrf_token %}
 
                                 <input class="hidden" value="{{ guide.id }}" name="guide_id">
 
-                                <div class="input-daterange" data-date-format="yyyy, MM d, DD">
+                                <div class="input-daterange" data-date-format="mm.dd.yyyy">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
@@ -181,29 +181,30 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-lg-7">
-                                            <label>Select additional services</label>
-                                            <select multiple class="form-control"
-                                                id="additional_services_select"
-                                                name="additional_services_select"
-                                            >
-                                                <option>Select additional services:</option>
-                                                {% for guide_service in guide_services %}
-                                                    <option value="{{ guide_service.id }}">
-                                                        {{ guide_service.service.name }} -
-                                                        {% if guide_service.price == 0 %}
-                                                            free
-                                                        {% else %}
-                                                            {{ guide_service.price }}USD
-                                                        {% endif %}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
+                                {% if guide_services %}
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-7">
+                                                <label>Select additional services</label>
+                                                <select multiple class="form-control"
+                                                    id="additional_services_select"
+                                                    name="additional_services_select"
+                                                >
+                                                    {% for guide_service in guide_services %}
+                                                        <option value="{{ guide_service.id }}">
+                                                            {{ guide_service.service.name }} -
+                                                            {% if guide_service.price == 0 %}
+                                                                free
+                                                            {% else %}
+                                                                {{ guide_service.price }}USD
+                                                            {% endif %}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% endif %}
 
                                 <div class="row">
                                     <div class="col-md-6">
@@ -274,7 +275,10 @@
                                     </div>
                                 </div>
                                 <div class="form-group text-right">
-                                     <button type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Book Now{% endblocktrans %}</button>
+                                     <button type="submit"
+                                         class="btn btn-primary btn-lg submit-button">
+                                            {% blocktrans %}Book Now{% endblocktrans %}
+                                     </button>
                                 </div>
                             </form>
                         </div>
@@ -455,6 +459,8 @@
 {% block js_stuff %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script>
-        $('#additional_services_select').select2();
+        $('#additional_services_select').select2({
+            placeholder: 'Select additional services'
+        });
     </script>
 {% endblock js_stuff %}

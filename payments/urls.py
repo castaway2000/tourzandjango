@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^making_order_payment/(?P<order_id>\w+)/$', views.making_order_payment, name='making_order_payment'),
 
     url(r'^payments/$', views.payments, name='payments'),
+    url(r'^order_payment_checkout/(?P<order_id>\w+)/$', views.order_payment_checkout, name='order_payment_checkout'),
 ]

@@ -136,78 +136,80 @@
                 <ul class="booking-list">
                     {% for guide in guides %}
                         <li>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-3">
-                                    <div class="booking-item-img">
-                                        <a href="{% url 'guide' guide.user.username %}">
-                                            {% if guide.profile_image %}
-                                                <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
-                                            {% else %}
-                                                <img src="{% static 'img/default_tour_image.jpg' %}">
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                    <br>
-                                </div>
-                                <div class="col-md-6 col-sm-6">
-                                    <div class="item-name">
-                                        {{ guide.user.username }}
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            {{ guide.overview|linebreaks|truncatewords_html:30 }}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12 mb10">
-                                            <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
-                                            {% for user_interest in guide.user.userinterest_set.all %}
-                                                {% if user_interest.interest.name in interest_input %}
-                                                    <span class="label label-success label-tag">
-                                                        {{ user_interest.interest.name }}
-                                                    </span>
+                            <div class="tour-item">
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-3">
+                                        <div class="booking-item-img">
+                                            <a href="{% url 'guide' guide.user.username %}">
+                                                {% if guide.profile_image %}
+                                                    <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                 {% else %}
-                                                    <span class="label label-default label-tag">
-                                                        {{ user_interest.interest.name }}
-                                                    </span>
+                                                    <img src="{% static 'img/default_tour_image.jpg' %}">
                                                 {% endif %}
-                                            {% endfor %}
+                                            </a>
                                         </div>
+                                        <br>
                                     </div>
-                                    {% with guide.user.userlanguage_set.all as user_languages %}
-                                        {% if user_languages %}
-                                            <div class="row">
-                                                <div class="col-md-12 mb10">
-                                                    <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
-                                                    {% for user_language in user_languages %}
-                                                        {% if user_language.language in language_input %}
-                                                            <span class="label label-success label-tag">
-                                                                {{ user_language.get_language_display }}
-                                                            </span>
-                                                        {% else %}
-                                                            <span class="label label-default label-tag">
-                                                                {{ user_language.get_language_display }}
-                                                            </span>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="item-name">
+                                            {{ guide.user.username }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                {{ guide.overview|linebreaks|truncatewords_html:30 }}
                                             </div>
-                                        {% endif %}
-                                    {% endwith %}
-                                </div>
-                                <div class="col-md-3 col-sm-3">
-                                    <div class="guide-rating">
-                                        <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb10">
+                                                <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
+                                                {% for user_interest in guide.user.userinterest_set.all %}
+                                                    {% if user_interest.interest.name in interest_input %}
+                                                        <span class="label label-success label-tag">
+                                                            {{ user_interest.interest.name }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="label label-default label-tag">
+                                                            {{ user_interest.interest.name }}
+                                                        </span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% with guide.user.userlanguage_set.all as user_languages %}
+                                            {% if user_languages %}
+                                                <div class="row">
+                                                    <div class="col-md-12 mb10">
+                                                        <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
+                                                        {% for user_language in user_languages %}
+                                                            {% if user_language.language in language_input %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ user_language.get_language_display }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="label label-default label-tag">
+                                                                    {{ user_language.get_language_display }}
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
-                                    <span class="guide-rate">
-                                        <b>{% blocktrans %}Price: {% endblocktrans %}</b>
-                                        {{ guide.rate }}
-                                    </span>
-                                    <p>
-                                        <a class="btn btn-primary" href="{% url 'guide' guide.user.username %}">
-                                            {% blocktrans %}Go to Guide{% endblocktrans %}
-                                        </a>
-                                    </p>
+                                    <div class="col-md-3 col-sm-3">
+                                        <div class="guide-rating">
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
+                                        </div>
+                                        <span class="guide-rate">
+                                            <b>{% blocktrans %}Hourly rate: {% endblocktrans %}</b>
+                                            {{ guide.rate }} {{ guide.currency.name }}
+                                        </span>
+                                        <p>
+                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.username %}">
+                                                {% blocktrans %}Go to Guide{% endblocktrans %}
+                                            </a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </li>

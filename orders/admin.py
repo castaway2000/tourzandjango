@@ -11,6 +11,15 @@ class OrderStatusAdmin(admin.ModelAdmin):
 admin.site.register(OrderStatus, OrderStatusAdmin)
 
 
+class PaymentStatusAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in PaymentStatus._meta.fields]
+
+    class Meta:
+        model = PaymentStatus
+
+admin.site.register(PaymentStatus, PaymentStatusAdmin)
+
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Order._meta.fields]
 

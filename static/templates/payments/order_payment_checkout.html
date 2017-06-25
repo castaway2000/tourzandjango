@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="gap"></div>
+            </div>
+            <div class="col-lg-8">
+
+                {% if order.payment_status.id == 2 %}
+                    <h3 class="text-center">Thank you!</h3>
+                    <h5 class="text-center">Your order has been successfully paid</h5>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="text-center">
+                                <a href="{% url 'chat_creation_guide' order.guide.id %}">
+                                    Go to Chat
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-center">
+                                <a href="{% url 'payments' %}">
+                                    Go to Payments
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h3>Send a message to your guide</h3>
+
+                    Tell your guide a little about yourself
+                    <ul>
+                        <li>
+                            what are your hobbies or interests?
+                        </li>
+                        <li>
+                            what drove you to book them out?
+                        </li>
+                        <li>
+                            what interests you most about the city they live in?
+                        </li>
+                    </ul>
+                    <form class="form-horizontal"  method="post">{% csrf_token %}
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <textarea class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">{% blocktrans %}Send{% endblocktrans %}</button>
+                        </div>
+                    </form>
+                {% endif %}
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="payment-summary">
+
+                    {% if order.payment_status.id == 2 %}
+                        <div class="is-paid-container">
+                            PAID
+                        </div>
+                    {% endif %}
+
+                    <div class="text-center">
+                        {% if order.guide.profile_image %}
+                            <img class="img-circle avatar-image-x-small"
+                                 src="{{ order.guide.profile_image.url }}"
+                                 alt="" title="" />
+                        {% else %}
+                            <img class="img-circle avatar-image-x-small"
+                                 src="{% static 'img/300x300.png' %}" alt="" title="">
+                        {% endif %}
+                    </div>
+
+                    <h5 class="text-center">
+                        <a href="{% url 'guide' order.guide.user.username %}">
+                            {{ order.guide.name }}
+                        </a>
+                    </h5>
+
+                    <div class="gap gap-small"></div>
+
+                    <h3 class="text-center">
+                        Payment Summary
+                    </h3>
+
+                    <div class="payment-summary-details">
+                        <table width="100%">
+                            <thead>
+                                <tr>
+                                    <th width="50%"></th>
+                                    <th width="50%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>Base Charge</b>
+                                    </td>
+                                    <td>
+                                        {{ order.total_price_before_fees|safe }} {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Service Fee</b>
+                                    </td>
+                                    <td>
+                                        {{ order.fees_tourist|safe }} {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Tax</b>
+                                    </td>
+                                    <td>
+                                        0 {{ order.currency.name }}
+                                    </td>
+                                </tr>
+
+                                <tr class="tr-last">
+                                    <td>
+                                        <b>Total</b>
+                                    </td>
+                                    <td>
+                                        {{ order.total_price|safe }} {{ order.currency.name }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="gap"></div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_stuff %}
+{% endblock js_stuff %}

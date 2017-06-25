@@ -10,6 +10,18 @@ from django.db.models.signals import post_save
 from django.db.models import Sum, Count, Avg
 from crequest.middleware import CrequestMiddleware
 from utils.sending_emails import SendingEmail
+from locations.models import Currency
+
+from payments.models import Payment, PaymentMethod
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+import braintree
+
+
+braintree.Configuration.configure(braintree.Environment.Sandbox,
+    merchant_id=BRAINTREE_MERCHANT_ID,
+    public_key=BRAINTREE_PUBLIC_KEY,
+    private_key=BRAINTREE_PRIVATE_KEY
+    )
 
 
 class OrderStatus(models.Model):
@@ -25,13 +37,27 @@ class OrderStatus(models.Model):
     def save(self, *args, **kwargs):
         if self.name:
             self.slug = slugify(self.name)
-        else:
-            self.slug = slugify(self.user.username)
         super(OrderStatus, self).save(*args, **kwargs)
 
 
+class PaymentStatus(models.Model):
+    name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    slug = models.SlugField(blank=True, null=True, default=None, unique=True)
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.name
+
+    def save(self, *args, **kwargs):
+        if self.name:
+            self.slug = slugify(self.name)
+        super(PaymentStatus, self).save(*args, **kwargs)
+
+
 class Order(models.Model):
-    status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1)
+    status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1) #pending (initiated, but not paid)
 
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
     tourist = models.ForeignKey(TouristProfile, blank=True, null=True, default=None)
@@ -48,14 +74,24 @@ class Order(models.Model):
     price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     additional_services_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    total_price_before_fees = models.DecimalField(max_digits=8, decimal_places=2, default=0)#for tourist
+
+    fees_tourist = models.DecimalField(max_digits=8, decimal_places=2, default=0)#additional fees for tourist (increasing)
+    fees_guide = models.DecimalField(max_digits=8, decimal_places=2, default=0)#additional fees for guide (decreasing)
+    fees_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)#total fees of a company
+
     total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    guide_payment = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
+
+    payment_status = models.ForeignKey(PaymentStatus, blank=True, null=True, default=1)
 
     rating_tourist = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     rating_guide = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     comment = models.TextField(blank=True, null=True, default=None)
     date_ordered = models.DateTimeField(auto_now_add=True, auto_now=False)
-    date_paid = models.DateField(blank=True, null=True, default=None)
+
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
 
@@ -80,12 +116,73 @@ class Order(models.Model):
         price_after_discount = float(self.price) - float(self.discount)
         self.price_after_discount = price_after_discount
 
-        self.total_price = price_after_discount + float(self.additional_services_price)
+        self.total_price_before_fees = price_after_discount + float(self.additional_services_price)
 
-        data = {"order": self}
-        a = SendingEmail(data)
+        if not self.currency and self.guide.currency:
+            self.currency = self.guide.currency
+
+        #FEES RATES FOR TOURISTS AND GUIDES
+        fees_tourist_rate = float(0.13)
+        fees_guide_rate = float(0.13)
+
+        fees_tourist = float(self.total_price_before_fees)*fees_tourist_rate
+        fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+
+        self.fees_tourist = fees_tourist
+        self.fees_guide = fees_guide
+        self.fees_total = fees_tourist + fees_guide
+
+        self.total_price = float(self.total_price_before_fees) + fees_tourist
+        self.guide_payment = float(self.total_price_before_fees) - fees_guide
+
+
+        if not self.pk:#new item
+            data = {"order": self}
+            a = SendingEmail(data)
 
         super(Order, self).save(*args, **kwargs)
+
+
+    def making_order_payment(self):
+        order = self
+        payment_method = PaymentMethod.objects.filter(is_active=True).order_by('is_default', '-id').first()
+
+        print("payment method: %s" % payment_method.token)
+
+        print(self.total_price)
+        amount = "%s" % float(self.total_price)
+        print(amount)
+
+        result = braintree.Transaction.sale({
+            "amount": amount,
+            "payment_method_token": payment_method.token,
+            "options": {
+                "submit_for_settlement": False
+            }
+        })
+
+        print (result)
+
+        if result.is_success:
+            data = result.transaction
+
+            payment_uuid = data.id
+            amount = data.amount
+            currency = data.currency_iso_code
+            currency, created = Currency.objects.get_or_create(name=currency)
+
+            Payment.objects.create(order=order, payment_method=payment_method,
+                                   uuid=payment_uuid, amount=amount, currency=currency)
+
+            order.status_id = 5 #paid
+            order.payment_status_id = 2 #paid
+
+            order.save(force_update=True)
+
+            return {"result": True}
+
+        else:
+            return {"result": False}
 
 
 """
