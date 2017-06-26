@@ -29,8 +29,8 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
 #both guide and tour
 @login_required()
 def making_booking(request):
-    print ("tour bookings123")
-    print (request.POST)
+    # print ("tour bookings123")
+    # print (request.POST)
 
     user = request.user
     return_dict = dict()
@@ -39,7 +39,7 @@ def making_booking(request):
     else:
         data = request.GET
 
-    print (data)
+    # print (data)
 
     kwargs = dict()
     tour_id = data.get("tour_id")
@@ -106,7 +106,7 @@ def making_booking(request):
     kwargs["guide_id"] = guide_id
     kwargs["date_booked_for"] = date_booked_for
 
-    print (kwargs)
+    # print (kwargs)
 
     if user.is_anonymous():
         if "bookings" in request.session:
@@ -118,10 +118,10 @@ def making_booking(request):
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
         try:
-            print ("try")
+            # print ("try")
             order = Order.objects.create(**kwargs)
             services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
-            print ("services ids: %s" % services_ids)
+            # print ("services ids: %s" % services_ids)
             guide_services = GuideService.objects.filter(id__in=services_ids)
 
             services_in_order=[]
