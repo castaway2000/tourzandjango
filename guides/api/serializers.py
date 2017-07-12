@@ -34,7 +34,7 @@ class GuideProfileSerializer(serializers.ModelSerializer):
     languages = UserLanguageSerializer(source='user.userlanguage_set', many=True, required=False)
 
     orders = OrderSerializer(source='order_set', many=True, required=False)
-    reviews = serializers.SerializerMethodField(required=False)#this field searches for the function "get_"+field_name
+    # reviews = serializers.SerializerMethodField(required=False)#this field searches for the function "get_"+field_name
     chats = ChatSerializer(source='user.guide', many=True, required=False)
 
     class Meta:

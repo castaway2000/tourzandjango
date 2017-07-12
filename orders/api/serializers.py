@@ -50,7 +50,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     services = ServiceInOrderSerializer(source='serviceinorder_set', many=True)
     # payments = PaymentSerializer(source='payment_set', many=True)
-    reviews = ReviewSerializer(source='review_set', many=True)
+    reviews = ReviewSerializer(source='review')
 
     class Meta:
         model = Order

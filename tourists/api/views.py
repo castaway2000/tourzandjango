@@ -34,22 +34,28 @@ from .serializers import *
 from .permissions import IsUserOwnerOrReadOnly
 
 from ..models import *
+from chats.models import Chat
 
 
 class TouristProfileViewSet(viewsets.ModelViewSet):
     queryset = TouristProfile.objects.all()
     serializer_class = TouristProfileSerializer
-    permission_classes = (IsUserOwnerOrReadOnly)
+    permission_classes = (IsUserOwnerOrReadOnly,)
 
     def get_queryset(self):
         user = self.request.user
-        if hasattr(user, 'guideprofile'):
-            orders = user.guideprofile.order_set.all()
-            user_ids_orders = [item.tourist.user_id for item in orders]
-            qs = TouristProfile.objects.filter(Q(user=user)|Q(user_id__in=user_ids_orders))
-        else:
-            qs = TouristProfile.objects.filter(user=user)
-        return qs
+        if not user.is_anonymous():
+            #showing only tourist if the current tourist is guide and he has orders with a tourist or a chat
+            if hasattr(user, 'guideprofile'):
+                orders = user.guideprofile.order_set.all()
+                user_ids_orders = [item.tourist.user_id for item in orders]
+
+                chats = Chat.objects.filter(guide=user)
+                chat_tourist_user_ids = [item.tourist.id for item in chats]
+                qs = TouristProfile.objects.filter(Q(user=user)|Q(user_id__in=user_ids_orders)|Q(user_id__in=chat_tourist_user_ids))
+            else:
+                qs = TouristProfile.objects.filter(user=user)
+            return qs
 
 
 class TouristTravelPhotoViewSet(viewsets.ReadOnlyModelViewSet):
@@ -59,5 +65,6 @@ class TouristTravelPhotoViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = TouristTravelPhoto.objects.filter(user=user)
-        return qs
+        if not user.is_anonymous():
+            qs = TouristTravelPhoto.objects.filter(user=user)
+            return qs
