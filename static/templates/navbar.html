@@ -30,8 +30,12 @@
                 <div class="col-md-7">
                     <div class="nav nav-menu">
                         <ul class="slimmenu top-menu" id="slimmenu">
-                            <li class="{% if current_page == "home" %}active{% endif %}">
-                                <a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
+{#                            <li class="{% if current_page == "home" %}active{% endif %}">#}
+{#                                <a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>#}
+{#                            </li>#}
+
+                            <li class="{% if current_page == "blog" %}active{% endif %}">
+                                <a href="{% url 'blog' %}">{% blocktrans %}Blog{% endblocktrans %}</a>
                             </li>
 
                             {% if request.session.current_role != "guide"  %}

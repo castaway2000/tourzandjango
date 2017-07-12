@@ -12,6 +12,7 @@ from django.db.models import Count
 
 
 def blog(request):
+    current_page = "blog"
     categories = BlogCategory.objects.filter(is_active=True).annotate(posts_nmb=Count("blogpost")).order_by("-posts_nmb")[:5]
     tags = BlogTag.objects.filter(is_active=True).annotate(posts_nmb=Count("blogposttag")).order_by("-posts_nmb")[:5]
     blog_posts = BlogPost.objects.filter(is_active=True).order_by("-id").values()
@@ -30,6 +31,7 @@ def blog(request):
 
 
 def blog_post(request, slug):
+    current_page = "blog"
     categories = BlogCategory.objects.filter(is_active=True).annotate(posts_nmb=Count("blogpost")).order_by("-posts_nmb")[:5]
     tags = BlogTag.objects.filter(is_active=True).annotate(posts_nmb=Count("blogposttag")).order_by("-posts_nmb")[:5]
     blog_post = BlogPost.objects.get(slug=slug)
