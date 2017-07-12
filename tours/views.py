@@ -218,7 +218,10 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
 
     if slug and tour_id:
         guide = user.guideprofile
-        tour = Tour.objects.get(id=tour_id, slug=slug, guide=guide)
+        try:
+            tour = Tour.objects.get(id=tour_id, slug=slug, guide=guide)
+        except:
+            tour = Tour.objects.get(id=tour_id, guide=guide)
         form = TourForm(request.POST or None, request.FILES or None, instance=tour)
         tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     else:

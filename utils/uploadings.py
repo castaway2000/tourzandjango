@@ -3,4 +3,7 @@ def upload_path_handler_tour(instance, filename):
 
 
 def upload_path_handler_tour_images(instance, filename):
-    return "tour_%s/%s" % (instance.tour.id, filename)
+    if type(instance).__name__ == "TourImage":
+        return "tour_%s/%s" % (instance.tour.id, filename)
+    else:
+        return "tour_%s/%s" % (instance.id, filename)

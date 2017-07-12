@@ -105,18 +105,28 @@ class TourImage(models.Model):
 
     def save(self, *args, **kwargs):
 
-        """
-        setting an image on tour instance if it is set here
-        """
-        for field in self._meta.local_fields:
-            if field.name == "is_main" and self.tour:
-                old = self._original_fields[field.name]
-                new = getattr(self, field.name)
-                if old != new and new == True:#if new value is True
+        if not self.pk:
+            print("self.pk")
+            print(self.tour.image.url)
 
-                    #put is_main flag to False to other possible existing images
-                    self.tour.tourimage_set.filter(is_main=True).update(is_main=False)
-                    self.tour.image = self.image
-                    self.tour.save(force_update=True)
+            if self.tour.image.url == "/media/tours/images/default_tour_image.jpg":
+                self.tour.image = self.image
+                self.tour.save(force_update=True)
+
+                self.is_main = True
+        else:
+            """
+            setting an image on tour instance if it is set here
+            """
+            for field in self._meta.local_fields:
+                if field.name == "is_main" and self.tour:
+                    old = self._original_fields[field.name]
+                    new = getattr(self, field.name)
+                    if old != new and new == True:#if new value is True
+
+                        #put is_main flag to False to other possible existing images
+                        self.tour.tourimage_set.filter(is_main=True).update(is_main=False)
+                        self.tour.image = self.image
+                        self.tour.save(force_update=True)
 
         super(TourImage, self).save(*args, **kwargs)
