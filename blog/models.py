@@ -43,7 +43,7 @@ class BlogPost(models.Model):
     category = models.ForeignKey(BlogCategory, blank=True, null=True, default=None)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to=upload_path_handler_blog, blank=True, null=True, default=None)
+    image = models.ImageField(upload_to=upload_path_handler_blog, blank=True, null=True, default="defaults/blog_post_default.jpg")
     updated_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name="blog_post_updated_by")
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -117,3 +117,6 @@ class BlogPostTag(models.Model):
     class Meta:
         verbose_name = 'BlogPostTag'
         verbose_name_plural = 'BlogPostTags'
+
+    def save(self, *args, **kwargs):
+        super(BlogPostTag, self).save(*args, **kwargs)
