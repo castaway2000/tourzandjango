@@ -49,6 +49,7 @@ urlpatterns = i18n_patterns(
     url(r'^', include('payments.urls')),
 
     url(r'^', include('website_management.urls')),
+    url(r'^', include('blog.urls')),
 
 
     url(r'^accounts/', include('allauth.urls')),
@@ -71,11 +72,10 @@ urlpatterns = i18n_patterns(
     url(r'^api/v1/', include('orders.api.urls')),
     url(r'^api/v1/', include('locations.api.urls')),
     url(r'^api/v1/', include('users.api.urls')),
+    url(r'^api/v1/', include('blog.api.urls')),
 
     url(r'^api/v1/', include(api_urls())),#for the main representation page of Django Rest Framework
-
     url(r'^api/v1/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
     url(r'^api/v1/schema/$', schema_view),
 
 )\

@@ -43,16 +43,21 @@ class TouristProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsUserOwnerOrReadOnly,)
 
     def get_queryset(self):
+        print("get queryset")
         user = self.request.user
+        print(user)
         if not user.is_anonymous():
+            print (user)
             #showing only tourist if the current tourist is guide and he has orders with a tourist or a chat
             if hasattr(user, 'guideprofile'):
+                print("guideprofile")
                 orders = user.guideprofile.order_set.all()
                 user_ids_orders = [item.tourist.user_id for item in orders]
 
                 chats = Chat.objects.filter(guide=user)
                 chat_tourist_user_ids = [item.tourist.id for item in chats]
                 qs = TouristProfile.objects.filter(Q(user=user)|Q(user_id__in=user_ids_orders)|Q(user_id__in=chat_tourist_user_ids))
+                print(qs)
             else:
                 qs = TouristProfile.objects.filter(user=user)
             return qs

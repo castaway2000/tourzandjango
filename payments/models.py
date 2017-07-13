@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from locations.models import Currency
 
 
-
 class PaymentCustomer(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
     uuid = models.CharField(max_length=64)

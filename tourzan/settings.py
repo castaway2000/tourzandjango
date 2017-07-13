@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'website_management',
     'emails',
     'payments',
+    'blog',
 
     #external packages
     'allauth',
