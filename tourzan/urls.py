@@ -26,6 +26,7 @@ from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
 from .api_router import SharedAPIRootRouter
 
+
 schema_view = get_schema_view(title='Pastebin API')
 
 

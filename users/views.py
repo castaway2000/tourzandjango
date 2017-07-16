@@ -20,6 +20,8 @@ from guides.models import GuideProfile
 from django.http import JsonResponse
 from utils.internalization_wrapper import languages_english
 from allauth.account.views import SignupView, _ajax_response
+from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
+import requests
 
 
 def login_view(request):
@@ -202,10 +204,31 @@ class SignupViewCustom(SignupView):
         if u"login_btn" in request.POST:
             return HttpResponseRedirect(reverse("login"))
 
+        #google captcha validating
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        if recaptcha_response and recaptcha_response != "":
+            data = {
+                'secret': GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            result = r.json()
+
+            if result['success']:
+                pass
+            else:
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         if form.is_valid():
             response = self.form_valid(form)
         else:
             response = self.form_invalid(form)
+
         return _ajax_response(self.request, response, form=form)

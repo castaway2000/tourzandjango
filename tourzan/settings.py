@@ -217,6 +217,8 @@ EMAIL_USE_TLS = True
 FROM_EMAIL = "hello@tourzan.com"
 
 
+GOOGLE_RECAPTCHA_SECRET_KEY = "6LcH3h4TAAAAABBUj4ci88yDIaM_A1A2YYt4IeTr"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
