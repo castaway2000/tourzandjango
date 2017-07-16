@@ -43,8 +43,6 @@ def payment_methods_adding(request):
     request.session['braintree_client_token'] = braintree.ClientToken.generate()
 
     if request.POST:
-        print(request.POST)
-
         payment_method_nonce = request.POST['payment_method_nonce']
         result = braintree.PaymentMethod.create({
             "customer_id": user.paymentcustomer.uuid,
@@ -82,7 +80,15 @@ def payment_methods_adding(request):
 
         PaymentMethod.objects.create(**kwargs)
 
-        return HttpResponseRedirect(reverse("payment_methods"))
+        #redirecting after payment method adding if there is a pending order id
+        pending_order_id = request.session.get("pending_order")
+        if pending_order_id:
+            del request.session["pending_order"]
+            messages.success(request, 'A new payment method was successfully added and now you can proceed with your order')
+            return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": pending_order_id}))
+        else:
+            messages.success(request, 'A new payment method was successfully added!')
+            return HttpResponseRedirect(reverse("payment_methods"))
     return render(request, 'payments/payment_methods_adding.html', locals())
 
 
@@ -144,6 +150,12 @@ def order_payment_checkout(request, order_id):
     user = request.user
     order = Order.objects.get(id=order_id)
     services_in_order = order.serviceinorder_set.all()
+
+    #adding variable to session for redirecting after adding a payment method
+    user_payment_method = PaymentMethod.objects.filter(user=user, is_active=True).exists()
+    if not user_payment_method:
+        request.session["pending_order"] = order.id
+
 
     #check for preventing unauthorized access
     if order.tourist.user != user and order.guide.user != user:

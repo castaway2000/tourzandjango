@@ -5,9 +5,10 @@ from django.contrib.auth.models import User
 from locations.models import Currency
 
 
+#created mapping between users and braintree customers
 class PaymentCustomer(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
-    uuid = models.CharField(max_length=64)
+    uuid = models.CharField(max_length=64)#from braintree
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 

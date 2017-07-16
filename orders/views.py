@@ -14,6 +14,7 @@ from tours.models import Tour
 from utils.statuses_changing_rules import checking_statuses
 import datetime
 from guides.models import GuideService
+from payments.models import PaymentMethod
 
 
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
@@ -145,7 +146,7 @@ def making_booking(request):
 
     if request.POST:#it means that it is ajax request
         return JsonResponse(return_dict)
-    else:#it means that it is creation of the new order with redirect tot checkout page
+    else:#it means that it is creation of the new order with redirect to checkout page
         # return HttpResponseRedirect(reverse("my_bookings"))
         return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
 

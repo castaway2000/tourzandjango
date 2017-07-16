@@ -10,61 +10,8 @@
             <div class="col-lg-12">
                 <div class="gap"></div>
             </div>
-            <div class="col-lg-8">
 
-                {% if order.payment_status.id == 2 %}
-                    <h3 class="text-center">Thank you!</h3>
-                    <h5 class="text-center">The payment has been successfully reserved</h5>
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="text-center">
-                                <a href="{% url 'chat_creation_guide' order.guide.id %}">
-                                    Go to Chat
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="text-center">
-                                <a href="{% url 'payments' %}">
-                                    Go to Payments Page
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <h3>Send a message to your guide</h3>
-
-                    Tell your guide a little about yourself
-                    <ul>
-                        <li>
-                            what are your hobbies or interests?
-                        </li>
-                        <li>
-                            what drove you to book them out?
-                        </li>
-                        <li>
-                            what interests you most about the city they live in?
-                        </li>
-                    </ul>
-                    <form class="" method="post">{% csrf_token %}
-
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <textarea class="form-control" name="message"></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">{% blocktrans %}Send{% endblocktrans %}</button>
-                        </div>
-                    </form>
-                {% endif %}
-
-            </div>
-            <div class="col-lg-4">
+            <div class="col-lg-4 col-sm-12 col-xs-12 pull-right">
 
                 <div class="payment-summary">
 
@@ -210,6 +157,75 @@
                 <div class="gap"></div>
 
             </div>
+
+            <div class="col-lg-8 col-sm-12 col-xs-12">
+
+                {% if order.payment_status.id == 2 %}
+                    <h3 class="text-center">Thank you!</h3>
+                    <h5 class="text-center">The payment has been successfully reserved</h5>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="text-center">
+                                <a href="{% url 'chat_creation_guide' order.guide.id %}">
+                                    Go to Chat
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-center">
+                                <a href="{% url 'payments' %}">
+                                    Go to Payments Page
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if not user_payment_method %}
+                        <div class="well">
+                            {% blocktrans %}
+                                You do not have any connected payment method. Please add at least one
+                            {% endblocktrans %}
+                            <a href="{% url 'payment_methods_adding' %}" class="btn btn-primary btn-sm">
+                                {% blocktrans %}here{% endblocktrans %}
+                            </a>
+                        </div>
+                    {% else %}
+
+                        <h3>Send a message to your guide</h3>
+
+                        Tell your guide a little about yourself
+                        <ul>
+                            <li>
+                                what are your hobbies or interests?
+                            </li>
+                            <li>
+                                what drove you to book them out?
+                            </li>
+                            <li>
+                                what interests you most about the city they live in?
+                            </li>
+                        </ul>
+                        <form class="" method="post">{% csrf_token %}
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <textarea class="form-control" name="message"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">{% blocktrans %}Send{% endblocktrans %}</button>
+                            </div>
+                        </form>
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+
         </div>
     </div>
 
