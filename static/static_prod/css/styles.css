@@ -1835,9 +1835,12 @@ h5.thumb-title {
   -webkit-border-radius: 0;
   border-radius: 0;
 }
-body {
-  overflow: hidden;
-}
+
+/*solution from comments from theme discussion */
+/*body {*/
+  /*overflow: hidden;*/
+/*}*/
+
 @media (min-width:992px) {
   body.boxed .global-wrap {
     width: 1230px;
