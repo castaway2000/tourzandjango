@@ -17,6 +17,7 @@ router.register(r'user_interests', views.UserInterestViewSet)
 router.register(r'language_levels', views.LanguageLevelViewSet)
 router.register(r'user_languages', views.UserLanguageViewSet)
 
+
 urlpatterns = [
     url(r'^', include(router.urls)),
 ]
