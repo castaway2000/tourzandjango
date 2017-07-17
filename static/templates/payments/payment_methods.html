@@ -35,7 +35,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="fa fa-times" href="#" rel="tooltip" data-placement="top" title="remove"></a>
+                                    <a class="fa fa-times" href="{% url 'deleting_payment_method' payment_method.id %}"
+                                       rel="tooltip" data-placement="top" title="remove"></a>
                                 </li>
                             </ul>
                             <p class="card-thumb-number">{{ payment_method.card_number }}</p>

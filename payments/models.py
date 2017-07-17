@@ -28,7 +28,7 @@ class CardType(models.Model):
 
 class PaymentMethod(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, default=None)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, blank=True, null=True, default=None)
     card_number = models.CharField(max_length=32)
     card_type = models.ForeignKey(CardType, blank=True, null=True, default=None)
     token = models.CharField(max_length=32)

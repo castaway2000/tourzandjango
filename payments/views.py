@@ -186,3 +186,22 @@ def order_payment_checkout(request, order_id):
             messages.success(request, 'The payment has been successfully reserved!')
 
     return render(request, 'payments/order_payment_checkout.html', locals())
+
+
+@login_required()
+def deleting_payment_method(request, payment_method_id):
+    user = request.user
+    if payment_method_id:
+        try:
+            payment_method = PaymentMethod.objects.get(id=payment_method_id, user=user, is_active=True)
+            result = braintree.PaymentMethod.delete(payment_method.token)
+            if result.is_success:
+                payment_method.is_active = False
+                payment_method.save()
+                messages.success(request, 'Payment method has been deleted successfully!')
+            else:
+                messages.error(request, 'Failure during deleting a payment method!')
+        except Exception as e:
+            messages.error(request, 'No such payment method was found!')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
