@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-27 10:09+0000\n"
+"POT-Creation-Date: 2017-07-17 19:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "This account is inactive."
 msgstr ""
 
-#: static/templates/account/email.html:5 static/templates/navbar.html:105
+#: static/templates/account/email.html:5 static/templates/navbar.html:110
 msgid "Account"
 msgstr ""
 
@@ -409,93 +409,103 @@ msgid ""
 "mail address</a>."
 msgstr ""
 
-#: static/templates/base_profile.html:7
-msgid "Account Settings"
-msgstr ""
-
-#: static/templates/base_profile.html:38 static/templates/base_profile.html:40
+#: static/templates/base_profile.html:40 static/templates/base_profile.html:42
 msgid "Switch to Guide Profile"
 msgstr ""
 
-#: static/templates/base_profile.html:42
+#: static/templates/base_profile.html:44
 msgid "Switch to Tourist Profile"
 msgstr ""
 
-#: static/templates/base_profile.html:51
+#: static/templates/base_profile.html:53
 msgid "Tourist Profile Settings"
 msgstr ""
 
-#: static/templates/base_profile.html:55 static/templates/base_profile.html:82
+#: static/templates/base_profile.html:57 static/templates/base_profile.html:98
 msgid "General Settings"
 msgstr ""
 
-#: static/templates/base_profile.html:58 static/templates/base_profile.html:94
+#: static/templates/base_profile.html:63
+#: static/templates/base_profile.html:113
 msgid "Credit/Debit Cards"
 msgstr ""
 
-#: static/templates/base_profile.html:61
+#: static/templates/base_profile.html:69
 msgid "My Travel Photos"
 msgstr ""
 
-#: static/templates/base_profile.html:71
+#: static/templates/base_profile.html:76
+msgid "Bookings history"
+msgstr ""
+
+#: static/templates/base_profile.html:83
+msgid "Payments"
+msgstr ""
+
+#: static/templates/base_profile.html:87
 msgid "Wishlist"
 msgstr ""
 
-#: static/templates/base_profile.html:78
+#: static/templates/base_profile.html:94
 msgid "Guide Profile Settings"
 msgstr ""
 
-#: static/templates/base_profile.html:85
-#: static/templates/guides/guide.html:383 static/templates/tours/tours.html:17
+#: static/templates/base_profile.html:101
+#: static/templates/guides/guide.html:439 static/templates/tours/tours.html:17
 msgid "Tours"
 msgstr ""
 
-#: static/templates/base_profile.html:88 static/templates/navbar.html:66
+#: static/templates/base_profile.html:104 static/templates/navbar.html:70
+#: static/templates/orders/orders.html:16
 msgid "Orders"
 msgstr ""
 
-#: static/templates/base_profile.html:91
+#: static/templates/base_profile.html:107
 msgid "Payments history"
 msgstr ""
 
-#: static/templates/chats/chat.html:16
+#: static/templates/chats/chat.html:15 static/templates/chats/chats.html:17
+msgid "Chat "
+msgstr ""
+
+#: static/templates/chats/chat.html:16 static/templates/chats/chats.html:18
 msgid "with "
 msgstr ""
 
-#: static/templates/chats/chat.html:18 static/templates/chats/chats.html:21
+#: static/templates/chats/chat.html:21 static/templates/chats/chats.html:23
 msgid "(guide)"
 msgstr ""
 
-#: static/templates/chats/chat.html:20 static/templates/chats/chats.html:25
+#: static/templates/chats/chat.html:26 static/templates/chats/chats.html:28
 msgid "(tourist)"
 msgstr ""
 
-#: static/templates/chats/chat.html:22 static/templates/chats/chats.html:28
+#: static/templates/chats/chat.html:32 static/templates/chats/chats.html:33
 msgid "started at: "
 msgstr ""
 
-#: static/templates/chats/chat.html:50
+#: static/templates/chats/chat.html:60
 msgid "Submit"
 msgstr ""
 
-#: static/templates/chats/chats.html:33
+#: static/templates/chats/chats.html:38
 msgid "Last Message:"
 msgstr ""
 
-#: static/templates/chats/chats.html:48
+#: static/templates/chats/chats.html:53
 msgid "No last message"
 msgstr ""
 
-#: static/templates/chats/chats.html:52
+#: static/templates/chats/chats.html:57
 msgid "Go To Conversation"
 msgstr ""
 
-#: static/templates/chats/chats.html:59
+#: static/templates/chats/chats.html:64
 msgid "There are no chats so far..."
 msgstr ""
 
-#: static/templates/errors_notification.html:10
-#: static/templates/errors_notification.html:15
+#: static/templates/errors_notification.html:9
+#: static/templates/errors_notification.html:14
 #, python-format
 msgid "%(message)s"
 msgstr ""
@@ -540,125 +550,118 @@ msgstr ""
 msgid "24/7 Dedicated Customer Support"
 msgstr ""
 
-#: static/templates/guides/guide.html:7 static/templates/guides/guides.html:13
-#: static/templates/navbar.html:34 static/templates/orders/bookings.html:13
+#: static/templates/guides/earnings.html:15
+msgid "Your Earnings"
+msgstr ""
+
+#: static/templates/guides/earnings.html:84
+#: static/templates/payments/payments.html:71
+msgid "by"
+msgstr ""
+
+#: static/templates/guides/guide.html:13
+#: static/templates/guides/guides.html:13
+#: static/templates/orders/bookings.html:13
 #: static/templates/orders/orders.html:12 static/templates/tours/tour.html:8
 #: static/templates/tours/tours.html:13
 msgid "Home"
 msgstr ""
 
-#: static/templates/guides/guide.html:29
+#: static/templates/guides/guide.html:35
 #: static/templates/users/tourist.html:18
 msgid "Go to Settings"
 msgstr ""
 
-#: static/templates/guides/guide.html:44 static/templates/guides/guide.html:50
-#: static/templates/tours/tour.html:29
-msgid "Write Review"
-msgstr ""
-
-#: static/templates/guides/guide.html:47 static/templates/guides/guide.html:51
-#: static/templates/tours/tour.html:30
+#: static/templates/guides/guide.html:52 static/templates/guides/guide.html:61
+#: static/templates/tours/tour.html:36
 msgid "Send Message"
 msgstr ""
 
-#: static/templates/guides/guide.html:59
+#: static/templates/guides/guide.html:58 static/templates/tours/tour.html:32
+msgid "Write Review"
+msgstr ""
+
+#: static/templates/guides/guide.html:69
 msgid "Some description will be here"
 msgstr ""
 
-#: static/templates/guides/guide.html:63
+#: static/templates/guides/guide.html:73
 msgid "Interests: "
 msgstr ""
 
-#: static/templates/guides/guide.html:72
+#: static/templates/guides/guide.html:82
 #: static/templates/users/tourist.html:47
 msgid "No interests"
 msgstr ""
 
-#: static/templates/guides/guide.html:80
-msgid "Services"
+#: static/templates/guides/guide.html:88
+msgid "Services: "
 msgstr ""
 
-#: static/templates/guides/guide.html:92
+#: static/templates/guides/guide.html:96
 msgid "No additional services..."
 msgstr ""
 
-#: static/templates/guides/guide.html:99
-msgid "Exeptional!"
-msgstr ""
-
-#: static/templates/guides/guide.html:100
-msgid "of guests recommend"
+#: static/templates/guides/guide.html:105
+msgid "Great!"
 msgstr ""
 
 #: static/templates/guides/guide.html:113
-msgid "guest rating"
+msgid "of tours were reviewed "
 msgstr ""
 
-#: static/templates/guides/guide.html:114
+#: static/templates/guides/guide.html:132
+msgid "tourist rating"
+msgstr ""
+
+#: static/templates/guides/guide.html:136
 msgid "based on"
 msgstr ""
 
-#: static/templates/guides/guide.html:114
+#: static/templates/guides/guide.html:138
+msgid "review"
+msgstr ""
+
+#: static/templates/guides/guide.html:140
 msgid "reviews"
 msgstr ""
 
-#: static/templates/guides/guide.html:129
+#: static/templates/guides/guide.html:157
 msgid "You have already booked this guide"
 msgstr ""
 
-#: static/templates/guides/guide.html:131 static/templates/tours/tour.html:109
+#: static/templates/guides/guide.html:159 static/templates/tours/tour.html:116
 msgid "book more"
 msgstr ""
 
-#: static/templates/guides/guide.html:133 static/templates/tours/tour.html:111
+#: static/templates/guides/guide.html:161 static/templates/tours/tour.html:118
 msgid "Edit"
 msgstr ""
 
-#: static/templates/guides/guide.html:149 static/templates/tours/tour.html:121
+#: static/templates/guides/guide.html:177 static/templates/tours/tour.html:128
 msgid "Booking a tour date:"
 msgstr ""
 
-#: static/templates/guides/guide.html:159
+#: static/templates/guides/guide.html:212
 msgid "Persons nmb:"
 msgstr ""
 
-#: static/templates/guides/guide.html:192 static/templates/tours/tour.html:128
+#: static/templates/guides/guide.html:245 static/templates/tours/tour.html:135
 msgid "Hours nmb:"
 msgstr ""
 
-#: static/templates/guides/guide.html:225 static/templates/tours/tour.html:164
+#: static/templates/guides/guide.html:280 static/templates/tours/tour.html:171
 msgid "Book Now"
 msgstr ""
 
-#: static/templates/guides/guide.html:238 static/templates/tours/tour.html:190
+#: static/templates/guides/guide.html:294 static/templates/tours/tour.html:199
 #: static/templates/users/tourist.html:56
 msgid "Reviews"
 msgstr ""
 
-#: static/templates/guides/guide.html:246 static/templates/tours/tour.html:199
+#: static/templates/guides/guide.html:302 static/templates/tours/tour.html:208
 #: static/templates/users/tourist.html:94
 msgid "No reviews so far..."
-msgstr ""
-
-#: static/templates/guides/guide.html:282
-msgid "login "
-msgstr ""
-
-#: static/templates/guides/guide.html:282
-msgid "to leave a review"
-msgstr ""
-
-#: static/templates/guides/guide.html:284 static/templates/tours/tour.html:236
-msgid "Write a Review"
-msgstr ""
-
-#: static/templates/guides/guide.html:289 static/templates/tours/tour.html:241
-msgid "Review Title"
-msgstr ""
-
-#: static/templates/guides/guide.html:293 static/templates/tours/tour.html:245
-msgid "Review Text"
 msgstr ""
 
 #: static/templates/guides/guide_registration.html:18
@@ -677,27 +680,27 @@ msgstr ""
 msgid "City*:"
 msgstr ""
 
-#: static/templates/guides/guide_registration.html:43
+#: static/templates/guides/guide_registration.html:50
 msgid "Date of birth*:"
 msgstr ""
 
-#: static/templates/guides/guide_registration.html:56
+#: static/templates/guides/guide_registration.html:63
 msgid "Interests*:"
 msgstr ""
 
-#: static/templates/guides/guide_registration.html:69
+#: static/templates/guides/guide_registration.html:76
 msgid "Overview*:"
 msgstr ""
 
-#: static/templates/guides/guide_registration.html:77
+#: static/templates/guides/guide_registration.html:85
 msgid "Additional services*:"
 msgstr ""
 
-#: static/templates/guides/guide_registration.html:92
+#: static/templates/guides/guide_registration.html:100
 msgid "Avatar"
 msgstr ""
 
-#: static/templates/guides/guide_registration.html:103
+#: static/templates/guides/guide_registration.html:111
 msgid "Upload New Avatar Image:"
 msgstr ""
 
@@ -722,6 +725,14 @@ msgstr ""
 msgid "No guides were found"
 msgstr ""
 
+#: static/templates/guides/guides.html:25
+msgid "guide was found!"
+msgstr ""
+
+#: static/templates/guides/guides.html:27
+msgid "guides were found"
+msgstr ""
+
 #: static/templates/guides/guides.html:35
 msgid "Filter By: "
 msgstr ""
@@ -741,7 +752,7 @@ msgstr ""
 msgid "Languages"
 msgstr ""
 
-#: static/templates/guides/guides.html:75 static/templates/navbar.html:173
+#: static/templates/guides/guides.html:75 static/templates/navbar.html:188
 #: static/templates/tours/tours.html:52
 msgid "Guide"
 msgstr ""
@@ -797,108 +808,147 @@ msgstr ""
 msgid "Rating (high to low)"
 msgstr ""
 
-#: static/templates/guides/guides.html:162
-#: static/templates/orders/orders.html:92
-#: static/templates/orders/profile_settings_guide_orders.html:33
+#: static/templates/guides/guides.html:164
 msgid "Interests:"
 msgstr ""
 
-#: static/templates/guides/guides.html:180
-#: static/templates/orders/orders.html:110
-#: static/templates/orders/profile_settings_guide_orders.html:51
+#: static/templates/guides/guides.html:182
 msgid "Languages:"
 msgstr ""
 
-#: static/templates/guides/guides.html:199
+#: static/templates/guides/guides.html:201
 #: static/templates/tours/profile_settings_guide_tours.html:35
-#: static/templates/tours/tours.html:179
+#: static/templates/tours/tours.html:181
 msgid "Rating: "
 msgstr ""
 
-#: static/templates/guides/guides.html:202
-#: static/templates/tours/profile_settings_guide_tours.html:51
-#: static/templates/tours/tours.html:182
-msgid "Price: "
+#: static/templates/guides/guides.html:204
+msgid "Hourly rate: "
 msgstr ""
 
-#: static/templates/navbar.html:39
-msgid "GUIDES"
+#: static/templates/guides/guides.html:209
+msgid "Go to Guide"
+msgstr ""
+
+#: static/templates/navbar.html:38
+msgid "Blog"
 msgstr ""
 
 #: static/templates/navbar.html:43
+msgid "GUIDES"
+msgstr ""
+
+#: static/templates/navbar.html:47
 msgid "TOURS"
 msgstr ""
 
-#: static/templates/navbar.html:49 static/templates/orders/bookings.html:17
+#: static/templates/navbar.html:53 static/templates/orders/bookings.html:17
 msgid "My Bookings"
 msgstr ""
 
-#: static/templates/navbar.html:51 static/templates/navbar.html:68
+#: static/templates/navbar.html:55 static/templates/navbar.html:72
 msgid "Pending"
 msgstr ""
 
-#: static/templates/navbar.html:53 static/templates/navbar.html:70
+#: static/templates/navbar.html:57 static/templates/navbar.html:74
 msgid "Waiting for payment"
 msgstr ""
 
-#: static/templates/navbar.html:55 static/templates/navbar.html:72
+#: static/templates/navbar.html:59 static/templates/navbar.html:76
 msgid "Agreed"
 msgstr ""
 
-#: static/templates/navbar.html:57 static/templates/navbar.html:76
+#: static/templates/navbar.html:61 static/templates/navbar.html:80
 msgid "Cancelled by me"
 msgstr ""
 
-#: static/templates/navbar.html:59
+#: static/templates/navbar.html:63
 msgid "Cancelled by guide"
 msgstr ""
 
-#: static/templates/navbar.html:61 static/templates/navbar.html:78
+#: static/templates/navbar.html:65 static/templates/navbar.html:82
 msgid "Completed"
 msgstr ""
 
-#: static/templates/navbar.html:74
+#: static/templates/navbar.html:78
 msgid "Cancelled by tourist"
 msgstr ""
 
-#: static/templates/navbar.html:85
+#: static/templates/navbar.html:89
 msgid "Chats"
 msgstr ""
 
-#: static/templates/navbar.html:91
+#: static/templates/navbar.html:95
 msgid "Tourist Settings"
 msgstr ""
 
-#: static/templates/navbar.html:93
+#: static/templates/navbar.html:97
 msgid "Guide Settings"
 msgstr ""
 
-#: static/templates/navbar.html:98 static/templates/navbar.html:101
+#: static/templates/navbar.html:102 static/templates/navbar.html:105
 msgid "Profile"
 msgstr ""
 
-#: static/templates/navbar.html:112
+#: static/templates/navbar.html:115
+msgid "My Payments"
+msgstr ""
+
+#: static/templates/navbar.html:119
+msgid "My Earnings"
+msgstr ""
+
+#: static/templates/navbar.html:127
 msgid "Switch to Guide"
 msgstr ""
 
-#: static/templates/navbar.html:116
+#: static/templates/navbar.html:131
 msgid "Want to be a guide?"
 msgstr ""
 
-#: static/templates/navbar.html:121
+#: static/templates/navbar.html:136
 msgid "Switch to Tourist"
 msgstr ""
 
-#: static/templates/navbar.html:136
+#: static/templates/navbar.html:151
 msgid "Log In"
 msgstr ""
 
-#: static/templates/navbar.html:143
+#: static/templates/navbar.html:158
 msgid "Logout"
 msgstr ""
 
-#: static/templates/navbar.html:171
+#: static/templates/navbar.html:186
 msgid "Tourist"
+msgstr ""
+
+#: static/templates/orders/booking_representation.html:104
+msgid ""
+"\n"
+"                                Guide Profile\n"
+"                            "
+msgstr ""
+
+#: static/templates/orders/booking_representation.html:116
+msgid ""
+"\n"
+"                                    Write a Review and Pay\n"
+"                                "
+msgstr ""
+
+#: static/templates/orders/booking_representation.html:120
+#: static/templates/orders/order_representation.html:145
+msgid ""
+"\n"
+"                                    View final details\n"
+"                                "
+msgstr ""
+
+#: static/templates/orders/booking_representation.html:132
+msgid ""
+"\n"
+"                                Cancel\n"
+"                            "
 msgstr ""
 
 #: static/templates/orders/bookings.html:23
@@ -927,8 +977,67 @@ msgstr ""
 msgid "Guides"
 msgstr ""
 
-#: static/templates/orders/orders.html:16
-msgid "My Orders"
+#: static/templates/orders/order_completing.html:64
+#: static/templates/payments/order_payment_checkout.html:20
+msgid ""
+"\n"
+"                                PAYMENT <br> RESERVED\n"
+"                            "
+msgstr ""
+
+#: static/templates/orders/order_completing.html:70
+#: static/templates/payments/order_payment_checkout.html:26
+msgid ""
+"\n"
+"                                PAID\n"
+"                            "
+msgstr ""
+
+#: static/templates/orders/order_completing.html:125
+#: static/templates/payments/order_payment_checkout.html:67
+msgid ""
+"\n"
+"                                                Description\n"
+"                                            "
+msgstr ""
+
+#: static/templates/orders/order_completing.html:164
+#: static/templates/payments/order_payment_checkout.html:106
+msgid ""
+"\n"
+"                                                Base Charge\n"
+"                                            "
+msgstr ""
+
+#: static/templates/orders/order_completing.html:176
+#: static/templates/payments/order_payment_checkout.html:118
+msgid ""
+"\n"
+"                                                Service Fee\n"
+"                                            "
+msgstr ""
+
+#: static/templates/orders/order_completing.html:193
+#: static/templates/payments/order_payment_checkout.html:130
+msgid ""
+"\n"
+"                                                Tax\n"
+"                                            "
+msgstr ""
+
+#: static/templates/orders/order_completing.html:206
+#: static/templates/payments/order_payment_checkout.html:143
+msgid ""
+"\n"
+"                                                Total\n"
+"                                            "
+msgstr ""
+
+#: static/templates/orders/order_representation.html:141
+msgid ""
+"\n"
+"                                    Write a feedback\n"
+"                                "
 msgstr ""
 
 #: static/templates/orders/orders.html:22
@@ -948,48 +1057,50 @@ msgstr ""
 msgid "Price "
 msgstr ""
 
-#: static/templates/orders/orders.html:132
-msgid "Booked tour:"
+#: static/templates/orders/review_form.html:33
+msgid ""
+"\n"
+"                    Save\n"
+"                "
 msgstr ""
 
-#: static/templates/orders/orders.html:140
-#: static/templates/tours/profile_settings_guide_tour_edit.html:93
-msgid "Price:"
+#: static/templates/orders/review_form.html:37
+msgid ""
+"\n"
+"                    Save and Finalize Payment\n"
+"                "
 msgstr ""
 
-#: static/templates/orders/orders.html:145
-msgid "Booked hourly:"
+#: static/templates/payments/order_payment_checkout.html:186
+msgid ""
+"\n"
+"                                You do not have any connected payment "
+"method. Please add at least one\n"
+"                            "
 msgstr ""
 
-#: static/templates/orders/orders.html:155
-#: static/templates/orders/profile_settings_guide_orders.html:79
-msgid "Status: "
+#: static/templates/payments/order_payment_checkout.html:190
+msgid "here"
 msgstr ""
 
-#: static/templates/orders/orders.html:158
-#: static/templates/orders/profile_settings_guide_orders.html:82
-msgid "Booked: "
+#: static/templates/payments/order_payment_checkout.html:220
+msgid "Send"
 msgstr ""
 
-#: static/templates/orders/orders.html:161
-#: static/templates/orders/profile_settings_guide_orders.html:85
-msgid "Booked for: "
+#: static/templates/payments/payment_methods.html:11
+msgid "Your Payment Methods"
 msgstr ""
 
-#: static/templates/orders/orders.html:164
-#: static/templates/orders/profile_settings_guide_orders.html:88
-msgid "Paid: "
+#: static/templates/payments/payment_methods.html:16
+msgid " Add New Payment Method "
 msgstr ""
 
-#: static/templates/orders/orders.html:168
-#: static/templates/orders/profile_settings_guide_orders.html:92
-msgid "No payment yet"
+#: static/templates/payments/payment_methods_adding.html:9
+msgid "Adding new payment method"
 msgstr ""
 
-#: static/templates/orders/orders.html:175
-#: static/templates/orders/profile_settings_guide_orders.html:99
-#: static/templates/tours/modals/delete_modal.html:7
-msgid "Cancel"
+#: static/templates/payments/payments.html:16
+msgid "Your Payments"
 msgstr ""
 
 #: static/templates/socialaccount/authentication_error.html:5
@@ -1071,6 +1182,11 @@ msgstr ""
 msgid "Are you sure you want to delete this?"
 msgstr ""
 
+#: static/templates/tours/modals/delete_modal.html:7
+#: static/templates/tours/profile_settings_guide_tour_edit.html:116
+msgid "Cancel"
+msgstr ""
+
 #: static/templates/tours/modals/delete_modal.html:8
 msgid "Yes"
 msgstr ""
@@ -1112,24 +1228,27 @@ msgstr ""
 msgid "Minimum Hours duration:"
 msgstr ""
 
+#: static/templates/tours/profile_settings_guide_tour_edit.html:93
+msgid "Price:"
+msgstr ""
+
 #: static/templates/tours/profile_settings_guide_tour_edit.html:99
 msgid "Hours duration:"
 msgstr ""
 
-#: static/templates/tours/profile_settings_guide_tour_edit.html:107
-#: static/templates/tours/profile_settings_guide_tour_edit.html:119
-msgid "Save"
-msgstr ""
-
-#: static/templates/tours/profile_settings_guide_tour_edit.html:114
+#: static/templates/tours/profile_settings_guide_tour_edit.html:110
 msgid "Add Image"
 msgstr ""
 
-#: static/templates/tours/profile_settings_guide_tour_edit.html:127
+#: static/templates/tours/profile_settings_guide_tour_edit.html:118
+msgid "Save"
+msgstr ""
+
+#: static/templates/tours/profile_settings_guide_tour_edit.html:126
 msgid "Delete Image"
 msgstr ""
 
-#: static/templates/tours/profile_settings_guide_tour_edit.html:128
+#: static/templates/tours/profile_settings_guide_tour_edit.html:127
 msgid "Make main"
 msgstr ""
 
@@ -1145,8 +1264,13 @@ msgstr ""
 msgid "Not Active"
 msgstr ""
 
+#: static/templates/tours/profile_settings_guide_tours.html:51
+#: static/templates/tours/tours.html:184
+msgid "Price: "
+msgstr ""
+
 #: static/templates/tours/profile_settings_guide_tours.html:57
-#: static/templates/tours/tours.html:188
+#: static/templates/tours/tours.html:190
 msgid "Free!"
 msgstr ""
 
@@ -1170,19 +1294,19 @@ msgstr ""
 msgid "Delete Tour"
 msgstr ""
 
-#: static/templates/tours/tour.html:81
+#: static/templates/tours/tour.html:88
 msgid "No tour overview so far..."
 msgstr ""
 
-#: static/templates/tours/tour.html:103
+#: static/templates/tours/tour.html:110
 msgid "Book"
 msgstr ""
 
-#: static/templates/tours/tour.html:108
+#: static/templates/tours/tour.html:115
 msgid "You have already booked this tour"
 msgstr ""
 
-#: static/templates/tours/tour.html:337
+#: static/templates/tours/tour.html:347
 msgid "Other Tours of"
 msgstr ""
 
@@ -1214,11 +1338,11 @@ msgstr ""
 msgid "Include FREE offers"
 msgstr ""
 
-#: static/templates/tours/tours.html:192
+#: static/templates/tours/tours.html:194
 msgid "Min hours:"
 msgstr ""
 
-#: static/templates/tours/tours.html:197
+#: static/templates/tours/tours.html:199
 msgid "Go to Tour"
 msgstr ""
 
@@ -1266,10 +1390,6 @@ msgstr ""
 msgid " Explore Our Top Tours"
 msgstr ""
 
-#: static/templates/users/review_representation.html:35
-msgid "Was this review helpful?"
-msgstr ""
-
 #: static/templates/users/tourist.html:88
 msgid "Next Page"
 msgstr ""
@@ -1298,26 +1418,26 @@ msgstr ""
 msgid "Address"
 msgstr ""
 
-#: tourzan/settings.py:158
+#: tourzan/settings.py:188
 msgid "English"
 msgstr ""
 
-#: tourzan/settings.py:159
+#: tourzan/settings.py:189
 msgid "Spanish"
 msgstr ""
 
-#: tourzan/settings.py:160
+#: tourzan/settings.py:190
 msgid "French"
 msgstr ""
 
-#: tourzan/settings.py:161
+#: tourzan/settings.py:191
 msgid "Portuguese"
 msgstr ""
 
-#: tourzan/settings.py:162
+#: tourzan/settings.py:192
 msgid "Japanese"
 msgstr ""
 
-#: tourzan/settings.py:163
+#: tourzan/settings.py:193
 msgid "Russian"
 msgstr ""
