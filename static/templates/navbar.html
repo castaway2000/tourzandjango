@@ -35,7 +35,7 @@
 {#                            </li>#}
 
                             <li class="{% if current_page == "blog" %}active{% endif %}">
-                                <a href="{% url 'blog' %}">{% trans "Blog" %}</a>
+                                <a href="{% url 'blog' %}">{% blocktrans %}Blog{% endblocktrans %}</a>
                             </li>
 
                             {% if request.session.current_role != "guide"  %}
