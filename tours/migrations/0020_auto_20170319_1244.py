@@ -10,12 +10,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('tours', '0019_auto_20170312_1117'),
+        ('users', '0002_auto_20170309_2150'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='tour',
             name='guide',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='guides.GuideProfile'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='users.GuideProfile'),
         ),
     ]
