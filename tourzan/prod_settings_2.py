@@ -8,7 +8,7 @@ DATABASES = {
         'NAME': 'testingdb',
         'USER': 'tourzandbuser',
         'PASSWORD': 'TourzanTravelling12#$',
-        'HOST': '176.37.92.43',
+        'HOST': 'touzandb.cgeysenvqij7.us-west-2.rds.amazonaws.com',
         'PORT': '',                      # Set to empty string for default.
     }
 }
