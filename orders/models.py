@@ -11,6 +11,7 @@ from django.db.models import Sum, Count, Avg
 from crequest.middleware import CrequestMiddleware
 from utils.sending_emails import SendingEmail
 from locations.models import Currency
+from utils.disabling_signals_for_load_data import disable_for_loaddata
 
 from payments.models import Payment, PaymentMethod
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
@@ -188,6 +189,7 @@ class Order(models.Model):
 """
 saving ratings from review to Order object
 """
+@disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
     guide = instance.guide
 

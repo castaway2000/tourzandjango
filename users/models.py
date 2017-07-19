@@ -5,13 +5,14 @@ from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
 from utils.internalization_wrapper import languages_english
 from django.db.models.signals import post_save
+from utils.disabling_signals_for_load_data import disable_for_loaddata
 from tourists.models import TouristProfile
-import uuid
 
 
 """
 creating user profile after user is created (mostly for login with Facebook)
 """
+@disable_for_loaddata
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         kwargs = dict()
