@@ -49,7 +49,7 @@ class Tour(models.Model):
 
     def __str__(self):
         if self.name:
-            return "%s" % self.name
+            return "%s %s" % (self.id, self.name)
         else:
             return "%s" % self.id
 
