@@ -238,3 +238,9 @@ try:
 except:
     pass
 
+
+try:
+    from .prod_settings import *
+except:
+    pass
+
