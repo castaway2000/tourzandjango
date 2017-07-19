@@ -228,6 +228,7 @@ class ServiceInOrder(models.Model):
 """
 saving sum of all additional services to order
 """
+@disable_for_loaddata
 def service_in_order_post_save(sender, instance, created, **kwargs):
 
     #! Double check how this functionality works
@@ -273,6 +274,7 @@ class Review(models.Model):
 """
 saving ratings from review to Order object
 """
+@disable_for_loaddata
 def review_post_save(sender, instance, created, **kwargs):
     order = instance.order
     order.rating_tourist = instance.guide_rating
