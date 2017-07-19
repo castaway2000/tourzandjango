@@ -229,7 +229,9 @@ class ServiceInOrder(models.Model):
 saving sum of all additional services to order
 """
 def service_in_order_post_save(sender, instance, created, **kwargs):
-    order = instance
+
+    #! Double check how this functionality works
+    order = instance.order
     additional_services = order.serviceinorder_set.filter(is_active=True)\
         .aggregate(total_price = Sum('price_after_discount'))
 
