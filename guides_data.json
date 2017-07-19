@@ -1,0 +1,213 @@
+123
+[
+{
+   "model": "guides.guideprofile",
+   "pk": 1,
+   "fields": {
+      "user": 1,
+      "city": 1,
+      "name": "Alex1234",
+      "rate": "20.00",
+      "currency": 1,
+      "is_active": true,
+      "is_approved": false,
+      "overview": "Some description here",
+      "date_of_birth": "1988-10-17",
+      "age": 28,
+      "header_image": "guides/header_images/300x300.png",
+      "profile_image": "guides/profile_images/Bart_Simpson_200px.png",
+      "optional_image": "guides/optional_images/300x300.png",
+      "slug": "admin",
+      "rating": "5.00",
+      "orders_nmb": 0,
+      "orders_completed_nmb": 1,
+      "orders_with_review_nmb": 1,
+      "orders_with_review_rate": "100.00",
+      "orders_reviewed_nmb": 0,
+      "created": "2017-05-06T10:20:21.811Z",
+      "updated": "2017-07-16T22:41:26.651Z"
+   }
+},
+{
+   "model": "guides.guideprofile",
+   "pk": 3,
+   "fields": {
+      "user": 11,
+      "city": 1,
+      "name": "Alex",
+      "rate": "0.00",
+      "currency": 1,
+      "is_active": true,
+      "is_approved": false,
+      "overview": "Some overview here",
+      "date_of_birth": "1988-10-17",
+      "age": 28,
+      "header_image": "guides/header_images/300x300.png",
+      "profile_image": "guides/profile_images/300x300.png",
+      "optional_image": "guides/optional_images/300x300.png",
+      "slug": "user",
+      "rating": "0.00",
+      "orders_nmb": 0,
+      "orders_completed_nmb": 0,
+      "orders_with_review_nmb": 0,
+      "orders_with_review_rate": "0.00",
+      "orders_reviewed_nmb": 0,
+      "created": "2017-05-14T14:17:39.685Z",
+      "updated": "2017-05-14T14:31:10.051Z"
+   }
+},
+{
+   "model": "guides.guideprofile",
+   "pk": 4,
+   "fields": {
+      "user": 17,
+      "city": 3,
+      "name": "New User guide test",
+      "rate": "10.00",
+      "currency": 1,
+      "is_active": true,
+      "is_approved": false,
+      "overview": "Some overview",
+      "date_of_birth": "1988-10-17",
+      "age": 28,
+      "header_image": "guides/header_images/300x300.png",
+      "profile_image": "guides/profile_images/Bart_Simpson_200px_rO43pJg.png",
+      "optional_image": "guides/optional_images/300x300.png",
+      "slug": "aleksandr",
+      "rating": "4.88",
+      "orders_nmb": 0,
+      "orders_completed_nmb": 0,
+      "orders_with_review_nmb": 4,
+      "orders_with_review_rate": "0.00",
+      "orders_reviewed_nmb": 0,
+      "created": "2017-05-22T20:30:09.581Z",
+      "updated": "2017-06-26T07:57:08.448Z"
+   }
+},
+{
+   "model": "guides.service",
+   "pk": 1,
+   "fields": {
+      "name": "Making pictures",
+      "html_field_name": "is_making_pictures",
+      "is_active": true,
+      "created": "2017-05-14T10:42:15.955Z",
+      "updated": "2017-05-14T10:43:44.468Z"
+   }
+},
+{
+   "model": "guides.service",
+   "pk": 2,
+   "fields": {
+      "name": "Personal driver",
+      "html_field_name": "is_personal_driver",
+      "is_active": true,
+      "created": "2017-05-22T18:33:55.356Z",
+      "updated": "2017-05-22T18:33:55.356Z"
+   }
+},
+{
+   "model": "guides.service",
+   "pk": 3,
+   "fields": {
+      "name": "ADA tours (tours for the disabled)",
+      "html_field_name": "is_ada_tours_(tours_for_the_disabled)",
+      "is_active": true,
+      "created": "2017-05-22T18:34:25.773Z",
+      "updated": "2017-05-22T18:34:51.909Z"
+   }
+},
+{
+   "model": "guides.service",
+   "pk": 4,
+   "fields": {
+      "name": "ASL (American sign language)",
+      "html_field_name": "is_asl_(american_sign_language)",
+      "is_active": true,
+      "created": "2017-05-22T18:34:41.205Z",
+      "updated": "2017-05-22T18:34:41.205Z"
+   }
+},
+{
+   "model": "guides.service",
+   "pk": 5,
+   "fields": {
+      "name": "General city info",
+      "html_field_name": "is_general_city_info",
+      "is_active": true,
+      "created": "2017-05-22T18:35:02.295Z",
+      "updated": "2017-05-22T18:35:02.295Z"
+   }
+},
+{
+   "model": "guides.service",
+   "pk": 6,
+   "fields": {
+      "name": "LGBTQ friendly",
+      "html_field_name": "is_lgbtq_friendly",
+      "is_active": true,
+      "created": "2017-05-22T18:35:14.585Z",
+      "updated": "2017-05-22T18:35:14.585Z"
+   }
+},
+{
+   "model": "guides.guideservice",
+   "pk": 3,
+   "fields": {
+      "service": 1,
+      "guide": 1,
+      "price": "10.00",
+      "is_active": true,
+      "created": "2017-05-22T18:35:31.640Z",
+      "updated": "2017-05-29T00:01:37.785Z"
+   }
+},
+{
+   "model": "guides.guideservice",
+   "pk": 4,
+   "fields": {
+      "service": 5,
+      "guide": 1,
+      "price": "5.00",
+      "is_active": true,
+      "created": "2017-05-22T18:35:31.641Z",
+      "updated": "2017-05-29T00:01:44.980Z"
+   }
+},
+{
+   "model": "guides.guideservice",
+   "pk": 29,
+   "fields": {
+      "service": 1,
+      "guide": 4,
+      "price": "5.00",
+      "is_active": true,
+      "created": "2017-05-22T20:43:33.442Z",
+      "updated": "2017-05-29T00:02:02.397Z"
+   }
+},
+{
+   "model": "guides.guideservice",
+   "pk": 30,
+   "fields": {
+      "service": 3,
+      "guide": 4,
+      "price": "0.00",
+      "is_active": true,
+      "created": "2017-05-22T20:43:33.442Z",
+      "updated": "2017-05-22T20:43:33.442Z"
+   }
+},
+{
+   "model": "guides.guideservice",
+   "pk": 31,
+   "fields": {
+      "service": 2,
+      "guide": 4,
+      "price": "7.00",
+      "is_active": true,
+      "created": "2017-05-22T20:43:33.442Z",
+      "updated": "2017-05-29T00:02:08.952Z"
+   }
+}
+]
