@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('tours', '0025_auto_20170502_2311'),
+        ('users', '0002_auto_20170309_2150'), #added manually for solving an issue with migrations
     ]
 
     operations = [
