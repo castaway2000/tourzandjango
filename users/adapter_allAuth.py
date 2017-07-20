@@ -86,9 +86,12 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # # some social logins don't have an email address, e.g. facebook accounts
         # # with mobile numbers only, but allauth takes care of this case so just
         # # ignore it
-        if 'email' not in sociallogin.account.extra_data:
-            print (2)
-            return
+
+
+        #!!!TEMOPRARY FIX FOR TWITTER, BUT IT SHOULD BE IMPROVED ON TWITTER SIDE
+        # if 'email' not in sociallogin.account.extra_data:
+        #     print (2)
+        #     return
 
 
         #check for cases when user connects his social network
