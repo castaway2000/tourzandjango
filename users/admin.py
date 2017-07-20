@@ -38,4 +38,13 @@ class UserLanguageAdmin(admin.ModelAdmin):
 admin.site.register(UserLanguage, UserLanguageAdmin)
 
 
+class GeneralProfileAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in GeneralProfile._meta.fields]
+
+    class Meta:
+        model = GeneralProfile
+
+admin.site.register(GeneralProfile, GeneralProfileAdmin)
+
+
 

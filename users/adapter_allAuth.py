@@ -90,20 +90,26 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             print (2)
             return
 
-        # check if given email address already exists.
-        # Note: __iexact is used to ignore cases
 
+        #check for cases when user connects his social network
+        print ("check is user anonymous %s" % request.user.is_anonymous)
+        if not request.user.is_anonymous():
+            user = request.user
+            print (user)
+        else:
 
-        try:
-            print (3)
-            email = sociallogin.account.extra_data['email'].lower()
-            print (email)
-            # email_address = EmailAddress.objects.get(email__iexact=email)
-            user = User.objects.get(email__iexact=email)
-        except:
-            # if it does not, let allauth take care of this new social account
-            print (4)
-            return
+            # check if given email address already exists.
+            # Note: __iexact is used to ignore cases
+            try:
+                print (3)
+                email = sociallogin.account.extra_data['email'].lower()
+                print (email)
+                # email_address = EmailAddress.objects.get(email__iexact=email)
+                user = User.objects.get(email__iexact=email)
+            except:
+                # if it does not, let allauth take care of this new social account
+                print (4)
+                return
 
         # if it does, connect this new social login to the existing user
         # user = email_address.user #it is commented because above EmailAddress is replaced with User model

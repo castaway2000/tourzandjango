@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from tourists.models import TouristProfile
 from utils.uploadings import upload_path_handler_user_scanned_docs
+from allauth.socialaccount.models import SocialAccount
 
 
 """
@@ -81,6 +82,25 @@ class GeneralProfile(models.Model):
         return "%s" % self.user.username
 
 
+def socialaccount_post_save(sender, instance, **kwargs):
+    print ("socialaccount_post_save")
+    user = instance.user
+    provider = instance.provider
+    print (user)
+    print(provider)
+
+    if user:
+        general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+
+        #remake it later in more dynamic way if it is needed
+        if provider == "facebook" and general_profile.facebook != instance.uid:
+            general_profile.facebook = instance.uid
+            general_profile.save(force_update=True)
+
+
+post_save.connect(socialaccount_post_save, sender=SocialAccount)
+
+
 class DocumentType(models.Model):
     name = models.CharField(max_length=64, blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -99,6 +119,5 @@ class GeneralProfileScan(models.Model):
 
     def __str__(self):
         return "%s" % self.document_type.name
-
 
 

@@ -275,3 +275,9 @@
     -o-transform: rotate(-15deg); /* Opera */
     transform: rotate(-15deg);
 }
+
+
+a.link_lead:hover,
+a.link_lead:active{
+    color: #1476ab;
+}

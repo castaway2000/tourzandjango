@@ -39,7 +39,16 @@
                     <ul>
                         <li>Facebook:
                             {% if general_profile.facebook %}
-                                {{ general_profile.facebook }}
+                                your profile is
+                                <a href="https://facebook.com/{{ general_profile.facebook }}" target=_"blank">
+                                    {% blocktrans %}connected{% endblocktrans %}
+                                </a>
+                                <a title="Facebook" class="link_lead"
+                                   href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
+                                >
+                                    {% blocktrans %}connect new?{% endblocktrans %}
+                                </a>
+
                             {% else %}
                                 {% blocktrans %}connect your facebook account {% endblocktrans %}
                                 <a title="Facebook" class=""
