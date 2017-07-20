@@ -40,13 +40,15 @@
                         <li>Facebook:
                             {% if general_profile.facebook %}
                                 your profile is
-                                <a href="https://facebook.com/{{ general_profile.facebook }}" target=_"blank">
+                                <a href="https://facebook.com/{{ general_profile.facebook }}" target="_blank">
                                     {% blocktrans %}connected{% endblocktrans %}
                                 </a>
                                 <a title="Facebook" class="link_lead"
                                    href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
                                 >
-                                    {% blocktrans %}connect new?{% endblocktrans %}
+                                    {% blocktrans %}
+                                        <i class="fa fa-plus" aria-hidden="true"></i> connect new?
+                                    {% endblocktrans %}
                                 </a>
 
                             {% else %}
@@ -60,7 +62,30 @@
                             {% endif %}
                         </li>
                         <li>Twitter </li>
-                        <li>Google </li>
+                        <li>Google:
+                            {% if general_profile.google %}
+                                your profile is
+                                <a href="https://plus.google.com/{{ general_profile.google }}" target="_blank"">
+                                    {% blocktrans %}connected{% endblocktrans %}
+                                </a>
+                                <a title="Google" class="link_lead"
+                                   href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
+                                >
+                                    {% blocktrans %}
+                                        <i class="fa fa-plus" aria-hidden="true"></i> connect new?
+                                    {% endblocktrans %}
+                                </a>
+
+                            {% else %}
+                                {% blocktrans %}connect your google account {% endblocktrans %}
+                                <a title="Google" class=""
+                                   href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
+                                >
+                                    {% blocktrans %}here{% endblocktrans %}
+                                </a>
+
+                            {% endif %}
+                        </li>
                     </ul>
                 </div>
             </div>

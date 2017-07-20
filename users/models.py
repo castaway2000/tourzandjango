@@ -97,6 +97,10 @@ def socialaccount_post_save(sender, instance, **kwargs):
             general_profile.facebook = instance.uid
             general_profile.save(force_update=True)
 
+        elif provider == "google" and general_profile.facebook != instance.uid:
+            general_profile.google = instance.uid
+            general_profile.save(force_update=True)
+
 
 post_save.connect(socialaccount_post_save, sender=SocialAccount)
 

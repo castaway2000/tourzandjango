@@ -276,7 +276,7 @@
     transform: rotate(-15deg);
 }
 
-
+a.link_lead,
 a.link_lead:hover,
 a.link_lead:active{
     color: #1476ab;
