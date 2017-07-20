@@ -335,8 +335,8 @@ msgid ""
 "a>."
 msgstr ""
 "El enlace para reestablecer su contraseña no estaba válido, posiblemente "
-"porque ya se ha utilizado. Por favor solicite una solicitud para "
-"reestablecer una  contraseña nueva."
+"porque ya se ha utilizado. Por favor <a href=\"%(passwd_reset_url)s\">solicite una solicitud para "
+"reestablecer una  contraseña nueva.</a>"
 
 #: static/templates/account/password_reset_from_key.html:17
 msgid "change password"
