@@ -61,6 +61,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+
+
     'crequest',
     'django_summernote',
     'rest_framework',
@@ -111,6 +115,42 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tourzan.wsgi.application'
 
+
+#Making logs to log file with additional info
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
+                       'pathname=%(pathname)s lineno=%(lineno)s ' +
+                       'funcname=%(funcName)s %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+            },
+        },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+            },
+        'tourzan': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+            },
+        }
+    }
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases

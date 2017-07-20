@@ -1,5 +1,8 @@
 {% extends 'base_profile.html' %}
 {% load i18n %}
+{% load socialaccount %}
+{% get_providers as socialaccount_providers %}
+
 
 {% block content_profile %}
     <div class="col-md-9">
@@ -27,6 +30,30 @@
                     <hr />
                     <input class="btn btn-primary" type="submit" value="Change Password" />
                 </form>
+            </div>
+            <div class="col-md-7">
+                <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
+
+                <div>
+                    <p>{% blocktrans %}Social networks {% endblocktrans %}</p>
+                    <ul>
+                        <li>Facebook:
+                            {% if general_profile.facebook %}
+                                {{ general_profile.facebook }}
+                            {% else %}
+                                {% blocktrans %}connect your facebook account {% endblocktrans %}
+                                <a title="Facebook" class=""
+                                   href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
+                                >
+                                    {% blocktrans %}here{% endblocktrans %}
+                                </a>
+
+                            {% endif %}
+                        </li>
+                        <li>Twitter </li>
+                        <li>Google </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

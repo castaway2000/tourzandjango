@@ -80,14 +80,14 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         #
         # Ignore existing social accounts, just do this stuff for new ones
         if sociallogin.is_existing:
-            print 1
+            print (1)
             return
 
         # # some social logins don't have an email address, e.g. facebook accounts
         # # with mobile numbers only, but allauth takes care of this case so just
         # # ignore it
         if 'email' not in sociallogin.account.extra_data:
-            print 2
+            print (2)
             return
 
         # check if given email address already exists.
@@ -95,14 +95,14 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
 
 
         try:
-            print 3
+            print (3)
             email = sociallogin.account.extra_data['email'].lower()
-            print email
+            print (email)
             # email_address = EmailAddress.objects.get(email__iexact=email)
             user = User.objects.get(email__iexact=email)
         except:
             # if it does not, let allauth take care of this new social account
-            print 4
+            print (4)
             return
 
         # if it does, connect this new social login to the existing user

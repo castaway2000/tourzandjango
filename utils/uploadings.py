@@ -11,3 +11,7 @@ def upload_path_handler_tour_images(instance, filename):
 
 def upload_path_handler_blog(instance, filename):
     return "blog/blog_%s/%s" % (instance.id, filename)
+
+
+def upload_path_handler_user_scanned_docs(instance, filename):
+    return "users/%s/%s" % (instance.user.username, filename)

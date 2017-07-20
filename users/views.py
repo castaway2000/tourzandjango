@@ -75,6 +75,8 @@ def home(request):
 def general_settings(request):
     page = "general_settings"
     user = request.user
+    general_profile, created = GeneralProfile.objects.get_or_create(user=user)
+
     form = PasswordChangeForm(data=request.POST or None, user=user)
     if request.method == 'POST':
 
