@@ -582,7 +582,7 @@ msgstr ""
 #: static/templates/errors_notification.html:14
 #, python-format
 msgid "%(message)s"
-msgstr "mesajes"
+msgstr "%(message)s"
 
 #: static/templates/footer.html:15
 msgid "Book local guides, while travelling!"

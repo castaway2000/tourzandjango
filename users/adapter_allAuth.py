@@ -87,9 +87,6 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # # with mobile numbers only, but allauth takes care of this case so just
         # # ignore it
 
-
-
-
         #check for cases when user connects his social network
         print ("check is user anonymous %s" % request.user.is_anonymous)
         if not request.user.is_anonymous():
@@ -97,7 +94,7 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             print (user)
         else:
 
-            
+
             #FOR TWITTER - EMAIL PERMISSIONS SHOULD BE ADDED ON TWITTER'S SIDE
             if 'email' not in sociallogin.account.extra_data:
                 print (2)
