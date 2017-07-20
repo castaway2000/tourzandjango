@@ -61,7 +61,30 @@
 
                             {% endif %}
                         </li>
-                        <li>Twitter </li>
+                        <li>Twitter:
+                            {% if general_profile.twitter %}
+                                your profile is
+                                <a href="https://twitter.com/{{ general_profile.twitter }}" target="_blank"">
+                                    {% blocktrans %}connected{% endblocktrans %}
+                                </a>
+                                <a title="Twitter" class="link_lead"
+                                   href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
+                                >
+                                    {% blocktrans %}
+                                        <i class="fa fa-plus" aria-hidden="true"></i> connect new?
+                                    {% endblocktrans %}
+                                </a>
+
+                            {% else %}
+                                {% blocktrans %}connect your twitter account {% endblocktrans %}
+                                <a title="Twitter" class=""
+                                   href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
+                                >
+                                    {% blocktrans %}here{% endblocktrans %}
+                                </a>
+
+                            {% endif %}
+                        </li>
                         <li>Google:
                             {% if general_profile.google %}
                                 your profile is
