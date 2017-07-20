@@ -88,10 +88,6 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # # ignore it
 
 
-        #!!!TEMOPRARY FIX FOR TWITTER, BUT IT SHOULD BE IMPROVED ON TWITTER SIDE
-        # if 'email' not in sociallogin.account.extra_data:
-        #     print (2)
-        #     return
 
 
         #check for cases when user connects his social network
@@ -100,6 +96,13 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             user = request.user
             print (user)
         else:
+
+            
+            #FOR TWITTER - EMAIL PERMISSIONS SHOULD BE ADDED ON TWITTER'S SIDE
+            if 'email' not in sociallogin.account.extra_data:
+                print (2)
+                return
+
 
             # check if given email address already exists.
             # Note: __iexact is used to ignore cases
