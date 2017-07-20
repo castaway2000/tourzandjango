@@ -64,7 +64,7 @@
                         <li>Twitter:
                             {% if general_profile.twitter %}
                                 your profile is
-                                <a href="https://twitter.com/{{ general_profile.twitter }}" target="_blank"">
+                                <a href="https://twitter.com/intent/user?user_id={{ general_profile.twitter }}" target="_blank"">
                                     {% blocktrans %}connected{% endblocktrans %}
                                 </a>
                                 <a title="Twitter" class="link_lead"
