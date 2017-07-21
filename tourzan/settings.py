@@ -68,7 +68,8 @@ INSTALLED_APPS = [
     'crequest',
     'django_summernote',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'storages',
 
 ]
 
@@ -280,6 +281,7 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
+
 
 
 try:
