@@ -2,6 +2,11 @@ from django.contrib import admin
 from .models import *
 
 
+class DocumentScanInline(admin.TabularInline):
+        model = DocumentScan
+        extra = 0
+
+
 class InterestAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Interest._meta.fields]
 
@@ -40,6 +45,7 @@ admin.site.register(UserLanguage, UserLanguageAdmin)
 
 class GeneralProfileAdmin(admin.ModelAdmin):
     list_display = [field.name for field in GeneralProfile._meta.fields]
+    inlines = [DocumentScanInline]
 
     class Meta:
         model = GeneralProfile

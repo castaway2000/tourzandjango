@@ -76,9 +76,35 @@ def general_settings(request):
     page = "general_settings"
     user = request.user
     general_profile, created = GeneralProfile.objects.get_or_create(user=user)
+    document_uploaded = general_profile.documentscan_set.filter(is_active=True).last()#approved
 
+    docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
     form = PasswordChangeForm(data=request.POST or None, user=user)
     if request.method == 'POST':
+
+        if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
+            if docs_form.is_valid():
+
+                #ADD some validation here for file size and extension
+                if request.FILES.get("file"):
+                    count = 0
+                    for file in request.FILES.getlist("file"):
+                        if count < 5:#uploading not more than 5 files
+                            DocumentScan.objects.create(file=file, general_profile=general_profile)
+                            count += 1
+                        else:
+                            break
+
+
+                    if count == 1:
+                        messages.success(request, 'File was successfully uploaded!')
+                    else:
+                        messages.success(request, 'Files were successfully uploaded!')
+
+                    #retrieve docs afrer uploading
+                    is_just_uploaded = True
+
+                update_session_auth_hash(request, user)
 
         if form.is_valid():
             new_form = form.save(commit=False)

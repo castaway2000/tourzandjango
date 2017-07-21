@@ -32,84 +32,121 @@
                 </form>
             </div>
             <div class="col-md-7">
-                <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
+                <div>
+                    <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
+
+                    <div>
+                        <p>{% blocktrans %}Social networks {% endblocktrans %}</p>
+                        <ul>
+                            <li>Facebook:
+                                {% if general_profile.facebook %}
+                                    your profile is
+                                    <a href="https://facebook.com/{{ general_profile.facebook }}" target="_blank">
+                                        {% blocktrans %}connected{% endblocktrans %}
+                                    </a>
+                                    <a title="Facebook" class="link_lead"
+                                       href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
+                                    >
+                                        {% blocktrans %}
+                                            <i class="fa fa-plus" aria-hidden="true"></i> connect new?
+                                        {% endblocktrans %}
+                                    </a>
+
+                                {% else %}
+                                    {% blocktrans %}connect your facebook account {% endblocktrans %}
+                                    <a title="Facebook" class=""
+                                       href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
+                                    >
+                                        {% blocktrans %}here{% endblocktrans %}
+                                    </a>
+
+                                {% endif %}
+                            </li>
+                            <li>Twitter:
+                                {% if general_profile.twitter %}
+                                    your profile is
+                                    <a href="https://twitter.com/intent/user?user_id={{ general_profile.twitter }}" target="_blank"">
+                                        {% blocktrans %}connected{% endblocktrans %}
+                                    </a>
+                                    <a title="Twitter" class="link_lead"
+                                       href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
+                                    >
+                                        {% blocktrans %}
+                                            <i class="fa fa-plus" aria-hidden="true"></i> connect new?
+                                        {% endblocktrans %}
+                                    </a>
+
+                                {% else %}
+                                    {% blocktrans %}connect your twitter account {% endblocktrans %}
+                                    <a title="Twitter" class=""
+                                       href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
+                                    >
+                                        {% blocktrans %}here{% endblocktrans %}
+                                    </a>
+
+                                {% endif %}
+                            </li>
+                            <li>Google:
+                                {% if general_profile.google %}
+                                    your profile is
+                                    <a href="https://plus.google.com/{{ general_profile.google }}" target="_blank"">
+                                        {% blocktrans %}connected{% endblocktrans %}
+                                    </a>
+                                    <a title="Google" class="link_lead"
+                                       href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
+                                    >
+                                        {% blocktrans %}
+                                            <i class="fa fa-plus" aria-hidden="true"></i> connect new?
+                                        {% endblocktrans %}
+                                    </a>
+
+                                {% else %}
+                                    {% blocktrans %}connect your google account {% endblocktrans %}
+                                    <a title="Google" class=""
+                                       href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
+                                    >
+                                        {% blocktrans %}here{% endblocktrans %}
+                                    </a>
+
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
                 <div>
-                    <p>{% blocktrans %}Social networks {% endblocktrans %}</p>
-                    <ul>
-                        <li>Facebook:
-                            {% if general_profile.facebook %}
-                                your profile is
-                                <a href="https://facebook.com/{{ general_profile.facebook }}" target="_blank">
-                                    {% blocktrans %}connected{% endblocktrans %}
-                                </a>
-                                <a title="Facebook" class="link_lead"
-                                   href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
-                                >
-                                    {% blocktrans %}
-                                        <i class="fa fa-plus" aria-hidden="true"></i> connect new?
-                                    {% endblocktrans %}
-                                </a>
+                    <hr>
+                    <h4>{% blocktrans %}Identity verification{% endblocktrans %}</h4>
 
-                            {% else %}
-                                {% blocktrans %}connect your facebook account {% endblocktrans %}
-                                <a title="Facebook" class=""
-                                   href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
-                                >
-                                    {% blocktrans %}here{% endblocktrans %}
-                                </a>
-
-                            {% endif %}
-                        </li>
-                        <li>Twitter:
-                            {% if general_profile.twitter %}
-                                your profile is
-                                <a href="https://twitter.com/intent/user?user_id={{ general_profile.twitter }}" target="_blank"">
-                                    {% blocktrans %}connected{% endblocktrans %}
-                                </a>
-                                <a title="Twitter" class="link_lead"
-                                   href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
-                                >
-                                    {% blocktrans %}
-                                        <i class="fa fa-plus" aria-hidden="true"></i> connect new?
-                                    {% endblocktrans %}
-                                </a>
-
-                            {% else %}
-                                {% blocktrans %}connect your twitter account {% endblocktrans %}
-                                <a title="Twitter" class=""
-                                   href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
-                                >
-                                    {% blocktrans %}here{% endblocktrans %}
-                                </a>
-
-                            {% endif %}
-                        </li>
-                        <li>Google:
-                            {% if general_profile.google %}
-                                your profile is
-                                <a href="https://plus.google.com/{{ general_profile.google }}" target="_blank"">
-                                    {% blocktrans %}connected{% endblocktrans %}
-                                </a>
-                                <a title="Google" class="link_lead"
-                                   href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
-                                >
-                                    {% blocktrans %}
-                                        <i class="fa fa-plus" aria-hidden="true"></i> connect new?
-                                    {% endblocktrans %}
-                                </a>
-
-                            {% else %}
-                                {% blocktrans %}connect your google account {% endblocktrans %}
-                                <a title="Google" class=""
-                                   href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
-                                >
-                                    {% blocktrans %}here{% endblocktrans %}
-                                </a>
-
-                            {% endif %}
-                        </li>
-                    </ul>
+                    <div>
+                        {% if not document_uploaded and not is_just_uploaded%}
+                            <p>
+                                {% blocktrans %}Please add a scan photo of your passport or driving license{% endblocktrans %}
+                            </p>
+                            <form class="form-inline" name="docs_form" method="post" enctype="multipart/form-data">{% csrf_token %}
+                                <div class="form-group">
+                                    <input type="file" multiple name="file" >
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" name="uploading_docs_button" class="btn btn-primary"
+                                           value="{% blocktrans %}submit{% endblocktrans %}">
+                                </div>
+                            </form>
+                        {% elif document_uploaded.status.id == 1 or is_just_uploaded %}
+                            <p>{% blocktrans %}You scan was successfully uploaded. We will verify it during 24 hours.{% endblocktrans %}</p>
+                        {% elif document_uploaded.status.id == 2 %}
+                            <p>{% blocktrans %}You identity was successfully verified!{% endblocktrans %}</p>
+                        {% elif document_uploaded.status.id == 3 %}
+                            <p>
+                                {% blocktrans %}You uploaded scan was rejected. Please upload it once again{% endblocktrans %}
+                                <br>
+                                {% if document_uploaded.comments %}
+                                    <b>{% blocktrans %}Comments: {% endblocktrans %}</b>
+                                    {{ document_uploaded.comments|safe }}
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

@@ -263,9 +263,9 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
                 TourImage.objects.create(image=file, tour=new_form)
 
         if slug:
-            messages.success(request, 'Tour details have been successfully updated!')
+            messages.success(request, '{% blocktrans %}Tour details have been successfully updated!{%endblocktrans')
         else:
-            messages.success(request, 'Tour details have been successfully created!')
+            messages.success(request, '{% blocktrans %}Tour details have been successfully created!{% endblocktrans %}')
             return HttpResponseRedirect(reverse("guide_settings_tour_edit", kwargs={"slug": new_form.slug, "tour_id": new_form.id}))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
