@@ -14,4 +14,4 @@ def upload_path_handler_blog(instance, filename):
 
 
 def upload_path_handler_user_scanned_docs(instance, filename):
-    return "users/%s/%s" % (instance.user.username, filename)
+    return "users/%s/docs/%s" % (instance.user.username, filename)

@@ -130,7 +130,7 @@ class ScanStatus(models.Model):
 class DocumentScan(models.Model):
     document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
     file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)
-    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=None)
+    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=1)#status "new"
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
