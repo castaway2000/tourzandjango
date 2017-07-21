@@ -21,3 +21,4 @@ AWS_SECRET_ACCESS_KEY = 'JC3LpuNFgypjl8pDP/Z2sVQch4z3Fi8Uz37m/BvG'
 AWS_STORAGE_BUCKET_NAME = 'tourzan'
 
 AWS_S3_FILE_OVERWRITE = False #to append extra characters to the file with the same name as existing file
+AWS_S3_ENCRYPTION = True

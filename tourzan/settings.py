@@ -283,7 +283,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 
-
 try:
     from .allauth_settings import *
 except:
@@ -291,7 +290,8 @@ except:
 
 
 try:
-    from .prod_settings import *
+    #delete '_2' on AWS
+    from .prod_settings_2 import *
 except:
     pass
 

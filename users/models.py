@@ -118,9 +118,19 @@ class DocumentType(models.Model):
         return "%s" % self.name
 
 
-class GeneralProfileScan(models.Model):
+class ScanStatus(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class DocumentScan(models.Model):
     document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
     file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)
+    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
