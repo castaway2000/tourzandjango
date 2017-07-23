@@ -104,7 +104,10 @@
                                 <li {% if page == "settings_orders" %}class="active"{% endif %}><a href="{% url 'guide_settings_orders' %}"><i class="fa fa-cog"></i>{% blocktrans %}Orders{% endblocktrans %}</a>
                                 </li>
 
-                                <li><a href="user-profile-cards.html"><i class="fa fa-cog"></i>{% blocktrans %}Payments history{% endblocktrans %}</a>
+                                <li>
+                                    <a href="{% url 'earnings' %}"><i class="fa fa-cog"></i>
+                                        {% blocktrans %}Earnings{% endblocktrans %}
+                                    </a>
                                 </li>
                                 
                                 <li {% if page == "payment_methods" %}class="active"{% endif %}>
