@@ -142,7 +142,10 @@
 }
 
 .label-tag{
+    display: inline-block;
     margin-right: 5px;
+    margin-top: 5px;
+    padding: 5px;
 }
 
 .header-white{

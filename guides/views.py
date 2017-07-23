@@ -16,8 +16,12 @@ def guides(request):
 
     user = request.user
 
+    services = Service.objects.filter(is_active=True).values()
+
+
     base_kwargs = dict()
     base_user_interests_kwargs = dict()
+    base_guide_service_kwargs = dict()
 
     hourly_price_kwargs = dict()
 
@@ -32,7 +36,7 @@ def guides(request):
     city_input = request.GET.getlist(u'city_input')
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
-
+    service_input = request.GET.getlist(u'service_input')
 
     language_input = request.GET.getlist(u'language_input')
 
@@ -69,7 +73,8 @@ def guides(request):
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
 
-    print ("guide_input: %s" % guide_input)
+    if service_input:
+        base_guide_service_kwargs["service__name__in"] = service_input
 
     #ordering
     if order_results:
@@ -127,16 +132,14 @@ def guides(request):
 
 
     if base_user_interests_kwargs:
-        print ("base_user_interests_kwargs")
-        print (base_user_interests_kwargs)
         user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)
         interests_user_ids = [item.user.id for item in user_interests]
-        print (interests_user_ids)
-        print (guides)
-
         guides = guides.filter(user_id__in=interests_user_ids)
-        print (guides)
 
+    if base_guide_service_kwargs:
+        guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
+        guide_services_guides_ids = [item.guide.id for item in guide_services]
+        guides = guides.filter(id__in=guide_services_guides_ids)
 
     items_nmb = guides.count()
 
@@ -431,3 +434,27 @@ def earnings(request):
     except:
         return HttpResponseRedirect(reverse("home"))
     return render(request, 'guides/earnings.html', locals())
+
+
+def search_service(request):
+    print ("search_service")
+    results = list()
+
+    if request.GET:
+        data = request.GET
+        print (data)
+        service_name = data.get(u"q")
+        services = Service.objects.filter(name__icontains=service_name)
+
+        for item in services:
+            results.append({
+                "id": item.name,
+                "text": item.name
+            })
+
+    response_data = {
+        "items": results,
+        "more": "false"
+    }
+
+    return JsonResponse(response_data, safe=False)

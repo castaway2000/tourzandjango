@@ -81,6 +81,18 @@
                                 </select>
                             </li>
                             <li>
+                                <h5 class="booking-filters-title">{% blocktrans %}Services{% endblocktrans %}</h5>
+                                <select multiple class="form-control select2 js-example-basic-multiple" id="service_input" name="service_input"
+                                        data-search_url="{% url 'search_service' %}">
+
+                                    {% for item in services %}
+                                        <option value="{{ item.name }}" {% if item.name in service_input %} selected {% endif %}>
+                                            {{ item.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </li>
+                            <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Price per hour{% endblocktrans %}</h5>
                                 <input type="text" id="price-slider-1" name="hourly_price"
                                        data-min = "0" data-max="50"
@@ -175,6 +187,26 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
+                                        {% with guide.guideservice_set.all as guide_services %}
+                                            {% if guide_services %}
+                                                <div class="row">
+                                                    <div class="col-md-12 mb10">
+                                                        <div><b>{% blocktrans %}Services:{% endblocktrans %}</b></div>
+                                                        {% for guide_service in guide.guideservice_set.all %}
+                                                            {% if guide_service.service.name in service_input %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ guide_service.service.name }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="label label-default label-tag">
+                                                                    {{ guide_service.service.name }}
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
                                         {% with guide.user.userlanguage_set.all as user_languages %}
                                             {% if user_languages %}
                                                 <div class="row">

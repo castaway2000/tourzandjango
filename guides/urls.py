@@ -13,4 +13,6 @@ urlpatterns = [
 
     url(r'^earnings/$', views.earnings, name='earnings'),
 
+    url(r'^search_service/$', views.search_service, name='search_service'),
+
 ]
