@@ -298,17 +298,31 @@ def profile_settings_guide(request):
                     user_language_second = user_language
 
         #saving services
-        guide_services_list = list()
+
+        guide_services_ids_list = list()
+
+        print (request.POST)
+
         for name, value in request.POST.items():
             string_key = "service_"
             if name.startswith(string_key):
+                print("in if: %s" % name)
 
                 cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
                 service = Service.objects.get(html_field_name=cleared_name)
-                guide_services_list.append(GuideService(service=service, guide=guide))
 
-        GuideService.objects.filter(guide=guide).delete()
-        GuideService.objects.bulk_create(guide_services_list)
+                price_field_name = "serviceprice_%s" % cleared_name
+                print(price_field_name)
+
+                price = request.POST.get(price_field_name)
+                print(price)
+
+                guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
+                                                                               is_active=True, defaults={"price": price})
+                guide_services_ids_list.append(guide_service.id)
+
+        GuideService.objects.filter(guide=guide).exclude(id__in=guide_services_ids_list).update(is_active=False)
+
 
 
         #To review this approach in the future
@@ -334,10 +348,10 @@ def profile_settings_guide(request):
 
     user_interests = UserInterest.objects.filter(user=user)
 
+
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)
     guide_services_ids = [item.service.id for item in guide_services]
-    print (guide_services_ids)
 
     return render(request, 'users/profile_settings_guide.html', locals())
 

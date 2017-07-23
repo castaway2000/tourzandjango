@@ -210,6 +210,13 @@ $(document).ready(function(){
             }
     });
 
+    $(document).on('change', '.service-name-checkbox', function() {
+        console.log("change");
+        var current_row = $(this).closest('tr');
+        console.log(current_row);
+        current_row.find('.service-price').toggleClass('hidden');
+    })
+
 });
 
 $('.datepicker').datepicker();

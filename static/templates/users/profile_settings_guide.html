@@ -134,15 +134,94 @@
 
                     <p class="lead">Additional services:</p>
 
-                    {% for service in services %}
-                        <div class="checkbox">
-                            <label>
-                              <input type="checkbox" name="service_{{ service.html_field_name }}"
-                                  {% if service.id in guide_services_ids %}checked{% endif %}
-                              > {{ service.name }}
-                            </label>
-                        </div>
-                    {% endfor %}
+                    <p>
+                        Selected services:
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for guide_service in guide_services %}
+                                <tr class="service_item_container">
+
+                                    <td>
+                                        <div class="checkbox">
+                                            <label>
+                                              <input type="checkbox" class="service-name-checkbox"
+                                                    name="service_{{ guide_service.service.html_field_name }}"
+                                                  checked
+                                              > {{ guide_service.service.name }}
+                                            </label>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="form-group form-group-icon-left service-price
+                                        ">
+                                            <i class="fa fa-money input-icon"></i>
+                                            <input type="number" step="1" name="serviceprice_{{ guide_service.service.html_field_name }}"
+                                                   class="form-control w100"
+                                                   {% if guide_service.price %}
+                                                       value="{{ guide_service.price|safe }}"
+                                                   {% else %}
+                                                        value="0"
+                                                   {% endif %}
+                                            >
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <p>
+                        Other services:
+                    </p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in services %}
+
+                                {% if not service.id in guide_services_ids %}
+                                    <tr class="service_item_container">
+
+                                        <td>
+                                            <div class="checkbox">
+                                                <label>
+                                                  <input type="checkbox" class="service-name-checkbox"
+                                                        name="service_{{ service.html_field_name }}"
+                                                  > {{ service.name }}
+                                                </label>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="form-group form-group-icon-left service-price
+                                                hidden
+                                            ">
+                                                <i class="fa fa-money input-icon"></i>
+                                                <input type="number" step="1" name="serviceprice_{{ service.html_field_name }}"
+                                                       class="form-control w100"
+                                                       value="0"
+                                                >
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
                 </div>
                 <div class="col-md-4 col-md-offset-1">

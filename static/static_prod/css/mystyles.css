@@ -281,3 +281,11 @@ a.link_lead:hover,
 a.link_lead:active{
     color: #1476ab;
 }
+
+.service_item_container td{
+    padding-right: 10px;
+}
+
+.service_item_container .input-icon {
+    top: 2px!important;
+}
