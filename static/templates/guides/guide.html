@@ -438,12 +438,21 @@
                     {% if tours %}
                         <ul class="booking-list">
                             {% for tour in tours %}
-                                {% include 'guides/tour_items_representation.html' %}
+                                {% if forloop.counter <= 5 %}
+                                    {% include 'guides/tour_items_representation.html' %}
+                                {% endif %}
                             {% endfor %}
                         </ul>
+                        {% if tours_nmb > 5 %}
+                            <div class="text-center">
+                                <a href="{% url 'tours' %}?guide_input={{ guide.user.username }}" class="btn btn-success">
+                                    {% blocktrans %}See more{% endblocktrans %}
+                                </a>
+                            </div>
+                        {% endif %}
                     {% else %}
                         <p>
-                            No tours so far...
+                            {% blocktrans %}No tours so far{% endblocktrans %}...
                         </p>
                     {% endif %}
                 </div>

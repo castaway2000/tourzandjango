@@ -263,7 +263,10 @@ class Review(models.Model):
 
     def __str__(self):
         if self.order:
-            return "%s" % self.order.tour.name
+            if self.order.tour:
+                return "%s" % self.order.tour.name
+            else:
+                return "%s" % self.order.guide.user.username
         else:
             return "%s" % self.id
 

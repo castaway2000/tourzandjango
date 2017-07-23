@@ -160,6 +160,7 @@ def guide(request, username):
 
     guide = guide_user.guideprofile
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
+    tours_nmb = tours.count()
 
     try:
         tourist = user.touristprofile
