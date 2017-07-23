@@ -15,10 +15,11 @@ from utils.statuses_changing_rules import checking_statuses
 import datetime
 from guides.models import GuideService
 from payments.models import PaymentMethod
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
+
 
 braintree.Configuration.configure(braintree.Environment.Sandbox,
     merchant_id=BRAINTREE_MERCHANT_ID,
@@ -203,6 +204,16 @@ def bookings(request, status=None):
     guides_ids = [item.guide.id for item in initial_orders]
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(orders, 10)
+    try:
+        orders = paginator.page(page)
+    except PageNotAnInteger:
+        orders = paginator.page(1)
+    except EmptyPage:
+        orders = paginator.page(paginator.num_pages)
+
     return render(request, 'orders/bookings.html', locals())
 
 
@@ -229,6 +240,18 @@ def orders(request, status=None):
             orders = Order.objects.filter(**kwargs).order_by("-id")
 
         orders_nmb = orders.count()
+
+
+        page = request.GET.get('page', 1)
+        paginator = Paginator(orders, 10)
+        try:
+            orders = paginator.page(page)
+        except PageNotAnInteger:
+            orders = paginator.page(1)
+        except EmptyPage:
+            orders = paginator.page(paginator.num_pages)
+
+
         return render(request, 'orders/orders.html', locals())
     except Exception as e:
         print (e)

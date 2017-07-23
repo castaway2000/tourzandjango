@@ -11,6 +11,8 @@ from .forms import *
 from django.contrib import messages
 from django.http import JsonResponse
 from orders.models import Review, Order
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Count
 
 
 def tours(request):
@@ -141,7 +143,7 @@ def tours(request):
     elif city_input or guide_input:
         print ("12345")
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
-    elif request.GET:
+    elif request.GET and not "page" in request.GET:
         print ("15")
         tours = Tour.objects.none()
     else:
@@ -157,6 +159,16 @@ def tours(request):
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
     print ("tours: %s" % tours)
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(tours, 5)
+    try:
+        tours = paginator.page(page)
+    except PageNotAnInteger:
+        tours = paginator.page(1)
+    except EmptyPage:
+        tours = paginator.page(paginator.num_pages)
+
     return render(request, 'tours/tours.html', locals())
 
 
@@ -194,8 +206,21 @@ def tour(request, slug, tour_id):
 
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     reviews = Review.objects.filter(order__tour=tour, is_tourist_feedback=True)
-    other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
+    reviews_total_nmb = Review.objects.filter(order__tour=tour, is_tourist_feedback=True).count()
 
+    other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
+    other_tours_nmb = other_tours.count()
+
+
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(reviews, 10)
+    try:
+        reviews = paginator.page(page)
+    except PageNotAnInteger:
+        reviews = paginator.page(1)
+    except EmptyPage:
+        reviews = paginator.page(paginator.num_pages)
 
     return render(request, 'tours/tour.html', locals())
 

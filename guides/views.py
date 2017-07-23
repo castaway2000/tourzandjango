@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from orders.models import Review
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def guides(request):
@@ -188,6 +188,16 @@ def guide(request, username):
                 pass
 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(reviews, 10)
+    try:
+        reviews = paginator.page(page)
+    except PageNotAnInteger:
+        reviews = paginator.page(1)
+    except EmptyPage:
+        reviews = paginator.page(paginator.num_pages)
 
     context = {
         "guide": guide,
