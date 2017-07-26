@@ -8,29 +8,6 @@
     <div class="col-md-9">
         <div class="row">
 
-            <div class="col-md-5">
-                <h4>{% blocktrans %}Change Password{% endblocktrans %}</h4>
-
-                <form method="post" action="">{% csrf_token %}
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                        <label>{% blocktrans %}Current Password{% endblocktrans %}</label>
-                        <span>{{ form.old_password.errors }}</span>
-                        <input class="form-control" type="password" name="{{ form.old_password.html_name }}">
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                        <label>{% blocktrans %}New Password{% endblocktrans %}</label>
-                        <span>{{ form.new_password1.errors }}</span>
-                        <input class="form-control" type="password" name="{{ form.new_password1.html_name }}">
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                        <label>{% blocktrans %}New Password Again{% endblocktrans %}</label>
-                        <span>{{ form.new_password2.errors }}</span>
-                        <input class="form-control" type="password" name="{{ form.new_password2.html_name }}">
-                    </div>
-                    <hr />
-                    <input class="btn btn-primary" type="submit" value="Change Password" />
-                </form>
-            </div>
             <div class="col-md-7">
                 <div>
                     <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
@@ -112,8 +89,102 @@
                             </li>
                         </ul>
                     </div>
+                    <div>
+                        <form class="form-horizontal" method="post">{% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-7">
+
+                                    {% if request.session.pending_validating_phone %}
+
+                                        <div class="form-group">
+                                            <label>{% blocktrans %}Phone{% endblocktrans %}</label>
+                                            <span id="phone_error_message" class="text-error">{{ verification_form.phone.errors }}</span>
+                                            <input type="text" class="form-control" name="{{ verification_form.phone.html_name }}"
+                                                   id="{{ verification_form.phone.html_name }}"
+
+                                                   value="{{ request.session.pending_validating_phone }}"
+                                                   >
+
+                                            <button type="submit"
+                                                class="btn btn-primary btn-xs"
+                                                name="submit_phone_btn" id="submit_phone_btn"
+                                                data-link="{% url 'sending_sms_code' %}"
+                                            >
+                                                {% blocktrans %}Re-send sms{% endblocktrans %}
+                                            </button>
+
+                                            {% if not request.session.pending_sms_code %}
+                                                <button type="submit"
+                                                    class="btn btn-default btn-xs"
+                                                    name="phone_verification_cancel_btn" id="phone_verification_cancel_btn"
+                                                >
+                                                    {% blocktrans %}Cancel{% endblocktrans %}
+                                                </button>
+                                            {% endif %}
+
+                                        </div>
+                                    {% elif general_profile.phone_is_validated  and general_profile.phone %}
+                                        <label>{% blocktrans %}Phone{% endblocktrans %}</label>
+                                        <span>{{ general_profile.phone }}</span>
+                                        <button type="submit" class="btn btn-success btn-xs"
+                                                id="edit_phone" name="edit_phone"
+                                        >
+                                            {% blocktrans %}Edit{% endblocktrans %}
+                                        </button>
+                                    {% else %}
+
+                                        <div class="form-group">
+                                            <label>{% blocktrans %}Phone {% endblocktrans %}</label>
+                                            <span id="phone_error_message" class="text-error">{{ verification_form.phone.errors }}</span>
+                                            <input type="text" class="form-control" name="{{ verification_form.phone.html_name }}"
+                                                   id="{{ verification_form.phone.html_name }}"
+    
+                                                   {% if general_profile.phone_is_validated  and general_profile.phone %}
+                                                   value="{{ general_profile.phone }}"
+                                                   {% elif request.session.pending_validating_phone %}
+                                                   value="{{ request.session.pending_validating_phone }}"
+                                                   {% endif %}
+                                                   >
+                                            <button type="submit"
+                                                class="btn btn-primary btn-xs {% if general_profile.phone_is_validated  %}hidden{% endif %}"
+                                                name="submit_phone_btn" id="submit_phone_btn"
+                                                data-link="{% url 'sending_sms_code' %}"
+                                            >
+                                                {% blocktrans %}Add{% endblocktrans %}
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if request.session.pending_validating_phone %}
+
+                                        <div class="form-group" id="sms_code_container">
+                                            <label>{% blocktrans %}Enter validation code here{% endblocktrans %}</label>
+                                            <span>{{ verification_form.sms_code.errors }}</span>
+                                            <input class="form-control w100" id="{{ verification_form.sms_code.html_name }}"
+                                                   name="{{ verification_form.sms_code.html_name }}">
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-xs"
+                                                    name="validate_phone_btn" id="validate_phone">
+                                                {% blocktrans %}Submit{% endblocktrans %}
+                                            </button>
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
+            </div>
+            <div class="col-lg-5">
+                <div>
+                    <h4>{% blocktrans %}Password management section{% endblocktrans %}</h4>
+                    <a href="{% url 'password_changing' %}" class="btn btn-danger">
+                        {% blocktrans %}Change password{% endblocktrans %}
+                    </a>
+                </div>
                 <div>
                     <hr>
                     <h4>{% blocktrans %}Identity verification{% endblocktrans %}</h4>

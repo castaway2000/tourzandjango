@@ -70,6 +70,8 @@ class GeneralProfile(models.Model):
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
     google = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
+    phone_is_validated = models.BooleanField(default=False)
+
     country = models.CharField(max_length=64, blank=True, null=True, default=None)
     city = models.CharField(max_length=64, blank=True, null=True, default=None)
     address = models.CharField(max_length=128, blank=True, null=True, default=None)
@@ -142,4 +144,16 @@ class DocumentScan(models.Model):
         else:
             return "%s" % self.general_profile.user.username
 
+
+class SmsSendingHistory(models.Model):
+    user = models.ForeignKey(User, blank=True, null=True, default=None)
+    phone = models.CharField(max_length=64, blank=True, null=True, default=None)#including code
+    sms_code = models.CharField(max_length=8, blank=True, null=True, default=None)
+    tries_nmb = models.IntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.phone
 

@@ -117,42 +117,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'tourzan.wsgi.application'
 
 
-#Making logs to log file with additional info
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
-                       'pathname=%(pathname)s lineno=%(lineno)s ' +
-                       'funcname=%(funcName)s %(message)s'),
-            'datefmt': '%Y-%m-%d %H:%M:%S'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-            },
-        },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-            },
-        'tourzan': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-            },
-        }
-    }
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
@@ -268,6 +232,15 @@ FROM_EMAIL = "hello@tourzan.com"
 
 
 GOOGLE_RECAPTCHA_SECRET_KEY = "6LcH3h4TAAAAABBUj4ci88yDIaM_A1A2YYt4IeTr"
+
+TWILIO_ACCOUNT_SID = "AC9c724976ac8617d597ddf08ea76e522b"
+TWILIO_AUTH_TOKEN = "b39c735874f5e41f2bf9e64b7960617b"
+TWILIO_FROM_PHONE = "888-856-0706"
+
+USER_SMS_NMB_LIMIT = 3
+PHONE_SMS_NMB_LIMIT = 3
+DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

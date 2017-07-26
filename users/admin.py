@@ -78,3 +78,12 @@ class DocumentScanAdmin(admin.ModelAdmin):
         model = DocumentScan
 
 admin.site.register(DocumentScan, DocumentScanAdmin)
+
+
+class SmsSendingHistoryAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in SmsSendingHistory._meta.fields]
+
+    class Meta:
+        model = SmsSendingHistory
+
+admin.site.register(SmsSendingHistory, SmsSendingHistoryAdmin)

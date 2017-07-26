@@ -292,3 +292,12 @@ a.link_lead:active{
 .service_item_container .input-icon {
     top: 2px!important;
 }
+
+.w150{
+    width: 150px;
+}
+
+.text-error{
+    color: red;
+    font-weight: 700;
+}

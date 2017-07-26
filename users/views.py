@@ -22,6 +22,8 @@ from utils.internalization_wrapper import languages_english
 from allauth.account.views import SignupView, _ajax_response
 from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
+from utils.sending_sms import SendingSMS
+from datetime import datetime
 
 
 def login_view(request):
@@ -72,6 +74,22 @@ def home(request):
 
 
 @login_required()
+def password_changing(request):
+    user = request.user
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST or None, user=user)
+        if "change_password_btn" in request.POST:
+            print ("CHANGE PASSWORD IN REQUEST")
+            if form.is_valid():
+                new_form = form.save(commit=False)
+                new_form = form.save()
+                messages.success(request, 'Password was successfully updated!')
+                update_session_auth_hash(request, user)
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'users/password_changing.html', locals())
+
+@login_required()
 def general_settings(request):
     page = "general_settings"
     user = request.user
@@ -80,7 +98,77 @@ def general_settings(request):
 
     docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
     form = PasswordChangeForm(data=request.POST or None, user=user)
+    verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
+
     if request.method == 'POST':
+
+        data = request.POST
+
+        # if "submit_phone_btn" in request.POST:
+        #     phone = data.get("phone")
+        #     request.session["validating_phone"] = phone
+
+
+        if "validate_phone_btn" or "submit_phone_btn" in data:
+            print("validate_phone_btn or submit_phone_btn")
+
+            if "phone_verification_cancel_btn" in data:
+
+                #deleting session info if validation process is canceled
+                if "pending_validating_phone" in request.session:
+                    del request.session["pending_validating_phone"]
+
+                if "pending_sms_code" in request.session:
+                    del request.session["pending_sms_code"]
+
+
+            elif "edit_phone" in data:
+                phone = general_profile.phone
+
+                #to show input field with current phone number
+                request.session["pending_validating_phone"] = phone
+
+            elif "submit_phone_btn" in data:
+                #to hide cancel button if the process has been started with sending code in sms
+                request.session["pending_sms_code"] = True
+
+
+            if verification_form.is_valid():
+                print("validate_phone_btn")
+                print(data.get("validate_phone_btn"))
+
+                if "submit_phone_btn" in data:
+                    phone = data.get("phone")
+                    request.session["pending_validating_phone"] = phone
+                    sms = SendingSMS({"phone_to": phone, "user_id": user.id})
+                    sms_sending_info = sms.send_validation_sms()
+                    if sms_sending_info["status"] == "success":
+                        general_profile = user.generalprofile
+                        general_profile.phone = phone
+                        general_profile.phone_is_validated = False
+                        general_profile.save(force_update=True)
+                        messages.success(request, 'SMS with validation code was sent!')
+                    else:#error
+                        message_text = sms_sending_info["message"]
+                        messages.error(request, message_text)
+
+                elif "validate_phone_btn" in data:
+                    print("in validate_phone_btn")
+                    general_profile.phone_is_validated = True
+                    general_profile.save(force_update=True)
+
+
+                    #deleting session info if validation process is successfully completed
+                    if "pending_validating_phone" in request.session:
+                        del request.session["pending_validating_phone"]
+
+                    if "pending_sms_code" in request.session:
+                        del request.session["pending_sms_code"]
+
+                    messages.success(request, 'Phone was successfully validated!')
+
+
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
             if docs_form.is_valid():
@@ -103,15 +191,6 @@ def general_settings(request):
 
                     #retrieve docs afrer uploading
                     is_just_uploaded = True
-
-                update_session_auth_hash(request, user)
-
-        if form.is_valid():
-            new_form = form.save(commit=False)
-            new_form = form.save()
-            messages.success(request, 'Password was successfully updated!')
-            update_session_auth_hash(request, user)
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request, 'users/general_settings.html', locals())
 
@@ -260,3 +339,30 @@ class SignupViewCustom(SignupView):
             response = self.form_invalid(form)
 
         return _ajax_response(self.request, response, form=form)
+
+
+@login_required()
+def sending_sms_code(request):
+    user = request.user
+
+    return_data = dict()
+    if request.POST:
+        print (request.POST)
+        data = request.POST
+
+        phone = data.get("phone")
+
+
+        sms = SendingSMS({"phone_to": phone, "user_id": user.id})
+        sms_sending_status = sms.send_validation_sms()
+
+        print("sms status %s" % sms_sending_status)
+        return_data["status"] = sms_sending_status
+
+        if sms_sending_status == "success":
+            general_profile = user.generalprofile
+            general_profile.phone = phone
+            general_profile.phone_is_verified = False
+            general_profile.save(force_update=True)
+
+    return JsonResponse(return_data)

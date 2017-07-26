@@ -215,7 +215,51 @@ $(document).ready(function(){
         var current_row = $(this).closest('tr');
         console.log(current_row);
         current_row.find('.service-price').toggleClass('hidden');
-    })
+    });
+
+
+    function togglingEditingPhoneStuff(){
+        $('#submit_phone_btn').toggleClass('hidden');
+        $('#validate_phone_btn').toggleClass('hidden');
+        $('#sms_code_container').toggleClass('hidden')
+    };
+
+    $('#edit_phone').on('click', function(){
+        togglingEditingPhoneStuff();
+    });
+
+
+    //$('#submit_phone_btn').on('click', function(e){
+    //    e.preventDefault();
+    //
+    //    var phone = $('#phone').val();
+    //    console.log(phone);
+    //    console.log(phone.length);
+    //    if (phone.length < 7){
+    //        $('#phone_error_message').text("Enter valid phone");
+    //        return false;
+    //    }
+    //
+    //    data = {};
+    //    var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+    //    data["csrfmiddlewaretoken"] = csrf_token;
+    //    data["phone"] = phone;
+    //
+    //
+    //    var url = $(this).data('link');
+    //    $.ajax({
+    //         url: url,
+    //         type: 'POST',
+    //         data: data,
+    //         cache: true,
+    //         success: function (data) {
+    //             console.log(data);
+    //             if(data.status=='success'){
+    //                 togglingEditingPhoneStuff();
+    //             };
+    //         }
+    //    })
+    //});
 
 });
 
