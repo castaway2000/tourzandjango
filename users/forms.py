@@ -23,6 +23,13 @@ class VerificationCodeForm(forms.Form):
         self.user = user
         super(VerificationCodeForm, self).__init__(*args, **kwargs)
 
+    def clean_phone(self):
+        user = self.user
+        phone = self.cleaned_data.get("phone")
+        if user.generalprofile.phone == phone:
+            raise forms.ValidationError("New phone should be different from current phone !")
+        return phone
+
 
     def clean_sms_code(self):
         code_entering_limit = 3
@@ -51,4 +58,4 @@ class VerificationCodeForm(forms.Form):
             else:
                 raise forms.ValidationError("Please resend a code once again!")
 
-        return self.cleaned_data.get('sms_code')
+        return sms_code

@@ -159,7 +159,7 @@
 
                                         <div class="form-group" id="sms_code_container">
                                             <label>{% blocktrans %}Enter validation code here{% endblocktrans %}</label>
-                                            <span>{{ verification_form.sms_code.errors }}</span>
+                                            <span class="text-error">{{ verification_form.sms_code.errors }}</span>
                                             <input class="form-control w100" id="{{ verification_form.sms_code.html_name }}"
                                                    name="{{ verification_form.sms_code.html_name }}">
                                             <button type="submit"

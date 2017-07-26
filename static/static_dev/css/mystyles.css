@@ -299,5 +299,10 @@ a.link_lead:active{
 
 .text-error{
     color: red;
-    font-weight: 700;
 }
+
+.text-error ul {
+    list-style: none;
+    margin-left: -40px;
+}
+
