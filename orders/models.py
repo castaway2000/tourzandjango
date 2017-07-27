@@ -243,7 +243,6 @@ def service_in_order_post_save(sender, instance, created, **kwargs):
 post_save.connect(service_in_order_post_save, sender=ServiceInOrder)
 
 
-
 class Review(models.Model):
     order = models.OneToOneField(Order, blank=True, null=True, default=None)
 

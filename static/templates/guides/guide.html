@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load stars_rating %}
+
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -115,21 +117,12 @@
                         </h3>
                         <div class="booking-item-rating">
                             <ul class="icon-list icon-group booking-item-rating-stars">
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
+                                {{ guide.rating|rendering_stars|safe }}
                             </ul>
                             <span class="booking-item-rating-number">
                                 <b>{{ guide.rating }}</b>
                                 of 5
-                                <small class="text-smaller">{% blocktrans %}tourist rating{% endblocktrans %}</small>
+                                <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small>
                             </span>
                             <p>
                                 <a class="text-default" href="#">

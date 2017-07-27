@@ -1,4 +1,5 @@
 {% load static %}
+{% load stars_rating %}
 
 <li>
     <div class="booking-item booking-item-small">
@@ -17,16 +18,7 @@
 
 
                 <ul class="icon-group booking-item-rating-stars">
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star-o"></i>
-                    </li>
+                    {{ tour.rating|rendering_stars|safe }}
                 </ul>
             </div>
             <div class="col-xs-4 text-center">

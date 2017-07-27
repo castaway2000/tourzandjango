@@ -1,5 +1,7 @@
 {% load static %}
 {% load i18n %}
+{% load stars_rating %}
+
 
 <li>
     <div class="row">
@@ -24,18 +26,13 @@
         <div class="col-md-10">
             <div class="booking-item-review-content">
                 <ul class="icon-group booking-item-rating-stars">
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
-                    <li><i class="fa fa-star"></i>
-                    </li>
+                    {{ review.guide_rating|rendering_stars|safe }}
                 </ul>
-                <h5>{{ review.guide_feedback_name }}</h5>
+
+                {% if review.guide_feedback_name %}
+                    <h5>{{ review.guide_feedback_name }}</h5>
+                {% endif %}
+
                 <p>
                     {{ review.guide_feedback_text|safe }}
                 </p>

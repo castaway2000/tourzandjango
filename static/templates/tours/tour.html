@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load stars_rating %}
+
 
 {% block content %}
     <div class="container">
@@ -62,23 +64,16 @@
                 </div>
                 <div class="col-md-4">
                     <div class="booking-item-meta">
-                        <h2 class="lh1em">Exeptional!</h2>
-                        <h3>97% <small >of guests recommend</small></h3>
+                        <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
+{#                        <h3>97% <small >of guests recommend</small></h3>#}
                         <div class="booking-item-rating">
                             <ul class="icon-list icon-group booking-item-rating-stars">
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                                <li><i class="fa fa-star"></i>
-                                </li>
-                            </ul><span class="booking-item-rating-number"><b >4.7</b> of 5 <small class="text-smaller">guest rating</small></span>
-                            <p><a class="text-default" href="#">based on 1535 reviews</a>
-                            </p>
+                                {{ tour.rating|rendering_stars|safe }}
+                            </ul>
+                            <span class="booking-item-rating-number"><b >{{ tour.rating}}</b> {% blocktrans %}of{% endblocktrans %} 5
+                                <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small></span>
+{#                            <p><a class="text-default" href="#">based on 1535 reviews</a>#}
+{#                            </p>#}
                         </div>
                     </div>
                     <div class="booking-item-meta">
