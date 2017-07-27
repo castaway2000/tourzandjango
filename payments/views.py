@@ -40,12 +40,26 @@ def payment_methods(request):
 @login_required()
 def payment_methods_adding(request):
     user = request.user
+
+    #for using at template js for initializing of braintree form
     request.session['braintree_client_token'] = braintree.ClientToken.generate()
+
+
+    payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
+    if created:
+        result = braintree.Customer.create({
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+        })
+        payment_customer.uuid = result.customer.id
+        payment_customer.save(force_update=True)
+
 
     if request.POST:
         payment_method_nonce = request.POST['payment_method_nonce']
         result = braintree.PaymentMethod.create({
-            "customer_id": user.paymentcustomer.uuid,
+            "customer_id": payment_customer.uuid,
             "payment_method_nonce": payment_method_nonce,
             "options": {
                 "verify_card": True,

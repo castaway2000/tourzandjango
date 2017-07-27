@@ -234,6 +234,8 @@ def orders(request, status=None):
         if not status:
             kwargs["guide"] = guide
             orders = Order.objects.filter(**kwargs).order_by("-id")
+            print("not status")
+
         else:
             kwargs["guide"] = guide
             kwargs["status__slug"] = status

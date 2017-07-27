@@ -72,12 +72,12 @@
                                     <td>
                                         {% if order.tour %}
                                             <b>
-                                                A tour "{{ order.tour.name }}" with {{ order.guide.name }}
+                                                A tour "{{ order.tour.name }}" with {{ order.guide.user.username}}
                                              </b>
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}
                                         {% else %}
                                             <b>
-                                                A tour with {{ order.guide.name }}
+                                                A tour with {{ order.guide.user.username }}
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}:
                                             </b>
                                             {{ order.hours_nmb|safe }} hours *
