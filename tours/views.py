@@ -101,7 +101,7 @@ def tours(request):
     #if it is one element in tuple, * is not needed
 
 
-    tours_initial = Tour.objects.filter(is_active=True).order_by(*order_results)
+    tours_initial = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True).order_by(*order_results)
 
 
     if hourly_price_kwargs or fixed_price_kwargs or free_price_kwargs:

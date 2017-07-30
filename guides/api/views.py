@@ -36,7 +36,7 @@ from guides.models import *
 
 
 class GuideProfileViewSet(viewsets.ModelViewSet):
-    queryset = GuideProfile.objects.all()
+    queryset = GuideProfile.objects.filter(is_active=True)
     serializer_class = GuideProfileSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
 

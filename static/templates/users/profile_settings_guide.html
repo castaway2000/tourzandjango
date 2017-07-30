@@ -30,6 +30,19 @@
                         </p>
                     {% endif %}
 
+                    {% if guide %}
+                       <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                  <input type="checkbox" class=""
+                                        name="{{ form.is_active.html_name }}"
+                                        {% if form.is_active.value %}checked {% endif %}
+                                  >{% blocktrans %}Is active{% endblocktrans %}
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
                         <label>Name:</label>
                         <span>{{ form.name.errors }}</span>

@@ -22,19 +22,19 @@ class PaymentTypeViewSet(viewsets.ModelViewSet):
 
 
 class TourViewSet(viewsets.ModelViewSet):
-    queryset = Tour.objects.all()
+    queryset = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True)
     serializer_class = TourSerializer
     permission_classes = (IsGuideOwnerOrReadOnly,)
 
     def get_queryset(self):
         user = self.request.user
-        qs = Tour.objects.filter(is_active=False, is_deleted=False)
+        qs = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True)
         return qs
 
     @list_route()
     def get_guide_representation(self, request):
         user = request.user
-        qs = Tour.objects.filter(guide__user=user).order_by('-id')
+        qs = Tour.objects.filter(guide__user=user, is_active=True, is_deleted=False, guide__is_active=True).order_by('-id')
 
         page = self.paginate_queryset(qs)
         if page is not None:
