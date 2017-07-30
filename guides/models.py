@@ -17,7 +17,6 @@ class GuideProfile(models.Model):
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
 
     is_active = models.BooleanField(default=True)
-    is_approved = models.BooleanField(default=False)
     overview = models.TextField(blank=True, null=True, default=None)
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)

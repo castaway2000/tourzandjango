@@ -111,11 +111,20 @@ class GeneralProfile(models.Model):
     address = models.CharField(max_length=128, blank=True, null=True, default=None)
     address_full = models.CharField(max_length=256, blank=True, null=True, default=None)
 
+    is_company = models.BooleanField(default=False)
+    business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
+
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __str__(self):
         return "%s" % self.user.username
+
+
+    def save(self, *args, **kwargs):
+        self.address_full = "%s %s" % (self.city, self.address)
+
+        super(GeneralProfile, self).save(*args, **kwargs)
 
 
 def socialaccount_post_save(sender, instance, **kwargs):

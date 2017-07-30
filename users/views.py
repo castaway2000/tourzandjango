@@ -97,20 +97,19 @@ def general_settings(request):
     document_uploaded = general_profile.documentscan_set.filter(is_active=True).last()#approved
 
     docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
-    form = PasswordChangeForm(data=request.POST or None, user=user)
+    form = GeneralProfileForm(data=request.POST or None, instance=general_profile)
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':
 
+        #GeneralProfile form section
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form = form.save()
+
+        #phone validation section
         data = request.POST
-
-        # if "submit_phone_btn" in request.POST:
-        #     phone = data.get("phone")
-        #     request.session["validating_phone"] = phone
-
-
         if "validate_phone_btn" or "submit_phone_btn" in data:
-            print("validate_phone_btn or submit_phone_btn")
 
             if "phone_verification_cancel_btn" in data:
 
@@ -134,8 +133,6 @@ def general_settings(request):
 
 
             if verification_form.is_valid():
-                print("validate_phone_btn")
-                print(data.get("validate_phone_btn"))
 
                 if "submit_phone_btn" in data:
                     phone = data.get("phone")
@@ -153,7 +150,6 @@ def general_settings(request):
                         messages.error(request, message_text)
 
                 elif "validate_phone_btn" in data:
-                    print("in validate_phone_btn")
                     general_profile.phone_is_validated = True
                     general_profile.save(force_update=True)
 
@@ -170,6 +166,7 @@ def general_settings(request):
 
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+        #documents uploading section
         if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
             if docs_form.is_valid():
 

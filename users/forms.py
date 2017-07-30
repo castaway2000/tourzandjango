@@ -59,3 +59,11 @@ class VerificationCodeForm(forms.Form):
                 raise forms.ValidationError("Please resend a code once again!")
 
         return sms_code
+
+
+class GeneralProfileForm(forms.ModelForm):
+    class Meta:
+        model = GeneralProfile
+
+        #city is added on form save in view
+        fields = ("address", "is_company", "business_id",)

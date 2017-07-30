@@ -261,6 +261,15 @@ $(document).ready(function(){
     //    })
     //});
 
+
+    $('#is_company').on("change", function(){
+        if ($(this).prop("checked")){
+            $('#business_id_container').removeClass("hidden");
+        }else{
+            $('#business_id_container').addClass("hidden");
+        }
+    })
+
 });
 
 $('.datepicker').datepicker();

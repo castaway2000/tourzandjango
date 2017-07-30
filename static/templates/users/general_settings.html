@@ -90,7 +90,7 @@
                         </ul>
                     </div>
                     <div>
-                        <form class="form-horizontal" method="post">{% csrf_token %}
+                        <form class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
                             <div class="row">
                                 <div class="col-lg-7">
 
@@ -175,6 +175,43 @@
                             </div>
                         </form>
                     </div>
+
+                    <div>
+                        <hr>
+                        <form class="form-horizontal" name="general_profile_form" method="post">{% csrf_token %}
+
+                            <div class="form-group form-group-icon-left">
+                                <i class="fa fa-lock input-icon"></i>
+                                <label>{% blocktrans %}Address{% endblocktrans %}:</label>
+                                <textarea class="form-control" name="{{ form.address.html_name }}">{% if form.address.value %}{{ form.address.value }}{% endif %}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                      <input type="checkbox" class=""
+                                            name="{{ form.is_company.html_name }}"
+                                            {% if form.is_company.value %}checked {% endif %}
+                                             id="is_company"
+                                      >{% blocktrans %}Do you represent a company?{% endblocktrans %}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="business_id_container" class="form-group form-group-icon-left
+                                {% if not form.is_company.value %}hidden{% endif %}"
+                            >
+                                <i class="fa fa-lock input-icon"></i>
+                                <label>{% blocktrans %}Business id{% endblocktrans %}:</label>
+                                <input class="form-control" name="{{ form.business_id.html_name }}" value="{% if form.business_id.value %}{{ form.business_id.value }}{% endif %}">
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
 
             </div>

@@ -37,10 +37,10 @@
                                   <input type="checkbox" class=""
                                         name="{{ form.is_active.html_name }}"
                                         {% if form.is_active.value %}checked {% endif %}
-                                  >{% blocktrans %}Is active{% endblocktrans %}
+                                  >{% blocktrans %}Is visible{% endblocktrans %}
                                 </label>
                             </div>
-                        </div>
+                       </div>
                     {% endif %}
 
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
@@ -49,7 +49,6 @@
                         <input class="form-control" name="{{ form.name.html_name }}"
                                value="{% if guide and guide.name %}{{ guide.name }}{% endif %}">
                     </div>
-
 
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
                         <label>City:</label>
