@@ -10,6 +10,7 @@ from tourists.models import TouristProfile
 from utils.uploadings import upload_path_handler_user_scanned_docs
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.signals import user_logged_in
+from payments.models import PaymentMethod
 
 
 def user_login_function(sender, user, **kwargs):
@@ -17,9 +18,28 @@ def user_login_function(sender, user, **kwargs):
     A signal receiver which performs some actions for
     the user logging in.
     """
-    general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
-    if general_profile:
-        pass
+    general_profile, created = GeneralProfile.objects.get_or_create(user=user)
+    if not general_profile.is_trusted:
+        is_trust_score = 0
+
+        if general_profile.facebook or general_profile.google or general_profile.twitter:
+            is_trust_score += 1
+
+        if general_profile.phone and general_profile.phone_is_validated:
+            is_trust_score += 1
+
+        if general_profile.documentscan_set.filter(status_id=2).exists():
+            is_trust_score += 1
+
+        if PaymentMethod.objects.filter(user=user, is_active=True).exists():
+            is_trust_score += 1
+
+        if is_trust_score >= 3:
+            general_profile.is_trusted = True
+        # else:
+        #     general_profile.is_trusted = False
+        general_profile.save(force_update=True)
+
 
 user_logged_in.connect(user_login_function)
 
@@ -147,7 +167,7 @@ class DocumentScan(models.Model):
     general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
     document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
     file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)
-    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=1)#status "new"
+    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=1)#status "new" 2 - "approved", 3 - "rejected"
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
