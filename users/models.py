@@ -9,6 +9,19 @@ from utils.disabling_signals_for_load_data import disable_for_loaddata
 from tourists.models import TouristProfile
 from utils.uploadings import upload_path_handler_user_scanned_docs
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.signals import user_logged_in
+
+
+def user_login_function(sender, user, **kwargs):
+    """
+    A signal receiver which performs some actions for
+    the user logging in.
+    """
+    general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+    if general_profile:
+        pass
+
+user_logged_in.connect(user_login_function)
 
 
 """
@@ -66,6 +79,7 @@ class UserLanguage(models.Model):
 
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
+    is_trusted = models.BooleanField(default=False)
     facebook = models.CharField(max_length=64, blank=True, null=True, default=None)
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
     google = models.CharField(max_length=64, blank=True, null=True, default=None)
