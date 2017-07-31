@@ -66,6 +66,7 @@ def making_booking(request):
 
     hours_nmb = data.get("booking_hours")
     price_hourly = data.get("price_hourly", 0)
+    kwargs["hours_nmb"] = hours_nmb
 
     if price_hourly:
         price_hourly = price_hourly.replace(",", ".")

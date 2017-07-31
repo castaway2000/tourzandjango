@@ -42,7 +42,7 @@
 
                     <h5 class="text-center">
                         <a href="{% url 'guide' order.guide.user.username %}">
-                            {{ order.guide.name }}
+                            {{ order.guide.user.username }}
                         </a>
                     </h5>
 
@@ -73,15 +73,22 @@
                                         {% if order.tour %}
                                             <b>
                                                 A tour "{{ order.tour.name }}" with {{ order.guide.user.username}}
-                                             </b>
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}
+                                            </b>
+                                            {% if order.tour.payment_type.id == 1 %}
+                                                <br>
+                                                {{ order.hours_nmb|safe }} hours *
+                                                {{ order.price_hourly|safe }} {{ order.currency.name }}
+                                                {% blocktrans %}per hour{% endblocktrans %}
+                                            {% endif %}
                                         {% else %}
                                             <b>
                                                 A tour with {{ order.guide.user.username }}
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}:
                                             </b>
                                             {{ order.hours_nmb|safe }} hours *
-                                            {{ order.price_hourly|safe }} {{ order.currency.name }} per hour
+                                            {{ order.price_hourly|safe }} {{ order.currency.name }}
+                                            {% blocktrans %}per hour{% endblocktrans %}
                                         {% endif %}
                                         {% if services_in_order %}
                                             <div class="mt10">

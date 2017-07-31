@@ -116,7 +116,7 @@
 
                             <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
 
-                                <div class="input-daterange" data-date-format="yyyy, MM d, DD">
+                                <div class="input-daterange" data-date-format="mm.dd.yyyy">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
@@ -174,7 +174,14 @@
                                             <div class="col-md-12 text-center">
                                                 <input class="hidden" id="hourly_rate" value="{{ tour.price_hourly }}" name="price_hourly">
                                                 <p id="amount_container" class="lead hidden">
-                                                    Price: <b><span id="amount"></span> {{ tour.currency.name }}</b>
+                                                    {% blocktrans %}Rate{% endblocktrans %}:
+                                                    <b><span id="amount">{{ tour.price_hourly|safe }}</span>
+                                                    {{ tour.currency.name }} {% blocktrans %}per hour{% endblocktrans %}
+                                                    </b>
+                                                </p>
+                                                <p>
+                                                    {% blocktrans %}Minimum{% endblocktrans %} {{ tour.min_hours }}
+                                                    {% blocktrans %}hours{% endblocktrans %}
                                                 </p>
                                             </div>
                                         </div>
