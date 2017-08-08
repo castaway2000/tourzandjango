@@ -3,6 +3,9 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from .models import PageContent
+from .forms import ContactUsMessageNotSignedInForm, ContactUsMessageSignedInForm
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 
 
 def tos(request):
@@ -21,4 +24,21 @@ def privacy_policy(request):
 
 
 def contact_us(request):
+    user = request.user
+    if not user.is_anonymous():
+        form = ContactUsMessageSignedInForm(request.POST or None)
+    else:
+        form = ContactUsMessageNotSignedInForm(request.POST or None)
+
+    if request.POST:
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            if not user.is_anonymous():
+                new_form.user = user
+                new_form.email = user.email
+            new_form = form.save()
+            messages.success(request, _('Your message has been successfully delivered!'))
+        else:
+            messages.error(request, _('There is some error with submiting of your message!'))
+
     return render(request, 'website_management/contact_us.html', locals())

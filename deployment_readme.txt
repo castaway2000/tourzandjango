@@ -38,8 +38,11 @@ Updates of the server can be make in the following way:
 -sign up under djangotourzan user: sudo su - djangotourzan
 -access project folder (with git repository inside): cd tourzan
 -run git pull command using your connected "remote" instance. For example git pull origin master
+-if any new migrations were created - run this command to apply them to Production db:
+    python manage.py migrate
+
 -exit virtual environment by typing "exit"
--run a command to restart supervisor and all the instances which it tracks (particulary gunicorn): 
+-run a command to restart supervisor and all the instances which it tracks (particulary gunicorn):
     sudo supervisorctl restart all
         or
     some certain instance: sudo supervisorctl restart [instane name] ("website" or "general" - need to doublecheck its name on Production)

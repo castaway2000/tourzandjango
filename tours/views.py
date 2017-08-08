@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from orders.models import Review, Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
+from django.utils.translation import ugettext as _
 
 
 def tours(request):
@@ -288,9 +289,9 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
                 TourImage.objects.create(image=file, tour=new_form)
 
         if slug:
-            messages.success(request, '{% blocktrans %}Tour details have been successfully updated!{%endblocktrans')
+            messages.success(request, _('Tour details have been successfully updated!'))
         else:
-            messages.success(request, '{% blocktrans %}Tour details have been successfully created!{% endblocktrans %}')
+            messages.success(request, _('Tour details have been successfully created!'))
             return HttpResponseRedirect(reverse("guide_settings_tour_edit", kwargs={"slug": new_form.slug, "tour_id": new_form.id}))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 

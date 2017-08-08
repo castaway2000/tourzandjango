@@ -90,3 +90,10 @@ ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
     border: 1px solid #169e49;
     background: #169e49;
 }
+
+.form-control:active,
+.form-control:focus {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: 1px solid #31dc72;
+}

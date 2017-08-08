@@ -27,28 +27,28 @@
                             </div>
 
                             <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Name*:{% endblocktrans %}</label>
-                                <span>{{ form.name.errors }}</span>
+                                <label>{% blocktrans %}Name{% endblocktrans %}*:</label>
+                                <span class="text-error">{{ form.name.errors }}</span>
                                 <input class="form-control" name="{{ form.name.html_name }}"
                                        value="{% if guide and guide.name %}{{ form.name.value }}{% endif %}">
                             </div>
 
                             <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}City*:{% endblocktrans %}</label>
+                                <label>{% blocktrans %}City{% endblocktrans %}*:</label>
                                 <input class="form-control" name="city" value="{% if guide and guide.city %}{{ guide.city.name}}{% endif %}">
                             </div>
 
                             <div class="form-group form-group-icon-left">
                                 <i class="fa fa-money input-icon"></i>
-                                <label>Hourly rate, USD/hour:</label>
-                                <span>{{ form.rate.errors }}</span>
+                                <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %}:</label>
+                                <span class="text-error">{{ form.rate.errors }}</span>
                                 <input type="number" step="0.1" name="{{ form.rate.html_name }}" class="form-control w100">
                             </div>
 
                             <div class="form-group form-group-icon-left">
                                 <i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Date of birth*:{% endblocktrans %}</label>
-                                <span>{{ form.date_of_birth.errors }}</span>
+                                <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
+                                <span class="text-error">{{ form.date_of_birth.errors }}</span>
                                 <input class="form-control datepicker"  data-date-format="mm.dd.yyyy"
                                        name="{{ form.date_of_birth.html_name }}"
                                        {% if request.POST.date_of_birth %}
@@ -60,7 +60,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>{% blocktrans %}Interests*:{% endblocktrans %}</label>
+                                <label>{% blocktrans %}Interests{% endblocktrans %}*:</label>
 
                                 <select multiple class="form-control select2"
                                     id="interest_input" name="interests"
@@ -73,8 +73,8 @@
                             </div>
 
                             <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
-                                <label>{% blocktrans %}Overview*:{% endblocktrans %}</label>
-                                <span>{{ form.overview.errors }}</span>
+                                <label>{% blocktrans %}Overview{% endblocktrans %}*:</label>
+                                <span class="text-error">{{ form.overview.errors }}</span>
                                 <textarea rows="5" maxlength="50000"
                                           placeholder="Write here some info about yourself (5000 characters limit)"
                                           name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
@@ -82,7 +82,7 @@
                             </div>
 
                             {% if services %}
-                                <p class="lead">{% blocktrans %}Additional services*:{% endblocktrans %}</p>
+                                <p class="lead">{% blocktrans %}Additional services{% endblocktrans %}*:</p>
 
                                 {% for service in services %}
                                     <div class="checkbox">
@@ -108,8 +108,8 @@
                                 </div>
                             {% endif %}
                             <div class="form-group">
-                                <label>{% blocktrans %}Upload New Avatar Image:{% endblocktrans %}</label>
-                                <span>{{ form.profile_image.errors }}</span>
+                                <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
+                                <span class="text-error">{{ form.profile_image.errors }}</span>
                                 <input type="file" name="{{ form.profile_image.html_name }}">
                             </div>
 

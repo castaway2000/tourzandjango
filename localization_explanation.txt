@@ -21,6 +21,8 @@ wrap the text which you need to translate like in this example:
         http://stackoverflow.com/questions/17621770/django-i18n-blocktrans-vs-trans
 
 
+    The way how to translate messages or some variables is explained here:
+        https://stackoverflow.com/questions/15391660/how-to-translate-a-message-variable-in-django-templates
 
 create folder for localization files ("locale" folder in project dir).
 add all the needed settings to settings.py:

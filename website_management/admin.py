@@ -11,3 +11,11 @@ class PageContentAdmin(SummernoteModelAdmin):
             model = PageContent
 
 admin.site.register(PageContent, PageContentAdmin)
+
+
+class ContactUsMessageAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in ContactUsMessage._meta.fields]
+    class Meta:
+            model = ContactUsMessage
+
+admin.site.register(ContactUsMessage, ContactUsMessageAdmin)

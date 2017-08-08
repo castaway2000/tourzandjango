@@ -14,7 +14,7 @@
                 <div class="col-md-5">
                     <div class="row">
                         <div class="col-lg-7">
-                            <h4>Tourist Profile</h4>
+                            <h4>{% blocktrans %}Tourist Profile{% endblocktrans %}</h4>
                         </div>
                         <div class="col-lg-5">
                              <a href="{% url 'tourist' profile.user.username %}">
@@ -24,7 +24,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Interests:</label>
+                        <label>{% blocktrans %}Interests{% endblocktrans %}:</label>
                         <select multiple class="form-control select2"
                             id="interest_input" name="interests"
                             data-search_url="{% url 'search_interest' %}"
@@ -36,14 +36,14 @@
                     </div>
 
                     <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
-                        <label>About:</label>
+                        <label>{% blocktrans %}About{% endblocktrans %}:</label>
                         <textarea rows="5" maxlength="50000"
                                   placeholder="Write here some info about yourself (5000 characters limit)"
                                   name="{{ form.about.html_name }}" class="form-control" >{% if form.about.value %}{{ form.about.value }}{% endif %}</textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>Native Language:</label>
+                        <label>{% blocktrans %}Native Language{% endblocktrans %}:</label>
                         <select class="form-control select2"
                             id="language_native" name="language_native"
                             data-search_url="{% url 'search_language' %}"
@@ -57,7 +57,7 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-lg-6">
-                                <label>Second Language:</label>
+                                <label>{% blocktrans %}Second Language{% endblocktrans %}:</label>
                                 <select class="form-control select2" id="language_second" name="language_second">
                                     {% if user_language_second %}
                                         <option value="{{ user_language_second.language}}" selected>
@@ -67,11 +67,11 @@
                                 </select>
                             </div>
                             <div class="col-lg-6">
-                                <label>Proficiency:</label>
+                                <label>{% blocktrans %}Proficiency{% endblocktrans %}:</label>
                                 <select class="form-control select2"
                                     id="language_second_proficiency" name="language_second_proficiency"
                                 >
-                                    <option selected>Select level</option>
+                                    <option selected>{% blocktrans %}Select level{% endblocktrans %}</option>
                                     {% for language_level in language_levels %}
                                         <option value="{{ language_level.id }}"
                                                 {% if language_level.id == user_language_second.level.id %}selected="selected"{% endif %}
@@ -87,14 +87,14 @@
 
                 </div>
                 <div class="col-md-4 col-md-offset-1">
-                    <h4>Avatar</h4>
+                    <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
                     {% if user.touristprofile.image %}
                         <div>
                             <img src="{{ user.touristprofile.image.url }}" class="img-responsive img-rounded">
                         </div>
                     {% endif %}
                     <div class="form-group">
-                        <label>Upload New Avatar Image:</label>
+                        <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
                         <input type="file" name="{{ form.image.html_name }}">
                     </div>
 
