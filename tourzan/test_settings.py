@@ -5,10 +5,10 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'testingdb',
-        'USER': 'tourzandbuser',
-        'PASSWORD': 'TourzanTravelling12#$',
-        'HOST': 'touzandb.cgeysenvqij7.us-west-2.rds.amazonaws.com',
+        'NAME': 'tourzantestingdb',
+        'USER': 'tourzan_testingr',
+        'PASSWORD': 'TourzanTesting12#$',
+        'HOST': 'tourzantestingdb.cgeysenvqij7.us-west-2.rds.amazonaws.com',
         'PORT': '',                      # Set to empty string for default.
     }
 }
@@ -18,7 +18,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 AWS_ACCESS_KEY_ID = 'AKIAJIYAQ4HEEI6HHQ3Q'
 AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'tourzan'
+AWS_STORAGE_BUCKET_NAME = 'tourzan_testing'
 
 AWS_S3_FILE_OVERWRITE = True #to append extra characters to the file with the same name as existing file
 AWS_S3_ENCRYPTION = True
