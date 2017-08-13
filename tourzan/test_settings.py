@@ -5,10 +5,10 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tourzantestingdb',
+        'NAME': 'testingdb',
         'USER': 'tourzan_testing',
         'PASSWORD': 'TourzanTesting12#$',
-        'HOST': 'tourzantestingdb.cgeysenvqij7.us-west-2.rds.amazonaws.com',
+        'HOST': 'testingdb.cgeysenvqij7.us-west-2.rds.amazonaws.com',
         'PORT': '',                      # Set to empty string for default.
     }
 }
