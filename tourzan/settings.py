@@ -271,7 +271,7 @@ except:
 
 try:
     #delete '_2' on Testing server of AWS
-    from .prod_settings_2 import *
+    from .test_settings_2 import *
 except:
     pass
 
