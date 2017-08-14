@@ -22,3 +22,5 @@ AWS_STORAGE_BUCKET_NAME = 'tourzan'
 
 AWS_S3_FILE_OVERWRITE = True #to append extra characters to the file with the same name as existing file
 AWS_S3_ENCRYPTION = True
+
+MEDIA_URL = 'https://tourzan.s3.amazonaws.com/'
