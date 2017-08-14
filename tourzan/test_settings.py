@@ -16,9 +16,9 @@ DATABASES = {
 #for media files
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-AWS_ACCESS_KEY_ID = 'AKIAJIYAQ4HEEI6HHQ3Q'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'tourzan_testing'
+AWS_ACCESS_KEY_ID = 'AKIAJE5BFN42CHVOOZJA'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'tourzan-testing'
 
 AWS_S3_FILE_OVERWRITE = True #to append extra characters to the file with the same name as existing file
 AWS_S3_ENCRYPTION = True
