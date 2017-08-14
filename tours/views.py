@@ -301,9 +301,8 @@ def deactivate_tour_image(request):
     if request.POST:
         data = request.POST
         tour_id = data.get("tour_id")
-        img_link = data.get("img_link")
-        img = img_link.split("/media/")[1]
-        TourImage.objects.filter(tour_id=tour_id, image=img).update(is_active=False)
+        img_id = data.get("img_id")
+        TourImage.objects.filter(tour_id=tour_id, id=img_id).update(is_active=False)
     response_date = dict()
     return JsonResponse(response_date)
 
@@ -313,9 +312,8 @@ def make_main_tour_image(request):
     if request.POST:
         data = request.POST
         tour_id = data.get("tour_id")
-        img_link = data.get("img_link")
-        img = img_link.split("/media/")[1]
-        tour_image = TourImage.objects.get(tour_id=tour_id, image=img)
+        img_id = data.get("img_id")
+        tour_image = TourImage.objects.get(tour_id=tour_id, id=img_id)
         tour_image.is_main = True
         tour_image.save(force_update=True)
     response_date = dict()
