@@ -268,3 +268,11 @@ try:
 except:
     pass
 
+
+try:
+    #delete '_2' on Testing server of AWS
+    from .test_settings_2 import *
+except:
+    pass
+
+

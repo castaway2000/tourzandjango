@@ -254,14 +254,12 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
         form = TourForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
-        print (request.POST)
         data = request.POST
 
         new_form = form.save(commit=False)
 
         payment_type = int(data.get(u"payment_type")) if data.get(u"payment_type") else None
         if payment_type == 1:
-            print ("hour")
 
             new_form.currency_id = data.get(u"currency")
             new_form.price_hourly = data.get(u"price_hourly") if data.get(u"price_hourly", 25) else 25
@@ -269,7 +267,6 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
 
 
         elif payment_type == 2:
-            print ("fixed")
 
             new_form.currency_id = data.get(u"currency")
             new_form.price = data.get(u"price") if data.get(u"price") else 50

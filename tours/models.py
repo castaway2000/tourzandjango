@@ -109,7 +109,7 @@ class TourImage(models.Model):
             print("self.pk")
             print(self.tour.image.url)
 
-            if self.tour.image.url == "/media/tours/images/default_tour_image.jpg":
+            if self.tour.image.url.endswith("default_tour_image.jpg"):
                 self.tour.image = self.image
                 self.tour.save(force_update=True)
 

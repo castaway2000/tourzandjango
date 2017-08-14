@@ -6,6 +6,10 @@ from django.utils.text import slugify
 from datetime import date
 from django.contrib.auth.models import User
 from locations.models import City, Currency
+from utils.uploadings import (upload_path_handler_guide_header_images,
+                              upload_path_handler_guide_profile_image,
+                              upload_path_handler_guide_optional_image
+                              )
 
 
 class GuideProfile(models.Model):
@@ -21,9 +25,9 @@ class GuideProfile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
 
-    header_image = models.ImageField(upload_to="guides/header_images", blank=True, null=True, default="guides/header_images/300x300.png")
-    profile_image = models.ImageField(upload_to="guides/profile_images", blank=True, null=True, default="guides/profile_images/300x300.png")
-    optional_image = models.ImageField(upload_to="guides/optional_images", blank=True, null=True, default="guides/optional_images/300x300.png")
+    header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default="guides/header_images/300x300.png")
+    profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default="guides/profile_images/300x300.png")
+    optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
 
     #statistic data
@@ -45,7 +49,6 @@ class GuideProfile(models.Model):
 
     #add logic to perform calculations only if the value was changed
     def save(self, *args, **kwargs):
-        print ("saving guide")
         self.slug = slugify(self.user.username)
 
         if self.date_of_birth:

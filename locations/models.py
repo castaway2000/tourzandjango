@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from utils.uploadings import upload_path_handler_city
 
 
 class LocationType(models.Model):
@@ -27,7 +28,7 @@ class Location(models.Model):
 
 class City(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
-    image = models.ImageField(upload_to="locations/cities", blank=True, null=True, default=None)
+    image = models.ImageField(upload_to=upload_path_handler_city, blank=True, null=True, default=None)
     is_featured = models.BooleanField(default=False)#for showing on Homepage
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)

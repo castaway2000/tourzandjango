@@ -85,7 +85,5 @@ urlpatterns = i18n_patterns(
 
                 url(r'^api/v1/', include(api_urls())),#for the main representation page of Django Rest Framework
 
-
-                url(r'^api/v1/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                 url(r'^api/v1/schema/$', schema_view),
               ]
