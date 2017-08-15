@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
+    'axes',
 
 ]
 
@@ -240,6 +241,8 @@ TWILIO_FROM_PHONE = "888-856-0706"
 USER_SMS_NMB_LIMIT = 3
 PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
+
+AXES_COOLOFF_TIME = 3
 
 
 # Static files (CSS, JavaScript, Images)
