@@ -1,32 +1,33 @@
 $(document).ready(function(){
 
-    function selectingHours(hours){
+    function updatingChosenHours(){
+        var form = $('.schedule-form');
+        hours = $('#booking_hours:not(.hidden) option:selected').val();
+        console.log("hours_select"+hours);
+        if (!hours){
+            var hours = form.find('#hours_nmb_container .btn-group-select-num label.active input').val();
+            console.log(form.find('#hours_nmb_container .btn-group-select-num label.active input'));
+            console.log("hours circles"+hours);
+        }
+
         $('#booking_hours option').attr('selected', false);
         $('#booking_hours option[value="'+hours+'"]').attr('selected','selected');
+        $('#booking_hours').val(hours);
+
+        return hours
     };
 
     function priceCalculation(){
-        var form = $('#form_tour_scheduling');
-        var hours = form.find('.btn-group-select-num label.active input').val();
-        var hourly_rate = form.find('#hourly_rate').val();
 
-        if (hours>0){
-            console.log("hours");
-            selectingHours(hours);
-        }else{
-            hours = $('#booking_hours option:selected').val();
-        }
-
-
+        updatingChosenHours();
         if ($('#amount_container').hasClass('hidden')){
             $('#amount_container').removeClass('hidden');
-        }else{
-
         }
     };
 
     $(document).on('click', '.hours-nmb', function(){
-        $('#form_tour_scheduling .hours-nmb').removeClass('active');
+        //$('#form_tour_scheduling .hours-nmb').removeClass('active');
+        $(this).parent().find('.hours-nmb').removeClass('active');
         $(this).addClass('active');
         priceCalculation();
     });
@@ -70,12 +71,13 @@ $(document).ready(function(){
 
     //$('#form_tour_scheduling').on('submit', function(e){
     $('#form_guide_scheduling .submit-button').on('click', function(e){
+        console.log("1");
         e.preventDefault();
-        var booked_hours = $('.hours-nmb.active input').val();
+        var booked_hours = updatingChosenHours();
         console.log(booked_hours);
 
         if (booked_hours>0){
-            $('#form_guide_scheduling').find('#booking_hours ').val(booked_hours);
+            $('.schedule-form').find('#booking_hours').val(booked_hours);
         }
 
         $('#form_guide_scheduling').submit();
@@ -139,14 +141,12 @@ $(document).ready(function(){
 
     $('.change-language-link').on('click', function (e) {
         e.preventDefault();
-        console.log("clicked");
         url = $(this).attr("href");
         window.location.href = url;
     });
 
     function changingPaymentType(){
         var current_payment_type = $('#payment_type').val();
-        console.log(current_payment_type);
         if (current_payment_type == 1){
             $('#hourly_area').removeClass('hidden');
             $('#fixed_area').addClass('hidden');
@@ -160,7 +160,6 @@ $(document).ready(function(){
     }
 
     $(document).on('change', '#payment_type', function(){
-        console.log("change");
         changingPaymentType();
     });
 
@@ -170,9 +169,11 @@ $(document).ready(function(){
     $('#book_more').on('click', function(e){
         e.preventDefault();
         $('#booking_form_area').removeClass('hidden');
-        $('#booking_form_area #additional_services_select').select2({
-            placeholder: 'Select additional services'
-        });
+        if ($('#additional_services_select').length>0){
+            $('#booking_form_area #additional_services_select').select2({
+                placeholder: 'Select additional services'
+            });
+        }
     });
 
 

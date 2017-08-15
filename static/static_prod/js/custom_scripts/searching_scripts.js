@@ -252,13 +252,6 @@ if (jQuery) {
         });
     }
 
-    if ($('#status_input')){
-        $('#status_input').select2({
-            placeholder: function(){
-                $(this).data('placeholder');
-            }
-        })
-    }
 }
 
 $(document).ready(function(){

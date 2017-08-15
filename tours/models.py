@@ -97,6 +97,14 @@ class Tour(models.Model):
 
         super(Tour, self).save(*args, **kwargs)
 
+    def get_hours_nmb_range(self):
+        min_hours_nmb = self.min_hours
+
+        min_hours_nmb_range_basic = range(min_hours_nmb, min_hours_nmb+5)
+        min_hours_nmb_range_full = range(min_hours_nmb, min_hours_nmb+10)
+
+        return {"min_hours_nmb_range_basic": min_hours_nmb_range_basic,
+                "min_hours_nmb_range_full": min_hours_nmb_range_full}
 
 class TourImage(models.Model):
     tour = models.ForeignKey(Tour, blank=True, null=True)

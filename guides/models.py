@@ -19,6 +19,7 @@ class GuideProfile(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
+    min_hours = models.IntegerField(default=1)
 
     is_active = models.BooleanField(default=True)
     overview = models.TextField(blank=True, null=True, default=None)
@@ -63,6 +64,16 @@ class GuideProfile(models.Model):
             print (e)
 
         super(GuideProfile, self).save(*args, **kwargs)
+
+
+    def get_hours_nmb_range(self):
+        min_hours_nmb = self.min_hours
+
+        min_hours_nmb_range_basic = range(min_hours_nmb, min_hours_nmb+5)
+        min_hours_nmb_range_full = range(min_hours_nmb, min_hours_nmb+10)
+
+        return {"min_hours_nmb_range_basic": min_hours_nmb_range_basic,
+                "min_hours_nmb_range_full": min_hours_nmb_range_full}
 
 
 class Service(models.Model):
