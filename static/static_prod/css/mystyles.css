@@ -306,3 +306,10 @@ a.link_lead:active{
     margin-left: -40px;
 }
 
+select.hide-arrow{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+}
+

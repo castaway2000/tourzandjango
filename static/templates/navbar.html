@@ -50,38 +50,40 @@
 
                             {% if not user.is_anonymous %}
                                 {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                    <li><a href="{% url 'my_bookings' %}">{% blocktrans %}My Bookings{% endblocktrans %}</a>
-                                        <ul>
-                                            <li><a href="{% url 'my_bookings_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by guide{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'my_bookings_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>
-                                            </li>
-                                        </ul>
+                                    <li class="{% if current_page == "bookings" %}active{% endif %}">
+                                        <a href="{% url 'my_bookings' %}">{% blocktrans %}My Bookings{% endblocktrans %}</a>
+{#                                        <ul>#}
+{#                                            <li><a href="{% url 'my_bookings_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by guide{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'my_bookings_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                        </ul>#}
                                     </li>
                                 {% else %}
-                                    <li><a href="{% url 'orders' %}">{% blocktrans %}Orders{% endblocktrans %}</a>
-                                        <ul>
-                                            <li><a href="{% url 'orders_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'orders_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'orders_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by tourist{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'orders_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>
-                                            </li>
-                                            <li><a href="{% url 'orders_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>
-                                            </li>
-                                        </ul>
+                                    <li class="{% if current_page == "orders" %}active{% endif %}">
+                                        <a href="{% url 'orders' %}">{% blocktrans %}Orders{% endblocktrans %}</a>
+{#                                        <ul>#}
+{#                                            <li><a href="{% url 'orders_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'orders_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'orders_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by tourist{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'orders_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                            <li><a href="{% url 'orders_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>#}
+{#                                            </li>#}
+{#                                        </ul>#}
                                     </li>
                                 {% endif %}
 

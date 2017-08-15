@@ -306,3 +306,23 @@ a.link_lead:active{
     margin-left: -40px;
 }
 
+select{
+    padding: 5px 5px 5px 3px!important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding: 3px 5px 5px 8px;
+}
+
+
+select.hide-arrow{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered{
+    font-size: 14px;
+}
+

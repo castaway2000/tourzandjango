@@ -17,17 +17,11 @@ $(document).ready(function(){
             hours = $('#booking_hours option:selected').val();
         }
 
-        console.log("hours "+hours);
-        console.log(hourly_rate);
 
-        var total_amount = hours*hourly_rate;
-        console.log(total_amount);
-        $('#amount').text(total_amount);
         if ($('#amount_container').hasClass('hidden')){
-            console.log('yes');
             $('#amount_container').removeClass('hidden');
         }else{
-            console.log('no');
+
         }
     };
 

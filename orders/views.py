@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
-from .models import Order, Review, ServiceInOrder
+from .models import Order, Review, ServiceInOrder, OrderStatus
 from locations.models import City
 from guides.models import GuideProfile
 from datetime import datetime
@@ -155,16 +155,17 @@ def making_booking(request):
 
 @login_required
 def bookings(request, status=None):
-    print ("bookings")
+    current_page = "bookings"
+    statuses = OrderStatus.objects.filter(is_active=True).values("name")
     user = request.user
     kwargs = dict()
-    # kwargs["user"] = user
 
-    print (request.GET)
+    # print (request.GET)
 
     filtered_prices = request.GET.get('price')
     filtered_cities = request.GET.getlist('city')
     filtered_guides = request.GET.getlist('guide')
+    filtered_statuses = request.GET.getlist('status_input')
 
     if filtered_prices:
         price = filtered_prices.split(";")
@@ -182,9 +183,12 @@ def bookings(request, status=None):
         print (filtered_guides)
         kwargs["guide__user__username__in"] = filtered_guides
 
-    if not status:
-        print (kwargs)
+    if filtered_statuses:
+        kwargs["status__name__in"] = filtered_statuses
 
+
+    if not status:
+        # print (kwargs)
         initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
         orders = initial_orders.filter(**kwargs).order_by('-id')
         bookings_nmb = orders.count()
@@ -220,13 +224,20 @@ def bookings(request, status=None):
 
 @login_required()
 def orders(request, status=None):
+    current_page = "orders"
+    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+
     user = request.user
 
     try:
         guide = user.guideprofile
         data = request.GET
+        filtered_statuses = request.GET.getlist('status_input')
 
         kwargs = dict()
+
+        if filtered_statuses:
+            kwargs["status__name__in"] = filtered_statuses
 
         tour_id = data.get("tour_id")
         if tour_id:
@@ -234,8 +245,9 @@ def orders(request, status=None):
 
         if not status:
             kwargs["guide"] = guide
+            print("kwargs %s" % kwargs)
             orders = Order.objects.filter(**kwargs).order_by("-id")
-            print("not status")
+            # print("not status")
 
         else:
             kwargs["guide"] = guide
