@@ -310,9 +310,12 @@ select{
     padding: 5px 5px 5px 3px!important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+
+.select2-container .select2-selection__rendered{
     padding: 3px 5px 5px 8px;
+    font-size: 14px;
 }
+
 
 
 select.hide-arrow{
@@ -322,7 +325,4 @@ select.hide-arrow{
     text-overflow: '';
 }
 
-.select2-container .select2-selection--single .select2-selection__rendered{
-    font-size: 14px;
-}
 

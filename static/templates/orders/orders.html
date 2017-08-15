@@ -46,9 +46,9 @@
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Status{% endblocktrans %}</h5>
-                                <select class="form-control select2 hide-arrow" id="status_input" name="status_input" data-placeholde="fdf"
+                                <select class="form-control select2 hide-arrow" id="status_input" name="status_input"
                                         >
-
+                                    <option value=""></option>
                                     {% for status in statuses %}
                                         <option value="{{ status.name}}"
                                         {% if request.GET.status_input == status.name %}selected{% endif %}

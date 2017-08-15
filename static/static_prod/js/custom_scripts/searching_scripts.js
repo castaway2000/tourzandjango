@@ -250,7 +250,14 @@ if (jQuery) {
 
             minimumInputLength: 1
         });
+    }
 
+    if ($('#status_input')){
+        $('#status_input').select2({
+            placeholder: function(){
+                $(this).data('placeholder');
+            }
+        })
     }
 }
 
