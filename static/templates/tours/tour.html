@@ -99,8 +99,9 @@
                             <div class="message-text"></div>
                         </div>
                         <form method="get" id="form_tour_scheduling" action="{% url 'making_booking' %}"
-                            class="form-horizontal
+                            class="form-horizontal schedule-form
                         {% if request.user.is_anonymous %}user-not-authorized{% endif %}">
+
                             <h3 class="text-center">
                                 {% blocktrans %}Book{% endblocktrans %} {{ tour.name }}
                             </h3>
@@ -126,37 +127,26 @@
                                         </div>
                                         <div class="col-md-5 text-center">
                                             {% if tour.payment_type.id == 1 %}
-                                                <div class="form-group form-group- form-group-select-plus">
-                                                    <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
-                                                    <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                        <label class="btn btn-primary hours-nmb">
-                                                            <input type="radio" name="options" value="1"/>1</label>
-                                                        <label class="btn btn-primary hours-nmb active">
-                                                            <input type="radio" name="options" value="2" />2</label>
-                                                        <label class="btn btn-primary hours-nmb">
-                                                            <input type="radio" name="options" value="3" />3</label>
-                                                        <label class="btn btn-primary hours-nmb">
-                                                            <input type="radio" name="options" value="4" />4</label>
-                                                        <label class="btn btn-primary hours-nmb">
-                                                            <input type="radio" name="options" />4+</label>
+                                                {% with tour.get_hours_nmb_range as hours_nmb_range %}
+                                                    <div id="#hours_nmb_container" class="form-group form-group- form-group-select-plus">
+                                                        <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
+                                                        <div class="btn-group btn-group-select-num" data-toggle="buttons">
+                                                            {% for hour in hours_nmb_range.min_hours_nmb_range_basic %}
+                                                                <label class="btn btn-primary hours-nmb
+                                                                    {% if forloop.counter == 1 %} active{% endif %}">
+                                                                <input type="radio" name="options" value="{{ hour }}"/>
+                                                                    {{ hour }}{% if forloop.last %}+{% endif %}
+                                                                </label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <select class="form-control hidden" id="booking_hours" name="booking_hours">
+                                                            {% for hour in hours_nmb_range.min_hours_nmb_range_full %}
+                                                                <option value="{{ hour }}">{{ hour }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
                                                     </div>
-                                                    <select class="form-control hidden" id="booking_hours" name="booking_hours">
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                        <option value="5" selected="selected">5</option>
-                                                        <option value="6">6</option>
-                                                        <option value="7">7</option>
-                                                        <option value="8">8</option>
-                                                        <option value="9">9</option>
-                                                        <option value="10">10</option>
-                                                        <option value="11">11</option>
-                                                        <option value="12">12</option>
-                                                        <option value="13">13</option>
-                                                        <option value="14">14</option>
-                                                    </select>
-                                                </div>
+                                                {% endwith %}
                                             {% elif tour.payment_type == 2 %}
                                                 {{ tour.price }} {{ tour.currency.name }}
                                             {% endif %}

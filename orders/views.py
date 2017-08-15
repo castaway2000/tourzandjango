@@ -41,8 +41,6 @@ def making_booking(request):
     else:
         data = request.GET
 
-    # print (data)
-
     kwargs = dict()
     tour_id = data.get("tour_id")
     guide_id = data.get("guide_id")
@@ -64,7 +62,8 @@ def making_booking(request):
     except:
         date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
 
-    hours_nmb = data.get("booking_hours")
+
+    hours_nmb = data.get("booking_hours", 0)
     price_hourly = data.get("price_hourly", 0)
     kwargs["hours_nmb"] = hours_nmb
 
@@ -78,26 +77,9 @@ def making_booking(request):
         else:
             price_hourly = 0
     else:
+        #guide with fixed price - not possible so far
         price_hourly = guide.rate
-        kwargs["hours_nmb"] = hours_nmb
-
-    # if hours_nmb and price_hourly:
-    #     price = int(hours_nmb)*float(price_hourly)
-    # else:
-    #     price = data.get("price", 0)
-    #     if price:
-    #         price = price.replace(",", ".")
-    #
-    # discount = data.get("discount", 0)
-    # if discount:
-    #     price_after_discount = price-discount
-    # else:
-    #     price_after_discount = price
-    #
-    # if hours_nmb:
-    #     kwargs["hours_nmb"] = hours_nmb
-    # else:
-    #     kwargs["hours_nmb"] = 0
+        kwargs["hours_nmb"] = 0
 
     if price_hourly:
         kwargs["price_hourly"] = price_hourly
@@ -121,7 +103,6 @@ def making_booking(request):
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
         try:
-            # print ("try")
             order = Order.objects.create(**kwargs)
             services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
             # print ("services ids: %s" % services_ids)
@@ -141,6 +122,7 @@ def making_booking(request):
             order.save(force_update=True)
 
         except Exception as e:
+            print("exception")
             print (e)
 
         return_dict["status"] = "success"
