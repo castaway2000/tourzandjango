@@ -24,3 +24,5 @@ AWS_S3_FILE_OVERWRITE = True #to append extra characters to the file with the sa
 AWS_S3_ENCRYPTION = True
 
 MEDIA_URL = 'https://tourzan.s3.amazonaws.com/'
+
+AXES_BEHIND_REVERSE_PROXY = True
