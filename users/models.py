@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from tourists.models import TouristProfile
 from utils.uploadings import upload_path_handler_user_scanned_docs
-from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialAccount, SocialToken
 from django.contrib.auth.signals import user_logged_in
 from payments.models import PaymentMethod
 
@@ -127,31 +127,35 @@ class GeneralProfile(models.Model):
         super(GeneralProfile, self).save(*args, **kwargs)
 
 
-def socialaccount_post_save(sender, instance, **kwargs):
-    print ("socialaccount_post_save")
-    user = instance.user
-    provider = instance.provider
-    print (user)
-    print(provider)
+
+def socialtoken_post_save(sender, instance, **kwargs):
+    # print("social token post save")
+    social_account = instance.account
+    user = social_account.user
+    provider = social_account.provider
 
     if user:
         general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
 
-        #remake it later in more dynamic way if it is needed
-        if provider == "facebook" and general_profile.facebook != instance.uid:
-            general_profile.facebook = instance.uid
+        #remake it later in more dynamic way for defining a social network if it will be needed
+        if provider == "facebook" and general_profile.facebook != social_account.uid:
+            general_profile.facebook = social_account.uid
             general_profile.save(force_update=True)
 
-        elif provider == "google" and general_profile.google != instance.uid:
-            general_profile.google = instance.uid
+        # elif provider == "google" and general_profile.google != social_account.uid:
+        elif provider == "google":
+            general_profile.google = social_account.uid
             general_profile.save(force_update=True)
+            social_account.delete()
 
-        elif provider == "twitter" and general_profile.twitter != instance.uid:
-            general_profile.twitter = instance.uid
+        # elif provider == "twitter" and general_profile.twitter != social_account.uid:
+        elif provider == "twitter":
+            general_profile.twitter = social_account.uid
             general_profile.save(force_update=True)
+            social_account.delete()
 
-
-post_save.connect(socialaccount_post_save, sender=SocialAccount)
+#SocialToken is saved after SocialAccount, so that is why all the related logic was moved to its post-save signal
+post_save.connect(socialtoken_post_save, sender=SocialToken)
 
 
 class DocumentType(models.Model):
