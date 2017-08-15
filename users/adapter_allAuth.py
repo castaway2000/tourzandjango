@@ -24,6 +24,10 @@ from allauth.socialaccount import app_settings
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.core.mail import EmailMultiAlternatives, EmailMessage
+from allauth.exceptions import ImmediateHttpResponse
+from django.core.urlresolvers import reverse
+from django.shortcuts import HttpResponseRedirect
+from users.models import GeneralProfile
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
@@ -65,8 +69,34 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
                 auto_signup = False
         return auto_signup
 
+
+    #after succesfull auth with social network before logging in
     def pre_social_login(self, request, sociallogin):
-        print ("entered to presocial")
+        # print ("entered to pre-social")
+
+        if not request.user.is_anonymous():
+            user = request.user
+            general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+
+            #here is the logic for validating twitter and google account without creating a new associated user account
+            #logic for facebook account which can be used for loging in as well - is placed in users.model
+            # in the function "socialtoken_post_save" triggered by post_save signal by SocialToken model
+            provider = sociallogin.account.provider
+            redirect_url = sociallogin.get_redirect_url(request)
+            social_account_uuid = sociallogin.account.uid
+
+            if provider == "google" and general_profile.google != social_account_uuid:
+                general_profile.google = social_account_uuid
+                general_profile.save(force_update=True)
+                raise ImmediateHttpResponse(HttpResponseRedirect(redirect_url))
+
+            elif provider == "twitter" and general_profile.twitter != social_account_uuid:
+                general_profile.twitter = social_account_uuid
+                general_profile.save(force_update=True)
+                raise ImmediateHttpResponse(HttpResponseRedirect(redirect_url))
+
+
+
         # """
         # Invoked just after a user successfully authenticates via a
         # social provider, but before the login is actually processed
@@ -90,6 +120,7 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # print(sociallogin.user)
         # print(request.user)
         print ("check is user anonymous %s" % request.user.is_anonymous())
+        print(request.user)
         if not request.user.is_anonymous():
             user = request.user
         else:

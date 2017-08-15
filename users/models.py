@@ -137,24 +137,12 @@ def socialtoken_post_save(sender, instance, **kwargs):
     if user:
         general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
 
-        #remake it later in more dynamic way for defining a social network if it will be needed
+        #code for twitter and google authentication when no accounts and users should be created, is placed to
+        #pre_social_login function of users.adapter_allAuth.MySocialAccountAdapter
         if provider == "facebook" and general_profile.facebook != social_account.uid:
             general_profile.facebook = social_account.uid
             general_profile.save(force_update=True)
 
-        # elif provider == "google" and general_profile.google != social_account.uid:
-        elif provider == "google":
-            general_profile.google = social_account.uid
-            general_profile.save(force_update=True)
-            social_account.delete()
-
-        # elif provider == "twitter" and general_profile.twitter != social_account.uid:
-        elif provider == "twitter":
-            general_profile.twitter = social_account.uid
-            general_profile.save(force_update=True)
-            social_account.delete()
-
-#SocialToken is saved after SocialAccount, so that is why all the related logic was moved to its post-save signal
 post_save.connect(socialtoken_post_save, sender=SocialToken)
 
 
