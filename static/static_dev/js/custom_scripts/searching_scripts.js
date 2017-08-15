@@ -250,8 +250,8 @@ if (jQuery) {
 
             minimumInputLength: 1
         });
-
     }
+
 }
 
 $(document).ready(function(){
