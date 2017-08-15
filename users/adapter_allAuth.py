@@ -77,7 +77,6 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # - social account has no email or email is unknown, just go on
         # - social account's email exists, link social account to existing user
         # """
-        #
         # Ignore existing social accounts, just do this stuff for new ones
         if sociallogin.is_existing:
             print (1)
@@ -88,13 +87,12 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # # ignore it
 
         #check for cases when user connects his social network
-        print ("check is user anonymous %s" % request.user.is_anonymous)
+        # print(sociallogin.user)
+        # print(request.user)
+        print ("check is user anonymous %s" % request.user.is_anonymous())
         if not request.user.is_anonymous():
             user = request.user
-            print (user)
         else:
-
-
             #FOR TWITTER - EMAIL PERMISSIONS SHOULD BE ADDED ON TWITTER'S SIDE
             if 'email' not in sociallogin.account.extra_data:
                 print (2)
