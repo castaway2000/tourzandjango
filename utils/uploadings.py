@@ -3,7 +3,15 @@ def upload_path_handler_city(instance, filename):
 
 
 def upload_path_handler_tour(instance, filename):
-    return "tours/%s" % (filename)
+    return "tours/original_size%s" % (filename)
+
+
+def upload_path_handler_tour_medium(instance, filename):
+    return "tours/medium_size/%s" % (filename)
+
+
+def upload_path_handler_tour_small(instance, filename):
+    return "tours/small_size/%s" % (filename)
 
 
 def upload_path_handler_tour_images(instance, filename):

@@ -128,8 +128,10 @@
                                 <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                                     {% for tour_image in tours_images %}
                                         <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                             data-imgid="{{ tour_image.id }}"
                                              class="img-responsive"
-                                             title="Image for {{ tour.name }}">
+                                             title="Image for {{ tour.name }}"
+                                        >
                                     {% endfor %}
                                 </div>
                             {% endif %}
@@ -150,7 +152,7 @@
                 e.preventDefault();
                 var fotoramaDiv = $('.fotorama').fotorama();
                 var data = fotoramaDiv.data('fotorama').activeFrame;
-                var img_link = data.img;
+                var img_id= data.imgid;
                 fotoramaDiv.data('fotorama').splice(0, 1);
 {#                console.log(fotoramaDiv.data('fotorama'));#}
 {#                console.log(fotoramaDiv.data('fotorama').size);#}
@@ -167,7 +169,7 @@
                 data = {};
                 var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
                 data["csrfmiddlewaretoken"] = csrf_token;
-                data["img_link"] = img_link;
+                data["img_id"] = img_id;
                 data["tour_id"] = tour_id;
 
                 $.ajax({
@@ -188,7 +190,7 @@
                 e.preventDefault();
                 var fotoramaDiv = $('.fotorama').fotorama();
                 var data = fotoramaDiv.data('fotorama').activeFrame;
-                var img_link = data.img;
+                var img_id= data.imgid;
 
                 var tour_id = $('#tour_id').text();
                 var url = $(this).data("action");
@@ -196,7 +198,7 @@
                 data = {};
                 var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
                 data["csrfmiddlewaretoken"] = csrf_token;
-                data["img_link"] = img_link;
+                data["img_id"] = img_id;
                 data["tour_id"] = tour_id;
 
                 $.ajax({

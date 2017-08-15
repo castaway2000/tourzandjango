@@ -7,6 +7,7 @@ from utils.uploadings import *
 from django.utils.text import slugify
 from utils.general import random_string_creating
 from guides.models import GuideProfile
+from utils.images_resizing import optimize_size
 
 
 class PaymentType(models.Model):
@@ -22,6 +23,9 @@ class Tour(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     overview = models.TextField(blank=True, null=True, default=None)
     image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default="/tours/images/default_tour_image.jpg")
+    image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default=None)
+    image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default=None)
+
 
     guide = models.ForeignKey(GuideProfile)
     city = models.ForeignKey(City, blank=True, null=True, default=None)
@@ -46,6 +50,16 @@ class Tour(models.Model):
     is_deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Tour, self).__init__(*args, **kwargs)
+
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
 
     def __str__(self):
         if self.name:
@@ -75,6 +89,11 @@ class Tour(models.Model):
             self.hours = 0
             self.price_hourly = 0
             self.min_hours = 0
+
+
+        if self._original_fields["image"] != self.image or (self.image and (not self.image_medium or not self.image_small)):
+            self.image_small = optimize_size(self.image, "small")
+            self.image_medium = optimize_size(self.image, "medium")
 
         super(Tour, self).save(*args, **kwargs)
 
