@@ -79,7 +79,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     #middleware for localization
-    'users.default_language_middleware.ForceDefaultLanguageMiddleware',
+    # 'users.default_language_middleware.ForceDefaultLanguageMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
 
@@ -91,8 +91,6 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'crequest.middleware.CrequestMiddleware',
-
-
 ]
 
 ROOT_URLCONF = 'tourzan.urls'
@@ -243,6 +241,7 @@ PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
 AXES_COOLOFF_TIME = 3
+# AXES_BEHIND_REVERSE_PROXY = True
 
 
 # Static files (CSS, JavaScript, Images)
