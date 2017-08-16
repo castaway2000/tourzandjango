@@ -25,10 +25,11 @@ from users.api.views import login_api_view, signup_api_view
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
 from .api_router import SharedAPIRootRouter
+from axes.decorators import watch_login
+from django.contrib.auth.views import login as admin_login
 
 
 schema_view = get_schema_view(title='Pastebin API')
-
 
 #returning of all the SharedAPIRootRouter urls (which are added there in each app.api.url file)
 #before returning of them they are being imported dynamically here
@@ -38,7 +39,11 @@ def api_urls():
 
 #added here i18n_patterns for localization
 urlpatterns = i18n_patterns(
+
+
+    url(r'^login/$', watch_login(admin_login), name='login'),
     url(r'^admin/', admin.site.urls),
+
     url(r'^', include('chats.urls')),
     url(r'^', include('locations.urls')),
     url(r'^', include('orders.urls')),
@@ -55,8 +60,6 @@ urlpatterns = i18n_patterns(
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),
-
-
 
 )\
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
