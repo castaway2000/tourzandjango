@@ -18,13 +18,8 @@ $('#phone').intlTelInput({
 
 var phone_masks_data_url = "/static/plugins/data_for_phone_mask/country_phone_masks.json";
 function gettingPhoneMasksData(callback){
-    $.ajax({
-        url: phone_masks_data_url,
-        async: false,
-        dataType: "json",
-        success: function(data){
-            callback(data)
-        }
+    $.get(phone_masks_data_url, function(){}).always(function(data) {
+        callback($.parseJSON(data));
     });
 }
 
@@ -36,7 +31,6 @@ gettingPhoneMasksData(function(returned_data){ //anonymous callback function
 
 
 $("#phone").on("countrychange", function(e, country_data) {
-    console.log('country changing');
     country = country_data.iso2.toUpperCase();
     dial_code = country_data.dialCode;
 

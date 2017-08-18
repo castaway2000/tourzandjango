@@ -95,8 +95,6 @@
                         <form id="phone_form" class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
                             <div class="row">
                                 <div class="col-lg-7">
-                                                eewewer {{ request.session.pending_validating_phone }}
-
                                     {% if not request.session.pending_validating_phone and general_profile.phone_is_validated  and general_profile.phone %}
                                         <label>{% blocktrans %}Phone{% endblocktrans %}</label>
                                         <span>{{ general_profile.phone }}</span>
@@ -120,7 +118,6 @@
                                                    value="{{ request.session.pending_validating_phone }}"
                                                    {% endif %}
                                                    >
-                                            a {{ general_profile.phone }}
 
                                             <button type="submit"
                                                 class="btn btn-primary btn-xs"

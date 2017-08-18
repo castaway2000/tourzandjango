@@ -109,9 +109,7 @@ def general_settings(request):
 
         #phone validation section
         data = request.POST
-        print("data %s" % data)
-
-
+        # print("data %s" % data)
 
         if "phone_verification_cancel_btn" in data:
 
@@ -122,16 +120,12 @@ def general_settings(request):
             if "pending_sms_code" in request.session:
                 del request.session["pending_sms_code"]
 
-            print (request.session.get("pending_validating_phone"))
-            print("cancelled")
-
 
         elif "edit_phone" in data:
             phone = general_profile.phone
 
             #to show input field with current phone number
             request.session["pending_validating_phone"] = phone
-            print(verification_form)
             verification_form = VerificationCodeForm(user) #pass extra parameter here "user"
 
         elif "submit_phone_btn" in data:
@@ -141,7 +135,7 @@ def general_settings(request):
 
         if verification_form.is_valid():
 
-            print("verification form is valid")
+            # print("verification form is valid")
 
             if "submit_phone_btn" in data:
                 # phone = data.get("phone")
@@ -149,7 +143,6 @@ def general_settings(request):
                 #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
                 phone = data.get("phone_formatted")
 
-                request.session["pending_validating_phone"] = phone
                 sms = SendingSMS({"phone_to": phone, "user_id": user.id})
                 sms_sending_info = sms.send_validation_sms()
                 if sms_sending_info["status"] == "success":
@@ -158,6 +151,7 @@ def general_settings(request):
                     general_profile.phone_is_validated = False
                     general_profile.save(force_update=True)
                     messages.success(request, 'SMS with validation code was sent!')
+                    request.session["pending_validating_phone"] = phone
                 else:#error
                     message_text = sms_sending_info["message"]
                     messages.error(request, message_text)
@@ -179,9 +173,6 @@ def general_settings(request):
                     messages.success(request, 'Phone was successfully validated!')
                 else:
                     messages.error(request, 'Please enter validation code!')
-
-            print ("pre redirect")
-            print (request.session.get("pending_validating_phone"))
 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -216,23 +207,24 @@ def general_settings(request):
 #instruction how to use standard django approach for language changing using that view is described here:
 #http://joaoventura.net/blog/2016/django-translation-4/
 def set_language(request, language):
-    print ("changing language")
+    # print ("changing language")
     user_language = language
     next = request.META.get('HTTP_REFERER')
     next_trans = translate_url(next, user_language)
     response = HttpResponseRedirect(next_trans)
 
     if hasattr(request, 'session'):
-        print ("has session")
-    print (request.LANGUAGE_CODE)
+        # print ("has session")
+        pass
+    # print (request.LANGUAGE_CODE)
 
     translation.activate(user_language)
     request.LANGUAGE_CODE = user_language
-    print (request.LANGUAGE_CODE)
+    # print (request.LANGUAGE_CODE)
     request.session[translation.LANGUAGE_SESSION_KEY] = user_language
     request.session['django_language'] = user_language
     request.session[LANGUAGE_SESSION_KEY] = user_language
-    print (request.session[LANGUAGE_SESSION_KEY])
+    # print (request.session[LANGUAGE_SESSION_KEY])
     return response
 
 
