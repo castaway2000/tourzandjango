@@ -58,11 +58,12 @@ class SendingSMS(object):
         else:
             try:
                 #Sending sms function which uses twilio
-                # self.client.messages.create(
-                #     to=phone_to,
-                #     from_=self.from_phone,
-                #     body=message,
-                # )
+
+                self.client.messages.create(
+                    to=phone_to,
+                    from_=self.from_phone,
+                    body=message,
+                )
 
                 SmsSendingHistory.objects.create(user_id=user_id, phone=phone_to, sms_code=self.random_string)
                 return {"status": "success", "message": "Sms was sent successfully!"}
