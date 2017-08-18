@@ -42,7 +42,7 @@ class SendingSMS(object):
     def sending_sms(self, message):
         user_id = self.user_id
         phone_to = self.phone_to
-        print ('entered to sms send')
+        # print ('entered to sms send')
 
         today = datetime.today()
         sms_messages_user = SmsSendingHistory.objects.filter(user_id=user_id, created__date=today).count()
@@ -64,9 +64,7 @@ class SendingSMS(object):
                     body=message,
                 )
 
-
                 SmsSendingHistory.objects.create(user_id=user_id, phone=phone_to, sms_code=self.random_string)
-                print("pre return")
                 return {"status": "success", "message": "Sms was sent successfully!"}
 
             except TwilioException as exception:

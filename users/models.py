@@ -11,6 +11,7 @@ from utils.uploadings import upload_path_handler_user_scanned_docs
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from django.contrib.auth.signals import user_logged_in
 from payments.models import PaymentMethod
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 def user_login_function(sender, user, **kwargs):
@@ -105,6 +106,7 @@ class GeneralProfile(models.Model):
     google = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
+    phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
 
     country = models.CharField(max_length=64, blank=True, null=True, default=None)
     city = models.CharField(max_length=64, blank=True, null=True, default=None)

@@ -109,50 +109,66 @@ def general_settings(request):
 
         #phone validation section
         data = request.POST
-        if "validate_phone_btn" or "submit_phone_btn" in data:
-
-            if "phone_verification_cancel_btn" in data:
-
-                #deleting session info if validation process is canceled
-                if "pending_validating_phone" in request.session:
-                    del request.session["pending_validating_phone"]
-
-                if "pending_sms_code" in request.session:
-                    del request.session["pending_sms_code"]
+        print("data %s" % data)
 
 
-            elif "edit_phone" in data:
-                phone = general_profile.phone
 
-                #to show input field with current phone number
+        if "phone_verification_cancel_btn" in data:
+
+            #deleting session info if validation process is canceled
+            if "pending_validating_phone" in request.session:
+                del request.session["pending_validating_phone"]
+
+            if "pending_sms_code" in request.session:
+                del request.session["pending_sms_code"]
+
+            print (request.session.get("pending_validating_phone"))
+            print("cancelled")
+
+
+        elif "edit_phone" in data:
+            phone = general_profile.phone
+
+            #to show input field with current phone number
+            request.session["pending_validating_phone"] = phone
+            print(verification_form)
+            verification_form = VerificationCodeForm(user) #pass extra parameter here "user"
+
+        elif "submit_phone_btn" in data:
+            #to hide cancel button if the process has been started with sending code in sms
+            request.session["pending_sms_code"] = True
+
+
+        if verification_form.is_valid():
+
+            print("verification form is valid")
+
+            if "submit_phone_btn" in data:
+                # phone = data.get("phone")
+
+                #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
+                phone = data.get("phone_formatted")
+
                 request.session["pending_validating_phone"] = phone
+                sms = SendingSMS({"phone_to": phone, "user_id": user.id})
+                sms_sending_info = sms.send_validation_sms()
+                if sms_sending_info["status"] == "success":
+                    general_profile = user.generalprofile
+                    general_profile.phone_pending = phone
+                    general_profile.phone_is_validated = False
+                    general_profile.save(force_update=True)
+                    messages.success(request, 'SMS with validation code was sent!')
+                else:#error
+                    message_text = sms_sending_info["message"]
+                    messages.error(request, message_text)
 
-            elif "submit_phone_btn" in data:
-                #to hide cancel button if the process has been started with sending code in sms
-                request.session["pending_sms_code"] = True
-
-
-            if verification_form.is_valid():
-
-                if "submit_phone_btn" in data:
-                    phone = data.get("phone")
-                    request.session["pending_validating_phone"] = phone
-                    sms = SendingSMS({"phone_to": phone, "user_id": user.id})
-                    sms_sending_info = sms.send_validation_sms()
-                    if sms_sending_info["status"] == "success":
-                        general_profile = user.generalprofile
-                        general_profile.phone = phone
-                        general_profile.phone_is_validated = False
-                        general_profile.save(force_update=True)
-                        messages.success(request, 'SMS with validation code was sent!')
-                    else:#error
-                        message_text = sms_sending_info["message"]
-                        messages.error(request, message_text)
-
-                elif "validate_phone_btn" in data:
+            #this approach is needed to prevent
+            elif "validate_phone_btn" in data:
+                if data.get("sms_code"):
+                    general_profile.phone = general_profile.phone_pending
+                    general_profile.phone_pending = ""
                     general_profile.phone_is_validated = True
                     general_profile.save(force_update=True)
-
 
                     #deleting session info if validation process is successfully completed
                     if "pending_validating_phone" in request.session:
@@ -160,11 +176,14 @@ def general_settings(request):
 
                     if "pending_sms_code" in request.session:
                         del request.session["pending_sms_code"]
-
                     messages.success(request, 'Phone was successfully validated!')
+                else:
+                    messages.error(request, 'Please enter validation code!')
 
+            print ("pre redirect")
+            print (request.session.get("pending_validating_phone"))
 
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         #documents uploading section
         if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
@@ -347,7 +366,10 @@ def sending_sms_code(request):
         print (request.POST)
         data = request.POST
 
-        phone = data.get("phone")
+        # phone = data.get("phone")
+
+        #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
+        phone = data.get("phone_formatted")
 
 
         sms = SendingSMS({"phone_to": phone, "user_id": user.id})
