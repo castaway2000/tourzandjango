@@ -16,7 +16,7 @@ class PaymentCustomer(models.Model):
         return "%s" % self.user.username
 
 
-class CardType(models.Model):
+class PaymentMethodType(models.Model):
     name = models.CharField(max_length=32)
     logo = models.ImageField(upload_to="cards/", blank=True, null=True, default="cards/mastercard-curved-32px.png")
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -29,11 +29,13 @@ class CardType(models.Model):
 class PaymentMethod(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, default=None)
     name = models.CharField(max_length=64, blank=True, null=True, default=None)
-    card_number = models.CharField(max_length=32)
-    card_type = models.ForeignKey(CardType, blank=True, null=True, default=None)
+    card_number = models.CharField(max_length=32, null=True)
+    type = models.ForeignKey(PaymentMethodType, blank=True, null=True, default=None)
     token = models.CharField(max_length=32)
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_paypal = models.BooleanField(default=False)
+    paypal_email = models.EmailField(null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 

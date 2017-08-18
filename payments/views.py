@@ -57,52 +57,66 @@ def payment_methods_adding(request):
 
 
     if request.POST:
-        payment_method_nonce = request.POST['payment_method_nonce']
-        result = braintree.PaymentMethod.create({
-            "customer_id": payment_customer.uuid,
-            "payment_method_nonce": payment_method_nonce,
-            "options": {
-                "verify_card": True,
-                # "fail_on_duplicate_payment_method": True,
-                # "make_default": True #first payment method of a customer will be marked as "default"
+        payment_method_nonce = request.POST.get('payment_method_nonce')
+        if payment_method_nonce:
+            result = braintree.PaymentMethod.create({
+                "customer_id": payment_customer.uuid,
+                "payment_method_nonce": payment_method_nonce,
+                "options": {
+                    "verify_card": True,
+                    # "fail_on_duplicate_payment_method": True,
+                    # "make_default": True #first payment method of a customer will be marked as "default"
+                }
+            })
+
+            # print(result)
+            # print(result.payment_method.token)
+            # print(result.payment_method.__class__.__name__)
+
+            response_data = result.payment_method
+            token = response_data.token
+
+            kwargs = {
+                "user": user,
+                "token": token
             }
-        })
 
-        print(result)
-        print(result.payment_method.token)
+            #depending on payment method different set of fields should be added
+            if result.payment_method.__class__.__name__ == 'CreditCard':
+                kwargs["is_default"] = response_data.default
 
-        response_data = result.payment_method
-        token = response_data.token
+                last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
+                card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
+                kwargs["card_number"] = card_number
 
-        kwargs = {
-            "user": user,
-            "token": token
-        }
+                card_type = response_data.verifications[0]["credit_card"]["card_type"]
+                card_type, created = PaymentMethodType.objects.get_or_create(name=card_type)
 
-        #improve for storing data for paypal
-        # if "credit_card" in response_data:
-        kwargs["is_default"] = response_data.default
+                kwargs["type"] = card_type
 
-        last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
-        card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
-        kwargs["card_number"] = card_number
+                PaymentMethod.objects.create(**kwargs)
 
-        card_type = response_data.verifications[0]["credit_card"]["card_type"]
-        card_type, created = CardType.objects.get_or_create(name=card_type)
+            elif result.payment_method.__class__.__name__ == 'PayPalAccount':#paypal
+                print ("PayPal")
+                kwargs["is_default"] = response_data.default
+                kwargs["is_paypal"] = True
+                kwargs["paypal_email"] = response_data.email
 
-        kwargs["card_type"] = card_type
+                type, created = PaymentMethodType.objects.get_or_create(name="paypal")
+                kwargs["type"] = type
 
-        PaymentMethod.objects.create(**kwargs)
+                PaymentMethod.objects.create(**kwargs)
 
-        #redirecting after payment method adding if there is a pending order id
-        pending_order_id = request.session.get("pending_order")
-        if pending_order_id:
-            del request.session["pending_order"]
-            messages.success(request, 'A new payment method was successfully added and now you can proceed with your order')
-            return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": pending_order_id}))
-        else:
-            messages.success(request, 'A new payment method was successfully added!')
-            return HttpResponseRedirect(reverse("payment_methods"))
+
+            #redirecting after payment method adding if there is a pending order id
+            pending_order_id = request.session.get("pending_order")
+            if pending_order_id:
+                del request.session["pending_order"]
+                messages.success(request, 'A new payment method was successfully added and now you can proceed with your order')
+                return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": pending_order_id}))
+            else:
+                messages.success(request, 'A new payment method was successfully added!')
+                return HttpResponseRedirect(reverse("payment_methods"))
     return render(request, 'payments/payment_methods_adding.html', locals())
 
 

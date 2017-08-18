@@ -11,13 +11,13 @@ class PaymentCustomerAdmin(admin.ModelAdmin):
 admin.site.register(PaymentCustomer, PaymentCustomerAdmin)
 
 
-class CardTypeAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in CardType._meta.fields]
+class PaymentMethodTypeAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in PaymentMethodType._meta.fields]
 
     class Meta:
-        model = CardType
+        model = PaymentMethodType
 
-admin.site.register(CardType, CardTypeAdmin)
+admin.site.register(PaymentMethodType, PaymentMethodTypeAdmin)
 
 
 class PaymentMethodAdmin(admin.ModelAdmin):
