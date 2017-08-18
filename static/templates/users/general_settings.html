@@ -95,7 +95,7 @@
                         <form id="phone_form" class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
                             <div class="row">
                                 <div class="col-lg-7">
-                                    {% if not request.session.pending_validating_phone and general_profile.phone_is_validated  and general_profile.phone %}
+                                    {% if not request.session.pending_validating_phone and general_profile.phone_is_validated and general_profile.phone %}
                                         <label>{% blocktrans %}Phone{% endblocktrans %}</label>
                                         <span>{{ general_profile.phone }}</span>
                                         <button type="submit" class="btn btn-success btn-xs"
