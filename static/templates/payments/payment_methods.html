@@ -39,12 +39,15 @@
                                        rel="tooltip" data-placement="top" title="remove"></a>
                                 </li>
                             </ul>
-                            <p class="card-thumb-number">{{ payment_method.card_number }}</p>
-    {#                                <p class="card-thumb-valid">valid thru <span>3 / 16</span>#}
-    {#                        </p>#}
-                                    <img class="card-thumb-type" src="{% static 'img/payment/mastercard-curved-32px.png' %}" alt="Image Alternative text" title="Image Title" /><small>cardholder name</small>
+                            {% if payment_method.is_paypal %}
+                                <p class="card-thumb-number">{{ payment_method.paypal_email }}</p>
+                            {% else %}
+                                <p class="card-thumb-number">{{ payment_method.card_number }}</p>
+                            {% endif %}
 
-                            <h5 class="uc">{{ user.get_full_name }}</h5>
+                            {% if payment_method.type.logo %}
+                                <img class="card-thumb-type" src="{{ payment_method.type.logo.url }}" alt="Image Alternative text" title="Image Title" />
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}

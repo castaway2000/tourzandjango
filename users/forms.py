@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from phonenumber_field.widgets import PhonePrefixSelect, PhoneNumberPrefixWidget
 
 
 class DocsUploadingForm(forms.Form):
@@ -15,8 +16,10 @@ class LoginForm(forms.Form):
 
 
 class VerificationCodeForm(forms.Form):
-    phone = forms.RegexField(required=False, strip=True, regex='^\+([0-9]{,15})$')
+    # phone = forms.RegexField(required=False, strip=True, regex='^\+([0-9]{,15})$')
+    phone = forms.CharField()
     sms_code = forms.CharField(required=False)
+    phone_formatted = forms.CharField()
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -24,16 +27,19 @@ class VerificationCodeForm(forms.Form):
 
     def clean_phone(self):
         user = self.user
-        phone = self.cleaned_data.get("phone")
+        # phone = self.cleaned_data.get("phone")
+        phone = self.cleaned_data.get("phone_formatted")
         if user.generalprofile.phone == phone:
             raise forms.ValidationError("New phone should be different from current phone !")
         return phone
 
 
+    #logic for sms code verification
     def clean_sms_code(self):
         code_entering_limit = 3
         user = self.user
         sms_code = self.cleaned_data.get("sms_code")
+
         if not sms_code:
             pass
             # raise forms.ValidationError("This field is required.")
@@ -61,6 +67,7 @@ class VerificationCodeForm(forms.Form):
 
 
 class GeneralProfileForm(forms.ModelForm):
+
     class Meta:
         model = GeneralProfile
 

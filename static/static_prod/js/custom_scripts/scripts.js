@@ -3,11 +3,8 @@ $(document).ready(function(){
     function updatingChosenHours(){
         var form = $('.schedule-form');
         hours = $('#booking_hours:not(.hidden) option:selected').val();
-        console.log("hours_select"+hours);
         if (!hours){
             var hours = form.find('#hours_nmb_container .btn-group-select-num label.active input').val();
-            console.log(form.find('#hours_nmb_container .btn-group-select-num label.active input'));
-            console.log("hours circles"+hours);
         }
 
         $('#booking_hours option').attr('selected', false);
@@ -136,7 +133,10 @@ $(document).ready(function(){
     });
 
 
-    priceCalculation();
+    if ($('#amount_container').length > 0){
+        priceCalculation();
+    }
+
 
 
     $('.change-language-link').on('click', function (e) {

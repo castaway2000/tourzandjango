@@ -326,3 +326,18 @@ select.hide-arrow{
 }
 
 
+.phone-area .phone-code,
+.phone-area .phone-number{
+    display: inline-block;
+    vertical-align: top;
+}
+
+.phone-area .phone-code{
+    width: 25%;
+    margin-right: 4.5%;
+}
+
+.phone-area .phone-number{
+    width: 70%;
+}
+

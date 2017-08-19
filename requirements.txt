@@ -28,3 +28,6 @@ boto3==1.4.4
 
 twilio==6.4.3
 django-axes==2.3.0
+
+django-phonenumber-field==1.3.0
+phonenumberslite==8.7.1
