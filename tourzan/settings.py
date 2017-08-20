@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     'storages',
     'axes',
     'phonenumber_field',
-
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -189,9 +188,9 @@ JWT_AUTH = {
 
 
 #Braintree integration info - sandbox credentials (not Production)
-BRAINTREE_MERCHANT_ID = 'gvpn8m8xqgvcgn8p'
-BRAINTREE_PUBLIC_KEY = 'j4sgkjtvnfvw37tf'
-BRAINTREE_PRIVATE_KEY = '91d31ae4f229d38b0186b4353bd91dd1'
+BRAINTREE_MERCHANT_ID = 'm66dhkzh66jhcw6x'
+BRAINTREE_PUBLIC_KEY = 'gg65yby3954fpxgk'
+BRAINTREE_PRIVATE_KEY = 'f7e5cdc42eb7f230d80f94fe7db3cc0e'
 
 
 # Internationalization
