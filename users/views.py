@@ -45,7 +45,7 @@ def login_view(request):
                         return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse("home"))
             else:
-                return HttpResponse("Your is disabled.")
+                return HttpResponse("Your account is disabled.")
         else:
             messages.error(request, 'Login credentials are incorrect!')
 
