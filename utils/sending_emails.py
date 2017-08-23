@@ -47,7 +47,6 @@ class SendingEmail(object):
 
 
     def email_for_order(self):
-        print ("email_for_order")
         self.email_type = 1 #order info
 
         order = self.order

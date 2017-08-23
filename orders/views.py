@@ -33,6 +33,7 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
 def making_booking(request):
     # print ("tour bookings123")
     # print (request.POST)
+    # print (request.GET)
 
     user = request.user
     return_dict = dict()
@@ -76,10 +77,7 @@ def making_booking(request):
             kwargs["price"] = tour.price
         else:
             price_hourly = 0
-    else:
-        #guide with fixed price - not possible so far
-        price_hourly = guide.rate
-        kwargs["hours_nmb"] = 0
+
 
     if price_hourly:
         kwargs["price_hourly"] = price_hourly
