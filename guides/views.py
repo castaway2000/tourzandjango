@@ -401,8 +401,10 @@ def guide_registration(request):
 
     try:
         guide = user.guideprofile
+        request.session["current_role"] = "guide"
         return HttpResponseRedirect(reverse("profile_settings_guide"))
-    except:
+    except Exception as e:
+        print(e)
         pass
 
     user_interests = UserInterest.objects.filter(user=user)

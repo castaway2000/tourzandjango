@@ -23,8 +23,8 @@ class Tour(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     overview = models.TextField(blank=True, null=True, default=None)
     image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default="/tours/images/default_tour_image.jpg")
-    image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default=None)
-    image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default=None)
+    image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default="/tours/images/default_tour_image_medium.jpg")
+    image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default="/tours/images/default_tour_image_small.jpg")
 
 
     guide = models.ForeignKey(GuideProfile)
