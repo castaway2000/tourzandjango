@@ -85,14 +85,16 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             redirect_url = sociallogin.get_redirect_url(request)
             social_account_uuid = sociallogin.account.uid
 
-            if provider == "google" and general_profile.google != social_account_uuid:
-                general_profile.google = social_account_uuid
-                general_profile.save(force_update=True)
+            if provider == "google":
+                if general_profile.google != social_account_uuid:
+                    general_profile.google = social_account_uuid
+                    general_profile.save(force_update=True)
                 raise ImmediateHttpResponse(HttpResponseRedirect(redirect_url))
 
-            elif provider == "twitter" and general_profile.twitter != social_account_uuid:
-                general_profile.twitter = social_account_uuid
-                general_profile.save(force_update=True)
+            elif provider == "twitter":
+                if general_profile.twitter != social_account_uuid:
+                    general_profile.twitter = social_account_uuid
+                    general_profile.save(force_update=True)
                 raise ImmediateHttpResponse(HttpResponseRedirect(redirect_url))
 
 
