@@ -21,13 +21,15 @@ class VerificationCodeForm(forms.Form):
     sms_code = forms.CharField(required=False)
     phone_formatted = forms.CharField()
 
+
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(VerificationCodeForm, self).__init__(*args, **kwargs)
 
-    def clean_phone(self):
+    def clean_phone_formatted(self):
         user = self.user
         # phone = self.cleaned_data.get("phone")
+        # print (self.cleaned_data.get("phone_formatted"))
         phone = self.cleaned_data.get("phone_formatted")
         if user.generalprofile.phone == phone:
             raise forms.ValidationError("New phone should be different from current phone !")
