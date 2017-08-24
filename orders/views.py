@@ -65,24 +65,28 @@ def making_booking(request):
 
 
     hours_nmb = data.get("booking_hours", 0)
+    # price_hourly = data.get("price_hourly", 0)
     price_hourly = data.get("price_hourly", 0)
     kwargs["hours_nmb"] = hours_nmb
 
-    if price_hourly:
-        price_hourly = price_hourly.replace(",", ".")
-    elif tour_id:
-        if tour.payment_type.id==1:
-            price_hourly = 0
-        elif tour.payment_type.id == 2:
-            kwargs["price"] = tour.price
-        else:
-            price_hourly = 0
 
+    if tour_id:
+        if tour.payment_type.id==1:#hourly
+            price_fixed = 0
+            price_hourly = tour.price_hourly
+        elif tour.payment_type.id == 2:#fixed
+            price_fixed = tour.price
+            price_hourly=0
+        else:#free tours
+            price_fixed = 0
+            price_hourly = 0
+    else:#guide
+        price_fixed = 0
+        price_hourly = guide.rate
 
-    if price_hourly:
-        kwargs["price_hourly"] = price_hourly
-    else:
-        kwargs["price_hourly"] = 0
+    kwargs["price"] = price_fixed
+    kwargs["price_hourly"] = price_hourly
+
 
     # kwargs["tour_id"] = tour_id
     kwargs["tourist"] = tourist

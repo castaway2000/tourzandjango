@@ -65,8 +65,7 @@ $(document).ready(function(){
          }, 2500);
     };
 
-
-    $('#form_guide_scheduling .submit-button').on('click', function(e){
+    $('#form_guide_scheduling .submit-button, #form_tour_scheduling .submit-button').on('click', function(e){
         var booked_hours = updatingChosenHours();
 
         if (booked_hours>0){
