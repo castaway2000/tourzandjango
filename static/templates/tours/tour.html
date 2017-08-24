@@ -128,13 +128,13 @@
                                         <div class="col-md-5 text-center">
                                             {% if tour.payment_type.id == 1 %}
                                                 {% with tour.get_hours_nmb_range as hours_nmb_range %}
-                                                    <div id="#hours_nmb_container" class="form-group form-group- form-group-select-plus">
+                                                    <div id="hours_nmb_container" class="form-group form-group- form-group-select-plus">
                                                         <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
                                                         <div class="btn-group btn-group-select-num" data-toggle="buttons">
                                                             {% for hour in hours_nmb_range.min_hours_nmb_range_basic %}
                                                                 <label class="btn btn-primary hours-nmb
                                                                     {% if forloop.counter == 1 %} active{% endif %}">
-                                                                <input type="radio" name="options" value="{{ hour }}"/>
+                                                                <input type="radio" name="booking_hours" value="{{ hour }}"/>
                                                                     {{ hour }}{% if forloop.last %}+{% endif %}
                                                                 </label>
                                                             {% endfor %}
@@ -153,7 +153,7 @@
                                         </div>
                                         <div class="col-md-3 text-center">
                                             <label> </label>
-                                            <button class="btn btn-primary btn-lg btn-booking">{% blocktrans %}Book Now{% endblocktrans %}</button>
+                                            <button class="btn btn-primary btn-lg btn-booking submit-button">{% blocktrans %}Book Now{% endblocktrans %}</button>
                                         </div>
                                     </div>
 
@@ -162,7 +162,6 @@
                                     {% if tour.payment_type.id == 1 %}
                                         <div class="row">
                                             <div class="col-md-12 text-center">
-                                                <input class="hidden" id="hourly_rate" value="{{ tour.price_hourly }}" name="price_hourly">
                                                 <p id="amount_container" class="lead hidden">
                                                     {% blocktrans %}Rate{% endblocktrans %}:
                                                     <b><span id="amount">{{ tour.price_hourly|safe }}</span>
