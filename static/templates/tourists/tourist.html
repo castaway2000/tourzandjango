@@ -10,7 +10,12 @@
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <h2 class="lh1em">
-                                {{ tourist.user.first_name }} {{ guide.user.last_name }} ({{ tourist.user.username }})
+                                {% if tourist.user.first_name or tourist.user.last_name %}
+                                    {{ tourist.user.first_name }} {{ tourist.user.last_name }}
+                                    ({{ tourist.user.username }})
+                                {% else %}
+                                    {{ tourist.user.username }}
+                                {% endif %}
                             </h2>
 
                             {% if tourist == request.user.profile and request.session.current_role != "touris" %}

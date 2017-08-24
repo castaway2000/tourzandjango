@@ -142,9 +142,12 @@ def profile_photos(request, username = None):
 
 @login_required()
 def tourist(request, username):
-    user = request.user
-    tourist = user.touristprofile
+    try:
+        user = User.objects.get(username=username)
+    except:
+        return HttpResponseRedirect(reverse("home"))
 
+    tourist = user.touristprofile
     orders = Order.objects.filter(tourist=tourist).order_by('-id')
     tours = tourist.order_set.all().order_by("-id")
 
