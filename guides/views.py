@@ -320,16 +320,13 @@ def profile_settings_guide(request):
         for name, value in request.POST.items():
             string_key = "service_"
             if name.startswith(string_key):
-                print("in if: %s" % name)
 
                 cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
                 service = Service.objects.get(html_field_name=cleared_name)
 
                 price_field_name = "serviceprice_%s" % cleared_name
-                print(price_field_name)
 
                 price = request.POST.get(price_field_name)
-                print(price)
 
                 guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
                                                                                is_active=True, defaults={"price": price})
@@ -350,6 +347,7 @@ def profile_settings_guide(request):
             new_form.city = city
             if not guide:
                 new_form.user = user
+                new_form.is_active = True
             new_form = form.save()
 
             if guide:
