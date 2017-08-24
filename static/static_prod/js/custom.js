@@ -74,8 +74,9 @@ $('.typeahead').typeahead({
 });
 
 
-$('input.date-pick, .input-daterange, .date-pick-inline').datepicker({
-    todayHighlight: true
+$('input.date-pick, .input-daterange, .date-pick-inline, #listing-calendar').datepicker({
+    todayHighlight: true,
+    startDate: new Date()
 });
 
 
@@ -356,7 +357,7 @@ if ($('#map-canvas').length) {
 
 
 $('.card-select > li').click(function() {
-    self = this;
+    var self = this;
     $(self).addClass('card-item-selected');
     $(self).siblings('li').removeClass('card-item-selected');
     $('.form-group-cc-number input').click(function() {

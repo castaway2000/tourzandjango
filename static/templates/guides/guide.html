@@ -163,12 +163,13 @@
 
                                 <input class="hidden" value="{{ guide.id }}" name="guide_id">
 
-                                <div class="input-daterange" data-date-format="mm.dd.yyyy">
+                                <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
+                                            <div class="form-group form-group-icon-left">
+                                                <i class="fa fa-calendar input-icon"></i>
                                                 <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                <input class="form-control" name="start" type="text" />
+                                                <input class="form-control" name="start" type="text" required />
                                             </div>
                                         </div>
                                     </div>

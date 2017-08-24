@@ -66,12 +66,8 @@ $(document).ready(function(){
     };
 
 
-    //$('#form_tour_scheduling').on('submit', function(e){
     $('#form_guide_scheduling .submit-button').on('click', function(e){
-        console.log("1");
-        e.preventDefault();
         var booked_hours = updatingChosenHours();
-        console.log(booked_hours);
 
         if (booked_hours>0){
             $('.schedule-form').find('#booking_hours').val(booked_hours);
@@ -79,53 +75,6 @@ $(document).ready(function(){
 
         $('#form_guide_scheduling').submit();
 
-        //if ($(this).hasClass('user-not-authorized')){
-        //
-        //}else{
-        //    e.preventDefault();
-        //    console.log();
-        //    var form = $(this);
-        //    data = gettingFormData(form);
-        //
-        //    var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
-        //    data["csrfmiddlewaretoken"] = csrf_token;
-        //
-        //    console.log(data);
-        //    console.log("123");
-        //    var url = form.attr("action");
-        //    console.log(url);
-        //
-        //    $.ajax({
-        //        url: url,
-        //        type: 'POST',
-        //        data: data,
-        //        cache: true,
-        //        success: function (data) {
-        //            console.log(data);
-        //            if (data.status == "success"){
-        //
-        //                $('.booking-result-message')
-        //                    .removeClass('alert-danger hidden').addClass('alert-success');
-        //                $('.booking-result-message .message-text').text(data.message);
-        //
-        //                hidingNotification();
-        //
-        //            }else{
-        //                $('.booking-result-message')
-        //                    .removeClass('alert-success hidden').addClass('alert-danger');
-        //                $('.booking-result-message .message-text').text("Failed");
-        //
-        //                hidingNotification();
-        //            }
-        //        },
-        //        error: function(){
-        //            $('.booking-result-message')
-        //                    .removeClass('alert-success hidden').addClass('alert-danger');
-        //
-        //            $('.booking-result-message .message-text').text("Failed");
-        //        }
-        //    })
-        //}
     });
 
     $(document).on('click', '.close-alert', function(){

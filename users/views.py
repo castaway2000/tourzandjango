@@ -101,6 +101,7 @@ def general_settings(request):
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':
+        # print(request.POST)
 
         #GeneralProfile form section
         if form.is_valid():
@@ -352,6 +353,7 @@ class SignupViewCustom(SignupView):
 @login_required()
 def sending_sms_code(request):
     user = request.user
+    print(request.POST)
 
     return_data = dict()
     if request.POST:
