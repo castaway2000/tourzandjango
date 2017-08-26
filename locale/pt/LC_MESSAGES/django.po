@@ -5,10 +5,10 @@
 #
 #, fuzzy
 msgid ""
-msgstr ""
+msgstr "felpudo"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-17 19:47+0000\n"
+"POT-Creation-Date: 2017-05-30 17:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,84 +18,74 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: localization_explanation.txt:11
-msgid "Welcome to my project!"
-msgstr ""
-
-#: localization_explanation.txt:15
-msgid ""
-"\n"
-"            \"Welcome to my project!\"\n"
-"        "
-msgstr ""
-
 #: static/templates/account/account_inactive.html:5
 #: static/templates/account/account_inactive.html:8
 msgid "Account Inactive"
-msgstr ""
+msgstr "Conta Inativa"
 
 #: static/templates/account/account_inactive.html:10
 msgid "This account is inactive."
-msgstr ""
+msgstr "Essa conta está inativa"
 
-#: static/templates/account/email.html:5 static/templates/navbar.html:110
+#: static/templates/account/email.html:5 static/templates/navbar.html:105
 msgid "Account"
-msgstr ""
+msgstr "Conta"
 
 #: static/templates/account/email.html:8
 msgid "E-mail Addresses"
-msgstr ""
+msgstr "Endereços de Email"
 
 #: static/templates/account/email.html:10
 msgid "The following e-mail addresses are associated with your account:"
-msgstr ""
+msgstr "Os endereços de email estão associados com sua conta."
 
 #: static/templates/account/email.html:24
 msgid "Verified"
-msgstr ""
+msgstr "Verificado"
 
 #: static/templates/account/email.html:26
 msgid "Unverified"
-msgstr ""
+msgstr "Não verificado"
 
 #: static/templates/account/email.html:28
 msgid "Primary"
-msgstr ""
+msgstr "Primário"
 
 #: static/templates/account/email.html:34
 msgid "Make Primary"
-msgstr ""
+msgstr "Faça primário"
 
 #: static/templates/account/email.html:35
 msgid "Re-send Verification"
-msgstr ""
+msgstr "Reenviar verificação"
 
 #: static/templates/account/email.html:36
 #: static/templates/socialaccount/connections.html:35
 msgid "Remove"
-msgstr ""
+msgstr "Remover"
 
 #: static/templates/account/email.html:43
 msgid "Warning:"
-msgstr ""
+msgstr "Atenção:"
 
 #: static/templates/account/email.html:43
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
 "an e-mail address so you can receive notifications, reset your password, etc."
-msgstr ""
+msgstr "Atualmente, você não possui nenhum endereço de email configurado. Você realmente deve adicionar "
+"um endereço de e-mail para que você possa receber notificações, alterar sua senha, etc."
 
 #: static/templates/account/email.html:48
 msgid "Add E-mail Address"
-msgstr ""
+msgstr "Adicionar um endereço de e-mail"
 
 #: static/templates/account/email.html:53
 msgid "Add E-mail"
-msgstr ""
+msgstr "Adicionar Email"
 
 #: static/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr ""
+msgstr "Você realmente deseja remover o endereço de e-mail selecionado?"
 
 #: static/templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -108,6 +98,13 @@ msgid ""
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
 msgstr ""
+"Olá de %(site_name)s!\n"
+"\n"
+"Você está recebendo este e-mail porque o usuário %(user_display)s a "
+"%(site_domain)s deu o seu como um endereço de e-mail para conectar sua "
+"conta.\n"
+"\n"
+"Para confirmar que isso está correto, vá para %(activate_url)s\n"
 
 #: static/templates/account/email/email_confirmation_message.txt:7
 #, python-format
@@ -115,10 +112,12 @@ msgid ""
 "Thank you from %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
+"Obrigado por %(site_name)s!\n"
+"%(site_domain)s"
 
 #: static/templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your E-mail Address"
-msgstr ""
+msgstr "Por favor, confirme seu endereço de email."
 
 #: static/templates/account/email/password_reset_key_message.txt:1
 #, python-format
@@ -130,11 +129,18 @@ msgid ""
 "It can be safely ignored if you did not request a password reset. Click the "
 "link below to reset your password."
 msgstr ""
+"Olá de %(site_name)s!\n"
+"\n"
+"Você está recebendo este e-mail porque você ou outra pessoa pediu uma"
+"senha para sua conta a %(site_domain)s.\n"
+"Pode ser ignorado com segurança se você não solicitou uma reinicialização da senha. Clique no "
+"link abaixo para alterar sua senha."
+
 
 #: static/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid "In case you forgot, your username is %(username)s."
-msgstr ""
+msgstr "Caso você tenha esquecido, seu nome de usuário é %(username)s."
 
 #: static/templates/account/email/password_reset_key_message.txt:10
 #, python-format
@@ -142,15 +148,17 @@ msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
+"Obrigado por usar %(site_name)s!\n"
+"%(site_domain)s"
 
 #: static/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
-msgstr ""
+msgstr "Email por mudar la senha"
 
 #: static/templates/account/email_confirm.html:6
 #: static/templates/account/email_confirm.html:10
 msgid "Confirm E-mail Address"
-msgstr ""
+msgstr "Confirme o endereço de e-mail"
 
 #: static/templates/account/email_confirm.html:16
 #, python-format
@@ -158,10 +166,13 @@ msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
+"Por favor confirme que <a href=\"mailto:%(email)s\">%(email)s</a> é um "
+"endereço de e-mail para usuário %(user_display)s."
+
 
 #: static/templates/account/email_confirm.html:20
 msgid "Confirm"
-msgstr ""
+msgstr "Confirme"
 
 #: static/templates/account/email_confirm.html:27
 #, python-format
@@ -169,12 +180,15 @@ msgid ""
 "This e-mail confirmation link expired or is invalid. Please <a href="
 "\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
+"Este link de confirmação de e-mail expirou ou é inválido. Por favor <a href="
+"\"%(email_url)s\">emita um novo pedido de confirmação de e-mail</a>."
+
 
 #: static/templates/account/login.html:6
 #: static/templates/account/login.html:10
 #: static/templates/account/login.html:43
 msgid "Sign In"
-msgstr ""
+msgstr "Inscrição"
 
 #: static/templates/account/login.html:15
 #, python-format
@@ -184,10 +198,13 @@ msgid ""
 "up</a>\n"
 "for a %(site_name)s account and sign in below:"
 msgstr ""
+"Faça login com uma"
+"das suas contas de terceiros existentes. Ou, <a href=\"%(signup_url)s\"> Registe-se</a>\n"
+"por uma conta de %(site_name)s e logon abaixo:"
 
 #: static/templates/account/login.html:25
 msgid "or"
-msgstr ""
+msgstr "ou"
 
 #: static/templates/account/login.html:32
 #, python-format
@@ -195,57 +212,59 @@ msgid ""
 "If you have not created an account yet, then please\n"
 "<a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
+"Se ainda não criou uma conta, então, por favor\n"
+"<a href=\"%(signup_url)s\">inscrever-se</a> primeiro."
 
 #: static/templates/account/login.html:42
 #: static/templates/users/login_register.html:48
 msgid "Forgot Password?"
-msgstr ""
+msgstr "Esqueceu a senha?"
 
 #: static/templates/account/logout.html:5
 #: static/templates/account/logout.html:8
 #: static/templates/account/logout.html:17
 msgid "Sign Out"
-msgstr ""
+msgstr "Sair"
 
 #: static/templates/account/logout.html:10
 msgid "Are you sure you want to sign out?"
-msgstr ""
+msgstr "Você tem certeza que deseja sair?"
 
 #: static/templates/account/messages/cannot_delete_primary_email.txt:2
 #, python-format
 msgid "You cannot remove your primary e-mail address (%(email)s)."
-msgstr ""
+msgstr "Você não pode remover seu endereço de e-mail principal (%(email)s)."
 
 #: static/templates/account/messages/email_confirmation_sent.txt:2
 #, python-format
 msgid "Confirmation e-mail sent to %(email)s."
-msgstr ""
+msgstr " E-mail de confirmação enviado para %(email)s."
 
 #: static/templates/account/messages/email_confirmed.txt:2
 #, python-format
 msgid "You have confirmed %(email)s."
-msgstr ""
+msgstr "Você confirmou %(email)s."
 
 #: static/templates/account/messages/email_deleted.txt:2
 #, python-format
 msgid "Removed e-mail address %(email)s."
-msgstr ""
+msgstr "Endereço de e-mail removido %(email)s."
 
 #: static/templates/account/messages/password_changed.txt:2
 msgid "Password successfully changed."
-msgstr ""
+msgstr "Senha mudada com successo."
 
 #: static/templates/account/messages/password_set.txt:2
 msgid "Password successfully set."
-msgstr ""
+msgstr "Senha definada com successo."
 
 #: static/templates/account/messages/primary_email_set.txt:2
 msgid "Primary e-mail address set."
-msgstr ""
+msgstr "Endereço de e-mail principal definado."
 
 #: static/templates/account/messages/unverified_primary_email.txt:2
 msgid "Your primary e-mail address must be verified."
-msgstr ""
+msgstr "Seu endereço de e-mail principal deve ser verificado."
 
 #: static/templates/account/password_change.html:5
 #: static/templates/account/password_change.html:8
@@ -256,38 +275,41 @@ msgstr ""
 #: static/templates/account/password_reset_from_key_done.html:7
 #: static/templates/users/general_settings.html:9
 msgid "Change Password"
-msgstr ""
+msgstr "Mudar senha"
 
 #: static/templates/account/password_reset.html:6
 #: static/templates/account/password_reset.html:10
 #: static/templates/account/password_reset_done.html:6
 #: static/templates/account/password_reset_done.html:9
 msgid "Password Reset"
-msgstr ""
+msgstr "Redefinição de Senha"
 
 #: static/templates/account/password_reset.html:15
 msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll send you "
 "an e-mail allowing you to reset it."
 msgstr ""
+"Esqueceu sua senha? Por favor digite seu endereço de email e nós lhe enviaremos "
+"um e-mail que lhe permitirá redefini-lo."
 
 #: static/templates/account/password_reset.html:23
 msgid "Reset My Password"
-msgstr ""
+msgstr "Redefinir minha Senha"
 
 #: static/templates/account/password_reset.html:26
 msgid "Please contact us if you have any trouble resetting your password."
-msgstr ""
+msgstr "Por favor contate-nos se você tem algum problema para redefinir sua senha."
 
 #: static/templates/account/password_reset_done.html:15
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Enviamos um e-mail para você. Por favor contate-nos se você não o receber em poucos minutos."
 
 #: static/templates/account/password_reset_from_key.html:7
 msgid "Bad Token"
-msgstr ""
+msgstr "Símbolo Mau"
 
 #: static/templates/account/password_reset_from_key.html:11
 #, python-format
@@ -296,90 +318,93 @@ msgid ""
 "used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
 "a>."
 msgstr ""
+"Este link de redefinição de senha é inválido. Possivelmente porque já foi "
+"usado Por favor solicite um <a href=\"%(passwd_reset_url)s\">link para reinicialização da senha nova.</a>."
 
 #: static/templates/account/password_reset_from_key.html:17
 msgid "change password"
-msgstr ""
+msgstr "mudar senha"
 
 #: static/templates/account/password_reset_from_key.html:20
 #: static/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
-msgstr ""
+msgstr "Sua senha agora foi alterada."
 
 #: static/templates/account/password_set.html:5
 #: static/templates/account/password_set.html:8
 #: static/templates/account/password_set.html:13
 msgid "Set Password"
-msgstr ""
+msgstr "Configurar Senha"
 
 #: static/templates/account/signup.html:33
 msgid "Login/Register on Tourzan"
-msgstr ""
+msgstr "Logon/Registrar sobre Tourzan"
 
 #: static/templates/account/signup.html:41
 msgid "Welcome to Tourzan"
-msgstr ""
+msgstr "Bem-vindo ao Tourzan"
 
 #: static/templates/account/signup.html:42
 msgid ""
 "You may be authenticated, using social networks or sign in/sign up using "
 "username and password"
 msgstr ""
+"Nome de usuário e email"
 
 #: static/templates/account/signup.html:56
 msgid "Login"
-msgstr ""
+msgstr "Logon"
 
 #: static/templates/account/signup.html:59
 msgid "Username or email"
-msgstr ""
+msgstr "Nome de usuário ou email"
 
 #: static/templates/account/signup.html:63
 #: static/templates/account/signup.html:90
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 #: static/templates/account/signup.html:70
 msgid "New To Traveler?"
-msgstr ""
+msgstr "Novo para o viajante?"
 
 #: static/templates/account/signup.html:74
 msgid "Username"
-msgstr ""
+msgstr "Nome de usuário"
 
 #: static/templates/account/signup.html:82
 #: static/templates/website_management/contact_us.html:42
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: static/templates/account/signup.html:95
 msgid "Password (re-enter)"
-msgstr ""
+msgstr "Senha (re-digitar)"
 
 #: static/templates/account/signup_closed.html:5
 #: static/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
-msgstr ""
+msgstr "A página para inscrever-se está fechada"
 
 #: static/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
-msgstr ""
+msgstr "Lamentamos mas a página para inscrever-se está fechada."
 
 #: static/templates/account/snippets/already_logged_in.html:5
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #: static/templates/account/snippets/already_logged_in.html:5
 #, python-format
 msgid "you are already logged in as %(user_display)s."
-msgstr ""
+msgstr "Você já está logado como %(user_display)s."
 
 #: static/templates/account/verification_sent.html:5
 #: static/templates/account/verification_sent.html:8
 #: static/templates/account/verified_email_required.html:5
 #: static/templates/account/verified_email_required.html:8
 msgid "Verify Your E-mail Address"
-msgstr ""
+msgstr "Verifique seu endereço de e-mail"
 
 #: static/templates/account/verification_sent.html:10
 msgid ""
@@ -387,6 +412,10 @@ msgid ""
 "finalize the signup process. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Nós enviamos um e-mail para verificação Siga o link fornecido para"
+"finalizar o processo de inscrição. Por favor contate-nos se você não o receber."
+
+
 
 #: static/templates/account/verified_email_required.html:12
 msgid ""
@@ -394,6 +423,12 @@ msgid ""
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
+"Esta parte do site exige que verifiquemos que"
+"você é quem você afirma ser.Para isso, exigimos que você"
+"verifique a propriedade de seu endereço de e-mail."
+
+
+
 
 #: static/templates/account/verified_email_required.html:16
 msgid ""
@@ -401,6 +436,10 @@ msgid ""
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
+"Nós enviamos um email para você para \n"
+"verificação, por favor clique no link dentro deste e-mail.Por favor\n"
+"contate-nos se você não receber isso dentro de alguns minutos."
+
 
 #: static/templates/account/verified_email_required.html:20
 #, python-format
@@ -408,735 +447,574 @@ msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
 "mail address</a>."
 msgstr ""
+"<strong>Nota:</strong> Você ainda pode <a href=\"%(email_url)s\"> mudar seu endereço de e-mail."
 
-#: static/templates/base_profile.html:40 static/templates/base_profile.html:42
+
+#: static/templates/base_profile.html:7
+msgid "Account Settings"
+msgstr "Configurações da Conta"
+
+#: static/templates/base_profile.html:38 static/templates/base_profile.html:40
 msgid "Switch to Guide Profile"
-msgstr ""
+msgstr "Mudar para perfil do guia"
 
-#: static/templates/base_profile.html:44
+#: static/templates/base_profile.html:42
 msgid "Switch to Tourist Profile"
-msgstr ""
+msgstr "Mudar para perfil do turista"
 
-#: static/templates/base_profile.html:53
+#: static/templates/base_profile.html:51
 msgid "Tourist Profile Settings"
-msgstr ""
+msgstr "Configurações do perfil do turista"
 
-#: static/templates/base_profile.html:57 static/templates/base_profile.html:98
+#: static/templates/base_profile.html:55 static/templates/base_profile.html:85
 msgid "General Settings"
-msgstr ""
+msgstr "Configurações Gerais"
+
+#: static/templates/base_profile.html:58 static/templates/base_profile.html:97
+msgid "Credit/Debit Cards"
+msgstr "Cartões de crédito/débito"
 
 #: static/templates/base_profile.html:63
-#: static/templates/base_profile.html:113
-msgid "Credit/Debit Cards"
-msgstr ""
-
-#: static/templates/base_profile.html:69
 msgid "My Travel Photos"
-msgstr ""
+msgstr "Minhas fotos de viagem"
 
-#: static/templates/base_profile.html:76
+#: static/templates/base_profile.html:70
 msgid "Bookings history"
-msgstr ""
+msgstr "História das reservas"
 
-#: static/templates/base_profile.html:83
-msgid "Payments"
-msgstr ""
-
-#: static/templates/base_profile.html:87
+#: static/templates/base_profile.html:74
 msgid "Wishlist"
-msgstr ""
+msgstr "Lista de Desejos"
 
-#: static/templates/base_profile.html:94
+#: static/templates/base_profile.html:81
 msgid "Guide Profile Settings"
-msgstr ""
+msgstr "Configurações do perfil do guia"
 
-#: static/templates/base_profile.html:101
-#: static/templates/guides/guide.html:439 static/templates/tours/tours.html:17
+#: static/templates/base_profile.html:88
+#: static/templates/guides/guide.html:427 static/templates/tours/tours.html:17
 msgid "Tours"
-msgstr ""
+msgstr "Passeios"
 
-#: static/templates/base_profile.html:104 static/templates/navbar.html:70
+#: static/templates/base_profile.html:91 static/templates/navbar.html:66
 #: static/templates/orders/orders.html:16
 msgid "Orders"
-msgstr ""
+msgstr "Pedidos"
 
-#: static/templates/base_profile.html:107
+#: static/templates/base_profile.html:94
 msgid "Payments history"
-msgstr ""
+msgstr "Histórico de pagamento"
 
-#: static/templates/chats/chat.html:15 static/templates/chats/chats.html:17
-msgid "Chat "
-msgstr ""
-
-#: static/templates/chats/chat.html:16 static/templates/chats/chats.html:18
+#: static/templates/chats/chat.html:16
 msgid "with "
-msgstr ""
+msgstr "com"
 
-#: static/templates/chats/chat.html:21 static/templates/chats/chats.html:23
+#: static/templates/chats/chat.html:18 static/templates/chats/chats.html:21
 msgid "(guide)"
-msgstr ""
+msgstr "(guia)"
 
-#: static/templates/chats/chat.html:26 static/templates/chats/chats.html:28
+#: static/templates/chats/chat.html:20 static/templates/chats/chats.html:25
 msgid "(tourist)"
-msgstr ""
+msgstr "(turista)"
 
-#: static/templates/chats/chat.html:32 static/templates/chats/chats.html:33
+#: static/templates/chats/chat.html:22 static/templates/chats/chats.html:28
 msgid "started at: "
-msgstr ""
+msgstr "começou em: "
 
-#: static/templates/chats/chat.html:60
+#: static/templates/chats/chat.html:50
 msgid "Submit"
-msgstr ""
+msgstr "Enviar"
 
-#: static/templates/chats/chats.html:38
+#: static/templates/chats/chats.html:33
 msgid "Last Message:"
-msgstr ""
+msgstr "última mensagem"
 
-#: static/templates/chats/chats.html:53
+#: static/templates/chats/chats.html:48
 msgid "No last message"
-msgstr ""
+msgstr "Nenhuma última mensagem"
 
-#: static/templates/chats/chats.html:57
+#: static/templates/chats/chats.html:52
 msgid "Go To Conversation"
-msgstr ""
+msgstr "Vai para a conversa"
 
-#: static/templates/chats/chats.html:64
+#: static/templates/chats/chats.html:59
 msgid "There are no chats so far..."
-msgstr ""
+msgstr "Não há conversas até agora..."
 
-#: static/templates/errors_notification.html:9
-#: static/templates/errors_notification.html:14
+
+
+#: static/templates/errors_notification.html:10
+#: static/templates/errors_notification.html:15
 #, python-format
 msgid "%(message)s"
-msgstr ""
+msgstr "%(message)s"
 
 #: static/templates/footer.html:15
 msgid "Book local guides, while travelling!"
-msgstr ""
+msgstr "Reserve dos guias locais durante do viagem!"
 
 #: static/templates/footer.html:34
 msgid "Newsletter"
-msgstr ""
+msgstr "Boletim"
 
 #: static/templates/footer.html:36
 msgid "Enter your E-mail Address"
-msgstr ""
+msgstr "Insira o seu endereço de email"
 
 #: static/templates/footer.html:38
 msgid "We Never Send Spam"
-msgstr ""
+msgstr "Nós nunca enviamos Spam"
 
 #: static/templates/footer.html:45
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Política de Privacidade"
 
 #: static/templates/footer.html:47
 msgid "Terms of Service"
-msgstr ""
+msgstr "Termos de Serviço"
 
 #: static/templates/footer.html:49
 msgid "About Us"
-msgstr ""
+msgstr "Sobre nós"
 
 #: static/templates/footer.html:51
 msgid "Contact US"
-msgstr ""
+msgstr "Contate-Nos"
 
 #: static/templates/footer.html:56
 msgid "Have Questions?"
-msgstr ""
+msgstr "Tem Perguntas?"
 
 #: static/templates/footer.html:59
-msgid "24/7 Dedicated Customer Support"
-msgstr ""
-
-#: static/templates/guides/earnings.html:15
-msgid "Your Earnings"
-msgstr ""
-
-#: static/templates/guides/earnings.html:84
-#: static/templates/payments/payments.html:71
-msgid "by"
-msgstr ""
+msgid "Customer Support"
+msgstr "Suporte ao cliente"
 
 #: static/templates/guides/guide.html:13
-#: static/templates/guides/guides.html:13
+#: static/templates/guides/guides.html:13 static/templates/navbar.html:34
 #: static/templates/orders/bookings.html:13
 #: static/templates/orders/orders.html:12 static/templates/tours/tour.html:8
 #: static/templates/tours/tours.html:13
 msgid "Home"
-msgstr ""
+msgstr "Pagina Inicial"
 
 #: static/templates/guides/guide.html:35
 #: static/templates/users/tourist.html:18
 msgid "Go to Settings"
-msgstr ""
+msgstr "Vá para as configurações"
 
-#: static/templates/guides/guide.html:52 static/templates/guides/guide.html:61
-#: static/templates/tours/tour.html:36
+#: static/templates/guides/guide.html:52 static/templates/guides/guide.html:56
+#: static/templates/tours/tour.html:30
 msgid "Send Message"
-msgstr ""
+msgstr "Enviar Mesagem"
 
-#: static/templates/guides/guide.html:58 static/templates/tours/tour.html:32
+#: static/templates/guides/guide.html:55 static/templates/tours/tour.html:29
 msgid "Write Review"
-msgstr ""
+msgstr "Escrever Critica"
 
-#: static/templates/guides/guide.html:69
+#: static/templates/guides/guide.html:64
 msgid "Some description will be here"
-msgstr ""
+msgstr "Alguma descrição será aqui"
 
-#: static/templates/guides/guide.html:73
+#: static/templates/guides/guide.html:68
 msgid "Interests: "
-msgstr ""
+msgstr "Interesses: "
 
-#: static/templates/guides/guide.html:82
+#: static/templates/guides/guide.html:77
 #: static/templates/users/tourist.html:47
 msgid "No interests"
-msgstr ""
+msgstr "Sem interesses"
 
-#: static/templates/guides/guide.html:88
+#: static/templates/guides/guide.html:83
 msgid "Services: "
-msgstr ""
+msgstr "Serviços: "
 
-#: static/templates/guides/guide.html:96
+#: static/templates/guides/guide.html:91
 msgid "No additional services..."
-msgstr ""
+msgstr "Sem serviços adicionais..."
 
-#: static/templates/guides/guide.html:105
+#: static/templates/guides/guide.html:100
 msgid "Great!"
-msgstr ""
+msgstr "Ótimo!"
 
-#: static/templates/guides/guide.html:113
+#: static/templates/guides/guide.html:108
 msgid "of tours were reviewed "
-msgstr ""
+msgstr "dos passeios foram criticados "
 
-#: static/templates/guides/guide.html:132
+#: static/templates/guides/guide.html:127
 msgid "tourist rating"
-msgstr ""
+msgstr "avaliação do turista"
 
-#: static/templates/guides/guide.html:136
+#: static/templates/guides/guide.html:131
 msgid "based on"
-msgstr ""
+msgstr "baseado em"
 
-#: static/templates/guides/guide.html:138
+#: static/templates/guides/guide.html:133
 msgid "review"
-msgstr ""
+msgstr "critica"
 
-#: static/templates/guides/guide.html:140
+#: static/templates/guides/guide.html:135
 msgid "reviews"
-msgstr ""
+msgstr "criticas"
 
-#: static/templates/guides/guide.html:157
+#: static/templates/guides/guide.html:152
 msgid "You have already booked this guide"
-msgstr ""
+msgstr "Você já reservou este guia"
 
-#: static/templates/guides/guide.html:159 static/templates/tours/tour.html:116
+#: static/templates/guides/guide.html:154 static/templates/tours/tour.html:109
 msgid "book more"
-msgstr ""
+msgstr "reservar mais"
 
-#: static/templates/guides/guide.html:161 static/templates/tours/tour.html:118
+#: static/templates/guides/guide.html:156 static/templates/tours/tour.html:111
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
-#: static/templates/guides/guide.html:177 static/templates/tours/tour.html:128
+#: static/templates/guides/guide.html:172 static/templates/tours/tour.html:121
 msgid "Booking a tour date:"
-msgstr ""
+msgstr "Reservar uma data de passeio"
 
-#: static/templates/guides/guide.html:212
+#: static/templates/guides/guide.html:203
 msgid "Persons nmb:"
-msgstr ""
+msgstr "Número de Pessoas"
 
-#: static/templates/guides/guide.html:245 static/templates/tours/tour.html:135
+#: static/templates/guides/guide.html:236 static/templates/tours/tour.html:128
 msgid "Hours nmb:"
-msgstr ""
+msgstr "Número de Horas"
 
-#: static/templates/guides/guide.html:280 static/templates/tours/tour.html:171
+#: static/templates/guides/guide.html:269 static/templates/tours/tour.html:164
 msgid "Book Now"
-msgstr ""
+msgstr "Reservar Agora"
 
-#: static/templates/guides/guide.html:294 static/templates/tours/tour.html:199
+#: static/templates/guides/guide.html:282 static/templates/tours/tour.html:190
 #: static/templates/users/tourist.html:56
 msgid "Reviews"
-msgstr ""
+msgstr "Criticas"
 
-#: static/templates/guides/guide.html:302 static/templates/tours/tour.html:208
+#: static/templates/guides/guide.html:290 static/templates/tours/tour.html:199
 #: static/templates/users/tourist.html:94
 msgid "No reviews so far..."
-msgstr ""
+msgstr "Sem criticas até agora ..."
 
 #: static/templates/guides/guide_registration.html:18
 msgid "Guide Profile"
-msgstr ""
+msgstr "Perfil do Guia"
 
 #: static/templates/guides/guide_registration.html:23
 msgid "See Public Page"
-msgstr ""
+msgstr "Veja a Página Pública"
 
 #: static/templates/guides/guide_registration.html:30
 msgid "Name*:"
-msgstr ""
+msgstr "Nome*:"
 
 #: static/templates/guides/guide_registration.html:37
 msgid "City*:"
-msgstr ""
+msgstr "Cidade*:"
 
-#: static/templates/guides/guide_registration.html:50
+#: static/templates/guides/guide_registration.html:43
 msgid "Date of birth*:"
-msgstr ""
+msgstr "Data de nascimento*:"
 
-#: static/templates/guides/guide_registration.html:63
+#: static/templates/guides/guide_registration.html:56
 msgid "Interests*:"
-msgstr ""
+msgstr "Interesses*:"
 
-#: static/templates/guides/guide_registration.html:76
+#: static/templates/guides/guide_registration.html:69
 msgid "Overview*:"
-msgstr ""
+msgstr "Visão geral*:"
 
-#: static/templates/guides/guide_registration.html:85
+#: static/templates/guides/guide_registration.html:77
 msgid "Additional services*:"
-msgstr ""
+msgstr "Serviços adicionais*:"
 
-#: static/templates/guides/guide_registration.html:100
+#: static/templates/guides/guide_registration.html:92
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
-#: static/templates/guides/guide_registration.html:111
+#: static/templates/guides/guide_registration.html:103
 msgid "Upload New Avatar Image:"
-msgstr ""
+msgstr "Carregar imagem de avatar nova:"
 
 #: static/templates/guides/guide_registration_welcome.html:10
 msgid "To create Guide Profile click a button bellow."
-msgstr ""
+msgstr "Por criar um perfil do guia, clilcar uma botão abaixo."
 
 #: static/templates/guides/guide_registration_welcome.html:12
 msgid "If you click this button you agree with terms and conditions"
-msgstr ""
+msgstr "Se você clicar neste botão você concorda com os termos e condições."
 
 #: static/templates/guides/guide_registration_welcome.html:20
 msgid "Create Guide Profile"
-msgstr ""
+msgstr "Criar perfil do guia"
 
 #: static/templates/guides/guides.html:17
 msgid "Guides "
-msgstr ""
+msgstr "Guias "
 
 #: static/templates/guides/guides.html:23
 #: static/templates/guides/guides.html:29
 msgid "No guides were found"
-msgstr ""
+msgstr "Nenhum guia foi encontrado"
 
 #: static/templates/guides/guides.html:25
 msgid "guide was found!"
-msgstr ""
+msgstr "O guia foi encontrado"
 
 #: static/templates/guides/guides.html:27
 msgid "guides were found"
-msgstr ""
+msgstr "Guias foram encontrados"
 
 #: static/templates/guides/guides.html:35
 msgid "Filter By: "
-msgstr ""
+msgstr "Filtrar por: "
 
 #: static/templates/guides/guides.html:41
 #: static/templates/orders/bookings.html:49
 #: static/templates/tours/tours.html:42
 msgid "City"
-msgstr ""
+msgstr "Cidade"
 
 #: static/templates/guides/guides.html:51
 #: static/templates/users/tourist.html:41
 msgid "Interests"
-msgstr ""
+msgstr "Interesses"
 
 #: static/templates/guides/guides.html:62
 msgid "Languages"
-msgstr ""
+msgstr "Línguas"
 
-#: static/templates/guides/guides.html:75 static/templates/navbar.html:188
+#: static/templates/guides/guides.html:75 static/templates/navbar.html:173
 #: static/templates/tours/tours.html:52
 msgid "Guide"
-msgstr ""
+msgstr "Guia"
 
 #: static/templates/guides/guides.html:84 static/templates/tours/tours.html:62
 msgid "Price per hour"
-msgstr ""
+msgstr "Preço horário"
 
 #: static/templates/guides/guides.html:93
 #: static/templates/orders/bookings.html:67
 #: static/templates/orders/orders.html:48
 #: static/templates/tours/tours.html:106
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: static/templates/guides/guides.html:105
 #: static/templates/tours/tours.html:118
 msgid "Sort: Price (low to high)"
-msgstr ""
+msgstr "Ordenar: Preço (baixo para alto)"
 
 #: static/templates/guides/guides.html:107
 #: static/templates/tours/tours.html:120
 msgid "Sort: Price (high to low)"
-msgstr ""
+msgstr "Ordenar: Preço (alto para baixo)"
 
 #: static/templates/guides/guides.html:109
 #: static/templates/tours/tours.html:122
 msgid "Sort: Rating (low to high)"
-msgstr ""
+msgstr "Ordenar: Avaliação (baixo para alto)"
 
 #: static/templates/guides/guides.html:111
 #: static/templates/tours/tours.html:124
 msgid "Sort: Rating (high to low)"
-msgstr ""
+msgstr "Ordenar: Avaliação (alto para baixo)"
 
 #: static/templates/guides/guides.html:116
 #: static/templates/tours/tours.html:129
 msgid "Price (low to high)"
-msgstr ""
+msgstr "Preço (baixo para alto)"
 
 #: static/templates/guides/guides.html:120
 #: static/templates/tours/tours.html:133
 msgid "Price (high to low)"
-msgstr ""
+msgstr "Preço (alto para baixo)"
 
 #: static/templates/guides/guides.html:124
 #: static/templates/tours/tours.html:137
 msgid "Rating (low to high)"
-msgstr ""
+msgstr "Avaliação: (baixo para alto)"
 
 #: static/templates/guides/guides.html:128
 #: static/templates/tours/tours.html:141
 msgid "Rating (high to low)"
-msgstr ""
+msgstr "Avaliação (alto para baixo)"
 
-#: static/templates/guides/guides.html:164
+#: static/templates/guides/guides.html:162
 msgid "Interests:"
-msgstr ""
+msgstr "Interesses:"
 
-#: static/templates/guides/guides.html:182
+#: static/templates/guides/guides.html:180
 msgid "Languages:"
-msgstr ""
+msgstr "Línguas:"
 
-#: static/templates/guides/guides.html:201
+#: static/templates/guides/guides.html:199
 #: static/templates/tours/profile_settings_guide_tours.html:35
-#: static/templates/tours/tours.html:181
+#: static/templates/tours/tours.html:179
 msgid "Rating: "
-msgstr ""
+msgstr "Avaliação: "
 
-#: static/templates/guides/guides.html:204
-msgid "Hourly rate: "
-msgstr ""
+#: static/templates/guides/guides.html:202
+#: static/templates/tours/profile_settings_guide_tours.html:51
+#: static/templates/tours/tours.html:182
+msgid "Price: "
+msgstr "Preço: "
 
-#: static/templates/guides/guides.html:209
-msgid "Go to Guide"
-msgstr ""
-
-#: static/templates/navbar.html:38
-msgid "Blog"
-msgstr ""
+#: static/templates/navbar.html:39
+msgid "GUIDES"
+msgstr "GUIAS"
 
 #: static/templates/navbar.html:43
-msgid "GUIDES"
-msgstr ""
-
-#: static/templates/navbar.html:47
 msgid "TOURS"
-msgstr ""
+msgstr "PASSEIOS"
 
-#: static/templates/navbar.html:53 static/templates/orders/bookings.html:17
+#: static/templates/navbar.html:49 static/templates/orders/bookings.html:17
 msgid "My Bookings"
-msgstr ""
+msgstr "Minhas Reservas"
+
+#: static/templates/navbar.html:51 static/templates/navbar.html:68
+msgid "Pending"
+msgstr "Pendente"
+
+#: static/templates/navbar.html:53 static/templates/navbar.html:70
+msgid "Waiting for payment"
+msgstr "À espera de pagamento"
 
 #: static/templates/navbar.html:55 static/templates/navbar.html:72
-msgid "Pending"
-msgstr ""
-
-#: static/templates/navbar.html:57 static/templates/navbar.html:74
-msgid "Waiting for payment"
-msgstr ""
-
-#: static/templates/navbar.html:59 static/templates/navbar.html:76
 msgid "Agreed"
-msgstr ""
+msgstr "Acordado"
 
-#: static/templates/navbar.html:61 static/templates/navbar.html:80
+#: static/templates/navbar.html:57 static/templates/navbar.html:76
 msgid "Cancelled by me"
-msgstr ""
+msgstr "Cancelado por mim"
 
-#: static/templates/navbar.html:63
+#: static/templates/navbar.html:59
 msgid "Cancelled by guide"
-msgstr ""
+msgstr "Cancelado pelo guia"
 
-#: static/templates/navbar.html:65 static/templates/navbar.html:82
+#: static/templates/navbar.html:61 static/templates/navbar.html:78
 msgid "Completed"
-msgstr ""
+msgstr "Completo"
 
-#: static/templates/navbar.html:78
+#: static/templates/navbar.html:74
 msgid "Cancelled by tourist"
-msgstr ""
+msgstr "Cancelado pelo turista"
 
-#: static/templates/navbar.html:89
+#: static/templates/navbar.html:85
 msgid "Chats"
-msgstr ""
+msgstr "Conversas"
 
-#: static/templates/navbar.html:95
+#: static/templates/navbar.html:91
 msgid "Tourist Settings"
-msgstr ""
+msgstr "Configurações do Turista"
 
-#: static/templates/navbar.html:97
+#: static/templates/navbar.html:93
 msgid "Guide Settings"
-msgstr ""
+msgstr "Configurações do guia"
 
-#: static/templates/navbar.html:102 static/templates/navbar.html:105
+#: static/templates/navbar.html:98 static/templates/navbar.html:101
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
-#: static/templates/navbar.html:115
-msgid "My Payments"
-msgstr ""
-
-#: static/templates/navbar.html:119
-msgid "My Earnings"
-msgstr ""
-
-#: static/templates/navbar.html:127
+#: static/templates/navbar.html:112
 msgid "Switch to Guide"
-msgstr ""
+msgstr "Mudar para Guia"
 
-#: static/templates/navbar.html:131
+#: static/templates/navbar.html:116
 msgid "Want to be a guide?"
-msgstr ""
+msgstr "Quer ser um guia?"
+
+#: static/templates/navbar.html:121
+msgid "Switch to Tourist"
+msgstr "Mudar para Turista"
 
 #: static/templates/navbar.html:136
-msgid "Switch to Tourist"
-msgstr ""
-
-#: static/templates/navbar.html:151
 msgid "Log In"
-msgstr ""
+msgstr "Entrar"
 
-#: static/templates/navbar.html:158
+#: static/templates/navbar.html:143
 msgid "Logout"
-msgstr ""
+msgstr "Sair"
 
-#: static/templates/navbar.html:186
+#: static/templates/navbar.html:171
 msgid "Tourist"
-msgstr ""
-
-#: static/templates/orders/booking_representation.html:104
-msgid ""
-"\n"
-"                                Guide Profile\n"
-"                            "
-msgstr ""
-
-#: static/templates/orders/booking_representation.html:116
-msgid ""
-"\n"
-"                                    Write a Review and Pay\n"
-"                                "
-msgstr ""
-
-#: static/templates/orders/booking_representation.html:120
-#: static/templates/orders/order_representation.html:145
-msgid ""
-"\n"
-"                                    View final details\n"
-"                                "
-msgstr ""
-
-#: static/templates/orders/booking_representation.html:132
-msgid ""
-"\n"
-"                                Cancel\n"
-"                            "
-msgstr ""
+msgstr "Turista"
 
 #: static/templates/orders/bookings.html:23
 #: static/templates/orders/bookings.html:29
 msgid "No bookings were found"
-msgstr ""
+msgstr "Nenhuma reservas foi encontrada."
 
 #: static/templates/orders/bookings.html:25
 msgid "booking was found!"
-msgstr ""
+msgstr "A reserva foi encontrada!"
 
 #: static/templates/orders/bookings.html:27
 msgid "bookings were found!"
-msgstr ""
+msgstr "As reservas foram encontradas!"
 
 #: static/templates/orders/bookings.html:36
 #: static/templates/tours/tours.html:36
 msgid "Filter By:"
-msgstr ""
+msgstr "Filtrar por:"
 
 #: static/templates/orders/bookings.html:40
 msgid "Price"
-msgstr ""
+msgstr "Preço"
 
 #: static/templates/orders/bookings.html:58
 msgid "Guides"
-msgstr ""
-
-#: static/templates/orders/order_completing.html:64
-#: static/templates/payments/order_payment_checkout.html:20
-msgid ""
-"\n"
-"                                PAYMENT <br> RESERVED\n"
-"                            "
-msgstr ""
-
-#: static/templates/orders/order_completing.html:70
-#: static/templates/payments/order_payment_checkout.html:26
-msgid ""
-"\n"
-"                                PAID\n"
-"                            "
-msgstr ""
-
-#: static/templates/orders/order_completing.html:125
-#: static/templates/payments/order_payment_checkout.html:67
-msgid ""
-"\n"
-"                                                Description\n"
-"                                            "
-msgstr ""
-
-#: static/templates/orders/order_completing.html:164
-#: static/templates/payments/order_payment_checkout.html:106
-msgid ""
-"\n"
-"                                                Base Charge\n"
-"                                            "
-msgstr ""
-
-#: static/templates/orders/order_completing.html:176
-#: static/templates/payments/order_payment_checkout.html:118
-msgid ""
-"\n"
-"                                                Service Fee\n"
-"                                            "
-msgstr ""
-
-#: static/templates/orders/order_completing.html:193
-#: static/templates/payments/order_payment_checkout.html:130
-msgid ""
-"\n"
-"                                                Tax\n"
-"                                            "
-msgstr ""
-
-#: static/templates/orders/order_completing.html:206
-#: static/templates/payments/order_payment_checkout.html:143
-msgid ""
-"\n"
-"                                                Total\n"
-"                                            "
-msgstr ""
-
-#: static/templates/orders/order_representation.html:141
-msgid ""
-"\n"
-"                                    Write a feedback\n"
-"                                "
-msgstr ""
+msgstr "Guias"
 
 #: static/templates/orders/orders.html:22
 #: static/templates/orders/orders.html:28
 msgid "No orders were found"
-msgstr ""
+msgstr "Nenhuma pedido foi encontrado"
 
 #: static/templates/orders/orders.html:24
 msgid "order was found!"
-msgstr ""
+msgstr "O pedido foi encontrado"
 
 #: static/templates/orders/orders.html:26
 msgid "orders were found"
-msgstr ""
+msgstr "Os pedidos foram encontrados"
 
 #: static/templates/orders/orders.html:39
 msgid "Price "
-msgstr ""
-
-#: static/templates/orders/review_form.html:33
-msgid ""
-"\n"
-"                    Save\n"
-"                "
-msgstr ""
-
-#: static/templates/orders/review_form.html:37
-msgid ""
-"\n"
-"                    Save and Finalize Payment\n"
-"                "
-msgstr ""
-
-#: static/templates/payments/order_payment_checkout.html:186
-msgid ""
-"\n"
-"                                You do not have any connected payment "
-"method. Please add at least one\n"
-"                            "
-msgstr ""
-
-#: static/templates/payments/order_payment_checkout.html:190
-msgid "here"
-msgstr ""
-
-#: static/templates/payments/order_payment_checkout.html:220
-msgid "Send"
-msgstr ""
-
-#: static/templates/payments/payment_methods.html:11
-msgid "Your Payment Methods"
-msgstr ""
-
-#: static/templates/payments/payment_methods.html:16
-msgid " Add New Payment Method "
-msgstr ""
-
-#: static/templates/payments/payment_methods_adding.html:9
-msgid "Adding new payment method"
-msgstr ""
-
-#: static/templates/payments/payments.html:16
-msgid "Your Payments"
-msgstr ""
+msgstr "Preço "
 
 #: static/templates/socialaccount/authentication_error.html:5
 #: static/templates/socialaccount/authentication_error.html:8
 msgid "Social Network Login Failure"
-msgstr ""
+msgstr "Falha no logon de rede social."
 
 #: static/templates/socialaccount/authentication_error.html:10
 msgid ""
 "An error occurred while attempting to login via your social network account."
-msgstr ""
+msgstr "Ocorreu um erro ao tentar fazer o logon através da sua conta de rede social."
 
 #: static/templates/socialaccount/connections.html:5
 #: static/templates/socialaccount/connections.html:8
 msgid "Account Connections"
-msgstr ""
+msgstr "Conexões da conta"
 
 #: static/templates/socialaccount/connections.html:11
 msgid ""
 "You can sign in to your account using any of the following third party "
 "accounts:"
 msgstr ""
+"Você pode entrar em sua conta usando qualquer uma das seguintes contas de terceiros:"
 
 #: static/templates/socialaccount/connections.html:43
 msgid ""
 "You currently have no social network accounts connected to this account."
-msgstr ""
+msgstr "Atualmente, você não tem contas de rede social conectadas a esta conta."
 
 #: static/templates/socialaccount/connections.html:46
 msgid "Add a 3rd Party Account"
-msgstr ""
+msgstr "Adicionar uma conta de terceiros"
 
 #: static/templates/socialaccount/login_cancelled.html:5
 #: static/templates/socialaccount/login_cancelled.html:9
 msgid "Login Cancelled"
-msgstr ""
+msgstr "O logon Cancellado"
 
 #: static/templates/socialaccount/login_cancelled.html:13
 #, python-format
@@ -1145,27 +1023,31 @@ msgid ""
 "accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s"
 "\">sign in</a>."
 msgstr ""
+"Você decidiu cancelar o logon em nosso site usando uma das suas contas "
+"existentes. Se isso foi um erro, por favor proceda a <a href=\"%(login_url)s"
+"\">O logon</a>."
+
 
 #: static/templates/socialaccount/messages/account_connected.txt:2
 msgid "The social account has been connected."
-msgstr ""
+msgstr "A conta social foi conectada."
 
 #: static/templates/socialaccount/messages/account_connected_other.txt:2
 msgid "The social account is already connected to a different account."
-msgstr ""
+msgstr "A conta social já está conectada a uma conta diferente."
 
 #: static/templates/socialaccount/messages/account_disconnected.txt:2
 msgid "The social account has been disconnected."
-msgstr ""
+msgstr "A conta social foi desconectada."
 
 #: static/templates/socialaccount/signup.html:5
 msgid "Signup"
-msgstr ""
+msgstr "Inscrever-se"
 
 #: static/templates/socialaccount/signup.html:8
 #: static/templates/socialaccount/signup.html:19
 msgid "Sign Up"
-msgstr ""
+msgstr "Inscrever-se"
 
 #: static/templates/socialaccount/signup.html:10
 #, python-format
@@ -1173,271 +1055,281 @@ msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "%(site_name)s. As a final step, please complete the following form:"
 msgstr ""
+"Você está prestes a usar sua %(provider_name)s conta para se conectar a\n"
+"%(site_name)s. Como um passo final, preencha o seguinte formulário por favor:"
+
 
 #: static/templates/top_slider.html:17
 msgid "Explore Guides"
-msgstr ""
+msgstr "Explore Guias"
 
 #: static/templates/tours/modals/delete_modal.html:6
 msgid "Are you sure you want to delete this?"
-msgstr ""
+msgstr "Você tem certeza que você deseja excluir isso?"
 
 #: static/templates/tours/modals/delete_modal.html:7
-#: static/templates/tours/profile_settings_guide_tour_edit.html:116
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: static/templates/tours/modals/delete_modal.html:8
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:11
 msgid "Tour Editing page"
-msgstr ""
+msgstr " Página de Edição de Passeio"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:16
 msgid "Name:"
-msgstr ""
+msgstr "Nome:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:26
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:36
 msgid " Is active"
-msgstr ""
+msgstr " Está ativo"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:43
 msgid "Pricing"
-msgstr ""
+msgstr "Preços"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:46
 msgid "Payment type: "
-msgstr ""
+msgstr "Tipo de pagamento: "
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:59
 #: static/templates/tours/profile_settings_guide_tour_edit.html:84
 msgid "Currency: "
-msgstr ""
+msgstr "Moeda: "
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:68
 msgid "Price Hourly:"
-msgstr ""
+msgstr "Preço horário:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:74
 msgid "Minimum Hours duration:"
-msgstr ""
+msgstr "Duração das horas mínimas:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:93
 msgid "Price:"
-msgstr ""
+msgstr "Preço:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:99
 msgid "Hours duration:"
-msgstr ""
+msgstr "Duração das horas"
 
-#: static/templates/tours/profile_settings_guide_tour_edit.html:110
-msgid "Add Image"
-msgstr ""
-
-#: static/templates/tours/profile_settings_guide_tour_edit.html:118
+#: static/templates/tours/profile_settings_guide_tour_edit.html:107
+#: static/templates/tours/profile_settings_guide_tour_edit.html:119
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
-#: static/templates/tours/profile_settings_guide_tour_edit.html:126
-msgid "Delete Image"
-msgstr ""
+#: static/templates/tours/profile_settings_guide_tour_edit.html:114
+msgid "Add Image"
+msgstr "Adicionar Imagem"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:127
+msgid "Delete Image"
+msgstr "Excluir Imagem"
+
+#: static/templates/tours/profile_settings_guide_tour_edit.html:128
 msgid "Make main"
-msgstr ""
+msgstr "Faça principal"
 
 #: static/templates/tours/profile_settings_guide_tours.html:12
 msgid "Create Tour"
-msgstr ""
+msgstr "Criar Passeio"
 
 #: static/templates/tours/profile_settings_guide_tours.html:41
 msgid "Active"
-msgstr ""
+msgstr "Ativo"
 
 #: static/templates/tours/profile_settings_guide_tours.html:43
 msgid "Not Active"
-msgstr ""
-
-#: static/templates/tours/profile_settings_guide_tours.html:51
-#: static/templates/tours/tours.html:184
-msgid "Price: "
-msgstr ""
+msgstr "Não ativo"
 
 #: static/templates/tours/profile_settings_guide_tours.html:57
-#: static/templates/tours/tours.html:190
+#: static/templates/tours/tours.html:188
 msgid "Free!"
-msgstr ""
+msgstr "Grátis!"
 
 #: static/templates/tours/profile_settings_guide_tours.html:63
 msgid "hour"
-msgstr ""
+msgstr "hora"
 
 #: static/templates/tours/profile_settings_guide_tours.html:65
 msgid "hours"
-msgstr ""
+msgstr "horas"
 
 #: static/templates/tours/profile_settings_guide_tours.html:81
 msgid "Tour Page"
-msgstr ""
+msgstr "Página de Passeio"
 
 #: static/templates/tours/profile_settings_guide_tours.html:86
 msgid "Tour Editing"
-msgstr ""
+msgstr "Edição de passeio"
 
 #: static/templates/tours/profile_settings_guide_tours.html:90
 msgid "Delete Tour"
-msgstr ""
+msgstr "Remover Passeio"
 
-#: static/templates/tours/tour.html:88
+#: static/templates/tours/tour.html:81
 msgid "No tour overview so far..."
-msgstr ""
+msgstr "Não há uma crítica agora mesmo..."
 
-#: static/templates/tours/tour.html:110
+#: static/templates/tours/tour.html:103
 msgid "Book"
-msgstr ""
+msgstr "Reserver"
 
-#: static/templates/tours/tour.html:115
+#: static/templates/tours/tour.html:108
 msgid "You have already booked this tour"
-msgstr ""
+msgstr "Você já reservou este passeio"
 
-#: static/templates/tours/tour.html:347
+#: static/templates/tours/tour.html:236
+msgid "Write a Review"
+msgstr "Escreva uma crítica"
+
+#: static/templates/tours/tour.html:241
+msgid "Review Title"
+msgstr "Rever o título"
+
+#: static/templates/tours/tour.html:245
+msgid "Review Text"
+msgstr "Rever o texto"
+
+#: static/templates/tours/tour.html:337
 msgid "Other Tours of"
-msgstr ""
+msgstr "Otros passeios de"
 
 #: static/templates/tours/tours.html:23 static/templates/tours/tours.html:29
 msgid "No tours were found"
-msgstr ""
+msgstr "Não foram encontrados os passeios"
 
 #: static/templates/tours/tours.html:25
 msgid "tours was found!"
-msgstr ""
+msgstr "Passeio foi encontrado!"
 
 #: static/templates/tours/tours.html:27
 msgid "tours were found"
-msgstr ""
+msgstr "Passeios foram encontrados!"
 
 #: static/templates/tours/tours.html:68
 msgid "Include hourly price offers"
-msgstr ""
+msgstr "Incluir ofertas preço horário"
 
 #: static/templates/tours/tours.html:79
 msgid "Fixed price "
-msgstr ""
+msgstr "Preço fixo"
 
 #: static/templates/tours/tours.html:85
 msgid "Include fixed-prices offers"
-msgstr ""
+msgstr "Incluir ofertas preço fixo"
 
 #: static/templates/tours/tours.html:101
 msgid "Include FREE offers"
-msgstr ""
+msgstr "Incluir ofertas GRATUITAS"
 
-#: static/templates/tours/tours.html:194
+#: static/templates/tours/tours.html:192
 msgid "Min hours:"
-msgstr ""
+msgstr "Horas mínimas:"
 
-#: static/templates/tours/tours.html:199
+#: static/templates/tours/tours.html:197
 msgid "Go to Tour"
-msgstr ""
+msgstr "Vá para o passeio"
 
 #: static/templates/users/general_settings.html:13
 msgid "Current Password"
-msgstr ""
+msgstr "Senha atual"
 
 #: static/templates/users/general_settings.html:18
 msgid "New Password"
-msgstr ""
+msgstr "Senha nova"
 
 #: static/templates/users/general_settings.html:23
 msgid "New Password Again"
-msgstr ""
+msgstr "Senha nova novamente"
 
 #: static/templates/users/home.html:19
 msgid " Guides "
-msgstr ""
+msgstr " Guias "
 
 #: static/templates/users/home.html:24
 msgid "Search on Local Guides"
-msgstr ""
+msgstr "Procure guias locais"
 
 #: static/templates/users/home.html:30
 msgid "Where are you going?"
-msgstr ""
+msgstr "Onde você vai?"
 
 #: static/templates/users/home.html:43
 msgid " Which of your interests should the guide meet? "
-msgstr ""
+msgstr " Qual dos seus interesses o guia deve atender? "
 
 #: static/templates/users/home.html:53
 msgid "Search for Guides"
-msgstr ""
+msgstr "Procure Guias"
 
 #: static/templates/users/home.html:405
 msgid "Explore Our Top Guides"
-msgstr ""
+msgstr "Explore nossos melhores guias"
 
 #: static/templates/users/home.html:406 static/templates/users/home.html:417
 msgid "view all"
-msgstr ""
+msgstr "Ver tudo"
 
 #: static/templates/users/home.html:416
 msgid " Explore Our Top Tours"
-msgstr ""
+msgstr " Explore nossos melhores passeios"
 
 #: static/templates/users/tourist.html:88
 msgid "Next Page"
-msgstr ""
+msgstr "Próxima página"
 
 #: static/templates/website_management/contact_us.html:6
 msgid "Contact Us"
-msgstr ""
+msgstr "Contate-Nos"
 
 #: static/templates/website_management/contact_us.html:18
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: static/templates/website_management/contact_us.html:24
 msgid "E-mail"
-msgstr ""
+msgstr "Email"
 
 #: static/templates/website_management/contact_us.html:30
 msgid "Message"
-msgstr ""
+msgstr "Mensagem"
 
 #: static/templates/website_management/contact_us.html:45
 msgid "Phone Number"
-msgstr ""
+msgstr "Número de telefone"
 
 #: static/templates/website_management/contact_us.html:51
 msgid "Address"
-msgstr ""
+msgstr "Endereço"
 
-#: tourzan/settings.py:188
+#: tourzan/settings.py:158
 msgid "English"
-msgstr ""
+msgstr "Inglês"
 
-#: tourzan/settings.py:189
+#: tourzan/settings.py:159
 msgid "Spanish"
-msgstr ""
+msgstr "Espanhol"
 
-#: tourzan/settings.py:190
+#: tourzan/settings.py:160
 msgid "French"
-msgstr ""
+msgstr "Francês"
 
-#: tourzan/settings.py:191
+#: tourzan/settings.py:161
 msgid "Portuguese"
-msgstr ""
+msgstr "Português"
 
-#: tourzan/settings.py:192
+#: tourzan/settings.py:162
 msgid "Japanese"
-msgstr ""
+msgstr "Japonês"
 
-#: tourzan/settings.py:193
+#: tourzan/settings.py:163
 msgid "Russian"
-msgstr ""
+msgstr "Russo"
