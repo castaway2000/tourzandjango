@@ -25,4 +25,4 @@ AWS_S3_ENCRYPTION = True
 
 MEDIA_URL = 'https://tourzan-testing.s3.amazonaws.com/'
 
-# AXES_BEHIND_REVERSE_PROXY = True
+AXES_BEHIND_REVERSE_PROXY = True
