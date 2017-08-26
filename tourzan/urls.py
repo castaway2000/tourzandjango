@@ -40,9 +40,8 @@ def api_urls():
 #added here i18n_patterns for localization
 urlpatterns = i18n_patterns(
 
-
-    url(r'^login/$', watch_login(admin_login), name='login'),
     url(r'^admin/', admin.site.urls),
+
 
     url(r'^', include('chats.urls')),
     url(r'^', include('locations.urls')),
