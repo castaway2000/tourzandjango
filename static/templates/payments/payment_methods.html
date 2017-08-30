@@ -29,14 +29,25 @@
                     <div class="col-md-4">
                         <div class="card-thumb">
                             <ul class="card-thumb-actions">
-{#                                <li>#}
-{#                                    <a class="fa fa-pencil popup-text" href="#edit-card-dialog" rel="tooltip"#}
-{#                                       data-placement="top" title="edit" data-effect="mfp-zoom-out">#}
-{#                                    </a>#}
-{#                                </li>#}
                                 <li>
-                                    <a class="fa fa-times" href="{% url 'deleting_payment_method' payment_method.id %}"
-                                       rel="tooltip" data-placement="top" title="remove"></a>
+                                    <a class="fa fa-check btn-default-payment-method
+                                    {% if payment_method.is_default %}active{% endif %}"
+                                       href="{% url 'payment_method_set_default' payment_method.id %}"
+                                       rel="tooltip"
+                                       data-placement="top"
+                                       {% if payment_method.is_default %}
+                                           title="{% blocktrans %}Is default{% endblocktrans %}"
+                                       {% else %}
+                                           title="{% blocktrans %}Make default{% endblocktrans %}"
+                                       {% endif %}
+                                       >
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="fa fa-times btn-delete-payment-method" href="{% url 'deleting_payment_method' payment_method.id %}"
+                                       rel="tooltip" data-placement="top"
+                                       title="{% blocktrans %}Remove{% endblocktrans %}">
+                                    </a>
                                 </li>
                             </ul>
                             {% if payment_method.is_paypal %}

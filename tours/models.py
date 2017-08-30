@@ -26,10 +26,8 @@ class Tour(models.Model):
     image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default="/tours/images/default_tour_image_medium.jpg")
     image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default="/tours/images/default_tour_image_small.jpg")
 
-
     guide = models.ForeignKey(GuideProfile)
     city = models.ForeignKey(City, blank=True, null=True, default=None)
-
     rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     #for fixed price tours
@@ -39,9 +37,7 @@ class Tour(models.Model):
 
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     min_hours = models.IntegerField(default=0)
-
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)#in decimals
-
     payment_type = models.ForeignKey(PaymentType, blank=True, null=True, default=None)#hourly or fixed price
     slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, default=random_string_creating)
 

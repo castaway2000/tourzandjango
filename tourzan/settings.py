@@ -280,4 +280,10 @@ except:
     pass
 
 
+try:
+    #local settings, specific for your machine
+    from .local_settings import *
+except:
+    pass
+
 

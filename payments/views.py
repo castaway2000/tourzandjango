@@ -44,7 +44,6 @@ def payment_methods_adding(request):
     #for using at template js for initializing of braintree form
     request.session['braintree_client_token'] = braintree.ClientToken.generate()
 
-
     payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
     if created:
         result = braintree.Customer.create({
@@ -55,7 +54,6 @@ def payment_methods_adding(request):
         payment_customer.uuid = result.customer.id
         payment_customer.save(force_update=True)
 
-
     if request.POST:
         payment_method_nonce = request.POST.get('payment_method_nonce')
         if payment_method_nonce:
@@ -65,7 +63,10 @@ def payment_methods_adding(request):
                 "options": {
                     "verify_card": True,
                     # "fail_on_duplicate_payment_method": True,
-                    # "make_default": True #first payment method of a customer will be marked as "default"
+                    # True #first payment method of a customer will be marked as "default"
+
+                    #just checkbox without being a part of a form returns "on" instead of True if it is checked
+                    "make_default": True if request.POST.get('is_default') else False
                 }
             })
 
@@ -75,7 +76,6 @@ def payment_methods_adding(request):
 
             response_data = result.payment_method
             token = response_data.token
-
             kwargs = {
                 "user": user,
                 "token": token
@@ -229,6 +229,32 @@ def deleting_payment_method(request, payment_method_id):
                 messages.success(request, 'Payment method has been deleted successfully!')
             else:
                 messages.error(request, 'Failure during deleting a payment method!')
+        except Exception as e:
+            messages.error(request, 'No such payment method was found!')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required()
+def payment_method_set_default(request, payment_method_id):
+    user = request.user
+    if payment_method_id:
+        try:
+            payment_method = PaymentMethod.objects.get(id=payment_method_id, user=user, is_active=True)
+
+            #all other Payment methods on Braintree side will be automatically updated to make_default = False
+            result = braintree.PaymentMethod.update(payment_method.token, {
+                "options":{
+                    "make_default": True
+                }
+            })
+            print(result)
+            if result.is_success:
+                payment_method.is_default = True
+                payment_method.save()
+                messages.success(request, 'New default payment method has been applied successfully!')
+            else:
+                messages.error(request, 'Failure during changing a default payment method!')
         except Exception as e:
             messages.error(request, 'No such payment method was found!')
 
