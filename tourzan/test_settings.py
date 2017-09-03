@@ -1,3 +1,5 @@
+import os
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
@@ -26,3 +28,9 @@ AWS_S3_ENCRYPTION = True
 MEDIA_URL = 'https://tourzan-testing.s3.amazonaws.com/'
 
 AXES_BEHIND_REVERSE_PROXY = True
+
+BRAINTREE_MERCHANT_ID = os.environ.get('BRAINTREE_MERCHANT_ID', '')
+BRAINTREE_PUBLIC_KEY = os.environ.get('BRAINTREE_PUBLIC_KEY', '')
+BRAINTREE_PRIVATE_KEY = os.environ.get('BRAINTREE_PRIVATE_KEY', '')
+
+FROM_EMAIL = "noreply@tourzan.com"

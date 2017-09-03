@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^order_payment_checkout/(?P<order_id>\w+)/$', views.order_payment_checkout, name='order_payment_checkout'),
 
     url(r'^deleting_payment_method/(?P<payment_method_id>\w+)/$', views.deleting_payment_method, name='deleting_payment_method'),
+    url(r'^payment_method_set_default/(?P<payment_method_id>\w+)/$', views.payment_method_set_default, name='payment_method_set_default'),
 ]

@@ -189,12 +189,6 @@ JWT_AUTH = {
 }
 
 
-#Braintree integration info - sandbox credentials (not Production)
-BRAINTREE_MERCHANT_ID = 'm66dhkzh66jhcw6x'
-BRAINTREE_PUBLIC_KEY = 'gg65yby3954fpxgk'
-BRAINTREE_PRIVATE_KEY = 'f7e5cdc42eb7f230d80f94fe7db3cc0e'
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -279,5 +273,11 @@ try:
 except:
     pass
 
+
+try:
+    #local settings, specific for your machine
+    from .local_settings import *
+except:
+    pass
 
 
