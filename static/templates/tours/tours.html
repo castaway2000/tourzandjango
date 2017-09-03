@@ -69,9 +69,12 @@
                                     </label>
                                 </div>
                                 <input type="text" id="price-slider-1" name="hourly_price"
-                                       data-min = "0" data-max="50"
+                                       data-min="{{ request.session.tours_rate_hourly_min }}"
+                                       data-max="{{ request.session.tours_rate_hourly_max }}"
                                        {% if request.GET.hourly_price %}
-                                           value="{{ request.GET.hourly_price }}"
+                                            value="{{ request.GET.hourly_price }}"
+                                            data-from="{{ hourly_price_min }}"
+                                            data-to="{{ hourly_price_max }}"
                                        {% endif %}
                                 >
                             </li>
@@ -86,9 +89,12 @@
                                     </label>
                                 </div>
                                 <input type="text" id="price-slider-2" name="fixed_price"
-                                       data-min = "0" data-max="300"
+                                       data-min="{{ request.session.tours_rate_fixed_min }}"
+                                       data-max="{{ request.session.tours_rate_fixed_max }}"
                                        {% if request.GET.fixed_price %}
-                                           value="{{ request.GET.fixed_price }}"
+                                            value="{{ request.GET.fixed_price }}"
+                                            data-from="{{ fixed_price_min }}"
+                                            data-to="{{ fixed_price_max }}"
                                        {% endif %}
                                 >
                             </li>

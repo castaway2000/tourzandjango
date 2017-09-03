@@ -9,22 +9,18 @@ from orders.models import Review
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Avg, Max, Min, Sum
 
 
 def guides(request):
     current_page = "guides"
-
     user = request.user
-
     services = Service.objects.filter(is_active=True).values()
-
 
     base_kwargs = dict()
     base_user_interests_kwargs = dict()
     base_guide_service_kwargs = dict()
-
     hourly_price_kwargs = dict()
-
 
     filtered_hourly_prices = request.GET.get('hourly_price')
 
@@ -37,13 +33,11 @@ def guides(request):
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
-
     language_input = request.GET.getlist(u'language_input')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
     languages = [(x,languages_english_dict[x]) for x in language_input]
-
 
     order_results = request.GET.get('order_results')
 
@@ -52,15 +46,16 @@ def guides(request):
     # will be combined with the base filters
     #Hourly price tours filtering
     if filtered_hourly_prices:
-        price = filtered_hourly_prices.split(";")
-        if len(price)==2:
-            hourly_price_kwargs["rate__gte"] = price[0]
-            hourly_price_kwargs["rate__lte"] = price[1]
-    else:
-        #default values
-        hourly_price_kwargs["rate__gte"] = 0
-        hourly_price_kwargs["rate__lte"] = 50
-
+        hourly_price = filtered_hourly_prices.split(";")
+        if len(hourly_price)==2:
+            hourly_price_min = hourly_price[0]
+            hourly_price_max = hourly_price[1]
+            hourly_price_kwargs["rate__gte"] = hourly_price_min
+            hourly_price_kwargs["rate__lte"] = hourly_price_max
+    # else:
+    #     #default values
+    #     hourly_price_kwargs["rate__gte"] = 0
+    #     hourly_price_kwargs["rate__lte"] = 50
 
     #filtering by cities
     if city_input:
@@ -81,55 +76,41 @@ def guides(request):
         if order_results == "price":
             order_results = ["rate"]
             order_results = tuple(order_results)
-
         elif order_results == "-price":
             order_results = ["-rate"]
             order_results = tuple(order_results)
-
         elif order_results == "rating":
             order_results = tuple(["rating"])
-
         elif order_results == "-rating":
             order_results = tuple(["-rating"])
-
         else:
             order_results = tuple(["rate"])
-
     else:
         order_results = tuple(["rate"])
 
-
     #it is needed for displaying of full list of filters
     # even if some filters are not available for the current list of tours
-
     #if it is one element in tuple, * is not needed
 
-    print (order_results)
+    # print (order_results)
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
-
-    print (base_kwargs)
+    # print (base_kwargs)
     if hourly_price_kwargs:
-        print (1)
+        # print (1)
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
-
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
-
         guides = guides_initial.filter(**base_kwargs_mixed)
-
     elif city_input or guide_input:
-        print (2)
+        # print (2)
         # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
         guides = guides_initial.filter(**base_kwargs)
-
     elif request.GET:
-        print (3)
+        # print (3)
         guides = GuideProfile.objects.none()
-
     else:
-        print (4)
+        # print (4)
         guides = guides_initial
-
 
     if base_user_interests_kwargs:
         user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)
@@ -140,9 +121,13 @@ def guides(request):
         guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
         guide_services_guides_ids = [item.guide.id for item in guide_services]
         guides = guides.filter(id__in=guide_services_guides_ids)
-
     items_nmb = guides.count()
 
+    guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
+    if not request.session.get("guides_rates_cached"):
+        request.session["guides_rate_min"] = int(guides_rate_info["rate__min"]) if float(guides_rate_info["rate__min"]).is_integer() else float(guides_rate_info["rate__min"])
+        request.session["guides_rate_max"] = int(guides_rate_info["rate__max"]) if float(guides_rate_info["rate__max"]).is_integer() else float(guides_rate_info["rate__max"])
+        request.session["guides_rates_cached"] = True
 
     return render(request, 'guides/guides.html', locals())
 

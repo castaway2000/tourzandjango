@@ -226,8 +226,7 @@ $('.nav-drop').dropit();
 
 
 $("#price-slider").ionRangeSlider({
-    min: 130,
-    max: 575,
+    min: 0,
     type: 'double',
     prefix: "$",
     // maxPostfix: "+",
@@ -236,8 +235,7 @@ $("#price-slider").ionRangeSlider({
 });
 
 $("#price-slider-1").ionRangeSlider({
-    min: 130,
-    max: 575,
+    min: 0,
     type: 'double',
     prefix: "$",
     // maxPostfix: "+",
@@ -246,8 +244,7 @@ $("#price-slider-1").ionRangeSlider({
 });
 
 $("#price-slider-2").ionRangeSlider({
-    min: 130,
-    max: 575,
+    min: 0,
     type: 'double',
     prefix: "$",
     // maxPostfix: "+",
@@ -315,13 +312,9 @@ $('.booking-item-container').children('.booking-item').click(function(event) {
     }
 });
 
-
 $('.form-group-cc-number input').payment('formatCardNumber');
 $('.form-group-cc-date input').payment('formatCardExpiry');
 $('.form-group-cc-cvc input').payment('formatCardCVC');
-
-
-
 
 if ($('#map-canvas').length) {
     var map,

@@ -95,9 +95,12 @@
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Price per hour{% endblocktrans %}</h5>
                                 <input type="text" id="price-slider-1" name="hourly_price"
-                                       data-min = "0" data-max="50"
+                                       data-min="{{ request.session.guides_rate_min }}"
+                                       data-max="{{ request.session.guides_rate_max }}"
                                        {% if request.GET.hourly_price %}
-                                           value="{{ request.GET.hourly_price }}"
+                                            value="{{ request.GET.hourly_price }}"
+                                            data-from="{{ hourly_price_min }}"
+                                            data-to="{{ hourly_price_max }}"
                                        {% endif %}
                                 >
                             </li>
