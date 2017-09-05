@@ -30,6 +30,7 @@ def guides(request):
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
 
     city_input = request.GET.getlist(u'city_input')
+    place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
@@ -58,7 +59,17 @@ def guides(request):
     #     hourly_price_kwargs["rate__lte"] = 50
 
     #filtering by cities
-    if city_input:
+    if place_id:
+        print("place_id %s" % place_id)
+        try:
+            city = City.objects.get(place_id=place_id)
+            print(city)
+            city_from_place_id = city.full_location
+
+        except:
+            pass
+        base_kwargs["city__place_id"] = place_id
+    elif city_input:
         base_kwargs["city__name__in"] = city_input
 
     #filtering by guides
@@ -125,8 +136,14 @@ def guides(request):
 
     guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
     if not request.session.get("guides_rates_cached"):
-        request.session["guides_rate_min"] = int(guides_rate_info["rate__min"]) if float(guides_rate_info["rate__min"]).is_integer() else float(guides_rate_info["rate__min"])
-        request.session["guides_rate_max"] = int(guides_rate_info["rate__max"]) if float(guides_rate_info["rate__max"]).is_integer() else float(guides_rate_info["rate__max"])
+        if items_nmb>0:#guides found more than 0
+            rate_min = guides_rate_info.get("rate__min", 0)
+            rate_max = guides_rate_info.get("rate__max")
+        else:
+            rate_min = 0
+            rate_max = 50#defaulr max value
+        request.session["guides_rate_min"] = int(rate_min) if float(rate_min).is_integer() else float(rate_min)
+        request.session["guides_rate_max"] = int(rate_max) if float(rate_max).is_integer() else float(rate_max)
         request.session["guides_rates_cached"] = True
 
     return render(request, 'guides/guides.html', locals())
@@ -319,17 +336,19 @@ def profile_settings_guide(request):
 
         GuideService.objects.filter(guide=guide).exclude(id__in=guide_services_ids_list).update(is_active=False)
 
-
-
-        #To review this approach in the future
-        city = request.POST.get("city")
-        if city:
-            city, created = City.objects.get_or_create(name=city)
+        print(request.POST)
+        place_id = request.POST.get("place_id")
+        full_location = request.POST.get("city_search_input")
+        if place_id :
+            city_original_name = full_location.split(",")[0]#first part - city name
+            city, created = City.objects.get_or_create(place_id =place_id ,
+                                                       defaults={"full_location": full_location,
+                                                               "original_name": city_original_name})
 
         if form.is_valid():
-
             new_form = form.save(commit=False)
-            new_form.city = city
+            if place_id:
+                new_form.city = city
             if not guide:
                 new_form.user = user
                 new_form.is_active = True

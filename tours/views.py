@@ -33,6 +33,7 @@ def tours(request):
     filtered_is_fixed_price_included = request.GET.get('is_fixed_price_included')
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
     city_input = request.GET.getlist(u'city_input')
+    place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
     order_results = request.GET.get('order_results')
 
@@ -64,7 +65,17 @@ def tours(request):
         free_price_kwargs["is_free"] = True
 
     #filtering by cities
-    if city_input:
+    if place_id:
+        print("place_id %s" % place_id)
+        try:
+            city = City.objects.get(place_id=place_id)
+            print(city)
+            city_from_place_id = city.full_location
+
+        except:
+            pass
+        base_kwargs["city__place_id"] = place_id
+    elif city_input:
         base_kwargs["city__name__in"] = city_input
 
     #filtering by guides

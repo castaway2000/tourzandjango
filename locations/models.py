@@ -31,6 +31,9 @@ class City(models.Model):
     image = models.ImageField(upload_to=upload_path_handler_city, blank=True, null=True, default=None)
     is_featured = models.BooleanField(default=False)#for showing on Homepage
     is_active = models.BooleanField(default=True)
+    place_id = models.CharField(max_length=128, blank=True, null=True)
+    original_name = models.CharField(max_length=128, blank=True, null=True)
+    full_location = models.CharField(max_length=256, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
