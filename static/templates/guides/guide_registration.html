@@ -10,115 +10,7 @@
         <div class="row">
             <div class="col-lg-10 col-lg-offset-1">
                 <div class="gap gap-small"></div>
-                <form method="post" enctype="multipart/form-data" action="{% url 'profile_settings_guide' %}">{% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="row">
-                                <div class="col-lg-7">
-                                    <h4>{% blocktrans %}Guide Profile{% endblocktrans %}</h4>
-                                </div>
-                                {% if guide %}
-                                    <div class="col-lg-5">
-                                         <a href="{% url 'guide' guide.user.username %}">
-                                             {% blocktrans %}See Public Page{% endblocktrans %}
-                                         </a>
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Name{% endblocktrans %}*:</label>
-                                <span class="text-error">{{ form.name.errors }}</span>
-                                <input class="form-control" name="{{ form.name.html_name }}"
-                                       value="{% if guide and guide.name %}{{ form.name.value }}{% endif %}">
-                            </div>
-
-                            <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}City{% endblocktrans %}*:</label>
-                                <input class="form-control" name="city" value="{% if guide and guide.city %}{{ guide.city.name}}{% endif %}">
-                            </div>
-
-                            <div class="form-group form-group-icon-left">
-                                <i class="fa fa-money input-icon"></i>
-                                <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %}:</label>
-                                <span class="text-error">{{ form.rate.errors }}</span>
-                                <input type="number" step="0.1" name="{{ form.rate.html_name }}" class="form-control w100">
-                            </div>
-
-                            <div class="form-group form-group-icon-left">
-                                <i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
-                                <span class="text-error">{{ form.date_of_birth.errors }}</span>
-                                <input class="form-control datepicker"  data-date-format="mm.dd.yyyy"
-                                       name="{{ form.date_of_birth.html_name }}"
-                                       {% if request.POST.date_of_birth %}
-                                            value="{{ request.POST.date_of_birth }}"
-                                       {% else %}
-                                            value="{{ form.date_of_birth.value|date:'m.d.Y' }}"
-                                       {% endif %}
-                                >
-                            </div>
-
-                            <div class="form-group">
-                                <label>{% blocktrans %}Interests{% endblocktrans %}*:</label>
-
-                                <select multiple class="form-control select2"
-                                    id="interest_input" name="interests"
-                                    data-search_url="{% url 'search_interest' %}"
-                                >
-                                    {% for user_interest in user_interests %}
-                                        <option value="{{ user_interest.interest.name }}" selected>{{ user_interest.interest.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
-                                <label>{% blocktrans %}Overview{% endblocktrans %}*:</label>
-                                <span class="text-error">{{ form.overview.errors }}</span>
-                                <textarea rows="5" maxlength="50000"
-                                          placeholder="Write here some info about yourself (5000 characters limit)"
-                                          name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
-
-                            </div>
-
-                            {% if services %}
-                                <p class="lead">{% blocktrans %}Additional services{% endblocktrans %}*:</p>
-
-                                {% for service in services %}
-                                    <div class="checkbox">
-                                        <label>
-                                          <input type="checkbox" name="service_{{ service.html_field_name }}"
-                                              {% if service.id in guide_services_ids %}checked{% endif %}
-                                          > {{ service.name }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-
-                        </div>
-                        <div class="col-md-4 col-md-offset-1">
-                            <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
-                            {% if user.guideprofile and user.guideprofile.profile_image %}
-                                <div>
-                                    <img src="{{ user.guideprofile.profile_image.url }}" class="img-responsive img-rounded">
-                                </div>
-                            {% else %}
-                                <div>
-                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
-                                </div>
-                            {% endif %}
-                            <div class="form-group">
-                                <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
-                                <span class="text-error">{{ form.profile_image.errors }}</span>
-                                <input type="file" name="{{ form.profile_image.html_name }}">
-                            </div>
-
-                            <hr>
-                            <input type="submit" class="btn btn-primary" value="Save Changes">
-
-                        </div>
-                    </div>
-                </form>
+                    {% include 'guides/guide_profile_edit_form.html' %}
                 <div class="gap gap-small"></div>
             </div>
         </div>
@@ -129,6 +21,10 @@
 {% block js_stuff %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 {% endblock js_stuff %}
 
 

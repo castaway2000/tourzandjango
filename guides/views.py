@@ -241,7 +241,7 @@ def guide(request, username):
 
 
 @login_required()
-def profile_settings_guide(request):
+def profile_settings_guide(request, guide_creation=True):
     page = "profile_settings_guide"
     user = request.user
 
@@ -258,11 +258,13 @@ def profile_settings_guide(request):
 
     try:
         guide = user.guideprofile
+        creating_guide=False
     except:
-        if not request.POST:
+        if request.session.get("guide_registration_welcome_page_seen") != True:
             return HttpResponseRedirect(reverse("guide_registration_welcome"))
         else:
             guide = None
+            creating_guide=True
 
     if guide:
         form = GuideProfileForm(request.POST or None, request.FILES or None, instance=guide)
@@ -270,7 +272,6 @@ def profile_settings_guide(request):
         form = GuideProfileForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST':
-        print (request.POST)
 
         #Interests assigning
         interests = request.POST.getlist("interests")
@@ -313,30 +314,6 @@ def profile_settings_guide(request):
                 else:
                     user_language_second = user_language
 
-        #saving services
-
-        guide_services_ids_list = list()
-
-        print (request.POST)
-
-        for name, value in request.POST.items():
-            string_key = "service_"
-            if name.startswith(string_key):
-
-                cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
-                service = Service.objects.get(html_field_name=cleared_name)
-
-                price_field_name = "serviceprice_%s" % cleared_name
-
-                price = request.POST.get(price_field_name)
-
-                guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
-                                                                               is_active=True, defaults={"price": price})
-                guide_services_ids_list.append(guide_service.id)
-
-        GuideService.objects.filter(guide=guide).exclude(id__in=guide_services_ids_list).update(is_active=False)
-
-        print(request.POST)
         place_id = request.POST.get("place_id")
         full_location = request.POST.get("city_search_input")
         if place_id :
@@ -354,22 +331,42 @@ def profile_settings_guide(request):
                 new_form.is_active = True
             new_form = form.save()
 
-            if guide:
-                messages.success(request, 'Profile has been updated!')
-            else:
+            #saving services
+            guide = new_form
+            guide_services_ids_list = list()
+            for name, value in request.POST.items():
+                string_key = "service_"
+                if name.startswith(string_key):
+                    cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
+                    service = Service.objects.get(html_field_name=cleared_name)
+                    price_field_name = "serviceprice_%s" % cleared_name
+                    price = request.POST.get(price_field_name, 0)
+                    guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
+                                                                                   is_active=True, defaults={"price": price})
+                    guide_services_ids_list.append(guide_service.id)
+
+            GuideService.objects.filter(guide=guide).exclude(id__in=guide_services_ids_list).update(is_active=False)
+
+            if creating_guide:
+                #after success registration delete of pending variable which set redirect to Welcome page
+                if "guide_registration_welcome_page_seen" in request.session:
+                    del request.session["guide_registration_welcome_page_seen"]
+                request.session["current_role"] = "guide"
                 messages.success(request, 'Profile has been created!')
                 return HttpResponseRedirect(reverse("profile_settings_guide"))
-        else: #if form is invalid
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                messages.success(request, 'Profile has been updated!')
+        # else: #if form is invalid
+        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
-
-
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)
     guide_services_ids = [item.service.id for item in guide_services]
-
-    return render(request, 'users/profile_settings_guide.html', locals())
+    if creating_guide:
+        return render(request, 'guides/guide_registration.html', locals())
+    else:
+        return render(request, 'users/profile_settings_guide.html', locals())
 
 
 def search_guide(request):
@@ -395,23 +392,8 @@ def search_guide(request):
 
 
 def guide_registration_welcome(request):
+    request.session["guide_registration_welcome_page_seen"] = True
     return render(request, 'guides/guide_registration_welcome.html', locals())
-
-
-def guide_registration(request):
-    user = request.user
-
-    try:
-        guide = user.guideprofile
-        request.session["current_role"] = "guide"
-        return HttpResponseRedirect(reverse("profile_settings_guide"))
-    except Exception as e:
-        print(e)
-        pass
-
-    user_interests = UserInterest.objects.filter(user=user)
-    form = GuideProfileForm(request.POST or None, request.FILES or None)
-    return render(request, 'guides/guide_registration.html', locals())
 
 
 def earnings(request):
