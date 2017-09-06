@@ -70,7 +70,7 @@ def payment_methods_adding(request):
                 }
             })
 
-            # print(result)
+            print(result)
             # print(result.payment_method.token)
             # print(result.payment_method.__class__.__name__)
 
@@ -88,7 +88,6 @@ def payment_methods_adding(request):
                 last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
                 card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
                 kwargs["card_number"] = card_number
-
                 card_type = response_data.verifications[0]["credit_card"]["card_type"]
                 card_type, created = PaymentMethodType.objects.get_or_create(name=card_type)
 
@@ -245,10 +244,11 @@ def payment_method_set_default(request, payment_method_id):
             #all other Payment methods on Braintree side will be automatically updated to make_default = False
             result = braintree.PaymentMethod.update(payment_method.token, {
                 "options":{
-                    "make_default": True
+                    "make_default": True,
+                    "verify_card": False,
                 }
             })
-            print(result)
+            # print(result)
             if result.is_success:
                 payment_method.is_default = True
                 payment_method.save()

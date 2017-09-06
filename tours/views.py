@@ -12,8 +12,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from orders.models import Review, Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count
 from django.utils.translation import ugettext as _
+from django.db.models import Avg, Max, Min, Sum
 
 
 def tours(request):
@@ -33,8 +33,8 @@ def tours(request):
     filtered_is_fixed_price_included = request.GET.get('is_fixed_price_included')
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
     city_input = request.GET.getlist(u'city_input')
+    place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
-
     order_results = request.GET.get('order_results')
 
     #for filtering by price type we need to implement 2-levels logic.
@@ -42,34 +42,47 @@ def tours(request):
     # will be combined with the base filters
     #Hourly price tours filtering
     if filtered_is_hourly_price_included and filtered_hourly_prices:
-        price = filtered_hourly_prices.split(";")
-        if len(price)==2:
-            hourly_price_kwargs["price_hourly__gte"] = price[0]
-            hourly_price_kwargs["price_hourly__lte"] = price[1]
+        hourly_price = filtered_hourly_prices.split(";")
+        if len(hourly_price)==2:
+            hourly_price_min = hourly_price[0]
+            hourly_price_max = hourly_price[1]
+            hourly_price_kwargs["price_hourly__gte"] = hourly_price_min
+            hourly_price_kwargs["price_hourly__lte"] = hourly_price_max
             hourly_price_kwargs["payment_type_id"] = 1
 
     #Fixed price tours filtering
     if filtered_is_fixed_price_included and filtered_fixed_prices:
-        price = filtered_fixed_prices.split(";")
-        if len(price)==2:
-            fixed_price_kwargs["price__gte"] = price[0]
-            fixed_price_kwargs["price__lte"] = price[1]
+        fixed_price = filtered_fixed_prices.split(";")
+        if len(fixed_price)==2:
+            fixed_price_min = fixed_price[0]
+            fixed_price_max = fixed_price[1]
+            fixed_price_kwargs["price__gte"] = fixed_price_min
+            fixed_price_kwargs["price__lte"] = fixed_price_max
             fixed_price_kwargs["payment_type_id"] = 2
 
     #Free tours filtering
     if filtered_is_free_offers_included:
         free_price_kwargs["is_free"] = True
 
-
     #filtering by cities
-    if city_input:
+    if place_id:
+        print("place_id %s" % place_id)
+        try:
+            city = City.objects.get(place_id=place_id)
+            print(city)
+            city_from_place_id = city.full_location
+
+        except:
+            pass
+        base_kwargs["city__place_id"] = place_id
+    elif city_input:
         base_kwargs["city__name__in"] = city_input
 
     #filtering by guides
     if guide_input:
         base_kwargs["guide__user__username__in"] = guide_input
 
-    print ("guide_input: %s" % guide_input)
+    # print ("guide_input: %s" % guide_input)
 
     #ordering
     if order_results:
@@ -77,36 +90,25 @@ def tours(request):
             order_results = ["-is_free", "price_hourly"]
             order_results.insert(1, "price")
             order_results = tuple(order_results)
-
         elif order_results == "-price":
             order_results = ["is_free","-price_hourly"]
             order_results.insert(1, "-price")
             order_results = tuple(order_results)
-
         elif order_results == "rating":
             order_results = tuple(["rating"])
-
         elif order_results == "-rating":
             order_results = tuple(["-rating"])
-
         else:
             order_results = ("-is_free", "price_hourly")
-
     else:
         order_results = ("-rating", "-is_free", "price_hourly")
-
 
     #it is needed for displaying of full list of filters
     # even if some filters are not available for the current list of tours
 
     #if it is one element in tuple, * is not needed
-
-
     tours_initial = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True).order_by(*order_results)
-
-
     if hourly_price_kwargs or fixed_price_kwargs or free_price_kwargs:
-
         """
         #python 2
         z = x.copy()
@@ -118,8 +120,7 @@ def tours(request):
         z = {**x, **y}
         """
 
-        print (base_kwargs)
-
+        # print (base_kwargs)
         q_objects = Q()
 
         if fixed_price_kwargs:
@@ -139,13 +140,13 @@ def tours(request):
 
         #if it is one element in tuple, * is not needed
         tours = tours_initial.filter(q_objects).order_by(*order_results)
-        print ("12")
-        print (q_objects)
+        # print ("12")
+        # print (q_objects)
     elif city_input or guide_input:
-        print ("12345")
+        # print ("12345")
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
     elif request.GET and not "page" in request.GET:
-        print ("15")
+        # print ("15")
         tours = Tour.objects.none()
     else:
         tours = tours_initial
@@ -156,10 +157,17 @@ def tours(request):
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
 
     guides_ids = list(set([item.guide.id for item in tours_initial ]))
-    print ("guides ids: %s" % guides_ids)
+    # print ("guides ids: %s" % guides_ids)
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
-    print ("tours: %s" % tours)
+    #getting min and max price for prices range slider
+    tours_rate_info = tours.aggregate(Min("price"), Max("price"), Min("price_hourly"), Max("price_hourly"))
+    if not request.session.get("tours_rates_cached"):
+        request.session["tours_rate_fixed_min"] = int(tours_rate_info["price__min"]) if float(tours_rate_info["price__min"]).is_integer() else float(tours_rate_info["price__min"])
+        request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
+        request.session["tours_rate_hourly_min"] = int(tours_rate_info["price_hourly__min"]) if float(tours_rate_info["price_hourly__min"]).is_integer() else float(tours_rate_info["price_hourly__min"])
+        request.session["tours_rate_hourly_max"] = int(tours_rate_info["price_hourly__max"]) if float(tours_rate_info["price_hourly__max"]).is_integer() else float(tours_rate_info["price_hourly__max"])
+        request.session["tours_rates_cached"] = True
 
     page = request.GET.get('page', 1)
     paginator = Paginator(tours, 5)

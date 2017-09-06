@@ -40,13 +40,12 @@
                         <ul class="list booking-filters-list">
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-
-                                <select class="form-control select2" id="city_input" name="city_input"
-                                        data-search_url="{% url 'search_city' %}">
-                                    {% if request.GET.city_input %}
-                                        <option value="{{ request.GET.city_input }}" selected>{{ request.GET.city_input }}</option>
+                                <input id="city_search_input" class="form-control"
+                                    {% if city_from_place_id %}
+                                        value="{{ city_from_place_id }}"
                                     {% endif %}
-                                </select>
+                                >
+                                <input id="place_id" name="place_id" class="hidden">
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
@@ -69,9 +68,12 @@
                                     </label>
                                 </div>
                                 <input type="text" id="price-slider-1" name="hourly_price"
-                                       data-min = "0" data-max="50"
+                                       data-min="{{ request.session.tours_rate_hourly_min }}"
+                                       data-max="{{ request.session.tours_rate_hourly_max }}"
                                        {% if request.GET.hourly_price %}
-                                           value="{{ request.GET.hourly_price }}"
+                                            value="{{ request.GET.hourly_price }}"
+                                            data-from="{{ hourly_price_min }}"
+                                            data-to="{{ hourly_price_max }}"
                                        {% endif %}
                                 >
                             </li>
@@ -86,9 +88,12 @@
                                     </label>
                                 </div>
                                 <input type="text" id="price-slider-2" name="fixed_price"
-                                       data-min = "0" data-max="300"
+                                       data-min="{{ request.session.tours_rate_fixed_min }}"
+                                       data-max="{{ request.session.tours_rate_fixed_max }}"
                                        {% if request.GET.fixed_price %}
-                                           value="{{ request.GET.fixed_price }}"
+                                            value="{{ request.GET.fixed_price }}"
+                                            data-from="{{ fixed_price_min }}"
+                                            data-to="{{ fixed_price_max }}"
                                        {% endif %}
                                 >
                             </li>
@@ -240,4 +245,9 @@
 {% block js_stuff %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 {% endblock js_stuff %}

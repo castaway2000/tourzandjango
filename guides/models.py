@@ -16,6 +16,7 @@ class GuideProfile(models.Model):
     user = models.OneToOneField(User)
     city = models.ForeignKey(City)
 
+
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)

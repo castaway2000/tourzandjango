@@ -341,3 +341,29 @@ select.hide-arrow{
     width: 70%;
 }
 
+.btn-default-payment-method.active, .btn-default-payment-method:hover, .btn-default-payment-method:active{
+    background-color: #31dc72!important;
+    color: white!important;
+    border-color: #31dc72!important;
+    -webkit-box-shadow: 0 0 0 1px #31dc72!important;
+    box-shadow: 0 0 0 1px #31dc72!important;
+}
+
+.btn-delete-payment-method:hover, .btn-delete-payment-method:active{
+    background-color: red!important;
+    color: white!important;
+    border-color: red!important;
+    -webkit-box-shadow: 0 0 0 1px red!important;
+    box-shadow: 0 0 0 1px red!important;
+}
+
+
+.select2-selection--multiple {
+    border-radius: 0!important;
+    height: 44px!important;
+    border: 1px solid #ccc!important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple{
+    border: 1px solid #31dc72!important;
+}

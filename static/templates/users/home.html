@@ -27,12 +27,14 @@
                                 <div class="col-md-4">
                                     <div class="form-group form-group-lg form-group-icon-left">
 {#                                        <i class="fa fa-globe input-icon"></i>#}
-                                        <label>{% blocktrans %}Where are you going?{% endblocktrans %}</label>
-                                         <select class="form-control select2" id="city_input" name="city_input"
-                                             data-search_url="{% url 'search_city' %}"
-                                             placeholder="City"
-                                         >
-                                        </select>
+                                         <label>{% blocktrans %}Where are you going?{% endblocktrans %}</label>
+{#                                         <select class="form-control select2" id="city_input" name="city_input"#}
+{#                                             data-search_url="{% url 'search_city' %}"#}
+{#                                             placeholder="City"#}
+{#                                         >#}
+{#                                        </select>#}
+                                        <input class="typeahead form-control"  id="city_search_input">
+                                        <input id="place_id" name="place_id" class="hidden">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -207,8 +209,12 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                        <label>Where are you going?</label>
-                                        <input class="typeahead form-control" placeholder="City, Airport, Point of Interest or U.S. Zip Code" type="text" />
+                                        <label>{% blocktrans %}Where are you going{% endblocktrans %}?</label>
+{#                                        <input class="typeahead form-control" placeholder="City, Airport, Point of Interest or U.S. Zip Code" type="text" />#}
+{#                                        #}
+{#                                        <input class="typeahead form-control"  id="city_search_input" name="city_search_input">#}
+{#                                        <input class="hidden" id="hidden_search_city_place_id">#}
+{#                                        <input class="hidden" id="hidden_search_city_place_name">#}
                                     </div>
                                 </div>
                                 <div class="col-md-8">
@@ -407,7 +413,7 @@
         </h2>
         <div class="row row-wrap">
             {% for guide in guides %}
-                {% include 'users/guides_representation.html' %}
+                {% include 'users/homepage_top_guides_representation.html' %}
             {% endfor %}
         </div>
         <div class="gap gap-small"></div>
@@ -418,7 +424,7 @@
         </h2>
         <div class="row row-wrap">
             {% for tour in all_tours %}
-                {% include 'users/homepage_tour_items_representation.html' %}
+                {% include 'users/homepage_top_tours_representation.html' %}
             {% endfor %}
         </div>
         <div class="gap gap-small"></div>
@@ -428,4 +434,9 @@
 {% block js_stuff %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 {% endblock %}

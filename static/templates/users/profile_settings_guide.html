@@ -52,7 +52,14 @@
 
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
                         <label>City:</label>
-                        <input class="form-control" name="city" value="{% if guide and guide.city %}{{ guide.city }}{% endif %}">
+                        <input class="typeahead form-control" id="city_search_input" name="city_search_input"
+                           {% if guide and guide.city %}
+                                {% if guide.city.full_location %}
+                                    value="{{ guide.city.full_location }}"
+                                {% endif %}
+                            {% endif %}
+                            >
+                        <input id="place_id" name="place_id" class="hidden">
                     </div>
 
                     <div class="form-group form-group-icon-left">
@@ -264,7 +271,11 @@
 
 
 {% block js_stuff %}
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 {% endblock js_stuff %}

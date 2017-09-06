@@ -197,6 +197,7 @@ LANGUAGES = (
     ('en', _('English')),
     ('es', _('Spanish')),
     ('fr', _('French')),
+    ('de', _('German')),
     ('pt', _('Portuguese')),
     ('ja', _('Japanese')),
     ('ru', _('Russian')),
@@ -223,7 +224,7 @@ EMAIL_HOST_PASSWORD = 'Testing12#$'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-FROM_EMAIL = "hello@tourzan.com"
+FROM_EMAIL = "noreply@tourzan.com"
 
 
 GOOGLE_RECAPTCHA_SECRET_KEY = "6LcH3h4TAAAAABBUj4ci88yDIaM_A1A2YYt4IeTr"
