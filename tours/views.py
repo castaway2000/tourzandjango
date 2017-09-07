@@ -71,7 +71,6 @@ def tours(request):
             city = City.objects.get(place_id=place_id)
             print(city)
             city_from_place_id = city.full_location
-
         except:
             pass
         base_kwargs["city__place_id"] = place_id
@@ -83,7 +82,6 @@ def tours(request):
         base_kwargs["guide__user__username__in"] = guide_input
 
     # print ("guide_input: %s" % guide_input)
-
     #ordering
     if order_results:
         if order_results == "price":
@@ -142,7 +140,7 @@ def tours(request):
         tours = tours_initial.filter(q_objects).order_by(*order_results)
         # print ("12")
         # print (q_objects)
-    elif city_input or guide_input:
+    elif place_id or city_input or guide_input:
         # print ("12345")
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
     elif request.GET and not "page" in request.GET:

@@ -65,7 +65,6 @@ def guides(request):
             city = City.objects.get(place_id=place_id)
             print(city)
             city_from_place_id = city.full_location
-
         except:
             pass
         base_kwargs["city__place_id"] = place_id
@@ -112,7 +111,7 @@ def guides(request):
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
-    elif city_input or guide_input:
+    elif place_id or city_input or guide_input:
         # print (2)
         # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
         guides = guides_initial.filter(**base_kwargs)
