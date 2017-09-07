@@ -893,7 +893,7 @@ msgstr "Les Conversations"
 
 #: static/templates/navbar.html:91
 msgid "Tourist Settings"
-msgstr "Les paramètres du touriste"
+msgstr "Paramètres"
 
 #: static/templates/navbar.html:93
 msgid "Guide Settings"
