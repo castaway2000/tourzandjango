@@ -367,3 +367,11 @@ select.hide-arrow{
 .select2-container--default.select2-container--focus .select2-selection--multiple{
     border: 1px solid #31dc72!important;
 }
+
+.div-input-icon{
+    position: relative;
+}
+
+.div-input-icon .input-icon{
+    top: 0;
+}
