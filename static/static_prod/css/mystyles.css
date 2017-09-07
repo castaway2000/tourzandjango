@@ -375,3 +375,13 @@ select.hide-arrow{
 .div-input-icon .input-icon{
     top: 0;
 }
+
+/*.booking-filters{*/
+    /*position: absolute;*/
+    /*z-index: 100;*/
+    /*width: 100%;*/
+/*}*/
+
+footer#main-footer {
+    font-size: 14px;
+}
