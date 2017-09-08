@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
-from users.models import Interest, UserInterest, UserLanguage, LanguageLevel
+from users.models import Interest, UserInterest, UserLanguage, LanguageLevel, GeneralProfile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
@@ -21,6 +21,7 @@ def guides(request):
     base_user_interests_kwargs = dict()
     base_guide_service_kwargs = dict()
     hourly_price_kwargs = dict()
+    with_company_kwargs = dict()
 
     filtered_hourly_prices = request.GET.get('hourly_price')
 
@@ -35,6 +36,7 @@ def guides(request):
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
     language_input = request.GET.getlist(u'language_input')
+    with_company = request.GET.get('is_company')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -74,12 +76,12 @@ def guides(request):
     #filtering by guides
     if guide_input:
         base_kwargs["user__username__in"] = guide_input
-
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
-
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
+    if not with_company:
+        base_kwargs["user__generalprofile__is_company"] = False
 
     #ordering
     if order_results:
@@ -102,24 +104,19 @@ def guides(request):
     # even if some filters are not available for the current list of tours
     #if it is one element in tuple, * is not needed
 
-    # print (order_results)
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
     # print (base_kwargs)
     if hourly_price_kwargs:
-        # print (1)
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
     elif place_id or city_input or guide_input:
-        # print (2)
         # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
         guides = guides_initial.filter(**base_kwargs)
-    elif request.GET:
-        # print (3)
+    elif request.GET:#there are get parameters
         guides = GuideProfile.objects.none()
     else:
-        # print (4)
         guides = guides_initial
 
     if base_user_interests_kwargs:
@@ -131,6 +128,7 @@ def guides(request):
         guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
         guide_services_guides_ids = [item.guide.id for item in guide_services]
         guides = guides.filter(id__in=guide_services_guides_ids)
+
     items_nmb = guides.count()
 
     guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
