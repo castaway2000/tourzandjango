@@ -103,6 +103,16 @@
                                        {% endif %}
                                 >
                             </li>
+                              <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="i-check" type="checkbox" name="is_company"
+                                        {% if request.GET.is_company %} checked {% endif %}
+                                        >
+                                        {% blocktrans %}Exclude corporate tour guides{% endblocktrans %}
+                                    </label>
+                                </div>
+                            </li>
                             <li>
                                 <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
                             </li>

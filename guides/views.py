@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
-from users.models import Interest, UserInterest, UserLanguage, LanguageLevel
+from users.models import Interest, UserInterest, UserLanguage, LanguageLevel, GeneralProfile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
@@ -21,6 +21,7 @@ def guides(request):
     base_user_interests_kwargs = dict()
     base_guide_service_kwargs = dict()
     hourly_price_kwargs = dict()
+    with_company_kwargs = dict()
 
     filtered_hourly_prices = request.GET.get('hourly_price')
 
@@ -35,6 +36,7 @@ def guides(request):
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
     language_input = request.GET.getlist(u'language_input')
+    with_company = request.GET.get('is_company')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -74,12 +76,12 @@ def guides(request):
     #filtering by guides
     if guide_input:
         base_kwargs["user__username__in"] = guide_input
-
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
-
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
+    if with_company:
+        with_company_kwargs["is_company"] = True
 
     #ordering
     if order_results:
@@ -131,6 +133,14 @@ def guides(request):
         guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
         guide_services_guides_ids = [item.guide.id for item in guide_services]
         guides = guides.filter(id__in=guide_services_guides_ids)
+
+    if with_company_kwargs:
+        is_company = GeneralProfile.objects.filter(**with_company_kwargs)
+        company_user_ids = [item.user_id for item in is_company]
+        print(company_user_ids)
+        guides = guides.exclude(user_id__in=company_user_ids)
+        print(guides)
+
     items_nmb = guides.count()
 
     guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
