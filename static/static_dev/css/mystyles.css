@@ -376,12 +376,92 @@ select.hide-arrow{
     top: 0;
 }
 
-/*.booking-filters{*/
-    /*position: absolute;*/
-    /*z-index: 100;*/
-    /*width: 100%;*/
-/*}*/
-
 footer#main-footer {
     font-size: 14px;
+    position: relative;
+    z-index: 200;
+}
+
+.slimmenu-menu-collapser {
+    background-color: transparent;
+}
+
+.slimmenu-collapse-button {
+    border: 1px solid #31dc72;
+    border-radius: 0;
+}
+
+.slimmenu-collapse-button .slimmenu-icon-bar {
+    background-color: #31dc72;;
+}
+
+.booking-filters-container{
+    position: absolute;
+    z-index: 100;
+    top: 180px;
+    left: 5%;
+    transition: all 0.3s ease-out;
+    width: 100%;
+    border-radius: 0;
+}
+
+.booking-filters-container .booking-filters{
+    position: fixed;
+    overflow: scroll;
+    height: 100%;
+    border-radius: 0;
+}
+
+.booking-filters-container.closed .booking-filters{
+    left: -500px;
+}
+
+.booking-filters-container.sticky-top .booking-filters{
+    top: 0;
+}
+
+.left-menu-toggle-button{
+    position: fixed;
+    top: 17px;
+    color: black;
+    z-index: 150;
+    left: 263px;
+    visibility: hidden;
+    width: 100px;
+}
+
+.booking-filters-container.closed .left-menu-toggle-button{
+    left: 0;
+}
+
+
+
+@media (max-width:1260px) {
+  .booking-filters-container{
+      z-index: 100;
+      top: 182px;
+      left: 1%;
+
+  }
+}
+
+@media (max-width:992px) {
+  .booking-filters-container{
+      z-index: 100;
+      top: 240px;
+      left: 0;
+      border-radius: 0;
+  }
+}
+
+@media (max-width:768px) {
+  .booking-filters-container{
+      top: 0;
+      left: 0;
+      border-radius: 0;
+      visibility: visible;
+  }
+    .left-menu-toggle-button{
+        visibility: visible;
+    }
 }

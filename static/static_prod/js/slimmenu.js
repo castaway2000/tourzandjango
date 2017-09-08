@@ -15,7 +15,20 @@
             animSpeed: 'medium',
             easingEffect: null,
             indentChildren: false,
-            childrenIndenter: '&nbsp;&nbsp;'
+            childrenIndenter: '&nbsp;&nbsp;',
+            logo: '<div class="navbar-header">'+
+                        '<div class="navbar-brand no-padding">'+
+                            '<a class="navbar-brand navbar-logo" href="/">'+
+                                '<span>'+
+                                    '<img src="/static/img/tourzan_logo_white.jpg" class="navbar-logo"'+
+                                     'alt="Tourzan logo" title="Tourzan logo" />'+
+                                '</span>'+
+                            '</a>'+
+                            '<div class="pull-left navbar-logo-text">'+
+                                '<a href="/">Tourzan</a>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>'
         };
 
     function Plugin( element, options )
@@ -32,7 +45,12 @@
         {
             var $options = this.options,
                 $menu = this.$elem,
-                $collapser = '<div class="slimmenu-menu-collapser">'+$options.collapserTitle+'<div class="slimmenu-collapse-button"><span class="slimmenu-icon-bar"></span><span class="slimmenu-icon-bar"></span><span class="slimmenu-icon-bar"></span></div></div>',
+                $collapser = '<div class="slimmenu-menu-collapser">' +
+                    ''+$options.logo+'' +
+                    '<div class="slimmenu-collapse-button"><span class="slimmenu-icon-bar">' +
+                    '</span><span class="slimmenu-icon-bar"></span>' +
+                    '<span class="slimmenu-icon-bar"></span>' +
+                    '</div></div>',
                 $menu_collapser;
 
             $menu.before($collapser);

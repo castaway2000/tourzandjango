@@ -8,6 +8,98 @@
 
 
 {% block content %}
+
+    <aside class="booking-filters-container text-white">
+        <div class="left-menu-toggle-button">
+            <button class="btn btnprimary" id="toggle_left_menu">
+                <i class="fa fa-filter" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="booking-filters">
+
+        <h3 class="text-center">{% blocktrans %}Filter By: {% endblocktrans %}</h3>
+        <form id="filtering_form" method="get" action="">
+            <div class="form-group">
+                <input id="order_results_input" name="order_results" class="hidden"
+                       value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
+            </div>
+            <div class="form-group">
+                <ul class="list booking-filters-list">
+                    <li>
+                        <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
+                        <input id="city_search_input" class="form-control"
+                            {% if city_from_place_id %}
+                                value="{{ city_from_place_id }}"
+                            {% endif %}
+                        >
+                        <input id="place_id" name="place_id" class="hidden">
+                    </li>
+                    <li>
+                        <h5 class="booking-filters-title">{% blocktrans %}Interests{% endblocktrans %}</h5>
+                        <select multiple class="form-control select2" id="interest_input" name="interest_input"
+                                data-search_url="{% url 'search_interest' %}">
+
+                                {% for item in interest_input %}
+                                    <option value="{{ item }}" selected>{{ item }}</option>
+                                {% endfor %}
+
+                        </select>
+                    </li>
+                    <li>
+                        <h5 class="booking-filters-title">{% blocktrans %}Languages{% endblocktrans %}</h5>
+                        <select multiple class="form-control select2" id="language_input" name="language_input"
+                                data-search_url="{% url 'search_language' %}">
+
+                                {% for lang in languages %}
+                                    <option value="{{ lang.0}}" selected>
+                                        {{ lang.1}}
+                                    </option>
+                                {% endfor %}
+
+                        </select>
+                    </li>
+                    <li>
+                        <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
+                        <select class="form-control select2" id="guide_input" name="guide_input"
+                                data-search_url="{% url 'search_guide' %}">
+                            {% if guide_input %}
+                                <option value="{{ request.GET.guide_input }}" selected>{{ request.GET.guide_input }}</option>
+                            {% endif %}
+                        </select>
+                    </li>
+                    <li>
+                        <h5 class="booking-filters-title">{% blocktrans %}Services{% endblocktrans %}</h5>
+                        <select multiple class="form-control select2 js-example-basic-multiple" id="service_input" name="service_input"
+                                data-search_url="{% url 'search_service' %}">
+
+                            {% for item in services %}
+                                <option value="{{ item.name }}" {% if item.name in service_input %} selected {% endif %}>
+                                    {{ item.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                    <li>
+                        <h5 class="booking-filters-title">{% blocktrans %}Price per hour{% endblocktrans %}</h5>
+                        <input type="text" id="price-slider-1" name="hourly_price"
+                               data-min="{{ request.session.guides_rate_min }}"
+                               data-max="{{ request.session.guides_rate_max }}"
+                               {% if request.GET.hourly_price %}
+                                    value="{{ request.GET.hourly_price }}"
+                                    data-from="{{ hourly_price_min }}"
+                                    data-to="{{ hourly_price_max }}"
+                               {% endif %}
+                        >
+                    </li>
+                    <li>
+                        <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        </div>
+    </aside>
+
     <div class="container">
         <ul class="breadcrumb">
             <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
@@ -18,99 +110,22 @@
                 </a>
             </li>
         </ul>
-        <h3 class="booking-title">
-            {% if items_nmb == 0 %}
-               {% blocktrans %}No guides were found{% endblocktrans %}
-            {% elif items_nmb == 1 %}
-                {{ items_nmb }}  {% blocktrans %}guide was found!{% endblocktrans %}
-            {% elif items_nmb > 1 %}
-                {{ items_nmb }} {% blocktrans %}guides were found{% endblocktrans %}
-            {% else %}
-                {% blocktrans %}No guides were found{% endblocktrans %}
-            {% endif %}
-        </h3>
+
         <div class="row">
-            <div class="col-md-3">
-                <aside class="booking-filters text-white">
-                    <h3>{% blocktrans %}Filter By: {% endblocktrans %}</h3>
-                    <form id="filtering_form" method="get" action="">
-                        <input id="order_results_input" name="order_results" class="hidden"
-                               value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
-                        <ul class="list booking-filters-list">
-                            <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                                <input id="city_search_input" class="form-control"
-                                    {% if city_from_place_id %}
-                                        value="{{ city_from_place_id }}"
-                                    {% endif %}
-                                >
-                                <input id="place_id" name="place_id" class="hidden">
-                            </li>
-                            <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}Interests{% endblocktrans %}</h5>
-                                <select multiple class="form-control select2" id="interest_input" name="interest_input"
-                                        data-search_url="{% url 'search_interest' %}">
-
-                                        {% for item in interest_input %}
-                                            <option value="{{ item }}" selected>{{ item }}</option>
-                                        {% endfor %}
-
-                                </select>
-                            </li>
-                            <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}Languages{% endblocktrans %}</h5>
-                                <select multiple class="form-control select2" id="language_input" name="language_input"
-                                        data-search_url="{% url 'search_language' %}">
-
-                                        {% for lang in languages %}
-                                            <option value="{{ lang.0}}" selected>
-                                                {{ lang.1}}
-                                            </option>
-                                        {% endfor %}
-
-                                </select>
-                            </li>
-                            <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
-                                <select class="form-control select2" id="guide_input" name="guide_input"
-                                        data-search_url="{% url 'search_guide' %}">
-                                    {% if guide_input %}
-                                        <option value="{{ request.GET.guide_input }}" selected>{{ request.GET.guide_input }}</option>
-                                    {% endif %}
-                                </select>
-                            </li>
-                            <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}Services{% endblocktrans %}</h5>
-                                <select multiple class="form-control select2 js-example-basic-multiple" id="service_input" name="service_input"
-                                        data-search_url="{% url 'search_service' %}">
-
-                                    {% for item in services %}
-                                        <option value="{{ item.name }}" {% if item.name in service_input %} selected {% endif %}>
-                                            {{ item.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </li>
-                            <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}Price per hour{% endblocktrans %}</h5>
-                                <input type="text" id="price-slider-1" name="hourly_price"
-                                       data-min="{{ request.session.guides_rate_min }}"
-                                       data-max="{{ request.session.guides_rate_max }}"
-                                       {% if request.GET.hourly_price %}
-                                            value="{{ request.GET.hourly_price }}"
-                                            data-from="{{ hourly_price_min }}"
-                                            data-to="{{ hourly_price_max }}"
-                                       {% endif %}
-                                >
-                            </li>
-                            <li>
-                                <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
-                            </li>
-                        </ul>
-                     </form>
-                </aside>
+            <div class="col-md-7 col-sm-7 col-xs-7">
+                <h3 class="booking-title">
+                    {% if items_nmb == 0 %}
+                       {% blocktrans %}No guides were found{% endblocktrans %}
+                    {% elif items_nmb == 1 %}
+                        {{ items_nmb }}  {% blocktrans %}guide was found!{% endblocktrans %}
+                    {% elif items_nmb > 1 %}
+                        {{ items_nmb }} {% blocktrans %}guides were found{% endblocktrans %}
+                    {% else %}
+                        {% blocktrans %}No guides were found{% endblocktrans %}
+                    {% endif %}
+                </h3>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-5 col-sm-5 col-xs-5">
                 {% if guides %}
                     <div class="nav-drop booking-sort">
                         {% with request.GET.order_results as order_results %}
@@ -147,12 +162,16 @@
                         {% endwith %}
                     </div>
                 {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9 col-md-offset-3">
                 <ul class="booking-list">
                     {% for guide in guides %}
                         <li>
                             <div class="tour-item">
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-3">
                                         <div class="booking-item-img">
                                             <a href="{% url 'guide' guide.user.username %}">
                                                 {% if guide.profile_image %}
@@ -164,7 +183,7 @@
                                         </div>
                                         <br>
                                     </div>
-                                    <div class="col-md-6 col-sm-6">
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
                                         <div class="item-name">
                                             {{ guide.user.username }}
                                         </div>
@@ -230,7 +249,7 @@
                                             {% endif %}
                                         {% endwith %}
                                     </div>
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-3">
                                         <div class="guide-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
                                         </div>
