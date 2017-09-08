@@ -36,7 +36,7 @@ def guides(request):
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
     language_input = request.GET.getlist(u'language_input')
-    with_company = request.GET.get('is_company')
+    is_company = request.GET.get('is_company')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -80,7 +80,7 @@ def guides(request):
         base_user_interests_kwargs["interest__name__in"] = interest_input
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
-    if not with_company:
+    if not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 
     #ordering
@@ -105,7 +105,8 @@ def guides(request):
     #if it is one element in tuple, * is not needed
 
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
-    # print (base_kwargs)
+    print("base kwargs")
+    print (base_kwargs)
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()

@@ -34,7 +34,7 @@
             <div class="col-md-3">
                 <aside class="booking-filters text-white">
                     <h3>{% blocktrans %}Filter By:{% endblocktrans %}</h3>
-                    <form id="filtering_form" method="get" action="">
+                    <form id="filtering_form" name="filtering_form" method="get" action="">
                         <input id="order_results_input" name="order_results" class="hidden"
                                value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
                         <ul class="list booking-filters-list">
@@ -111,9 +111,9 @@
                                 <div class="checkbox">
                                     <label>
                                         <input class="i-check" type="checkbox" name="is_company"
-                                        {% if request.GET.is_company %} checked {% endif %}
+                                        {% if request.GET.is_company or not request.GET %} checked {% endif %}
                                         >
-                                        {% blocktrans %}Exclude tours through companies?{% endblocktrans %}
+                                        {% blocktrans %}Include tours through companies{% endblocktrans %}
                                     </label>
                                 </div>
                             </li>
@@ -166,7 +166,7 @@
                     <li>
                         <div class="tour-item">
                             <div class="row">
-                                <div class="col-md-3 col-sm-3">
+                                <div class="col-md-3 col-sm-3 col-xs-3">
                                     <div class="booking-item-img">
                                         <a href="{% url 'tour' tour.slug tour.id %}">
                                             {% if tour.image_small %}
@@ -180,7 +180,7 @@
                                     </div>
                                     <br>
                                 </div>
-                                <div class="col-md-6 col-sm-6">
+                                <div class="col-md-6 col-sm-6 col-xs-5">
                                     <div class="tour-name">
                                         {{ tour.name }}
                                     </div>
@@ -193,7 +193,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-3">
+                                <div class="col-md-3 col-sm-3 col-xs-4">
                                     <div class="tour-rating">
                                         <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
                                     </div>

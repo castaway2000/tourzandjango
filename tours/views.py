@@ -18,9 +18,7 @@ from django.db.models import Avg, Max, Min, Sum
 
 
 def tours(request):
-    print (request.GET)
     user = request.user
-
     base_kwargs = dict()
     hourly_price_kwargs = dict()
     fixed_price_kwargs = dict()
@@ -34,7 +32,7 @@ def tours(request):
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
     filtered_is_fixed_price_included = request.GET.get('is_fixed_price_included')
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
-    filtered_with_company = request.GET.get('is_company')
+    filtered_is_company = request.GET.get('is_company')
     city_input = request.GET.getlist(u'city_input')
     place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
@@ -67,10 +65,6 @@ def tours(request):
     if filtered_is_free_offers_included:
         free_price_kwargs["is_free"] = True
 
-    #filtering by company
-    if filtered_with_company:
-        with_company_kwargs['is_company'] = True
-
     #filtering by cities
     if place_id:
         print("place_id %s" % place_id)
@@ -87,6 +81,12 @@ def tours(request):
     #filtering by guides
     if guide_input:
         base_kwargs["guide__user__username__in"] = guide_input
+
+    #filtering by company
+    if not filtered_is_company:
+        base_kwargs['guide__user__generalprofile__is_company'] = False
+
+    print(base_kwargs)
 
     # print ("guide_input: %s" % guide_input)
     #ordering
@@ -143,19 +143,14 @@ def tours(request):
             free_price_filters.update(free_price_kwargs)
             q_objects |= Q(**free_price_filters)
 
-        #if it is one element in tuple, * is not needed
+        #if it is one element in tuple, the second * is not needed
         tours = tours_initial.filter(q_objects).order_by(*order_results)
-        # print ("12")
-        # print (q_objects)
+        print(tours)
 
     elif place_id or city_input or guide_input:
-        # print ("12345")
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
-    # elif filtered_with_company:
-    #     is_company = GeneralProfile.objects.filter(**with_company_kwargs)
-    #     company_user_ids = [item.user.id for item in is_company]
-    #     tours = tours_initial.exclude(guides_ids__in=company_user_ids)
-    if request.GET and not "page" in request.GET:
+
+    elif request.GET and not "page" in request.GET:
         # print ("15")
         tours = Tour.objects.none()
     else:
@@ -164,7 +159,6 @@ def tours(request):
 
     cities_ids = list(set([item.city.id for item in tours_initial]))
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
-
     guides_ids = list(set([item.guide.id for item in tours_initial]))
     # print ("guides ids: %s" % guides_ids)
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
@@ -186,7 +180,6 @@ def tours(request):
         tours = paginator.page(1)
     except EmptyPage:
         tours = paginator.page(paginator.num_pages)
-
     return render(request, 'tours/tours.html', locals())
 
 

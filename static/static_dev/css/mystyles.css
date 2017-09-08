@@ -435,7 +435,17 @@ footer#main-footer {
     left: 0;
 }
 
+.slimmenu-menu-collapser .navbar-brand{
+    padding-left: 30px!important;
+}
 
+.slimmenu-menu-collapser .navbar-logo-text{
+    padding-left: 30px;
+}
+
+.seacrch-results-container{
+    min-height: 1000px;
+}
 
 @media (max-width:1260px) {
   .booking-filters-container{
@@ -469,8 +479,7 @@ footer#main-footer {
       visibility: visible;
   }
 
-    .booking-filters-container .booking-filters{
-        /*overflow-y: auto;*/
-        /*height: 100%;*/
+    .seacrch-results-container{
+        min-height: 800px;
     }
 }
