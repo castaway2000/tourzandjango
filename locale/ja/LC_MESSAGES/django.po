@@ -1,6 +1,5 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Japanese Translation.
+# Copyright (C) 2017 Saber Applications Inc. # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -18,84 +17,77 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: localization_explanation.txt:11
-msgid "Welcome to my project!"
-msgstr ""
 
-#: localization_explanation.txt:15
-msgid ""
-"\n"
-"            \"Welcome to my project!\"\n"
-"        "
-msgstr ""
 
 #: static/templates/account/account_inactive.html:5
 #: static/templates/account/account_inactive.html:8
 msgid "Account Inactive"
-msgstr ""
+msgstr "アカウント停止中"
 
 #: static/templates/account/account_inactive.html:10
 msgid "This account is inactive."
-msgstr ""
+msgstr "このアカウントは現在停止されているようです。"
 
 #: static/templates/account/email.html:5 static/templates/navbar.html:110
 msgid "Account"
-msgstr ""
+msgstr "アカウント"
 
 #: static/templates/account/email.html:8
 msgid "E-mail Addresses"
-msgstr ""
+msgstr "メールアドレス"
 
 #: static/templates/account/email.html:10
 msgid "The following e-mail addresses are associated with your account:"
-msgstr ""
+msgstr "下記のアドレスがあなたのアカウントに設定されています："
 
 #: static/templates/account/email.html:24
 msgid "Verified"
-msgstr ""
+msgstr "認証済"
 
 #: static/templates/account/email.html:26
 msgid "Unverified"
-msgstr ""
+msgstr "未認証"
 
 #: static/templates/account/email.html:28
 msgid "Primary"
-msgstr ""
+msgstr "メイン"
 
 #: static/templates/account/email.html:34
 msgid "Make Primary"
-msgstr ""
+msgstr "メインに設定"
 
 #: static/templates/account/email.html:35
 msgid "Re-send Verification"
-msgstr ""
+msgstr "認証メールを再送する"
 
 #: static/templates/account/email.html:36
 #: static/templates/socialaccount/connections.html:35
 msgid "Remove"
-msgstr ""
+msgstr "削除"
 
 #: static/templates/account/email.html:43
 msgid "Warning:"
-msgstr ""
+msgstr "注意:"
 
 #: static/templates/account/email.html:43
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
 "an e-mail address so you can receive notifications, reset your password, etc."
 msgstr ""
+"メールアドレスの設定が完了していません。通知を受け取る以外にも、"
+"パスワードのリセット等にも必要になるため、設定することをおすすめします。"
 
 #: static/templates/account/email.html:48
 msgid "Add E-mail Address"
-msgstr ""
+msgstr "メールアドレスを追加"
 
 #: static/templates/account/email.html:53
 msgid "Add E-mail"
-msgstr ""
+msgstr "メールを追加"
 
 #: static/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr ""
+msgstr "このメールアドレスを本当に削除しますか？"
 
 #: static/templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -108,6 +100,13 @@ msgid ""
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
 msgstr ""
+"%(site_name)sからのお知らせです！\n"
+"\n"
+"このメールは、ユーザー名「%(user_display)s」さんが"
+"%(site_domain)s上でこのメールアドレスをアカウントに設定したため"
+"送信されました。\n"
+"\n"
+"問題なければ%(activate_url)sにアクセスしてください。\n"
 
 #: static/templates/account/email/email_confirmation_message.txt:7
 #, python-format
@@ -115,10 +114,12 @@ msgid ""
 "Thank you from %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
+"%(site_name)sからのお知らせです！\n"
+"%(site_domain)s"
 
 #: static/templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your E-mail Address"
-msgstr ""
+msgstr "メールアドレスの認証を完了してください"
 
 #: static/templates/account/email/password_reset_key_message.txt:1
 #, python-format
@@ -130,11 +131,16 @@ msgid ""
 "It can be safely ignored if you did not request a password reset. Click the "
 "link below to reset your password."
 msgstr ""
+"%(site_name)sからのお知らせです！\n"
+"\n"
+"このメールは、%(site_domain)s上のあなたのアカウントから"
+"パスワードの変更リクエストがあったため送信されました。\n"
+"下記のリンクをクリックして、パスワードをリセットしてください。"
 
 #: static/templates/account/email/password_reset_key_message.txt:8
 #, python-format
 msgid "In case you forgot, your username is %(username)s."
-msgstr ""
+msgstr "あなたのユーザー名は「%(username)s」です。"
 
 #: static/templates/account/email/password_reset_key_message.txt:10
 #, python-format
@@ -142,15 +148,17 @@ msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
+" %(site_name)sをご利用いただき、ありがとうございます！\n"
+"%(site_domain)s"
 
 #: static/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
-msgstr ""
+msgstr "パスワードのリセットメール"
 
 #: static/templates/account/email_confirm.html:6
 #: static/templates/account/email_confirm.html:10
 msgid "Confirm E-mail Address"
-msgstr ""
+msgstr "メールアドレスの認証"
 
 #: static/templates/account/email_confirm.html:16
 #, python-format
@@ -158,10 +166,12 @@ msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
+"<a href=\"mailto:%(email)s\">%(email)s</a> がユーザー名「%(user_display)s」"
+"のメールアドレスであることを認証してください。"
 
 #: static/templates/account/email_confirm.html:20
 msgid "Confirm"
-msgstr ""
+msgstr "確認"
 
 #: static/templates/account/email_confirm.html:27
 #, python-format
@@ -169,12 +179,14 @@ msgid ""
 "This e-mail confirmation link expired or is invalid. Please <a href="
 "\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
+"このメールアドレスの認証用リンクは期限が切れているか、無効になっています。"
+"申し訳ございませんが、<a href=\"%(email_url)s\">再度お手続きをお願いいたします</a>。"
 
 #: static/templates/account/login.html:6
 #: static/templates/account/login.html:10
 #: static/templates/account/login.html:43
 msgid "Sign In"
-msgstr ""
+msgstr "サインイン"
 
 #: static/templates/account/login.html:15
 #, python-format
@@ -184,10 +196,14 @@ msgid ""
 "up</a>\n"
 "for a %(site_name)s account and sign in below:"
 msgstr ""
+"他サイトの既存のアカウントを\n"
+"利用するか、もしくは<a href=\"%(signup_url)s\">下記からサイン "
+"アップ</a>\n"
+"して %(site_name)s のアカウントを作成してください:"
 
 #: static/templates/account/login.html:25
 msgid "or"
-msgstr ""
+msgstr "または"
 
 #: static/templates/account/login.html:32
 #, python-format
@@ -195,57 +211,60 @@ msgid ""
 "If you have not created an account yet, then please\n"
 "<a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
+"もしアカウントをまだ作成していない場合は、\n"
+"<a href=\"%(signup_url)s\">まずはサインアップ</a> してください。"
 
 #: static/templates/account/login.html:42
 #: static/templates/users/login_register.html:48
 msgid "Forgot Password?"
-msgstr ""
+msgstr "パスワードを忘れたときは"
 
 #: static/templates/account/logout.html:5
 #: static/templates/account/logout.html:8
 #: static/templates/account/logout.html:17
 msgid "Sign Out"
-msgstr ""
+msgstr "サインアウト"
 
 #: static/templates/account/logout.html:10
 msgid "Are you sure you want to sign out?"
-msgstr ""
+msgstr "本当にサインアウトしますか？"
 
 #: static/templates/account/messages/cannot_delete_primary_email.txt:2
 #, python-format
 msgid "You cannot remove your primary e-mail address (%(email)s)."
-msgstr ""
+msgstr "メインに設定されたメールアドレスは削除できません。(%(email)s)."
 
 #: static/templates/account/messages/email_confirmation_sent.txt:2
 #, python-format
 msgid "Confirmation e-mail sent to %(email)s."
-msgstr ""
+msgstr "%(email)sに認証メールが送信されました。"
 
 #: static/templates/account/messages/email_confirmed.txt:2
 #, python-format
 msgid "You have confirmed %(email)s."
-msgstr ""
+msgstr "%(email)sの認証が完了しました。"
 
 #: static/templates/account/messages/email_deleted.txt:2
 #, python-format
 msgid "Removed e-mail address %(email)s."
-msgstr ""
+msgstr "登録メールアドレスから%(email)sを削除しました。"
 
 #: static/templates/account/messages/password_changed.txt:2
 msgid "Password successfully changed."
-msgstr ""
+msgstr "パスワードの変更が完了しました。"
 
 #: static/templates/account/messages/password_set.txt:2
 msgid "Password successfully set."
-msgstr ""
+msgstr "パスワードの設定が完了しました。"
 
 #: static/templates/account/messages/primary_email_set.txt:2
 msgid "Primary e-mail address set."
-msgstr ""
+msgstr "メインのメールアドレスの設定が完了しました。"
 
 #: static/templates/account/messages/unverified_primary_email.txt:2
 msgid "Your primary e-mail address must be verified."
-msgstr ""
+msgstr "メインのメールアドレスの認証を完了させてください。"
+
 
 #: static/templates/account/password_change.html:5
 #: static/templates/account/password_change.html:8
@@ -256,38 +275,42 @@ msgstr ""
 #: static/templates/account/password_reset_from_key_done.html:7
 #: static/templates/users/general_settings.html:9
 msgid "Change Password"
-msgstr ""
+msgstr "パスワード変更"
 
 #: static/templates/account/password_reset.html:6
 #: static/templates/account/password_reset.html:10
 #: static/templates/account/password_reset_done.html:6
 #: static/templates/account/password_reset_done.html:9
 msgid "Password Reset"
-msgstr ""
+msgstr "パスワードリセット"
 
 #: static/templates/account/password_reset.html:15
 msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll send you "
 "an e-mail allowing you to reset it."
 msgstr ""
+"パスワードを忘れてしまった場合は、下記にメールアドレスを入力してください。"
+"パスワードリセット用のメールを送信します。"
 
 #: static/templates/account/password_reset.html:23
 msgid "Reset My Password"
-msgstr ""
+msgstr "パスワードを変更する"
 
 #: static/templates/account/password_reset.html:26
 msgid "Please contact us if you have any trouble resetting your password."
-msgstr ""
+msgstr "パスワードのリセットが出来なかった場合はサポートにご連絡ください。"
 
 #: static/templates/account/password_reset_done.html:15
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"メールの送信が完了しました。数分以内に受信されなかった場合は、"
+"申し訳ございませんが、サポートまでご連絡ください。"
 
 #: static/templates/account/password_reset_from_key.html:7
 msgid "Bad Token"
-msgstr ""
+msgstr "リンクが無効になっています"
 
 #: static/templates/account/password_reset_from_key.html:11
 #, python-format
@@ -296,90 +319,95 @@ msgid ""
 "used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
 "a>."
 msgstr ""
+"このパスワードリセット用のリンクは一度使用されているため、無効になっています。"
+"申し訳ございませんが  <a href=\"%(passwd_reset_url)s\">再度お手続き願います。 </"
+"a>."
 
 #: static/templates/account/password_reset_from_key.html:17
 msgid "change password"
-msgstr ""
+msgstr "パスワード変更"
 
 #: static/templates/account/password_reset_from_key.html:20
 #: static/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
-msgstr ""
+msgstr "パスワードが変更されました。"
 
 #: static/templates/account/password_set.html:5
 #: static/templates/account/password_set.html:8
 #: static/templates/account/password_set.html:13
 msgid "Set Password"
-msgstr ""
+msgstr "パスワードを設定"
 
 #: static/templates/account/signup.html:33
 msgid "Login/Register on Tourzan"
-msgstr ""
+msgstr " Tourzanにサインイン・登録する"
 
 #: static/templates/account/signup.html:41
 msgid "Welcome to Tourzan"
-msgstr ""
+msgstr "Tourzanへようこそ！"
 
 #: static/templates/account/signup.html:42
 msgid ""
 "You may be authenticated, using social networks or sign in/sign up using "
 "username and password"
 msgstr ""
+"認証には、ユーザー名とパスワードを入力してサインイン/サインアップする他、"
+"SNSを利用することができます。"
 
 #: static/templates/account/signup.html:56
 msgid "Login"
-msgstr ""
+msgstr "ログイン"
 
 #: static/templates/account/signup.html:59
 msgid "Username or email"
-msgstr ""
+msgstr "ユーザー名またはメールアドレス"
 
 #: static/templates/account/signup.html:63
 #: static/templates/account/signup.html:90
 msgid "Password"
-msgstr ""
+msgstr "パスワード"
 
 #: static/templates/account/signup.html:70
 msgid "New To Traveler?"
-msgstr ""
+msgstr "新規登録"
 
 #: static/templates/account/signup.html:74
 msgid "Username"
-msgstr ""
+msgstr "ユーザー名"
 
 #: static/templates/account/signup.html:82
 #: static/templates/website_management/contact_us.html:42
 msgid "Email"
-msgstr ""
+msgstr "メールアドレス"
 
 #: static/templates/account/signup.html:95
 msgid "Password (re-enter)"
-msgstr ""
+msgstr "パスワード（再入力）"
 
 #: static/templates/account/signup_closed.html:5
 #: static/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
-msgstr ""
+msgstr "サインアップできません"
 
 #: static/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
-msgstr ""
+msgstr "申し訳ございませんが、現在サインアップすることができません。"
 
 #: static/templates/account/snippets/already_logged_in.html:5
 msgid "Note"
-msgstr ""
+msgstr "お知らせ"
 
 #: static/templates/account/snippets/already_logged_in.html:5
 #, python-format
 msgid "you are already logged in as %(user_display)s."
-msgstr ""
+msgstr "すでにユーザー名「 %(user_display)s」でログインしているようです。"
 
 #: static/templates/account/verification_sent.html:5
 #: static/templates/account/verification_sent.html:8
 #: static/templates/account/verified_email_required.html:5
 #: static/templates/account/verified_email_required.html:8
 msgid "Verify Your E-mail Address"
-msgstr ""
+msgstr "メールアドレスの認証を完了してください"
 
 #: static/templates/account/verification_sent.html:10
 msgid ""
@@ -387,6 +415,9 @@ msgid ""
 "finalize the signup process. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"メールアドレスの認証メールを送信しました。送信されたリンクに"
+"アクセスして、サインアップを完了してください。メールが数分以内に"
+"受信できなかった場合は、申し訳ございませんがサポートまでご連絡ください。"
 
 #: static/templates/account/verified_email_required.html:12
 msgid ""
@@ -394,6 +425,9 @@ msgid ""
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
+"この先に進むには、登録されたメールアドレスが、ご自分のものであることを\n"
+"確認させていただく必要があります。お手数ですが、メールアドレスの\n"
+"認証を完了させてください。"
 
 #: static/templates/account/verified_email_required.html:16
 msgid ""
@@ -401,6 +435,9 @@ msgid ""
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
+"メールアドレスの認証メールを送信しました。\n"
+"認証メールに記載されたリンクにアクセスしてください。\n"
+"数分以内に受信できなかった場合は、サポートまでご連絡ください。"
 
 #: static/templates/account/verified_email_required.html:20
 #, python-format
@@ -408,156 +445,158 @@ msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
 "mail address</a>."
 msgstr ""
+"<strong>お知らせ:</strong> 今からまた<a href=\"%(email_url)s\">登録メールアドレス"
+"を変更することもできます。</a>"
 
 #: static/templates/base_profile.html:40 static/templates/base_profile.html:42
 msgid "Switch to Guide Profile"
-msgstr ""
+msgstr "ガイドプロフィールに切り替え"
 
 #: static/templates/base_profile.html:44
 msgid "Switch to Tourist Profile"
-msgstr ""
+msgstr "ツーリストプロフィールに切り替え"
 
 #: static/templates/base_profile.html:53
 msgid "Tourist Profile Settings"
-msgstr ""
+msgstr "ツーリストプロフィール設定"
 
 #: static/templates/base_profile.html:57 static/templates/base_profile.html:98
 msgid "General Settings"
-msgstr ""
+msgstr "全般設定"
 
 #: static/templates/base_profile.html:63
 #: static/templates/base_profile.html:113
 msgid "Credit/Debit Cards"
-msgstr ""
+msgstr "クレジットカード/デビットカード"
 
 #: static/templates/base_profile.html:69
 msgid "My Travel Photos"
-msgstr ""
+msgstr "自分のトラベルフォト"
 
 #: static/templates/base_profile.html:76
 msgid "Bookings history"
-msgstr ""
+msgstr "予約履歴"
 
 #: static/templates/base_profile.html:83
 msgid "Payments"
-msgstr ""
+msgstr "支払い"
 
 #: static/templates/base_profile.html:87
 msgid "Wishlist"
-msgstr ""
+msgstr "ウィッシュリスト"
 
 #: static/templates/base_profile.html:94
 msgid "Guide Profile Settings"
-msgstr ""
+msgstr "ガイドプロフィール設定"
 
 #: static/templates/base_profile.html:101
 #: static/templates/guides/guide.html:439 static/templates/tours/tours.html:17
 msgid "Tours"
-msgstr ""
+msgstr "ツアー"
 
 #: static/templates/base_profile.html:104 static/templates/navbar.html:70
 #: static/templates/orders/orders.html:16
 msgid "Orders"
-msgstr ""
+msgstr "申し込み"
 
 #: static/templates/base_profile.html:107
 msgid "Payments history"
-msgstr ""
+msgstr "支払い履歴"
 
 #: static/templates/chats/chat.html:15 static/templates/chats/chats.html:17
 msgid "Chat "
-msgstr ""
+msgstr "チャット "
 
 #: static/templates/chats/chat.html:16 static/templates/chats/chats.html:18
 msgid "with "
-msgstr ""
+msgstr "の相手："
 
 #: static/templates/chats/chat.html:21 static/templates/chats/chats.html:23
 msgid "(guide)"
-msgstr ""
+msgstr "(ガイド)"
 
 #: static/templates/chats/chat.html:26 static/templates/chats/chats.html:28
 msgid "(tourist)"
-msgstr ""
+msgstr "(ツーリスト)"
 
 #: static/templates/chats/chat.html:32 static/templates/chats/chats.html:33
 msgid "started at: "
-msgstr ""
+msgstr "開始日時: "
 
 #: static/templates/chats/chat.html:60
 msgid "Submit"
-msgstr ""
+msgstr "送信"
 
 #: static/templates/chats/chats.html:38
 msgid "Last Message:"
-msgstr ""
+msgstr "最終メッセージ:"
 
 #: static/templates/chats/chats.html:53
 msgid "No last message"
-msgstr ""
+msgstr "メッセージはありません。"
 
 #: static/templates/chats/chats.html:57
 msgid "Go To Conversation"
-msgstr ""
+msgstr "会話内容を見る"
 
 #: static/templates/chats/chats.html:64
 msgid "There are no chats so far..."
-msgstr ""
+msgstr "まだチャットを利用していません。"
 
 #: static/templates/errors_notification.html:9
 #: static/templates/errors_notification.html:14
 #, python-format
 msgid "%(message)s"
-msgstr ""
+msgstr "%(message)s"
 
 #: static/templates/footer.html:15
 msgid "Book local guides, while travelling!"
-msgstr ""
+msgstr "旅行中に、現地のガイドを予約してみませんか？"
 
 #: static/templates/footer.html:34
 msgid "Newsletter"
-msgstr ""
+msgstr "ニュースレター"
 
 #: static/templates/footer.html:36
 msgid "Enter your E-mail Address"
-msgstr ""
+msgstr "メールアドレスを入力してください"
 
 #: static/templates/footer.html:38
 msgid "We Never Send Spam"
-msgstr ""
+msgstr "迷惑メールが送信されることはありません"
 
 #: static/templates/footer.html:45
 msgid "Privacy Policy"
-msgstr ""
+msgstr "プライバシーポリシー"
 
 #: static/templates/footer.html:47
 msgid "Terms of Service"
-msgstr ""
+msgstr "利用規約"
 
 #: static/templates/footer.html:49
 msgid "About Us"
-msgstr ""
+msgstr "このサイトについて"
 
 #: static/templates/footer.html:51
 msgid "Contact US"
-msgstr ""
+msgstr "連絡先"
 
 #: static/templates/footer.html:56
 msgid "Have Questions?"
-msgstr ""
+msgstr "質問はこちらへ"
 
 #: static/templates/footer.html:59
 msgid "24/7 Dedicated Customer Support"
-msgstr ""
+msgstr "カスタマーサポート（24時間対応）"
 
 #: static/templates/guides/earnings.html:15
 msgid "Your Earnings"
-msgstr ""
+msgstr "売上履歴"
 
 #: static/templates/guides/earnings.html:84
 #: static/templates/payments/payments.html:71
 msgid "by"
-msgstr ""
+msgstr "期間"
 
 #: static/templates/guides/guide.html:13
 #: static/templates/guides/guides.html:13
@@ -565,362 +604,362 @@ msgstr ""
 #: static/templates/orders/orders.html:12 static/templates/tours/tour.html:8
 #: static/templates/tours/tours.html:13
 msgid "Home"
-msgstr ""
+msgstr "ホーム"
 
 #: static/templates/guides/guide.html:35
 #: static/templates/users/tourist.html:18
 msgid "Go to Settings"
-msgstr ""
+msgstr "設定へ"
 
 #: static/templates/guides/guide.html:52 static/templates/guides/guide.html:61
 #: static/templates/tours/tour.html:36
 msgid "Send Message"
-msgstr ""
+msgstr "メッセージ送信"
 
 #: static/templates/guides/guide.html:58 static/templates/tours/tour.html:32
 msgid "Write Review"
-msgstr ""
+msgstr "レビューを書く"
 
 #: static/templates/guides/guide.html:69
 msgid "Some description will be here"
-msgstr ""
+msgstr "記入内容がここに表示されます"
 
 #: static/templates/guides/guide.html:73
 msgid "Interests: "
-msgstr ""
+msgstr "興味や関心: "
 
 #: static/templates/guides/guide.html:82
 #: static/templates/users/tourist.html:47
 msgid "No interests"
-msgstr ""
+msgstr "設定されていません"
 
 #: static/templates/guides/guide.html:88
 msgid "Services: "
-msgstr ""
+msgstr "アピールポイント: "
 
 #: static/templates/guides/guide.html:96
 msgid "No additional services..."
-msgstr ""
+msgstr "設定されていません"
 
 #: static/templates/guides/guide.html:105
 msgid "Great!"
-msgstr ""
+msgstr "おめでとうございます！"
 
 #: static/templates/guides/guide.html:113
 msgid "of tours were reviewed "
-msgstr ""
+msgstr "のツアーがレビューされました"
 
 #: static/templates/guides/guide.html:132
 msgid "tourist rating"
-msgstr ""
+msgstr "ツーリスト評価"
 
 #: static/templates/guides/guide.html:136
 msgid "based on"
-msgstr ""
+msgstr "合計で"
 
 #: static/templates/guides/guide.html:138
 msgid "review"
-msgstr ""
+msgstr "件のレビューがありました"
 
 #: static/templates/guides/guide.html:140
 msgid "reviews"
-msgstr ""
+msgstr "件のレビューがありました"
 
 #: static/templates/guides/guide.html:157
 msgid "You have already booked this guide"
-msgstr ""
+msgstr "すでにこのガイドを予約しています"
 
 #: static/templates/guides/guide.html:159 static/templates/tours/tour.html:116
 msgid "book more"
-msgstr ""
+msgstr "さらに予約する"
 
 #: static/templates/guides/guide.html:161 static/templates/tours/tour.html:118
 msgid "Edit"
-msgstr ""
+msgstr "編集"
 
 #: static/templates/guides/guide.html:177 static/templates/tours/tour.html:128
 msgid "Booking a tour date:"
-msgstr ""
+msgstr "ツアーの日付を選んで予約:"
 
 #: static/templates/guides/guide.html:212
 msgid "Persons nmb:"
-msgstr ""
+msgstr "人数:"
 
 #: static/templates/guides/guide.html:245 static/templates/tours/tour.html:135
 msgid "Hours nmb:"
-msgstr ""
+msgstr "時間(1時間単位):"
 
 #: static/templates/guides/guide.html:280 static/templates/tours/tour.html:171
 msgid "Book Now"
-msgstr ""
+msgstr "予約する"
 
 #: static/templates/guides/guide.html:294 static/templates/tours/tour.html:199
 #: static/templates/users/tourist.html:56
 msgid "Reviews"
-msgstr ""
+msgstr "レビュー"
 
 #: static/templates/guides/guide.html:302 static/templates/tours/tour.html:208
 #: static/templates/users/tourist.html:94
 msgid "No reviews so far..."
-msgstr ""
+msgstr "まだレビューはありません"
 
 #: static/templates/guides/guide_registration.html:18
 msgid "Guide Profile"
-msgstr ""
+msgstr "ガイドプロフィール"
 
 #: static/templates/guides/guide_registration.html:23
 msgid "See Public Page"
-msgstr ""
+msgstr "公開ページ"
 
 #: static/templates/guides/guide_registration.html:30
 msgid "Name*:"
-msgstr ""
+msgstr "名前*:"
 
 #: static/templates/guides/guide_registration.html:37
 msgid "City*:"
-msgstr ""
+msgstr "場所*:"
 
 #: static/templates/guides/guide_registration.html:50
 msgid "Date of birth*:"
-msgstr ""
+msgstr "誕生日*:"
 
 #: static/templates/guides/guide_registration.html:63
 msgid "Interests*:"
-msgstr ""
+msgstr "興味や関心*:"
 
 #: static/templates/guides/guide_registration.html:76
 msgid "Overview*:"
-msgstr ""
+msgstr "概要*:"
 
 #: static/templates/guides/guide_registration.html:85
 msgid "Additional services*:"
-msgstr ""
+msgstr "アピールポイント*:"
 
 #: static/templates/guides/guide_registration.html:100
 msgid "Avatar"
-msgstr ""
+msgstr "アバター"
 
 #: static/templates/guides/guide_registration.html:111
 msgid "Upload New Avatar Image:"
-msgstr ""
+msgstr "アバター用の画像をアップロードする:"
 
 #: static/templates/guides/guide_registration_welcome.html:10
 msgid "To create Guide Profile click a button bellow."
-msgstr ""
+msgstr "ガイドプロフィールを作成するには下記のボタンをクリックしてください。"
 
 #: static/templates/guides/guide_registration_welcome.html:12
 msgid "If you click this button you agree with terms and conditions"
-msgstr ""
+msgstr "このボタンをクリックすると利用規約と条件に同意したものとみなします。"
 
 #: static/templates/guides/guide_registration_welcome.html:20
 msgid "Create Guide Profile"
-msgstr ""
+msgstr "ガイドプロフィールを作成する"
 
 #: static/templates/guides/guides.html:17
 msgid "Guides "
-msgstr ""
+msgstr "ガイド "
 
 #: static/templates/guides/guides.html:23
 #: static/templates/guides/guides.html:29
 msgid "No guides were found"
-msgstr ""
+msgstr "条件に合うガイドは見つかりませんでした"
 
 #: static/templates/guides/guides.html:25
 msgid "guide was found!"
-msgstr ""
+msgstr "人のガイドが見つかりました！ "
 
 #: static/templates/guides/guides.html:27
 msgid "guides were found"
-msgstr ""
+msgstr "人のガイドが見つかりました！"
 
 #: static/templates/guides/guides.html:35
 msgid "Filter By: "
-msgstr ""
+msgstr "絞り込み検索: "
 
 #: static/templates/guides/guides.html:41
 #: static/templates/orders/bookings.html:49
 #: static/templates/tours/tours.html:42
 msgid "City"
-msgstr ""
+msgstr "場所"
 
 #: static/templates/guides/guides.html:51
 #: static/templates/users/tourist.html:41
 msgid "Interests"
-msgstr ""
+msgstr "興味や関心"
 
 #: static/templates/guides/guides.html:62
 msgid "Languages"
-msgstr ""
+msgstr "言語"
 
 #: static/templates/guides/guides.html:75 static/templates/navbar.html:188
 #: static/templates/tours/tours.html:52
 msgid "Guide"
-msgstr ""
+msgstr "ガイド"
 
 #: static/templates/guides/guides.html:84 static/templates/tours/tours.html:62
 msgid "Price per hour"
-msgstr ""
+msgstr "料金（1時間当たり）"
 
 #: static/templates/guides/guides.html:93
 #: static/templates/orders/bookings.html:67
 #: static/templates/orders/orders.html:48
 #: static/templates/tours/tours.html:106
 msgid "Apply"
-msgstr ""
+msgstr "適用"
 
 #: static/templates/guides/guides.html:105
 #: static/templates/tours/tours.html:118
 msgid "Sort: Price (low to high)"
-msgstr ""
+msgstr "ソート: 料金 (昇順)"
 
 #: static/templates/guides/guides.html:107
 #: static/templates/tours/tours.html:120
 msgid "Sort: Price (high to low)"
-msgstr ""
+msgstr "ソート: 料金 (降順)"
 
 #: static/templates/guides/guides.html:109
 #: static/templates/tours/tours.html:122
 msgid "Sort: Rating (low to high)"
-msgstr ""
+msgstr "ソート: 評価 (昇順)"
 
 #: static/templates/guides/guides.html:111
 #: static/templates/tours/tours.html:124
 msgid "Sort: Rating (high to low)"
-msgstr ""
+msgstr "ソート: 評価 (降順)"
 
 #: static/templates/guides/guides.html:116
 #: static/templates/tours/tours.html:129
 msgid "Price (low to high)"
-msgstr ""
+msgstr "料金(昇順)"
 
 #: static/templates/guides/guides.html:120
 #: static/templates/tours/tours.html:133
 msgid "Price (high to low)"
-msgstr ""
+msgstr "料金(降順)"
 
 #: static/templates/guides/guides.html:124
 #: static/templates/tours/tours.html:137
 msgid "Rating (low to high)"
-msgstr ""
+msgstr "評価(昇順)"
 
 #: static/templates/guides/guides.html:128
 #: static/templates/tours/tours.html:141
 msgid "Rating (high to low)"
-msgstr ""
+msgstr "評価(降順)"
 
 #: static/templates/guides/guides.html:164
 msgid "Interests:"
-msgstr ""
+msgstr "興味や関心:"
 
 #: static/templates/guides/guides.html:182
 msgid "Languages:"
-msgstr ""
+msgstr "言語:"
 
 #: static/templates/guides/guides.html:201
 #: static/templates/tours/profile_settings_guide_tours.html:35
 #: static/templates/tours/tours.html:181
 msgid "Rating: "
-msgstr ""
+msgstr "評価: "
 
 #: static/templates/guides/guides.html:204
 msgid "Hourly rate: "
-msgstr ""
+msgstr "料金（1時間当たり）: "
 
 #: static/templates/guides/guides.html:209
 msgid "Go to Guide"
-msgstr ""
+msgstr "ガイドへ"
 
 #: static/templates/navbar.html:38
 msgid "Blog"
-msgstr ""
+msgstr "ブログ"
 
 #: static/templates/navbar.html:43
 msgid "GUIDES"
-msgstr ""
+msgstr "ガイド"
 
 #: static/templates/navbar.html:47
 msgid "TOURS"
-msgstr ""
+msgstr "ツアー"
 
 #: static/templates/navbar.html:53 static/templates/orders/bookings.html:17
 msgid "My Bookings"
-msgstr ""
+msgstr "予約履歴"
 
 #: static/templates/navbar.html:55 static/templates/navbar.html:72
 msgid "Pending"
-msgstr ""
+msgstr "保留中"
 
 #: static/templates/navbar.html:57 static/templates/navbar.html:74
 msgid "Waiting for payment"
-msgstr ""
+msgstr "支払い待ち"
 
 #: static/templates/navbar.html:59 static/templates/navbar.html:76
 msgid "Agreed"
-msgstr ""
+msgstr "承認済み"
 
 #: static/templates/navbar.html:61 static/templates/navbar.html:80
 msgid "Cancelled by me"
-msgstr ""
+msgstr "あなたによるキャンセル"
 
 #: static/templates/navbar.html:63
 msgid "Cancelled by guide"
-msgstr ""
+msgstr "ガイド側によるキャンセル"
 
 #: static/templates/navbar.html:65 static/templates/navbar.html:82
 msgid "Completed"
-msgstr ""
+msgstr "完了"
 
 #: static/templates/navbar.html:78
 msgid "Cancelled by tourist"
-msgstr ""
+msgstr "ツーリスト側によるキャンセル"
 
 #: static/templates/navbar.html:89
 msgid "Chats"
-msgstr ""
+msgstr "チャット"
 
 #: static/templates/navbar.html:95
 msgid "Tourist Settings"
-msgstr ""
+msgstr "ツーリスト設定"
 
 #: static/templates/navbar.html:97
 msgid "Guide Settings"
-msgstr ""
+msgstr "ガイド設定"
 
 #: static/templates/navbar.html:102 static/templates/navbar.html:105
 msgid "Profile"
-msgstr ""
+msgstr "プロフィール"
 
 #: static/templates/navbar.html:115
 msgid "My Payments"
-msgstr ""
+msgstr "支払い履歴"
 
 #: static/templates/navbar.html:119
 msgid "My Earnings"
-msgstr ""
+msgstr "売上履歴"
 
 #: static/templates/navbar.html:127
 msgid "Switch to Guide"
-msgstr ""
+msgstr "ガイドに切り替え"
 
 #: static/templates/navbar.html:131
 msgid "Want to be a guide?"
-msgstr ""
+msgstr "ガイドとして登録"
 
 #: static/templates/navbar.html:136
 msgid "Switch to Tourist"
-msgstr ""
+msgstr "ツーリストに切り替え"
 
 #: static/templates/navbar.html:151
 msgid "Log In"
-msgstr ""
+msgstr "ログイン"
 
 #: static/templates/navbar.html:158
 msgid "Logout"
-msgstr ""
+msgstr "ログアウト"
 
 #: static/templates/navbar.html:186
 msgid "Tourist"
-msgstr ""
+msgstr "ツーリスト"
 
 #: static/templates/orders/booking_representation.html:104
 msgid ""
@@ -928,6 +967,10 @@ msgid ""
 "                                Guide Profile\n"
 "                            "
 msgstr ""
+"\n"
+"                                ガイドプロフィール\n"
+"                            "
+
 
 #: static/templates/orders/booking_representation.html:116
 msgid ""
@@ -935,6 +978,9 @@ msgid ""
 "                                    Write a Review and Pay\n"
 "                                "
 msgstr ""
+"\n"
+"                                    レビューを記入して支払う\n"
+"                                "
 
 #: static/templates/orders/booking_representation.html:120
 #: static/templates/orders/order_representation.html:145
@@ -943,6 +989,9 @@ msgid ""
 "                                    View final details\n"
 "                                "
 msgstr ""
+"\n"
+"                                    詳細を確認する\n"
+"                                "
 
 #: static/templates/orders/booking_representation.html:132
 msgid ""
@@ -950,32 +999,35 @@ msgid ""
 "                                Cancel\n"
 "                            "
 msgstr ""
+"\n"
+"                                キャンセル\n"
+"                            "
 
 #: static/templates/orders/bookings.html:23
 #: static/templates/orders/bookings.html:29
 msgid "No bookings were found"
-msgstr ""
+msgstr "予約情報は見つかりませんでした。"
 
 #: static/templates/orders/bookings.html:25
 msgid "booking was found!"
-msgstr ""
+msgstr "件の予約情報が見つかりました！"
 
 #: static/templates/orders/bookings.html:27
 msgid "bookings were found!"
-msgstr ""
+msgstr "件の予約情報が見つかりました！"
 
 #: static/templates/orders/bookings.html:36
 #: static/templates/tours/tours.html:36
 msgid "Filter By:"
-msgstr ""
+msgstr "絞り込み検索："
 
 #: static/templates/orders/bookings.html:40
 msgid "Price"
-msgstr ""
+msgstr "料金"
 
 #: static/templates/orders/bookings.html:58
 msgid "Guides"
-msgstr ""
+msgstr "ガイド"
 
 #: static/templates/orders/order_completing.html:64
 #: static/templates/payments/order_payment_checkout.html:20
@@ -984,6 +1036,9 @@ msgid ""
 "                                PAYMENT <br> RESERVED\n"
 "                            "
 msgstr ""
+"\n"
+"                                支払い <br>予約完了 \n"
+"                            "
 
 #: static/templates/orders/order_completing.html:70
 #: static/templates/payments/order_payment_checkout.html:26
@@ -992,6 +1047,9 @@ msgid ""
 "                                PAID\n"
 "                            "
 msgstr ""
+"\n"
+"                                支払い完了\n"
+"                            "
 
 #: static/templates/orders/order_completing.html:125
 #: static/templates/payments/order_payment_checkout.html:67
@@ -1000,6 +1058,9 @@ msgid ""
 "                                                Description\n"
 "                                            "
 msgstr ""
+"\n"
+"                                                内容\n"
+"                                            "
 
 #: static/templates/orders/order_completing.html:164
 #: static/templates/payments/order_payment_checkout.html:106
@@ -1008,6 +1069,9 @@ msgid ""
 "                                                Base Charge\n"
 "                                            "
 msgstr ""
+"\n"
+"                                                基本料金\n"
+"                                            "
 
 #: static/templates/orders/order_completing.html:176
 #: static/templates/payments/order_payment_checkout.html:118
@@ -1016,6 +1080,9 @@ msgid ""
 "                                                Service Fee\n"
 "                                            "
 msgstr ""
+"\n"
+"                                                サービス料\n"
+"                                            "
 
 #: static/templates/orders/order_completing.html:193
 #: static/templates/payments/order_payment_checkout.html:130
@@ -1024,6 +1091,9 @@ msgid ""
 "                                                Tax\n"
 "                                            "
 msgstr ""
+"\n"
+"                                                消費税\n"
+"                                            "
 
 #: static/templates/orders/order_completing.html:206
 #: static/templates/payments/order_payment_checkout.html:143
@@ -1032,6 +1102,9 @@ msgid ""
 "                                                Total\n"
 "                                            "
 msgstr ""
+"\n"
+"                                                合計\n"
+"                                            "
 
 #: static/templates/orders/order_representation.html:141
 msgid ""
@@ -1039,23 +1112,26 @@ msgid ""
 "                                    Write a feedback\n"
 "                                "
 msgstr ""
+"\n"
+"                                    フィードバックを記入\n"
+"                                "
 
 #: static/templates/orders/orders.html:22
 #: static/templates/orders/orders.html:28
 msgid "No orders were found"
-msgstr ""
+msgstr "申し込みは見つかりませんでした。"
 
 #: static/templates/orders/orders.html:24
 msgid "order was found!"
-msgstr ""
+msgstr "件の申し込みが見つかりました！"
 
 #: static/templates/orders/orders.html:26
 msgid "orders were found"
-msgstr ""
+msgstr "件の申し込みが見つかりました"
 
 #: static/templates/orders/orders.html:39
 msgid "Price "
-msgstr ""
+msgstr "料金 "
 
 #: static/templates/orders/review_form.html:33
 msgid ""
@@ -1063,6 +1139,9 @@ msgid ""
 "                    Save\n"
 "                "
 msgstr ""
+"\n"
+"                    保存\n"
+"                "
 
 #: static/templates/orders/review_form.html:37
 msgid ""
@@ -1070,6 +1149,9 @@ msgid ""
 "                    Save and Finalize Payment\n"
 "                "
 msgstr ""
+"\n"
+"                    保存して支払いを確定\n"
+"                "
 
 #: static/templates/payments/order_payment_checkout.html:186
 msgid ""
@@ -1078,65 +1160,73 @@ msgid ""
 "method. Please add at least one\n"
 "                            "
 msgstr ""
+"\n"
+"                                お支払いの方法が登録されていません。"
+"最低でも１つのお支払い方法を登録してください。\n"
+"                            "
 
 #: static/templates/payments/order_payment_checkout.html:190
 msgid "here"
-msgstr ""
+msgstr "追加"
 
 #: static/templates/payments/order_payment_checkout.html:220
 msgid "Send"
-msgstr ""
+msgstr "送信"
 
 #: static/templates/payments/payment_methods.html:11
 msgid "Your Payment Methods"
-msgstr ""
+msgstr "お支払い方法"
 
 #: static/templates/payments/payment_methods.html:16
 msgid " Add New Payment Method "
-msgstr ""
+msgstr " お支払い方法を追加"
 
 #: static/templates/payments/payment_methods_adding.html:9
 msgid "Adding new payment method"
-msgstr ""
+msgstr "新しいお支払い方法を追加しています"
 
 #: static/templates/payments/payments.html:16
 msgid "Your Payments"
-msgstr ""
+msgstr "支払い履歴"
 
 #: static/templates/socialaccount/authentication_error.html:5
 #: static/templates/socialaccount/authentication_error.html:8
 msgid "Social Network Login Failure"
-msgstr ""
+msgstr "SNSによるログインに失敗しました"
 
 #: static/templates/socialaccount/authentication_error.html:10
 msgid ""
 "An error occurred while attempting to login via your social network account."
 msgstr ""
+"SNSアカウント経由でのログイン中にエラーが発生しました。"
 
 #: static/templates/socialaccount/connections.html:5
 #: static/templates/socialaccount/connections.html:8
 msgid "Account Connections"
-msgstr ""
+msgstr "アカウントの関連付け"
 
 #: static/templates/socialaccount/connections.html:11
 msgid ""
 "You can sign in to your account using any of the following third party "
 "accounts:"
 msgstr ""
+"下記の他サイトのアカウントを利用してサインイン"
+"することができます:"
 
 #: static/templates/socialaccount/connections.html:43
 msgid ""
 "You currently have no social network accounts connected to this account."
 msgstr ""
+"現在このアカウントには、SNSアカウントの関連付けはされていません。"
 
 #: static/templates/socialaccount/connections.html:46
 msgid "Add a 3rd Party Account"
-msgstr ""
+msgstr "他サイトのアカウントを関連付けする"
 
 #: static/templates/socialaccount/login_cancelled.html:5
 #: static/templates/socialaccount/login_cancelled.html:9
 msgid "Login Cancelled"
-msgstr ""
+msgstr "ログインがキャンセルされました"
 
 #: static/templates/socialaccount/login_cancelled.html:13
 #, python-format
@@ -1145,27 +1235,30 @@ msgid ""
 "accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s"
 "\">sign in</a>."
 msgstr ""
+"既存のアカウントを使用してのログインがキャンセルされました。"
+"記入内容に間違いがあった可能性があります。もう１度 <a href=\"%(login_url)s"
+"\">サインイン</a>してください。"
 
 #: static/templates/socialaccount/messages/account_connected.txt:2
 msgid "The social account has been connected."
-msgstr ""
+msgstr "SNSアカウントが関連付けされました。"
 
 #: static/templates/socialaccount/messages/account_connected_other.txt:2
 msgid "The social account is already connected to a different account."
-msgstr ""
+msgstr "そのSNSアカウントは、既に他のアカウントに関連付けされています。"
 
 #: static/templates/socialaccount/messages/account_disconnected.txt:2
 msgid "The social account has been disconnected."
-msgstr ""
+msgstr "SNSアカウントの接続が切れました。"
 
 #: static/templates/socialaccount/signup.html:5
 msgid "Signup"
-msgstr ""
+msgstr  "サインアップ"
 
 #: static/templates/socialaccount/signup.html:8
 #: static/templates/socialaccount/signup.html:19
 msgid "Sign Up"
-msgstr ""
+msgstr  "サインアップ"
 
 #: static/templates/socialaccount/signup.html:10
 #, python-format
@@ -1173,271 +1266,273 @@ msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "%(site_name)s. As a final step, please complete the following form:"
 msgstr ""
+"%(provider_name)s のアカウントで\n"
+"%(site_name)sにログインしようとしています。次のフォームへの記入をお願いいたします:"
 
 #: static/templates/top_slider.html:17
 msgid "Explore Guides"
-msgstr ""
+msgstr "ガイドを見る"
 
 #: static/templates/tours/modals/delete_modal.html:6
 msgid "Are you sure you want to delete this?"
-msgstr ""
+msgstr "本当にこれを削除しますか？"
 
 #: static/templates/tours/modals/delete_modal.html:7
 #: static/templates/tours/profile_settings_guide_tour_edit.html:116
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #: static/templates/tours/modals/delete_modal.html:8
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:11
 msgid "Tour Editing page"
-msgstr ""
+msgstr "ツアー編集ページ"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:16
 msgid "Name:"
-msgstr ""
+msgstr "名前:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:26
 msgid "Overview"
-msgstr ""
+msgstr "概要"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:36
 msgid " Is active"
-msgstr ""
+msgstr " アクティブ"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:43
 msgid "Pricing"
-msgstr ""
+msgstr "料金"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:46
 msgid "Payment type: "
-msgstr ""
+msgstr "支払い方法: "
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:59
 #: static/templates/tours/profile_settings_guide_tour_edit.html:84
 msgid "Currency: "
-msgstr ""
+msgstr "通貨: "
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:68
 msgid "Price Hourly:"
-msgstr ""
+msgstr "料金（１時間あたり）:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:74
 msgid "Minimum Hours duration:"
-msgstr ""
+msgstr "最短ガイド時間（１時間単位）:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:93
 msgid "Price:"
-msgstr ""
+msgstr "料金:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:99
 msgid "Hours duration:"
-msgstr ""
+msgstr "ツアー時間（１時間単位）:"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:110
 msgid "Add Image"
-msgstr ""
+msgstr "画像を追加"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:118
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:126
 msgid "Delete Image"
-msgstr ""
+msgstr "画像を削除"
 
 #: static/templates/tours/profile_settings_guide_tour_edit.html:127
 msgid "Make main"
-msgstr ""
+msgstr "メインに設定"
 
 #: static/templates/tours/profile_settings_guide_tours.html:12
 msgid "Create Tour"
-msgstr ""
+msgstr "ツアーを作成する"
 
 #: static/templates/tours/profile_settings_guide_tours.html:41
 msgid "Active"
-msgstr ""
+msgstr "アクティブ"
 
 #: static/templates/tours/profile_settings_guide_tours.html:43
 msgid "Not Active"
-msgstr ""
+msgstr "非アクティブ"
 
 #: static/templates/tours/profile_settings_guide_tours.html:51
 #: static/templates/tours/tours.html:184
 msgid "Price: "
-msgstr ""
+msgstr "料金: "
 
 #: static/templates/tours/profile_settings_guide_tours.html:57
 #: static/templates/tours/tours.html:190
 msgid "Free!"
-msgstr ""
+msgstr "無料！"
 
 #: static/templates/tours/profile_settings_guide_tours.html:63
 msgid "hour"
-msgstr ""
+msgstr "時間"
 
 #: static/templates/tours/profile_settings_guide_tours.html:65
 msgid "hours"
-msgstr ""
+msgstr "時間"
 
 #: static/templates/tours/profile_settings_guide_tours.html:81
 msgid "Tour Page"
-msgstr ""
+msgstr "ツアーページ"
 
 #: static/templates/tours/profile_settings_guide_tours.html:86
 msgid "Tour Editing"
-msgstr ""
+msgstr "ツアーの編集"
 
 #: static/templates/tours/profile_settings_guide_tours.html:90
 msgid "Delete Tour"
-msgstr ""
+msgstr "ツアーを削除"
 
 #: static/templates/tours/tour.html:88
 msgid "No tour overview so far..."
-msgstr ""
+msgstr "ツアー概要がまだ記入されていません"
 
 #: static/templates/tours/tour.html:110
 msgid "Book"
-msgstr ""
+msgstr "予約"
 
 #: static/templates/tours/tour.html:115
 msgid "You have already booked this tour"
-msgstr ""
+msgstr "このツアーは既に予約済みです"
 
 #: static/templates/tours/tour.html:347
 msgid "Other Tours of"
-msgstr ""
+msgstr "その他のツアー"
 
 #: static/templates/tours/tours.html:23 static/templates/tours/tours.html:29
 msgid "No tours were found"
-msgstr ""
+msgstr "ツアーは見つかりませんでした"
 
 #: static/templates/tours/tours.html:25
 msgid "tours was found!"
-msgstr ""
+msgstr "件のツアーが見つかりました！"
 
 #: static/templates/tours/tours.html:27
 msgid "tours were found"
-msgstr ""
+msgstr "件のツアーが見つかりました！"
 
 #: static/templates/tours/tours.html:68
 msgid "Include hourly price offers"
-msgstr ""
+msgstr "時給制のツアーを含める"
 
 #: static/templates/tours/tours.html:79
 msgid "Fixed price "
-msgstr ""
+msgstr "固定料金 "
 
 #: static/templates/tours/tours.html:85
 msgid "Include fixed-prices offers"
-msgstr ""
+msgstr "固定料金のツアーを含める"
 
 #: static/templates/tours/tours.html:101
 msgid "Include FREE offers"
-msgstr ""
+msgstr "無料のツアーを含める"
 
 #: static/templates/tours/tours.html:194
 msgid "Min hours:"
-msgstr ""
+msgstr "最短ツアー時間（1時間単位）:"
 
 #: static/templates/tours/tours.html:199
 msgid "Go to Tour"
-msgstr ""
+msgstr "ツアーを見る"
 
 #: static/templates/users/general_settings.html:13
 msgid "Current Password"
-msgstr ""
+msgstr "現在のパスワード"
 
 #: static/templates/users/general_settings.html:18
 msgid "New Password"
-msgstr ""
+msgstr "新しいパスワード"
 
 #: static/templates/users/general_settings.html:23
 msgid "New Password Again"
-msgstr ""
+msgstr "新しいパスワード（確認用）"
 
 #: static/templates/users/home.html:19
 msgid " Guides "
-msgstr ""
+msgstr " ガイド "
 
 #: static/templates/users/home.html:24
 msgid "Search on Local Guides"
-msgstr ""
+msgstr "現地のガイドを探す"
 
 #: static/templates/users/home.html:30
 msgid "Where are you going?"
-msgstr ""
+msgstr "旅行先はどこですか？"
 
 #: static/templates/users/home.html:43
 msgid " Which of your interests should the guide meet? "
-msgstr ""
+msgstr " ガイドに案内してほしいジャンルやキーワードを入力してください "
 
 #: static/templates/users/home.html:53
 msgid "Search for Guides"
-msgstr ""
+msgstr "ガイドを探す"
 
 #: static/templates/users/home.html:405
 msgid "Explore Our Top Guides"
-msgstr ""
+msgstr "人気のガイドを見る"
 
 #: static/templates/users/home.html:406 static/templates/users/home.html:417
 msgid "view all"
-msgstr ""
+msgstr "すべて表示"
 
 #: static/templates/users/home.html:416
 msgid " Explore Our Top Tours"
-msgstr ""
+msgstr "人気のツアーを見る"
 
 #: static/templates/users/tourist.html:88
 msgid "Next Page"
-msgstr ""
+msgstr "次のページへ"
 
 #: static/templates/website_management/contact_us.html:6
 msgid "Contact Us"
-msgstr ""
+msgstr "ご連絡はこちら"
 
 #: static/templates/website_management/contact_us.html:18
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #: static/templates/website_management/contact_us.html:24
 msgid "E-mail"
-msgstr ""
+msgstr "メールアドレス"
 
 #: static/templates/website_management/contact_us.html:30
 msgid "Message"
-msgstr ""
+msgstr "メッセージ"
 
 #: static/templates/website_management/contact_us.html:45
 msgid "Phone Number"
-msgstr ""
+msgstr "電話番号"
 
 #: static/templates/website_management/contact_us.html:51
 msgid "Address"
-msgstr ""
+msgstr "住所"
 
 #: tourzan/settings.py:188
 msgid "English"
-msgstr ""
+msgstr "英語"
 
 #: tourzan/settings.py:189
 msgid "Spanish"
-msgstr ""
+msgstr "スペイン語"
 
 #: tourzan/settings.py:190
 msgid "French"
-msgstr ""
+msgstr "フランス語"
 
 #: tourzan/settings.py:191
 msgid "Portuguese"
-msgstr ""
+msgstr "ポルトガル語"
 
 #: tourzan/settings.py:192
 msgid "Japanese"
-msgstr ""
+msgstr "日本語"
 
 #: tourzan/settings.py:193
 msgid "Russian"
-msgstr ""
+msgstr "ロシア語"
