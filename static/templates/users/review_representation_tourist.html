@@ -18,7 +18,7 @@
                 <p class="booking-item-review-person-loc">{{ review.order.guide.city.name }}</p>
                 <small>
                     <a href="#">
-                        14 {% blocktrans %}Reviews{% endblocktrans %}
+                        {{ review.order.guide.orders_with_review_nmb }} {% blocktrans %}Reviews{% endblocktrans %}
                     </a>
                 </small>
             </div>
