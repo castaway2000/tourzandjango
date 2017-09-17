@@ -16,6 +16,7 @@ from utils.disabling_signals_for_load_data import disable_for_loaddata
 from payments.models import Payment, PaymentMethod
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
+from partners.models import Partner
 
 
 braintree.Configuration.configure(braintree.Environment.Sandbox,
@@ -62,6 +63,7 @@ class Order(models.Model):
 
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
     tourist = models.ForeignKey(TouristProfile, blank=True, null=True, default=None)
+    partner = models.ForeignKey(Partner, blank=True, null=True, default=None)
 
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
 

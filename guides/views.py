@@ -10,6 +10,9 @@ from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg, Max, Min, Sum
+import requests
+from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
 def guides(request):
@@ -115,7 +118,7 @@ def guides(request):
     elif place_id or city_input or guide_input:
         # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
         guides = guides_initial.filter(**base_kwargs)
-    elif request.GET:#there are get parameters
+    elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
     else:
         guides = guides_initial
@@ -144,11 +147,19 @@ def guides(request):
         request.session["guides_rate_max"] = int(rate_max) if float(rate_max).is_integer() else float(rate_max)
         request.session["guides_rates_cached"] = True
 
-    return render(request, 'guides/guides.html', locals())
+    if request.GET.get("ref_id"):
+        return render(request, 'guides/guides_iframe.html', locals())
+    else:
+        return render(request, 'guides/guides.html', locals())
 
 
 def guide(request, username):
     user = request.user
+
+    #referal id for partner to track clicks in iframe
+    ref_id = request.GET.get("ref_id")
+    if ref_id and not "ref_id" in request.session:
+        request.session["ref_id"] = ref_id
 
     if username:
         try:
@@ -442,3 +453,28 @@ def search_service(request):
     }
 
     return JsonResponse(response_data, safe=False)
+
+
+def guide_payouts(request):
+    payment_rails_url = PaymentRailsWidget().get_widget_url()
+    return render(request, 'guides/guide_payouts.html', locals())
+
+# @xframe_options_exempt
+# def guide_payout_iframe(request):
+#     html = render(request, 'help/faq.html', context)
+#     return HttpResponse(html)
+
+
+def guide_payouts_join(request):
+    print("guide_payouts_join")
+    api_url = 'https://api.paymentrails.com/v1/'
+    auth = PaymentRailsAuth()
+
+    # Get list of recipients
+    r = requests.get(api_url + 'recipients', auth=auth)
+    print (r.json())
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def guides_for_clients(request):
+    return render(request, 'guides/guides_for_clients.html', locals())

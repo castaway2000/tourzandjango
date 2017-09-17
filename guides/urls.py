@@ -10,4 +10,9 @@ urlpatterns = [
     url(r'^guide/registration/$', views.profile_settings_guide, name='guide_registration'),
     url(r'^earnings/$', views.earnings, name='earnings'),
     url(r'^search_service/$', views.search_service, name='search_service'),
+
+    url(r'^guide/payouts/$', views.guide_payouts, name='guide_payouts'),
+    url(r'^guide/payouts/join/$', views.guide_payouts_join, name='guide_payouts_join'),
+
+    url(r'^guides_for_clients/$', views.guides_for_clients, name='guides_for_clients'),
 ]

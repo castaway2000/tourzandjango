@@ -97,7 +97,7 @@
                                                     {% for service_in_order in services_in_order %}
                                                         <li>
                                                             {{ service_in_order.service.name }} -
-                                                            {{ service_in_order.price_after_discount|safe }}
+                                                            {{ service_in_order.price_after_discount|floatformat:2 }}
                                                             {{ order.currency.name }}
                                                         </li>
                                                     {% endfor %}
@@ -116,7 +116,7 @@
                                         </b>
                                     </td>
                                     <td>
-                                        {{ order.total_price_before_fees|safe }} {{ order.currency.name }}
+                                        {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -128,7 +128,7 @@
                                         </b>
                                     </td>
                                     <td>
-                                        {{ order.fees_tourist|safe }} {{ order.currency.name }}
+                                        {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -153,7 +153,7 @@
                                         </b>
                                     </td>
                                     <td>
-                                        {{ order.total_price|safe }} {{ order.currency.name }}
+                                        {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
                                     </td>
                                 </tr>
                             </tbody>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1">
+                <div class="gap gap-small"></div>
+                    <H1>Payouts</H1>
+                    {{ payment_rails_url }}
+                    <iframe src="{{ payment_rails_url }}"></iframe>
+                <div class="gap gap-small"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js_stuff %}
+{% endblock js_stuff %}
+
+
