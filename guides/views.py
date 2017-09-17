@@ -15,6 +15,7 @@ from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 
+@xframe_options_exempt
 def guides(request):
     current_page = "guides"
     user = request.user
