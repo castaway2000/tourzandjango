@@ -219,7 +219,7 @@
                                     <div class="row">
                                         <div class="col-md-3 col-sm-3 col-xs-3">
                                             <div class="booking-item-img">
-                                                <a href="{% url 'guide' guide.user.username %}?ref_id={{ request.GET.ref_id }}"">
+                                                <a href="{% url 'guide' guide.user.username %}?ref_id={{ request.GET.ref_id }}">
                                                     {% if guide.profile_image %}
                                                         <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                     {% else %}

@@ -479,3 +479,7 @@ def guide_payouts_join(request):
 
 def guides_for_clients(request):
     return render(request, 'guides/guides_for_clients.html', locals())
+
+
+def tours_for_clients(request):
+    return render(request, 'guides/tours_for_clients.html', locals())
