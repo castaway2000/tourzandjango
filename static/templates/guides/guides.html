@@ -278,33 +278,30 @@
                         </li>
                     {% endfor %}
                 </ul>
-{#                <div class="row">#}
-{#                    <div class="col-md-6">#}
-{#                        <ul class="pagination">#}
-{#                            <li class="active"><a href="#">1</a>#}
-{#                            </li>#}
-{#                            <li><a href="#">2</a>#}
-{#                            </li>#}
-{#                            <li><a href="#">3</a>#}
-{#                            </li>#}
-{#                            <li><a href="#">4</a>#}
-{#                            </li>#}
-{#                            <li><a href="#">5</a>#}
-{#                            </li>#}
-{#                            <li><a href="#">6</a>#}
-{#                            </li>#}
-{#                            <li><a href="#">7</a>#}
-{#                            </li>#}
-{#                            <li class="dots">...</li>#}
-{#                            <li><a href="#">43</a>#}
-{#                            </li>#}
-{#                            <li class="next"><a href="#">Next Page</a>#}
-{#                            </li>#}
-{#                        </ul>#}
-{#                    </div>#}
-{#                    <div class="col-md-6 text-right">#}
-{#                    </div>#}
-{#                </div>#}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if guides.has_other_pages %}
+                            <ul class="pagination">
+                                {% if guides.has_previous %}
+                                    <li class="next"><a href="?page={{ guides.previous_page_number }}">{% trans 'Previous Page' %}</a>
+                                    </li>
+                                {% endif %}
+                                {% for i in guides.paginator.page_range %}
+                                    {% if guides.number == i %}
+                                        <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                                      {% else %}
+                                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                      {% endif %}
+                                {% endfor %}
+                                {% if guides.has_next %}
+                                    <li class="next"><a href="?page={{ guides.next_page_number }}">{% trans 'Next Page' %}</a></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            
             </div>
         </div>
         <div class="gap"></div>

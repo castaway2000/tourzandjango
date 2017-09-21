@@ -109,8 +109,8 @@ def guides(request):
     #if it is one element in tuple, * is not needed
 
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
-    print("base kwargs")
-    print (base_kwargs)
+    # print("base kwargs")
+    # print (base_kwargs)
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()
@@ -135,7 +135,6 @@ def guides(request):
         guides = guides.filter(id__in=guide_services_guides_ids)
 
     items_nmb = guides.count()
-
     guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
     if not request.session.get("guides_rates_cached"):
         if items_nmb>0:#guides found more than 0
@@ -147,6 +146,15 @@ def guides(request):
         request.session["guides_rate_min"] = int(rate_min) if float(rate_min).is_integer() else float(rate_min)
         request.session["guides_rate_max"] = int(rate_max) if float(rate_max).is_integer() else float(rate_max)
         request.session["guides_rates_cached"] = True
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(guides, 5)
+    try:
+        guides = paginator.page(page)
+    except PageNotAnInteger:
+        guides = paginator.page(1)
+    except EmptyPage:
+        guides = paginator.page(paginator.num_pages)
 
     if request.GET.get("ref_id"):
         return render(request, 'guides/guides_iframe.html', locals())

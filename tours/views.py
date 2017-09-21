@@ -15,8 +15,10 @@ from orders.models import Review, Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 from django.db.models import Avg, Max, Min, Sum
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
+@xframe_options_exempt
 def tours(request):
     user = request.user
     base_kwargs = dict()

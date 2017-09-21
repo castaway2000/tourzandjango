@@ -265,7 +265,7 @@
                             {% if tours.has_other_pages %}
                                 <ul class="pagination">
                                     {% if tours.has_previous %}
-                                        <li class="next"><a href="?page={{ tours.previous_page_number }}">Previous Page</a>
+                                        <li class="next"><a href="?page={{ tours.previous_page_number }}">{% trans 'Previous Page' %}</a>
                                         </li>
                                     {% endif %}
                                     {% for i in tours.paginator.page_range %}
@@ -276,7 +276,7 @@
                                           {% endif %}
                                     {% endfor %}
                                     {% if tours.has_next %}
-                                        <li class="next"><a href="?page={{ tours.next_page_number }}">Next Page</a></li>
+                                        <li class="next"><a href="?page={{ tours.next_page_number }}">{% trans 'Next Page' %}</a></li>
                                     {% endif %}
                                 </ul>
                             {% endif %}
