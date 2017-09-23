@@ -32,4 +32,7 @@ BRAINTREE_MERCHANT_ID = os.environ.get('BRAINTREE_MERCHANT_ID', '')
 BRAINTREE_PUBLIC_KEY = os.environ.get('BRAINTREE_PUBLIC_KEY', '')
 BRAINTREE_PRIVATE_KEY = os.environ.get('BRAINTREE_PRIVATE_KEY', '')
 
+PAYMENT_RAILS_KEY = os.environ.get('PAYMENT_RAILS_KEY', '')
+PAYMENT_RAILS_SECRET = os.environ.get('PAYMENT_RAILS_SECRET', '')
+
 FROM_EMAIL = "noreply@tourzan.com"
