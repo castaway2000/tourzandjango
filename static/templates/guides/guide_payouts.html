@@ -8,11 +8,11 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-lg-10 col-lg-offset-1">
+            <div class="col-lg-10 col-lg-offset-1 text-center">
                 <div class="gap gap-small"></div>
-                    <H1>Payouts</H1>
-                    {{ payment_rails_url }}
-                    <iframe src="{{ payment_rails_url }}"></iframe>
+                    <H1>Payout method settings</H1>
+                    <iframe src="{{ payment_rails_url }}" id="paymentrails_widget"
+                            style="border: none; width: 700px; height: 785px;"></iframe>
                 <div class="gap gap-small"></div>
             </div>
         </div>
@@ -21,6 +21,22 @@
 
 
 {% block js_stuff %}
+    <script>
+        $(document).ready(function(){
+            function resizeWidget(){
+                default_widget_width = 700;
+                window_width = $(window).width();
+                if (window_width < default_widget_width+20){
+                    new_width = window_width - 20;
+                    $('#paymentrails_widget').css("width", new_width);
+                }
+            }
+            $(window).resize(function(){
+                resizeWidget();
+            });
+            resizeWidget();
+        });
+    </script>
 {% endblock js_stuff %}
 
 
