@@ -471,7 +471,6 @@ def order_completing(request, order_id):
                 kwargs = dict(kwargs, **tourist_kwargs)
 
                 #completing payment
-                print("111111111")
                 if order.status.id in [2, 4] and order.payment_status.id in [2, 3]:
                     print("in")
                     transaction_id = order.payment.uuid

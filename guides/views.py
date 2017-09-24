@@ -464,25 +464,18 @@ def search_service(request):
     return JsonResponse(response_data, safe=False)
 
 
+@login_required()
 def guide_payouts(request):
-    payment_rails_url = PaymentRailsWidget().get_widget_url()
-    return render(request, 'guides/guide_payouts.html', locals())
-
-# @xframe_options_exempt
-# def guide_payout_iframe(request):
-#     html = render(request, 'help/faq.html', context)
-#     return HttpResponse(html)
-
-
-def guide_payouts_join(request):
-    print("guide_payouts_join")
-    api_url = 'https://api.paymentrails.com/v1/'
-    auth = PaymentRailsAuth()
-
-    # Get list of recipients
-    r = requests.get(api_url + 'recipients', auth=auth)
-    print (r.json())
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    user = request.user
+    try:
+        guide = user.guideprofile
+        if not guide.uuid:
+            guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
+        payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
+        return render(request, 'guides/guide_payouts.html', locals())
+    except:
+        messages.error(request, 'You have no permissions for this action!')
+        return render(request, 'users/home.html', locals())
 
 
 def guides_for_clients(request):

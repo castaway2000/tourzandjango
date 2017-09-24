@@ -12,7 +12,6 @@ urlpatterns = [
     url(r'^search_service/$', views.search_service, name='search_service'),
 
     url(r'^guide/payouts/$', views.guide_payouts, name='guide_payouts'),
-    url(r'^guide/payouts/join/$', views.guide_payouts_join, name='guide_payouts_join'),
 
     url(r'^guides_for_clients/$', views.guides_for_clients, name='guides_for_clients'),
     url(r'^tours_for_clients/$', views.tours_for_clients, name='tours_for_clients'),

@@ -8,10 +8,14 @@ class PaymentRailsWidget(object):
     api_key = PAYMENT_RAILS_KEY
     secret_key = PAYMENT_RAILS_SECRET
 
+    def __init__(self, **kwargs):
+        self.guide = kwargs.get("guide")
+
     def get_widget_url(self):
         timestamp = str(int(time.time()))
-        email = "test@gmail.com"
-        guide_id = "123"
+        email = self.guide.user.email
+        guide_id = self.guide.uuid
+        # guide_id = self.guide.id
         query_string = "email=%s&refid=%s&ts=%s&key=%s" % (email, guide_id, timestamp, self.api_key)
         signiture = self.create_signiture(query_string)
         widget_link = "%s?%s&sign=%s" % (self.widget_base_url, query_string, signiture)
