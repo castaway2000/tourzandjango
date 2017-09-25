@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'emails',
     'payments',
     'blog',
+    'partners',
 
     #external packages
     'allauth',
@@ -73,6 +74,8 @@ INSTALLED_APPS = [
     'storages',
     'axes',
     'phonenumber_field',
+
+    'corsheaders',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -92,8 +95,17 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'crequest.middleware.CrequestMiddleware',
-
 ]
+
+# CORS_ORIGIN_WHITELIST = (
+#     'google.com',
+#     'https://widget.paymentrails.com',
+#     'widget.paymentrails.com',
+#     'paymentrails.com'
+# )
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tourzan.urls'
 

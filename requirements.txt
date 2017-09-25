@@ -6,7 +6,7 @@ django-language-field==0.0.3
 Babel==2.4.0
 django-international==0.0.6
 django-summernote==0.8.7
-
+django-cors-headers==2.1.0
 
 djangorestframework==3.6.3
 markdown==2.6.8

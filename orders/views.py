@@ -19,6 +19,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
+from partners.models import Partner
 
 
 braintree.Configuration.configure(braintree.Environment.Sandbox,
@@ -105,6 +106,10 @@ def making_booking(request):
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
         try:
+            if request.session.get("ref_id"):
+                ref_id = request.session["ref_id"]
+                partner = Partner.objects.get(uuid=ref_id)
+                kwargs["partner"] = partner
             order = Order.objects.create(**kwargs)
             services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
             # print ("services ids: %s" % services_ids)
@@ -466,7 +471,6 @@ def order_completing(request, order_id):
                 kwargs = dict(kwargs, **tourist_kwargs)
 
                 #completing payment
-                print("111111111")
                 if order.status.id in [2, 4] and order.payment_status.id in [2, 3]:
                     print("in")
                     transaction_id = order.payment.uuid

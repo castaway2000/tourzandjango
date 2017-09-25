@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .models import Tour
 from locations.models import City
 from guides.models import GuideProfile
+from users.models import GeneralProfile
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .forms import *
@@ -14,16 +15,17 @@ from orders.models import Review, Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 from django.db.models import Avg, Max, Min, Sum
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
+@xframe_options_exempt
 def tours(request):
-    print (request.GET)
     user = request.user
-
     base_kwargs = dict()
     hourly_price_kwargs = dict()
     fixed_price_kwargs = dict()
     free_price_kwargs = dict()
+    with_company_kwargs = dict()
 
     filtered_hourly_prices = request.GET.get('hourly_price')
     filtered_fixed_prices = request.GET.get('fixed_price')
@@ -32,6 +34,7 @@ def tours(request):
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
     filtered_is_fixed_price_included = request.GET.get('is_fixed_price_included')
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
+    filtered_is_company = request.GET.get('is_company')
     city_input = request.GET.getlist(u'city_input')
     place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
@@ -71,7 +74,6 @@ def tours(request):
             city = City.objects.get(place_id=place_id)
             print(city)
             city_from_place_id = city.full_location
-
         except:
             pass
         base_kwargs["city__place_id"] = place_id
@@ -82,8 +84,13 @@ def tours(request):
     if guide_input:
         base_kwargs["guide__user__username__in"] = guide_input
 
-    # print ("guide_input: %s" % guide_input)
+    #filtering by company
+    if not filtered_is_company:
+        base_kwargs['guide__user__generalprofile__is_company'] = False
 
+    print(base_kwargs)
+
+    # print ("guide_input: %s" % guide_input)
     #ordering
     if order_results:
         if order_results == "price":
@@ -138,35 +145,40 @@ def tours(request):
             free_price_filters.update(free_price_kwargs)
             q_objects |= Q(**free_price_filters)
 
-        #if it is one element in tuple, * is not needed
+        #if it is one element in tuple, the second * is not needed
         tours = tours_initial.filter(q_objects).order_by(*order_results)
-        # print ("12")
-        # print (q_objects)
-    elif city_input or guide_input:
-        # print ("12345")
+        # print(tours)
+
+    elif place_id or city_input or guide_input:
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
-    elif request.GET and not "page" in request.GET:
+
+    elif request.GET and not "page" in request.GET and request.GET.get("ref_id")==False:
         # print ("15")
         tours = Tour.objects.none()
     else:
         tours = tours_initial
-
     tours_nmb = tours.count()
 
     cities_ids = list(set([item.city.id for item in tours_initial]))
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
-
-    guides_ids = list(set([item.guide.id for item in tours_initial ]))
+    guides_ids = list(set([item.guide.id for item in tours_initial]))
     # print ("guides ids: %s" % guides_ids)
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
     #getting min and max price for prices range slider
     tours_rate_info = tours.aggregate(Min("price"), Max("price"), Min("price_hourly"), Max("price_hourly"))
     if not request.session.get("tours_rates_cached"):
-        request.session["tours_rate_fixed_min"] = int(tours_rate_info["price__min"]) if float(tours_rate_info["price__min"]).is_integer() else float(tours_rate_info["price__min"])
-        request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
-        request.session["tours_rate_hourly_min"] = int(tours_rate_info["price_hourly__min"]) if float(tours_rate_info["price_hourly__min"]).is_integer() else float(tours_rate_info["price_hourly__min"])
-        request.session["tours_rate_hourly_max"] = int(tours_rate_info["price_hourly__max"]) if float(tours_rate_info["price_hourly__max"]).is_integer() else float(tours_rate_info["price_hourly__max"])
+        if tours.count()>0:
+            print(tours_rate_info)
+            request.session["tours_rate_fixed_min"] = int(tours_rate_info["price__min"]) if float(tours_rate_info["price__min"]).is_integer() else float(tours_rate_info["price__min"])
+            request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
+            request.session["tours_rate_hourly_min"] = int(tours_rate_info["price_hourly__min"]) if float(tours_rate_info["price_hourly__min"]).is_integer() else float(tours_rate_info["price_hourly__min"])
+            request.session["tours_rate_hourly_max"] = int(tours_rate_info["price_hourly__max"]) if float(tours_rate_info["price_hourly__max"]).is_integer() else float(tours_rate_info["price_hourly__max"])
+        else:
+            request.session["tours_rate_fixed_min"] = 0
+            request.session["tours_rate_fixed_max"] = 100
+            request.session["tours_rate_hourly_min"] = 0
+            request.session["tours_rate_hourly_max"] = 50
         request.session["tours_rates_cached"] = True
 
     page = request.GET.get('page', 1)
@@ -178,7 +190,10 @@ def tours(request):
     except EmptyPage:
         tours = paginator.page(paginator.num_pages)
 
-    return render(request, 'tours/tours.html', locals())
+    if request.GET.get("ref_id"):
+        return render(request, 'tours/tours_iframe.html', locals())
+    else:
+        return render(request, 'tours/tours.html', locals())
 
 
 def guide_tours(request, username):
@@ -203,6 +218,11 @@ def guide_tours(request, username):
 
 def tour(request, slug, tour_id):
     user = request.user
+
+    #referal id for partner to track clicks in iframe
+    ref_id = request.GET.get("ref_id")
+    if ref_id and not "ref_id" in request.session:
+        request.session["ref_id"] = ref_id
 
     tour = Tour.objects.get(id=tour_id, slug=slug)
     guide = tour.guide

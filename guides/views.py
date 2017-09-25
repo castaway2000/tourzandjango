@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
-from users.models import Interest, UserInterest, UserLanguage, LanguageLevel
+from users.models import Interest, UserInterest, UserLanguage, LanguageLevel, GeneralProfile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from orders.models import Review
@@ -10,8 +10,12 @@ from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg, Max, Min, Sum
+import requests
+from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
+@xframe_options_exempt
 def guides(request):
     current_page = "guides"
     user = request.user
@@ -21,6 +25,7 @@ def guides(request):
     base_user_interests_kwargs = dict()
     base_guide_service_kwargs = dict()
     hourly_price_kwargs = dict()
+    with_company_kwargs = dict()
 
     filtered_hourly_prices = request.GET.get('hourly_price')
 
@@ -35,6 +40,7 @@ def guides(request):
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
     language_input = request.GET.getlist(u'language_input')
+    is_company = request.GET.get('is_company')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -65,7 +71,6 @@ def guides(request):
             city = City.objects.get(place_id=place_id)
             print(city)
             city_from_place_id = city.full_location
-
         except:
             pass
         base_kwargs["city__place_id"] = place_id
@@ -75,12 +80,12 @@ def guides(request):
     #filtering by guides
     if guide_input:
         base_kwargs["user__username__in"] = guide_input
-
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
-
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
+    if not is_company:
+        base_kwargs["user__generalprofile__is_company"] = False
 
     #ordering
     if order_results:
@@ -103,24 +108,20 @@ def guides(request):
     # even if some filters are not available for the current list of tours
     #if it is one element in tuple, * is not needed
 
-    # print (order_results)
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
+    # print("base kwargs")
     # print (base_kwargs)
     if hourly_price_kwargs:
-        # print (1)
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
-    elif city_input or guide_input:
-        # print (2)
+    elif place_id or city_input or guide_input:
         # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
         guides = guides_initial.filter(**base_kwargs)
-    elif request.GET:
-        # print (3)
+    elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
     else:
-        # print (4)
         guides = guides_initial
 
     if base_user_interests_kwargs:
@@ -132,8 +133,8 @@ def guides(request):
         guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
         guide_services_guides_ids = [item.guide.id for item in guide_services]
         guides = guides.filter(id__in=guide_services_guides_ids)
-    items_nmb = guides.count()
 
+    items_nmb = guides.count()
     guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
     if not request.session.get("guides_rates_cached"):
         if items_nmb>0:#guides found more than 0
@@ -146,11 +147,28 @@ def guides(request):
         request.session["guides_rate_max"] = int(rate_max) if float(rate_max).is_integer() else float(rate_max)
         request.session["guides_rates_cached"] = True
 
-    return render(request, 'guides/guides.html', locals())
+    page = request.GET.get('page', 1)
+    paginator = Paginator(guides, 5)
+    try:
+        guides = paginator.page(page)
+    except PageNotAnInteger:
+        guides = paginator.page(1)
+    except EmptyPage:
+        guides = paginator.page(paginator.num_pages)
+
+    if request.GET.get("ref_id"):
+        return render(request, 'guides/guides_iframe.html', locals())
+    else:
+        return render(request, 'guides/guides.html', locals())
 
 
 def guide(request, username):
     user = request.user
+
+    #referal id for partner to track clicks in iframe
+    ref_id = request.GET.get("ref_id")
+    if ref_id and not "ref_id" in request.session:
+        request.session["ref_id"] = ref_id
 
     if username:
         try:
@@ -444,3 +462,25 @@ def search_service(request):
     }
 
     return JsonResponse(response_data, safe=False)
+
+
+@login_required()
+def guide_payouts(request):
+    user = request.user
+    try:
+        guide = user.guideprofile
+        if not guide.uuid:
+            guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
+        payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
+        return render(request, 'guides/guide_payouts.html', locals())
+    except:
+        messages.error(request, 'You have no permissions for this action!')
+        return render(request, 'users/home.html', locals())
+
+
+def guides_for_clients(request):
+    return render(request, 'guides/guides_for_clients.html', locals())
+
+
+def tours_for_clients(request):
+    return render(request, 'guides/tours_for_clients.html', locals())

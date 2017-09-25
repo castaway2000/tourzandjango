@@ -225,3 +225,58 @@ window.setTimeout(function() {
     $(this).addClass('hidden');
   });
 }, 2500);
+
+
+$(document).ready(function(){
+    $(document).on('click', '#toggle_left_menu', function(e) {
+        console.log("aa");
+         if($.cookie("left_menu_hided") == 1) {
+             $.cookie("left_menu_hided", 0, {path: '/'});
+             console.log("set 0");
+         }
+         else{
+            $.cookie("left_menu_hided", 1, {path: '/'});
+             console.log("set 1");
+        }
+        hidingLeftMenu()
+    });
+
+
+});
+
+function hidingLeftMenu(){
+    if ($.cookie("left_menu_hided") == 1) {
+        $('.booking-filters-container').addClass("closed");
+        console.log("min");
+    }else{
+        $('.booking-filters-container').removeClass("closed");
+        console.log("max");
+    }
+}
+hidingLeftMenu();
+
+
+//sticking leftbar on scroll
+
+$(window).scroll(function () {
+    var scroll = $(window).scrollTop();
+    var width = $(window).width();
+    elementsResizing()
+});
+
+function elementsResizing(){
+    var scroll = $(window).scrollTop();
+    var width = $(window).width();
+    if (scroll >= 130 && width>990) {
+        $('.booking-filters-container').addClass('sticky-top');
+    } else  {
+        $('.booking-filters-container').removeClass('sticky-top');
+    };
+    if (width>990){
+        $('.booking-filters-container').removeClass("closed");
+    }
+};
+
+$(window).resize(function () {
+    elementsResizing();
+});

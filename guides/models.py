@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from utils.general import random_string_creating
+from utils.general import random_string_creating, uuid_creating
 from django.utils.text import slugify
 from datetime import date
 from django.contrib.auth.models import User
@@ -31,6 +31,7 @@ class GuideProfile(models.Model):
     profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default="guides/profile_images/300x300.png")
     optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
+    uuid = models.CharField(max_length=48, null=True)
 
     #statistic data
     rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -63,6 +64,9 @@ class GuideProfile(models.Model):
             self.orders_with_review_rate = (self.orders_with_review_nmb/self.orders_completed_nmb)*100
         except Exception as e:
             print (e)
+
+        if not self.uuid:
+            self.uuid = uuid_creating()
 
         super(GuideProfile, self).save(*args, **kwargs)
 

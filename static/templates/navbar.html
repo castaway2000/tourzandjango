@@ -10,10 +10,9 @@
     <div class="header-top header-white">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 hidden-sm hidden-xs">
                     <div class="navbar-header">
                         <div class="navbar-brand no-padding">
-
                             <a class="navbar-brand navbar-logo" href="/">
                                 <span>
                                     <img src="{% static 'img/tourzan_logo_white.jpg' %}" class="navbar-logo"
@@ -23,11 +22,10 @@
                             <div class="pull-left navbar-logo-text">
                                 <a href="{% url 'home' %}">Tourzan</a>
                             </div>
-
                         </div>
                     </div>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-7 col-sm-12 col-xs-12">
                     <div class="nav nav-menu">
                         <ul class="slimmenu top-menu" id="slimmenu">
 {#                            <li class="{% if current_page == "home" %}active{% endif %}">#}
@@ -142,7 +140,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 col-sm-12 col-xs-12">
                     <div class="top-user-area clearfix">
                         <ul class="top-user-area-list list list-horizontal list-border">
                             {% if user.is_anonymous %}

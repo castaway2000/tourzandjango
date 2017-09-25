@@ -39,22 +39,16 @@
             </div>
 
             <div class="col-md-3">
-                <h4>{% blocktrans %}Newsletter{% endblocktrans %}</h4>
-                <form>
-                    <label>{% blocktrans %}Enter your E-mail Address{% endblocktrans %}</label>
-                    <input type="text" class="form-control">
-                    <p class="mt5"><small>*{% blocktrans %}We Never Send Spam{% endblocktrans %}</small>
-                    </p>
-                    <input type="submit" class="btn btn-primary" value="Subscribe">
-                </form>
-            </div>
-            <div class="col-md-2">
                 <ul class="list list-footer">
                     <li>
                         <a href="{% url 'blog' %}">
                             <p class="lead">{% blocktrans %}Blog{% endblocktrans %}</p>
                         </a>
                     </li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <ul class="list list-footer">
                     <li><a href="{% url 'privacy_policy' %}">{% blocktrans %}Privacy Policy{% endblocktrans %}</a>
                     </li>
                     <li><a href="{% url 'tos' %}">{% blocktrans %}Terms of Service{% endblocktrans %}</a>
