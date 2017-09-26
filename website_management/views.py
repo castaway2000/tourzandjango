@@ -23,6 +23,10 @@ def privacy_policy(request):
     return render(request, 'website_management/privacy_policy.html', locals())
 
 
+def faq(request):
+    return render(request, 'website_management/faq.html', locals())
+
+
 def contact_us(request):
     user = request.user
     if not user.is_anonymous():
