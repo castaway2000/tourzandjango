@@ -50,6 +50,7 @@ urlpatterns = i18n_patterns(
     url(r'^', include('users.urls')),
 
     url(r'^', include('guides.urls')),
+    url(r'^', include('guides_calendar.urls')),
     url(r'^', include('tourists.urls')),
     url(r'^', include('payments.urls')),
 

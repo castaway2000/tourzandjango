@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'payments',
     'blog',
     'partners',
+    'guides_calendar',
 
     #external packages
     'allauth',

@@ -1,0 +1,191 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <div class="row">
+
+            <div class="col-md-12">
+                <h4>
+                    {% blocktrans %}Calendar{% endblocktrans %}
+                </h4>
+                <a href="{%  url 'weekly_schedule' %}">{% trans 'Set up weekly schedule' %}</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <form method="get" name="form_dates_select" class="form-inline">
+                    <div class="form-group">
+                        <input class="form-control d_picker" name="date_start" value="{{ request.GET.date_start }}">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control d_picker" name="date_end" value="{{ request.GET.date_end }}">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">{% trans 'Apply' %}</button>
+                    </div>
+                </form>
+                <table class="table table-responsive table-calendar" id="table_calendar" data-link="{% url 'updating_calendar' %}">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            {% for hour in hours_list %}
+                                <th>
+                                    <div class="time-title">
+                                        {{ hour }}:00
+                                    </div>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        {% for calendar_item in calendar_items %}
+
+                            {% if calendar_item.is_day_start %}
+                                <td>
+                                    <div class="day-title">
+                                         {{ calendar_item.date|date:"d.m.Y, D" }}
+                                    </div>
+                                </td>
+                            {% endif %}
+                            <td
+                                class="calendar-item {{ calendar_item.status }}"
+                                data-id="{{ calendar_item.id }}"
+                            >
+                            </td>
+
+                            {% if forloop.counter|divisibleby:24 %}
+                                </tr>
+
+                                 {% if calendar_item.time_from|date:"D" == "Fri" %}
+                                    <tr>
+                                        <td>
+                                            Weekend
+                                        </td>
+                                    </tr>
+                                 {% endif %}
+
+                                <tr>
+                            {% endif %}
+
+                        {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block js_stuff %}
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function(){
+{#            $(".table-calendar").DataTable();#}
+
+            $('.d_picker').datepicker({
+                todayHighlight: true,
+                format: "mm.dd.yyyy"
+            });
+
+            if (!$('input[name="date_start"]').val()){
+                $('input[name="date_start"]').datepicker("setDate", new Date());
+            }
+            if (!$('input[name="date_end"]').val()){
+                $('input[name="date_end"]').datepicker('setDate', '+9d');
+            }
+
+            function changingCellAvailability(cell, force_availability){
+                console.log("changingCellAvailability");
+                var new_status;
+                if (force_availability==false){
+                    if (cell.hasClass("available")){
+                        new_status = "unavailable";
+                    }else if(cell.hasClass("unavailable")){
+                        new_status = "available"
+                    }else if(cell.hasClass("unavailable")==false && cell.hasClass("available")==false && cell.hasClass("booked")==false){
+                        new_status = "available"
+                    }
+                }else{
+                    new_status = force_availability;
+                }
+
+                if (new_status){
+                    data = {};
+                    var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                    data["csrfmiddlewaretoken"] = csrf_token;
+                    data["calendar_item_id"] = cell.data("id");
+                    data["new_status"] = new_status;
+                    var url = $('#table_calendar').data('link');
+                    console.log(url);
+                    $.ajax({
+                         url: url,
+                         type: 'POST',
+                         data: data,
+                         cache: true,
+                         success: function(data){
+                             cell.removeClass("available").removeClass("disabled").removeClass("booked");
+                             cell.addClass(new_status);
+                             console.log(data.result);
+                         }
+                    })
+                }
+            };
+
+            function changingCellAreaAvailability(first_cell_position, last_cell_position, force_availability){
+                console.log("!23123");
+                console.log(first_cell_position[0]);
+                row_start = first_cell_position[0];
+                row_end = last_cell_position[0];
+                cell_start = first_cell_position[1];
+                cell_end = last_cell_position[1];
+                console.log(row_start);
+                console.log(row_end);
+                console.log(cell_start);
+                console.log(cell_end);
+                target_cells = $("table tbody tr:gt("+row_start+"):lt("+row_end+")").find("td:gt("+cell_start+"):lt("+cell_end+")");
+                target_cells.css('background','red');
+                console.log(target_cells);
+            }
+
+            $('.calendar-item').on("click", function(){
+                changingCellAvailability(cell=$(this), force_availability=false)
+            });
+
+            //code for changing cells in bulk
+{#            first_cell_position = [];#}
+{#            last_cell_position = [];#}
+{#            $('.calendar-item').bind('mousemove',function(e){#}
+{#                if (e.buttons & 1 || (e.buttons === undefined && e.which == 1)) {#}
+{#                    console.log('left button pressed');#}
+{#                    var cellIndex  = this.cellIndex + 1;#}
+{#                    console.log(cellIndex);#}
+{#                    var rowIndex = this.parentNode.rowIndex + 1;#}
+{#                    console.log(rowIndex);#}
+{#                    console.log(first_cell_position);#}
+{#                    if (first_cell_position.length==0){#}
+{#                        changingCellAvailability(cell=$(this), force_availability=false);#}
+{#                        first_cell_availability = $(this).hasClass("available") ? "available" : "unavailable";#}
+{#                        first_cell_position = [rowIndex, cellIndex];#}
+{#                    }else{#}
+{#                        changingCellAvailability(cell=$(this), force_availability=first_cell_availability);#}
+{#                    }#}
+{#                    last_cell_position = [rowIndex, cellIndex];#}
+{##}
+{#                    changingCellAreaAvailability(first_cell_position, last_cell_position,#}
+{#                            force_availability=first_cell_availability)#}
+{#                }#}
+{#            });#}
+        })
+    </script>
+{% endblock %}
+

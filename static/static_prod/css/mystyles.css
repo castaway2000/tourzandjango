@@ -447,6 +447,62 @@ footer#main-footer {
     min-height: 1000px;
 }
 
+.table-calendar{
+    /*table-layout: fixed;*/
+    width: 100%;
+    margin-top: 15px;
+}
+
+.table-calendar thead th{
+    padding: 1px!important;
+    white-space: nowrap;
+}
+
+.day-title{
+    width: 100px;
+}
+
+.time-title{
+    /*-moz-transform: rotate(-90deg);  !* Firefox *!*/
+    /*-o-transform: rotate(-90deg);  !* Opera *!*/
+    /*-webkit-transform: rotate(-90deg);  !* Safari y Chrome *!*/
+    transform:
+    /* Magic Numbers */
+    translate(3px, -5px)
+    /* 45 is really 360 - 45 */
+    rotate(315deg);
+  width: 30px;
+}
+
+.table-calendar tbody > tr .calendar-item{
+    text-align: center;
+    width: 10px;
+    cursor: pointer;
+    background-color: #dadada;
+}
+
+.table-calendar tbody > tr > td{
+    border: 1px solid white;
+}
+
+.table-calendar tbody > tr > td.calendar-item.available {
+    background-color: #bdf0bd;
+}
+
+.table-calendar tbody > tr > td.calendar-item.calendar-item.booked{
+    background-color: #5adc72;
+}
+
+.table-calendar tbody > tr > td.calendar-item.calendar-item.disabled {
+   background-color: #dadada;
+}
+
+.table-calendar thead{
+    border-top: 2px solid white!important;
+    border-left: 2px solid white!important;
+    border-right: 2px solid white!important;
+}
+
 @media (max-width:1260px) {
   .booking-filters-container{
       z-index: 100;

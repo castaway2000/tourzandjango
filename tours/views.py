@@ -331,8 +331,8 @@ def deactivate_tour_image(request):
         tour_id = data.get("tour_id")
         img_id = data.get("img_id")
         TourImage.objects.filter(tour_id=tour_id, id=img_id).update(is_active=False)
-    response_date = dict()
-    return JsonResponse(response_date)
+    response_data = dict()
+    return JsonResponse(response_data)
 
 
 @login_required()
@@ -344,8 +344,8 @@ def make_main_tour_image(request):
         tour_image = TourImage.objects.get(tour_id=tour_id, id=img_id)
         tour_image.is_main = True
         tour_image.save(force_update=True)
-    response_date = dict()
-    return JsonResponse(response_date)
+    response_data = dict()
+    return JsonResponse(response_data)
 
 
 @login_required()
