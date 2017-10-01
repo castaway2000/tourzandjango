@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
-        <h1 class="page-title">About Us</h1>
+        <h1 class="page-title">{% blocktrans %}About Us{% endblocktrans %}</h1>
     </div>
 
     <div class="container">
@@ -24,14 +25,51 @@
                         <div class="col-md-10">
                             <h2>Live in the moment.</h2>
                             <p class="text-bigger">
+                                {% blocktrans %}
                                 We at tourzan live in the moment. We were founded on the idea that travel is best when with a local to guide you and show you their home.
                                 We are just like you and want to see the world, relax, learn and explore.
                                 Our founder created this site with that in mind. The intent to bring you the best possible experience that you simply can not replicate elsewhere.
                                 Its a unique localized feel. We are small but well connected global community and growing rapidly.
+                                {% endblocktrans %}
                                 </br>
+                                {% blocktrans %}
                                 From Seattle to Singapore there is so much to be seen and so many new things to learn.
                                 We hope you will live in the moment with us and tell others of the wonderful experience Tourzan.com brought you.
+                                {% endblocktrans %}
                             </p>
+                        </div>
+                    <div class="col-md-10">
+                            <h2>Who we are</h2>
+                            <p class="text-bigger">
+                                {% blocktrans %}
+                                    Tourzan is made of a passionate rag tag team of travelers and developers from all over the world.
+                                    Over the last two years we have spent countless hours working to make this idea a reality.
+                                {% endblocktrans %}
+                                {% blocktrans %}
+                                    When we say distributed we mean it. The lead web developer and mobile developer are located in the Ukraine.
+                                    Our Junior Developer, Test Engineer and CEO is located in the Seattle.
+                                    Our localization experts are based out of Florida USA, Germany, and Tokyo.
+                                    Our the development feedback group is from every continent and represents the needs of you. yes you.
+                                    We think of the user first and how to best accommodate the ease of use and performance.
+                                {% endblocktrans %}
+                            </p>
+                    </div>
+                    <div class="col-md-10">
+                            <h2>What we stand for</h2>
+                            <p class="text-bigger">
+                                {% blocktrans %}
+                                    What would we be if we didn't have values?
+                                {% endblocktrans %}
+                            </p>
+                                </br>
+                                    <ul>
+                                        <li>{% blocktrans %}People{% endblocktrans %}</li>
+                                            <p>{% blocktrans %}You, yes you literally make this project a success.{% endblocktrans %}</p>
+                                        <li>{% blocktrans %}Security{% endblocktrans %}</li>
+                                            <p>{% blocktrans %}We take pride in providing a PCI compliant and SSL secured webservice{% endblocktrans %}</p>
+                                        <li>{% blocktrans %}Culture{% endblocktrans %}</li>
+                                            <p>{% blocktrans %}Cross cultural understanding brought tourzan to life.{% endblocktrans %}</p>
+                                    </ul>
                         </div>
                     </div>
                 </div>
