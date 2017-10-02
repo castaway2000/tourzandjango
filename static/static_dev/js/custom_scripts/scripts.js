@@ -76,7 +76,6 @@ $(document).ready(function(){
         $('.schedule-form').find('#booking_hours').val(time_slots_nmb);
 
         time_slots_chosen = [];
-        console.log("111111111");
         $.each($('.time-slots-container .time-slot.chosen'), function(){
             console.log($(this));
             console.log($(this).data("guide_time_slot"));

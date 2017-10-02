@@ -465,11 +465,7 @@
     <script>
         $(document).ready(function(){
 
-            $('.d_picker').datepicker({
-                todayHighlight: true,
-                format: "mm.dd.yyyy"
-            }).on("changeDate", function(e) {
-                // `e` here contains the extra attributes
+            function gettingTimeSlotsForDate(){
                 data = {};
                 var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
                 data["csrfmiddlewaretoken"] = csrf_token;
@@ -489,16 +485,21 @@
                          time_slots_container = $('#time_slots');
                          time_slots_container.html("");
                          $.each(available_time_slots, function(index, el){
-                            console.log(el);
-                             console.log(el.calendar_item__time_from.split("T"));
-                             console.log(slot_time = el.calendar_item__time_from.split("T")[1]);
-
                             slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
                              slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
                             time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
                          })
                      }
                 })
+            }
+            gettingTimeSlotsForDate();
+
+            $('.d_picker').datepicker({
+                todayHighlight: true,
+                format: "mm.dd.yyyy"
+            }).on("changeDate", function(e) {
+                // `e` here contains the extra attributes
+                gettingTimeSlotsForDate();
             });
 
             $(document).on("click", '.time-slots-container .time-slot', function(){

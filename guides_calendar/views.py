@@ -167,6 +167,6 @@ def available_date_timeslots(request):
         guide_id = data.get("guide_id")
         calendar_date = datetime.datetime.strptime(data.get("booking_date"), '%m.%d.%Y')
         available_time_slots = list(CalendarItemGuide.objects.filter(guide_id=guide_id, status_id=2, calendar_item__date=calendar_date)\
-                                    .values("calendar_item_id", "calendar_item__time_from", "calendar_item__time_to"))
+                                    .values("id", "calendar_item__time_from", "calendar_item__time_to"))
         response_data["available_time_slots"] = available_time_slots
     return JsonResponse(response_data)

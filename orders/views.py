@@ -49,8 +49,8 @@ def making_booking(request):
     #creating booked time slots in guide's schedule
     #if some of selected time slots is already booked or unavailable - return an error
     time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
-    is_inuavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
-    if is_inuavailable_or_booked_timeslot == False:
+    is_unuavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
+    if is_unuavailable_or_booked_timeslot == False:
 
         kwargs = dict()
         tour_id = data.get("tour_id")
