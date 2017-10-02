@@ -228,6 +228,7 @@ def guide(request, username):
         "reviews": reviews,
         "guide_services": guide_services
     }
+
     return render(request, 'guides/guide.html', locals())
 
 

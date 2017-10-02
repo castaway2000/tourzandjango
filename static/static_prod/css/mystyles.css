@@ -503,6 +503,25 @@ footer#main-footer {
     border-right: 2px solid white!important;
 }
 
+.time-slots-container{
+    text-align: left;
+    color: white;
+}
+
+.time-slots-container .time-slot{
+    display: inline-block;
+    background-color: grey;
+    border-radius: 2px;
+    margin-right: 2px;
+    margin-bottom: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.time-slots-container .time-slot.chosen{
+    background-color: #5adc72;
+}
+
 @media (max-width:1260px) {
   .booking-filters-container{
       z-index: 100;

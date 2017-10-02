@@ -30,13 +30,19 @@ class SendingEmail(object):
         print ("before sending emails")
         message = get_template('emails/notification_email.html').render(vars)
 
+        print(self.from_email)
+        print(to_email)
+        print(self.bcc_emails)
+        print(self.reply_to_emails)
         msg = EmailMessage(
                         subject, message, from_email=self.from_email,
                         to=to_email, bcc=self.bcc_emails, reply_to=self.reply_to_emails
                         )
+        print("after message")
         msg.content_subtype = 'html'
         msg.mixed_subtype = 'related'
-        msg.send()
+        # msg.send()
+        print("send")
 
         OwnEmailMessage.objects.create(type_id=self.email_type, email=to_email,
                                                        order_id=self.order.id, user=to_user)
@@ -80,5 +86,5 @@ class SendingEmail(object):
 
         #sending to user
         to_user = order.tourist.user
-        to_email = [order.tourist.user.email]
+        to_email = [order.tourist.user.email] if order.tourist.user.email else [FROM_EMAIL]
         self.sending_email(to_user, to_email, subject, message)

@@ -140,8 +140,10 @@ class Order(models.Model):
 
 
         if not self.pk:#new item
+            print(self.pk)
             data = {"order": self}
             a = SendingEmail(data)
+            print("email was sent")
 
         super(Order, self).save(*args, **kwargs)
 
@@ -193,6 +195,7 @@ saving ratings from review to Order object
 """
 @disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
+    print("order post save")
     guide = instance.guide
 
     statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\

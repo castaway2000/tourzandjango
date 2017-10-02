@@ -26,8 +26,13 @@ def guide_calendar(request, guide_username=None):
             messages.error(request, _('Please sign up as a guide!'))
             return HttpResponseRedirect(reverse("home"))
 
-    guide_calendar_items = CalendarItemGuide.objects.filter(guide__user=user).exclude(status_id=1)
-    guide_calendar_items_dict = {item.calendar_item.id: item.status.name for item in guide_calendar_items}
+    guide_calendar_items = CalendarItemGuide.objects.filter(guide__user=user).exclude(calendar_item__isnull=True)
+    guide_calendar_items_dict=dict()
+    for item in guide_calendar_items:
+        try:
+            guide_calendar_items_dict[item.calendar_item.id] = item.status.name
+        except:
+            pass
 
     if not request.GET.get("date_start") or not request.GET.get("date_end"):
         date_start = datetime.datetime.today()
@@ -152,4 +157,16 @@ def updating_schedule_template(request):
             ScheduleTemplateItem.objects.update_or_create(guide=guide, day=day, hour=hour,
                                                        defaults={"status": new_status})
             response_data["result"] = _("Time slots were successfully updated!")
+    return JsonResponse(response_data)
+
+
+def available_date_timeslots(request):
+    response_data = dict()
+    if request.POST:
+        data = request.POST
+        guide_id = data.get("guide_id")
+        calendar_date = datetime.datetime.strptime(data.get("booking_date"), '%m.%d.%Y')
+        available_time_slots = list(CalendarItemGuide.objects.filter(guide_id=guide_id, status_id=2, calendar_item__date=calendar_date)\
+                                    .values("calendar_item_id", "calendar_item__time_from", "calendar_item__time_to"))
+        response_data["available_time_slots"] = available_time_slots
     return JsonResponse(response_data)
