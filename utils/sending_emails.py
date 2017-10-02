@@ -41,7 +41,7 @@ class SendingEmail(object):
         print("after message")
         msg.content_subtype = 'html'
         msg.mixed_subtype = 'related'
-        # msg.send()
+        msg.send()
         print("send")
 
         OwnEmailMessage.objects.create(type_id=self.email_type, email=to_email,
