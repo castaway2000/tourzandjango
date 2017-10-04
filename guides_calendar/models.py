@@ -18,16 +18,19 @@ class CalendarItem(models.Model):
         verbose_name_plural = 'Calendar Items'
 
 
-# STATUSES = (
-#     ("booked", "booked"),
-#     ("available", "available"),
-#     ("unavailable", "unavailable"),
-# )
+STATUSES = (
+    ("booked", "booked"),
+    ("available", "available"),
+    ("unavailable", "unavailable"),
+)
 
 
 class CalendarItemStatus(models.Model):
     name = models.CharField(max_length=32)
     is_active = models.BooleanField(default=True)
+    booked = models.CharField(max_length=1, default=0)
+    available = models.CharField(max_length=1, default=0)
+    unavailable = models.CharField(max_length=1, default=0)
 
     def __str__(self):
         return "%s" % self.name
