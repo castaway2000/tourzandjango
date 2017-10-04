@@ -15,4 +15,6 @@ urlpatterns = [
 
     url(r'^guides_for_clients/$', views.guides_for_clients, name='guides_for_clients'),
     url(r'^tours_for_clients/$', views.tours_for_clients, name='tours_for_clients'),
+
+    url(r'^identification/$', views.identification, name='identification'),
 ]

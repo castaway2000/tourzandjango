@@ -8,14 +8,16 @@ from django.contrib.auth.models import User
 from locations.models import City, Currency
 from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_profile_image,
-                              upload_path_handler_guide_optional_image
+                              upload_path_handler_guide_optional_image,
+                              upload_path_handler_guide_webcam_image
                               )
 
 
 class GuideProfile(models.Model):
     user = models.OneToOneField(User)
     city = models.ForeignKey(City)
-
+    webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
+    is_approved = models.BooleanField(default=False)
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)

@@ -13,6 +13,8 @@ from django.db.models import Avg, Max, Min, Sum
 import requests
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
+import base64
+from django.core.files.base import ContentFile
 
 
 @xframe_options_exempt
@@ -485,3 +487,36 @@ def guides_for_clients(request):
 
 def tours_for_clients(request):
     return render(request, 'guides/tours_for_clients.html', locals())
+
+
+@login_required()
+def identification(request):
+    page = "identification"
+
+    #remake this to decorator
+    user = request.user
+    try:
+        guide = user.guideprofile
+        if not guide.uuid:
+            guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
+    except:
+        messages.error(request, 'You have no permissions for this action!')
+        return render(request, 'users/home.html', locals())
+
+    if request.POST:
+        webcam_img = request.POST.get("webcam_image")
+        format, imgstr = webcam_img.split(';base64,')
+        ext = format.split('/')[-1]
+        webcam_img_file = ContentFile(base64.b64decode(imgstr), name='webcam.' + ext)
+        guide.webcam_image = webcam_img_file
+        guide.save(force_update=True)
+        request.session["identification_step"] = 2
+
+    if not guide.is_approved:
+        if not request.session.get("identification_step") or request.session.get("identification_step")==1:
+            request.session["identification_step"] = 1
+            return render(request, 'users/profile_identification_step1.html', locals())
+        elif request.session["identification_step"] == 2:
+            return render(request, 'users/profile_identification_step2.html', locals())
+    else:
+        return HttpResponseRedirect(reverse("general_settings"))

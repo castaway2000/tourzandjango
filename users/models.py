@@ -101,6 +101,7 @@ class UserLanguage(models.Model):
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
     is_trusted = models.BooleanField(default=False)
+
     facebook = models.CharField(max_length=64, blank=True, null=True, default=None)
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
     google = models.CharField(max_length=64, blank=True, null=True, default=None)

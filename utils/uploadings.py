@@ -41,6 +41,8 @@ def upload_path_handler_guide_profile_image(instance, filename):
 def upload_path_handler_guide_optional_image(instance, filename):
     return "users/%s/guide/optional_image/%s" % (instance.user.id, filename)
 
+def upload_path_handler_guide_webcam_image(instance, filename):
+    return "users/%s/guide/webcam_images/%s" % (instance.user.id, filename)
 
 def upload_path_handler_tourist_profile_image(instance, filename):
     return "users/%s/tourist/profile/%s" % (instance.user.id, filename)
