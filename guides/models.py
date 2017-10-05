@@ -9,15 +9,15 @@ from locations.models import City, Currency
 from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_profile_image,
                               upload_path_handler_guide_optional_image,
-                              upload_path_handler_guide_webcam_image
+                              upload_path_handler_guide_webcam_image,
+                              upload_path_handler_user_scanned_docs
                               )
 
 
 class GuideProfile(models.Model):
     user = models.OneToOneField(User)
     city = models.ForeignKey(City)
-    webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
-    is_approved = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -83,6 +83,41 @@ class GuideProfile(models.Model):
                 "min_hours_nmb_range_full": min_hours_nmb_range_full}
 
 
+class GuideIdentityVerification(models.Model):
+    user = models.OneToOneField(User)
+    webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
+    onfido_id = models.CharField(max_length=64, null=True)
+    checks_url = models.CharField(max_length=256, null=True)
+
+
+class VerificationReportType(models.Model):
+    name = models.CharField(max_length=64)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class VerificationReportStatus(models.Model):
+    name = models.CharField(max_length=64)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class VerificationReportResult(models.Model):
+    name = models.CharField(max_length=64)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class GuideIdentityVerificationReport(models.Model):
+    identification_checking = models.ForeignKey(GuideIdentityVerification)
+    report_url = models.CharField(max_length=256, null=True)
+    type = models.ForeignKey(VerificationReportType, blank=True, null=True, default=None)
+    status = models.ForeignKey(VerificationReportStatus, blank=True, null=True, default=None)
+    result = models.ForeignKey(VerificationReportResult, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
 class Service(models.Model):
     name = models.CharField(max_length=256)
     html_field_name = models.CharField(max_length=256, blank=True, null=True, default=None)
@@ -110,3 +145,38 @@ class GuideService(models.Model):
     def __str__(self):
         return "%s" % self.service.name
 
+
+class DocumentType(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class ScanStatus(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class DocumentScan(models.Model):
+    # general_profile = models.ForeignKey(Guide, blank=True, null=True, default=None)
+    # user = models.ForeignKey(User, blank=True, null=True, default=None)
+    guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
+    document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
+    file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)
+    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=1)#status 1 - "new", 2 - "approved", 3 - "rejected"
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        if self.document_type:
+            return "%s %s" % (self.guide.user.username, self.document_type.name)
+        else:
+            return "%s" % self.guide.user.username

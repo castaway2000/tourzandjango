@@ -490,8 +490,54 @@ def tours_for_clients(request):
 
 
 @login_required()
-def identification(request):
-    page = "identification"
+def identity_verification(request):
+    return render(request, 'users/profile_identity_verification.html', locals())
+
+@login_required()
+def identity_verification_ID_uploading(request):
+    page = "identity_verification"
+
+    #remake this to decorator
+    user = request.user
+    try:
+        guide = user.guideprofile
+        if not guide.uuid:
+            guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
+    except:
+        messages.error(request, 'You have no permissions for this action!')
+        return render(request, 'users/home.html', locals())
+
+    document_uploaded = guide.documentscan_set.filter(is_active=True).last()#approved
+    docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
+
+    if request.POST:
+        #documents uploading section
+        if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
+            if docs_form.is_valid():
+
+                #ADD some validation here for file size and extension
+                if request.FILES.get("file"):
+                    count = 0
+                    for file in request.FILES.getlist("file"):
+                        if count < 5:#uploading not more than 5 files
+                            DocumentScan.objects.create(file=file, guide=guide)
+                            count += 1
+                        else:
+                            break
+
+                    if count == 1:
+                        messages.success(request, 'File was successfully uploaded!')
+                    else:
+                        messages.success(request, 'Files were successfully uploaded!')
+
+                    #retrieve docs afrer uploading
+                    is_just_uploaded = True
+    return render(request, 'users/profile_identity_verification_ID_uploading.html', locals())
+
+
+@login_required()
+def identity_verification_photo(request):
+    page = "identity_verification"
 
     #remake this to decorator
     user = request.user
@@ -512,11 +558,48 @@ def identification(request):
         guide.save(force_update=True)
         request.session["identification_step"] = 2
 
-    if not guide.is_approved:
+        # test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3
+        # Authorization: Token token=your_api_token
+        headers = {'Authorization': 'Token token=test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3'}
+        url = "https://api.onfido.com/v2/applicants"
+        applicant_data = {
+            "first_name": "Alex"
+        }
+        r = requests.post(url, data=applicant_data, headers=headers)
+        result = r.json()
+
+    if not guide.is_verified:
         if not request.session.get("identification_step") or request.session.get("identification_step")==1:
             request.session["identification_step"] = 1
             return render(request, 'users/profile_identification_step1.html', locals())
         elif request.session["identification_step"] == 2:
-            return render(request, 'users/profile_identification_step2.html', locals())
+
+            headers = {'Authorization': 'Token token=test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3'}
+            # url = "https://api.onfido.com/v2/applicants"
+            # applicant_data = {
+            #     "first_name": "Alex",
+            #     "last_name": "Terentyev"
+            # }
+            # r = requests.post(url, data=applicant_data, headers=headers)
+            # result = r.json()
+            # print(result)
+            # guide.onfido_id = result["id"]
+            # guide.save(force_update=True)
+
+            # url = "https://api.onfido.com/v2/applicants/%s/checks" % guide.onfido_id
+            # check_data = {
+            #     "type": "express",
+            #     "reports[][name]": "identity"
+            # }
+            # r = requests.post(url, data=check_data, headers=headers)
+            # result = r.json()
+            # print(result)
+
+            url = "https://api.onfido.com/v2/checks/c754bfc5-110a-4632-8b03-87de2dd880c6/reports/9d621e6c-8734-4848-b2cc-4e367a5151d5"
+            r = requests.get(url, headers=headers)
+            result = r.json()
+            print(result)
+
+            return render(request, 'users/profile_identity_verification_photo.html', locals())
     else:
         return HttpResponseRedirect(reverse("general_settings"))

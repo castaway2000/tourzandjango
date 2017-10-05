@@ -1,0 +1,22 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block content_profile %}
+<div class="col-md-9">
+    <h3 class="text-center">{% trans 'Verification' %}</h3>
+    <div class="row">
+        <div class="col-lg-6 text-center">
+            <a href="{% url 'identity_verification_ID_uploading' %}" class="btn btn-success">{% trans 'ID scan uploading' %}</a>
+        </div>
+        <div class="col-lg-6 text-center">
+            <a href="{% url 'identity_verification_photo' %}" class="btn btn-success">{% trans 'Live photo' %}</a>
+        </div>
+    </div>
+</div>
+{% endblock content_profile %}
+
+
+{% block js_stuff %}
+{% endblock js_stuff %}

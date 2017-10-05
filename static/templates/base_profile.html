@@ -90,19 +90,19 @@
                                     <i class="fa fa-user"></i>{% blocktrans %}Guide Profile Settings{% endblocktrans %}</a>
                                 </li>
 
+                                {% if guide and not guide.is_verified %}
+                                    <li {% if page == "identity_verification" %}class="active"{% endif %}>
+                                        <a href="{% url 'identity_verification' %}">
+                                            <i class="fa fa-cog"></i>{% blocktrans %}Identity verification{% endblocktrans %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+
                                 <li {% if page == "general_settings" %}class="active"{% endif %}>
                                     <a href="{% url 'general_settings' %}">
                                         <i class="fa fa-cog"></i>{% blocktrans %}General Settings{% endblocktrans %}
                                     </a>
                                 </li>
-
-                                {% if guide and not guide.is_approved %}
-                                    <li {% if page == "identification" %}class="active"{% endif %}>
-                                        <a href="{% url 'identification' %}">
-                                            <i class="fa fa-cog"></i>{% blocktrans %}Identification{% endblocktrans %}
-                                        </a>
-                                    </li>
-                                {% endif %}
 
                                 <li {% if page == "calendar" %}class="active"{% endif %}><a href="{% url 'guide_calendar' %}">
                                     <i class="fa fa-calendar"></i>{% blocktrans %}Calendar{% endblocktrans %}</a>

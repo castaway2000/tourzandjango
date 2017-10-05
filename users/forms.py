@@ -3,10 +3,6 @@ from .models import *
 from phonenumber_field.widgets import PhonePrefixSelect, PhoneNumberPrefixWidget
 
 
-class DocsUploadingForm(forms.Form):
-    file = forms.FileField(required=False)
-
-
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput())

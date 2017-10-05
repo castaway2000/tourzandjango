@@ -10,3 +10,7 @@ class GuideProfileForm(forms.ModelForm):
 
         #city is added on form save in view
         fields = ("name", "overview", "date_of_birth", "profile_image", "rate", "is_active",)
+
+
+class DocsUploadingForm(forms.Form):
+    file = forms.FileField(required=False)
