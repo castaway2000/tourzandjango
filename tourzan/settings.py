@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'blog',
     'partners',
     'guides_calendar',
+    'verifications',
 
     #external packages
     'allauth',

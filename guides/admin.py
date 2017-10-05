@@ -2,14 +2,9 @@ from django.contrib import admin
 from .models import *
 
 
-class DocumentScanInline(admin.TabularInline):
-        model = DocumentScan
-        extra = 0
-
 
 class GuideProfileAdmin(admin.ModelAdmin):
     list_display = [field.name for field in GuideProfile._meta.fields]
-    inlines = [DocumentScanInline]
 
     class Meta:
         model = GuideProfile
@@ -35,29 +30,3 @@ class GuideServiceAdmin(admin.ModelAdmin):
 
 admin.site.register(GuideService, GuideServiceAdmin)
 
-
-class DocumentTypeAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in DocumentType._meta.fields]
-
-    class Meta:
-        model = DocumentType
-
-admin.site.register(DocumentType, DocumentTypeAdmin)
-
-
-class ScanStatusAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in ScanStatus._meta.fields]
-
-    class Meta:
-        model = ScanStatus
-
-admin.site.register(ScanStatus, ScanStatusAdmin)
-
-
-class DocumentScanAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in DocumentScan._meta.fields]
-
-    class Meta:
-        model = DocumentScan
-
-admin.site.register(DocumentScan, DocumentScanAdmin)

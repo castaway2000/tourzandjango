@@ -16,7 +16,4 @@ urlpatterns = [
     url(r'^guides_for_clients/$', views.guides_for_clients, name='guides_for_clients'),
     url(r'^tours_for_clients/$', views.tours_for_clients, name='tours_for_clients'),
 
-    url(r'^identity_verification/$', views.identity_verification, name='identity_verification'),
-    url(r'^identity_verification/ID_uploading/$', views.identity_verification_ID_uploading, name='identity_verification_ID_uploading'),
-    url(r'^identity_verification/photo/$', views.identity_verification_photo, name='identity_verification_photo'),
 ]

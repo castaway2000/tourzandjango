@@ -5,7 +5,7 @@
 
 {% block content_profile %}
 <div class="col-md-9">
-    <h3>{% trans 'Identification: documents scan uploading' %}</h3>
+    <h3>{% trans 'Identification step 1: documents scan uploading' %}</h3>
     <div class="row">
         <div class="col-lg-6">
             <div>
@@ -22,31 +22,42 @@
                                    value="{% blocktrans %}submit{% endblocktrans %}">
                         </div>
                     </form>
-                {% elif document_uploaded.status.id == 1 or is_just_uploaded %}
-                    <p>{% blocktrans %}You scan was successfully uploaded. We will verify it during 24 hours.{% endblocktrans %}</p>
-                {% elif document_uploaded.status.id == 2 %}
-                    <p>{% blocktrans %}You identity was successfully verified!{% endblocktrans %}</p>
-                {% elif document_uploaded.status.id == 3 %}
-                    <p>
-                        {% blocktrans %}You uploaded scan was rejected. Please upload it once again{% endblocktrans %}
-                        <br>
-                        {% if document_uploaded.comments %}
-                            <b>{% blocktrans %}Comments: {% endblocktrans %}</b>
-                            {{ document_uploaded.comments|safe }}
-                        {% endif %}
+                {% else %}
+                    {% if document_uploaded.status.id == 1 or is_just_uploaded %}
+                        <div class="well">
+                            <p>{% blocktrans %}Your scan was successfully uploaded. We will verify it during 24 hours.{% endblocktrans %}</p>
+                        </div>
+                    {% elif document_uploaded.status.id == 2 %}
+                        <div class="well">
+                            <p>{% blocktrans %}Your identity was successfully verified!{% endblocktrans %}</p>
+                        </div>
+                    {% elif document_uploaded.status.id == 3 %}
+                        <p>
+                            <div class="well">
+                                {% blocktrans %}Your uploaded scan was rejected. Please upload it once again{% endblocktrans %}
+                            </div>
+                            <br>
+                            {% if document_uploaded.comments %}
+                                <b>{% blocktrans %}Comments: {% endblocktrans %}</b>
+                                {{ document_uploaded.comments|safe }}
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                    <br>
+                    <h5>{% blocktrans %}Why it matters:{% endblocktrans %}</h5>
+                    <p>{% blocktrans %}Think about this for a moment. A stranger is hiring a stranger to show them around. As such
+                        it’s nice to have peace of mind. Trusted profiles gain more views from tourists looking to
+                        hire guides and give guides peace of mind they are meeting up with safe and respectful
+                        tourists and vice versa.
+                        {% endblocktrans %}
                     </p>
+
+                    <div>
+                        <a href="{% url 'identity_verification_photo' %}" class="btn btn-default">
+                            {% trans 'Go to step 2' %}
+                        </a>
+                    </div>
                 {% endif %}
-                <br>
-                <h5>{% blocktrans %}Why it matters:{% endblocktrans %}</h5>
-                <p>{% blocktrans %}Think about this for a moment. A stranger is hiring a stranger to show them around. As such
-                    it’s nice to have peace of mind. Trusted profiles gain more views from tourists looking to
-                    hire guides and give guides peace of mind they are meeting up with safe and respectful
-                    tourists and vice versa.
-                    {% endblocktrans %}
-                </p>
-            </div>
-            <div>
-                <a href="{% url 'identity_verification' %}" class="btn btn-default">{% trans 'Back' %}</a>
             </div>
         </div>
     </div>

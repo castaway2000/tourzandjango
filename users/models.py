@@ -12,6 +12,7 @@ from django.contrib.auth.signals import user_logged_in
 from payments.models import PaymentMethod
 from phonenumber_field.modelfields import PhoneNumberField
 from guides.models import GuideProfile
+from utils.uploadings import upload_path_handler_guide_webcam_image
 
 
 def user_login_function(sender, user, **kwargs):
@@ -100,7 +101,9 @@ class UserLanguage(models.Model):
 
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
-    is_trusted = models.BooleanField(default=False)
+    is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
+    is_verified = models.BooleanField(default=False)#is verified by docs
+    webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
 
     facebook = models.CharField(max_length=64, blank=True, null=True, default=None)
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
@@ -159,4 +162,3 @@ class SmsSendingHistory(models.Model):
 
     def __str__(self):
         return "%s" % self.phone
-

@@ -27,7 +27,7 @@ def upload_path_handler_blog(instance, filename):
 
 
 def upload_path_handler_user_scanned_docs(instance, filename):
-    return "users/%s/docs/%s" % (instance.guide.user.id, filename)
+    return "users/%s/docs/%s" % (instance.general_profile.user.id, filename)
 
 
 def upload_path_handler_guide_header_images(instance, filename):
@@ -41,8 +41,10 @@ def upload_path_handler_guide_profile_image(instance, filename):
 def upload_path_handler_guide_optional_image(instance, filename):
     return "users/%s/guide/optional_image/%s" % (instance.user.id, filename)
 
+
 def upload_path_handler_guide_webcam_image(instance, filename):
-    return "users/%s/guide/webcam_images/%s" % (instance.user.id, filename)
+    return "users/%s/webcam_images/%s" % (instance.user.id, filename)
+
 
 def upload_path_handler_tourist_profile_image(instance, filename):
     return "users/%s/tourist/profile/%s" % (instance.user.id, filename)

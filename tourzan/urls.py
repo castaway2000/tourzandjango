@@ -56,7 +56,7 @@ urlpatterns = i18n_patterns(
 
     url(r'^', include('website_management.urls')),
     url(r'^', include('blog.urls')),
-
+    url(r'^', include('verifications.urls')),
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),

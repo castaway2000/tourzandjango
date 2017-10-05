@@ -20,11 +20,8 @@ urlpatterns = [
     url(r'^search_language/$', views.search_language, name='search_language'),
 
     url(r'^accounts/signup/$', views.SignupViewCustom.as_view(), name='account_signup'),
-
     url(r'^password_changing/$', views.password_changing, name='password_changing'),
 
-
     url(r'^sending_sms_code/$', views.sending_sms_code, name='sending_sms_code'),
-
 
 ]
