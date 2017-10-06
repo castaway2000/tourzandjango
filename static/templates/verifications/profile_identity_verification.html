@@ -13,7 +13,8 @@
         {% if guide.is_verified %}
             <h3>{% trans 'Your profile has been verified' %}</h3>
         {% else %}
-            <h3>{% trans 'Your profile verification is pending' %}</h3>
+            <h3>{% trans 'Your profile verification is pending' %}.</h3>
+            <p>{% trans 'We will verify it during 24 hours.' %}</p>
             <p>{% trans 'You will see here a confirmation, as soon as it will be verified ' %}</p>
         {% endif %}
 {#        <div class="col-lg-6 text-center">#}

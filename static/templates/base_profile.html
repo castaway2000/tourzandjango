@@ -92,7 +92,7 @@
 
                                 {% if guide and not user.generalprofile.is_verified %}
                                     <li {% if page == "identity_verification" %}class="active"{% endif %}>
-                                        <a href="{% url 'identity_verification' %}">
+                                        <a href="{% url 'identity_verification_router' %}">
                                             <i class="fa fa-cog"></i>{% blocktrans %}Identity verification{% endblocktrans %}
                                         </a>
                                     </li>

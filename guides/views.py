@@ -370,8 +370,8 @@ def profile_settings_guide(request, guide_creation=True):
                 if "guide_registration_welcome_page_seen" in request.session:
                     del request.session["guide_registration_welcome_page_seen"]
                 request.session["current_role"] = "guide"
-                messages.success(request, 'Profile has been created!')
-                return HttpResponseRedirect(reverse("profile_settings_guide"))
+                messages.success(request, 'Profile has been created! Please complete identity verification process!')
+                return HttpResponseRedirect(reverse("identity_verification_router"))
             else:
                 messages.success(request, 'Profile has been updated!')
         # else: #if form is invalid

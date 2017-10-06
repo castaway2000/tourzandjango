@@ -25,7 +25,12 @@
                 {% else %}
                     {% if document_uploaded.status.id == 1 or is_just_uploaded %}
                         <div class="well">
-                            <p>{% blocktrans %}Your scan was successfully uploaded. We will verify it during 24 hours.{% endblocktrans %}</p>
+                            <p>
+                                {% blocktrans %}Your scan was successfully uploaded.
+                                    please proceed to
+                                {% endblocktrans %}
+                                <a href="{% url 'identity_verification_photo' %}">{% trans 'step' %} 2</a>
+                            </p>
                         </div>
                     {% elif document_uploaded.status.id == 2 %}
                         <div class="well">

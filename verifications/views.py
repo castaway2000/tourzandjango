@@ -10,7 +10,12 @@ from django.contrib import messages
 
 
 @login_required()
-def identity_verification(request):
+def identity_verification_router(request):
+    """
+    This is a kind of routing view. Depending on already done scan docs uploading of live photo making, the script
+    will redirect a user to the needed page.
+    However all of 2 verification pages can be directly accessible as well
+    """
     page = "identity_verification"
     #remake this to decorator
     user = request.user
@@ -31,7 +36,7 @@ def identity_verification(request):
     elif not general_profile.webcam_image:
         return HttpResponseRedirect(reverse("identity_verification_photo"))
     else:
-        return render(request, 'users/profile_identity_verification.html', locals())
+        return render(request, 'verifications/profile_identity_verification.html', locals())
 
 
 @login_required()
@@ -74,7 +79,7 @@ def identity_verification_ID_uploading(request):
 
                     #retrieve docs afrer uploading
                     is_just_uploaded = True
-    return render(request, 'users/profile_identity_verification_ID_uploading.html', locals())
+    return render(request, 'verifications/profile_identity_verification_ID_uploading.html', locals())
 
 
 @login_required()
@@ -111,12 +116,12 @@ def identity_verification_photo(request):
         r = requests.post(url, data=applicant_data, headers=headers)
         result = r.json()
 
-        return HttpResponseRedirect(reverse("identity_verification"))
+        return HttpResponseRedirect(reverse("identity_verification_router"))
 
     if not general_profile.is_verified:
         if not request.session.get("identification_step") or request.session.get("identification_step")==1:
             request.session["identification_step"] = 1
-            return render(request, 'users/profile_identification_step1.html', locals())
+            # return HttpResponseRedirect(reverse("identity_verification_router"))
         elif request.session["identification_step"] == 2:
 
             headers = {'Authorization': 'Token token=test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3'}
@@ -145,6 +150,6 @@ def identity_verification_photo(request):
             result = r.json()
             # print(result)
 
-            return render(request, 'users/profile_identity_verification_photo.html', locals())
+        return render(request, 'verifications/profile_identity_verification_photo.html', locals())
     else:
         return HttpResponseRedirect(reverse("general_settings"))
