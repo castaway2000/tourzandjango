@@ -7,6 +7,7 @@ from .forms import *
 import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from tourzan.settings import ONFIDO_TOKEN_TEST
 
 
 @login_required()
@@ -29,11 +30,11 @@ def identity_verification_router(request):
         return render(request, 'users/home.html', locals())
 
     document_scan = DocumentScan.objects.filter(general_profile=general_profile).exists()
-    identity_verification = IdentityVerification.objects.filter(general_profile=general_profile).exists()
+    identity_verification = IdentityVerificationApplicant.objects.filter(general_profile=general_profile).exists()
 
     if not document_scan:
         return HttpResponseRedirect(reverse("identity_verification_ID_uploading"))
-    elif not general_profile.webcam_image:
+    elif not identity_verification:
         return HttpResponseRedirect(reverse("identity_verification_photo"))
     else:
         return render(request, 'verifications/profile_identity_verification.html', locals())
@@ -104,52 +105,89 @@ def identity_verification_photo(request):
         webcam_img_file = ContentFile(base64.b64decode(imgstr), name='webcam.' + ext)
         general_profile.webcam_image = webcam_img_file
         general_profile.save(force_update=True)
-        request.session["identification_step"] = 2
 
-        # test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3
-        # Authorization: Token token=your_api_token
-        headers = {'Authorization': 'Token token=test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3'}
-        url = "https://api.onfido.com/v2/applicants"
-        applicant_data = {
-            "first_name": "Alex"
-        }
-        r = requests.post(url, data=applicant_data, headers=headers)
-        result = r.json()
+        token = "Token token=%s" % ONFIDO_TOKEN_TEST
+        headers = {'Authorization': token}
 
-        return HttpResponseRedirect(reverse("identity_verification_router"))
-
-    if not general_profile.is_verified:
-        if not request.session.get("identification_step") or request.session.get("identification_step")==1:
-            request.session["identification_step"] = 1
-            # return HttpResponseRedirect(reverse("identity_verification_router"))
-        elif request.session["identification_step"] == 2:
-
-            headers = {'Authorization': 'Token token=test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3'}
-            # url = "https://api.onfido.com/v2/applicants"
-            # applicant_data = {
-            #     "first_name": "Alex",
-            #     "last_name": "Terentyev"
-            # }
-            # r = requests.post(url, data=applicant_data, headers=headers)
-            # result = r.json()
-            # print(result)
-            # guide.onfido_id = result["id"]
-            # guide.save(force_update=True)
-
-            # url = "https://api.onfido.com/v2/applicants/%s/checks" % guide.onfido_id
-            # check_data = {
-            #     "type": "express",
-            #     "reports[][name]": "identity"
-            # }
-            # r = requests.post(url, data=check_data, headers=headers)
-            # result = r.json()
-            # print(result)
-
-            url = "https://api.onfido.com/v2/checks/c754bfc5-110a-4632-8b03-87de2dd880c6/reports/9d621e6c-8734-4848-b2cc-4e367a5151d5"
-            r = requests.get(url, headers=headers)
+        #applicant creation
+        try:
+            applicant = IdentityVerificationApplicant.objects.get(general_profile=general_profile)
+        except:
+            url = "https://api.onfido.com/v2/applicants"
+            applicant_data = {
+                "first_name": "Alexx",
+                "last_name": "Alexx"
+            }
+            r = requests.post(url, data=applicant_data, headers=headers)
             result = r.json()
-            # print(result)
+            applicant = IdentityVerificationApplicant.objects.create(general_profile=general_profile,
+                                                         applicant_id=result["id"],
+                                                         applicant_url=result["href"]
+                                                         )
 
-        return render(request, 'verifications/profile_identity_verification_photo.html', locals())
+
+        #creating check and saving check link
+        url = "https://api.onfido.com/v2/applicants/%s/checks" % applicant.applicant_id
+            #if there is any existing check
+        r = requests.get(url, headers=headers)
+        result = r.json()
+        print(result)
+
+        #A little bit workaround solution but it solves possible bottle necks while testing
+        #if there is any existing not finsished check for this applicant - use it.
+        previous_check_is_found = False
+        if "checks" in result:
+            for item in result["checks"]:
+                if item["status"] == "in_progress":
+                    check_id = item["id"]
+                    check, created = IdentityVerificationCheck.objects.update_or_create(check_id=check_id,
+                                                                                         applicant = applicant,
+                                                                                         defaults={
+                                                                                             "check_id": item["id"],
+                                                                                             "check_url": item["href"]
+                                                                                         })
+                    previous_check_is_found = True
+                    break
+
+        if not previous_check_is_found:#create new check
+            check_data = {
+                "type": "express",
+                "reports[][name]": "identity"
+            }
+            r = requests.post(url, data=check_data, headers=headers)
+            result = r.json()
+            check = IdentityVerificationCheck.objects.create(applicant=applicant,
+                                                             check_id=result["id"],
+                                                             check_url=result["href"]
+                                                             )
+
+
+        #a call to get full info (not just ids) for the created reports
+        url = "https://api.onfido.com/v2/checks/%s/reports" % check.check_id
+        r = requests.get(url, headers=headers)
+        result = r.json()
+        reports = result["reports"]
+
+        #saving information about created reports for the recently created check
+        print("reports: %s" % reports)
+        for report in reports:
+            report_url = "https://api.onfido.com/v2/checks/%s/reports/%s" % (check.check_id, report["id"])
+            report_type, created = VerificationReportType.objects.get_or_create(name=report["name"])
+            report_status = report["status"]
+
+            defaults_kwargs = dict()
+            if report_status:
+                report_status, created = VerificationReportStatus.objects.get_or_create(name=report_status)
+                defaults_kwargs["status"] = report_status
+            report_result = report["result"]
+            if report_result:
+                report_result, created = VerificationReportResult.objects.get_or_create(name=report_result)
+                defaults_kwargs["result"] = report_result
+            IdentityVerificationReport.objects.update_or_create(identification_checking=check,
+                                                      report_id=report["id"],
+                                                      report_url=report_url,
+                                                      type=report_type, defaults = defaults_kwargs
+                                                      )
+        return HttpResponseRedirect(reverse("identity_verification_router"))
     else:
-        return HttpResponseRedirect(reverse("general_settings"))
+        return render(request, 'verifications/profile_identity_verification_photo.html', locals())

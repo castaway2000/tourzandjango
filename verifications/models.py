@@ -4,12 +4,26 @@ from utils.uploadings import upload_path_handler_user_scanned_docs
 from users.models import GeneralProfile
 
 
-class IdentityVerification(models.Model):
+class IdentityVerificationApplicant(models.Model):
     general_profile = models.OneToOneField(GeneralProfile)
-    onfido_id = models.CharField(max_length=64, null=True)
-    checks_url = models.CharField(max_length=256, null=True)
+    applicant_id = models.CharField(max_length=64, null=True)
+    applicant_url = models.CharField(max_length=256, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.general_profile.user
+
+
+class IdentityVerificationCheck(models.Model):
+    applicant = models.ForeignKey(IdentityVerificationApplicant, blank=True, null=True, default=None)
+    check_id = models.CharField(max_length=64, null=True)
+    check_url = models.CharField(max_length=256, null=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.applicant
 
 
 class VerificationReportType(models.Model):
@@ -17,11 +31,17 @@ class VerificationReportType(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+    def __str__(self):
+        return "%s" % self.name
+
 
 class VerificationReportStatus(models.Model):
     name = models.CharField(max_length=64)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.name
 
 
 class VerificationReportResult(models.Model):
@@ -29,15 +49,22 @@ class VerificationReportResult(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+    def __str__(self):
+        return "%s" % self.name
+
 
 class IdentityVerificationReport(models.Model):
-    identification_checking = models.ForeignKey(IdentityVerification)
+    identification_checking = models.ForeignKey(IdentityVerificationCheck)
+    report_id = models.CharField(max_length=64, null=True)
     report_url = models.CharField(max_length=256, null=True)
     type = models.ForeignKey(VerificationReportType, blank=True, null=True, default=None)
     status = models.ForeignKey(VerificationReportStatus, blank=True, null=True, default=None)
     result = models.ForeignKey(VerificationReportResult, blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.report_id
 
 
 class DocumentType(models.Model):

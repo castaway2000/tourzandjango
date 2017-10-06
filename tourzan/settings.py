@@ -252,8 +252,8 @@ PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
 AXES_COOLOFF_TIME = 3
-# AXES_BEHIND_REVERSE_PROXY = True
 
+ONFIDO_TOKEN_TEST = "test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
