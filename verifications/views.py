@@ -115,8 +115,8 @@ def identity_verification_photo(request):
         except:
             url = "https://api.onfido.com/v2/applicants"
             applicant_data = {
-                "first_name": "Alexx",
-                "last_name": "Alexx"
+                "first_name": guide.name,
+                "last_name": guide.name
             }
             r = requests.post(url, data=applicant_data, headers=headers)
             result = r.json()
@@ -125,6 +125,23 @@ def identity_verification_photo(request):
                                                          applicant_url=result["href"]
                                                          )
 
+        #sending ID document scan
+        #improve this later if it is needed to allow to send several files (for example scans of 2 pages of passport)
+        last_doc = DocumentScan.objects.filter(general_profile=general_profile).last()
+        url = "https://api.onfido.com/v2/applicants/%s/documents" % applicant.applicant_id
+        f = last_doc.file.file
+        f.open(mode='rb')
+        files = {'file': f}
+        r = requests.post(url, files=files,  data={"type": "unknown"})
+        f.close()#closing file after a call with it
+
+        #live photo uploading
+        url = "https://api.onfido.com/v2/live_photos"
+        f = general_profile.webcam_image.file
+        f.open(mode='rb')
+        files = {'file': f}
+        r = requests.post(url, files=files, data={"applicant_id": applicant.applicant_id})
+        f.close()#closing file after a call with it
 
         #creating check and saving check link
         url = "https://api.onfido.com/v2/applicants/%s/checks" % applicant.applicant_id
@@ -152,7 +169,9 @@ def identity_verification_photo(request):
         if not previous_check_is_found:#create new check
             check_data = {
                 "type": "express",
-                "reports[][name]": "identity"
+                "reports[][name]": "identity",#free available for sandbox
+                "reports[][name]": "document",
+                "reports[][name]": "facial_similarity"
             }
             r = requests.post(url, data=check_data, headers=headers)
             result = r.json()
