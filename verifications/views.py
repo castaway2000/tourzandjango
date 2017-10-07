@@ -191,6 +191,7 @@ def identity_verification_photo(request):
         #a call to get full info (not just ids) for the created reports
         url = "https://api.onfido.com/v2/checks/%s/reports" % check.check_id
         r = requests.get(url, headers=headers)
+        print ("all reports in the ongoing check were retrieved")
         result = r.json()
         reports = result["reports"]
 
@@ -214,6 +215,7 @@ def identity_verification_photo(request):
                                                       report_url=report_url,
                                                       type=report_type, defaults = defaults_kwargs
                                                       )
+        print ("Onfido API integration is finished")
         return HttpResponseRedirect(reverse("identity_verification_router"))
     else:
         return render(request, 'verifications/profile_identity_verification_photo.html', locals())
