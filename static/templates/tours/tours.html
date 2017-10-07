@@ -215,6 +215,16 @@
                                             {% blocktrans %}Go to Tour{% endblocktrans %}
                                         </a>
                                     </p>
+                                    {% if tour.guide.user.generalprofile.is_verified %}
+                                        <p>
+                                            <b>{% trans 'Guide is verified' %}</b>
+                                        </p>
+                                    {% endif %}
+                                    {% if tour.guide.user.generalprofile.is_trusted %}
+                                        <p>
+                                            <b>{% trans 'Guide is trusted' %}</b>
+                                        </p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
