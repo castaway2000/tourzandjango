@@ -112,6 +112,7 @@ def identity_verification_photo(request):
         #applicant creation
         try:
             applicant = IdentityVerificationApplicant.objects.get(general_profile=general_profile)
+            print ("an applicant were retrieved from local db")
         except:
             url = "https://api.onfido.com/v2/applicants"
             applicant_data = {
@@ -119,6 +120,7 @@ def identity_verification_photo(request):
                 "last_name": guide.name
             }
             r = requests.post(url, data=applicant_data, headers=headers)
+            print ("new applicant was created")
             result = r.json()
             applicant = IdentityVerificationApplicant.objects.create(general_profile=general_profile,
                                                          applicant_id=result["id"],
@@ -134,6 +136,7 @@ def identity_verification_photo(request):
         files = {'file': f}
         r = requests.post(url, files=files,  data={"type": "unknown"})
         f.close()#closing file after a call with it
+        print ("ID scan was uploaded")
 
         #live photo uploading
         url = "https://api.onfido.com/v2/live_photos"
@@ -142,13 +145,14 @@ def identity_verification_photo(request):
         files = {'file': f}
         r = requests.post(url, files=files, data={"applicant_id": applicant.applicant_id})
         f.close()#closing file after a call with it
+        print ("live photo was uploaded")
 
         #creating check and saving check link
         url = "https://api.onfido.com/v2/applicants/%s/checks" % applicant.applicant_id
             #if there is any existing check
         r = requests.get(url, headers=headers)
         result = r.json()
-        print(result)
+        print ("all applicant's checks were retrieved")
 
         #A little bit workaround solution but it solves possible bottle necks while testing
         #if there is any existing not finsished check for this applicant - use it.
@@ -164,17 +168,20 @@ def identity_verification_photo(request):
                                                                                              "check_url": item["href"]
                                                                                          })
                     previous_check_is_found = True
+                    print ("check was retrieved")
                     break
 
         if not previous_check_is_found:#create new check
+
+            # identity report is free available for sandbox. For sandbox use the variant without other reports
             check_data = {
                 "type": "express",
-                "reports[][name]": "identity",#free available for sandbox
-                "reports[][name]": "document",
-                "reports[][name]": "facial_similarity"
+                "reports[][name]": ["identity", "document", "facial_similarity"],
+                # "reports[][name]": ["identity"]
             }
             r = requests.post(url, data=check_data, headers=headers)
             result = r.json()
+            print ("check was created")
             check = IdentityVerificationCheck.objects.create(applicant=applicant,
                                                              check_id=result["id"],
                                                              check_url=result["href"]
