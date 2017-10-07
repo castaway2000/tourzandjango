@@ -310,6 +310,16 @@
                                                     {% blocktrans %}Go to Guide{% endblocktrans %}
                                                 </a>
                                             </p>
+                                            {% if guide.user.generalprofile.is_verified %}
+                                                <p>
+                                                    <b>Verified</b>
+                                                </p>
+                                            {% endif %}
+                                            {% if guide.user.generalprofile.is_trusted %}
+                                                <p>
+                                                    <b>Trusted</b>
+                                                </p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
