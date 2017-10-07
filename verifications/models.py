@@ -63,8 +63,26 @@ class IdentityVerificationReport(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+    def __init__(self, *args, **kwargs):
+        super(IdentityVerificationReport, self).__init__(*args, **kwargs)
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
     def __str__(self):
         return "%s" % self.report_id
+
+    def save(self, *args, **kwargs):
+        if not self.pk or self.status != self._original_fields["status"]:
+            general_profile = self.identification_checking.applicant.general_profile
+            if general_profile.is_verified == False and self.status.name=="clear":
+                general_profile.is_verified=True
+                general_profile.save(force_update=True)
+
+        super(IdentityVerificationReport, self).save(*args, **kwargs)
 
 
 class DocumentType(models.Model):

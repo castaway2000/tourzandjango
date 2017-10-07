@@ -469,6 +469,7 @@ def guide_payouts(request):
     user = request.user
     try:
         guide = user.guideprofile
+        general_profile = user.generalprofile
         if not guide.uuid:
             guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
         payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()

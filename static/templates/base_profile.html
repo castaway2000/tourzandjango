@@ -90,13 +90,20 @@
                                     <i class="fa fa-user"></i>{% blocktrans %}Guide Profile Settings{% endblocktrans %}</a>
                                 </li>
 
-                                {% if guide and not user.generalprofile.is_verified %}
+                                {% if guide %}
                                     <li {% if page == "identity_verification" %}class="active"{% endif %}>
                                         <a href="{% url 'identity_verification_router' %}">
                                             <i class="fa fa-cog"></i>{% blocktrans %}Identity verification{% endblocktrans %}
                                         </a>
                                     </li>
                                 {% endif %}
+
+                                <li {% if page == "guide_payouts" %}class="active"{% endif %}>
+                                    <a href="{% url 'guide_payouts' %}">
+                                        <i class="fa fa-university"></i>
+                                        {% blocktrans %}Payout preferences{% endblocktrans %}
+                                    </a>
+                                </li>
 
                                 <li {% if page == "general_settings" %}class="active"{% endif %}>
                                     <a href="{% url 'general_settings' %}">
@@ -130,12 +137,6 @@
                                     <a href="{% url 'payment_methods' %}">
                                         <i class="fa fa-credit-card"></i>
                                         {% blocktrans %}Credit/Debit Cards{% endblocktrans %}
-                                    </a>
-                                </li>
-                                <li {% if page == "guide_payouts" %}class="active"{% endif %}>
-                                    <a href="{% url 'guide_payouts' %}">
-                                        <i class="fa fa-university"></i>
-                                        {% blocktrans %}Payout preferences{% endblocktrans %}
                                     </a>
                                 </li>
                             {% endif %}
