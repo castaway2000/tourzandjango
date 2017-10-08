@@ -56,6 +56,7 @@ def identity_verification_ID_uploading(request):
 
     document_uploaded = user.generalprofile.documentscan_set.filter(is_active=True).last()#approved
     docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
+    document_types = ["passport", "driving_licence"]
 
     general_profile = user.generalprofile
     if request.POST:
@@ -63,12 +64,16 @@ def identity_verification_ID_uploading(request):
         if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
             if docs_form.is_valid():
 
+                document_type = request.POST.get("document_type")
+                document_type, created = DocumentType.objects.get_or_create(name=document_type)
+
                 #ADD some validation here for file size and extension
                 if request.FILES.get("file"):
                     count = 0
                     for file in request.FILES.getlist("file"):
                         if count < 5:#uploading not more than 5 files
-                            DocumentScan.objects.create(file=file, general_profile=general_profile)
+                            DocumentScan.objects.create(file=file, general_profile=general_profile,
+                                                        document_type=document_type)
                             count += 1
                         else:
                             break
@@ -134,7 +139,7 @@ def identity_verification_photo(request):
         f = last_doc.file.file
         f.open(mode='rb')
         files = {'file': f}
-        r = requests.post(url, files=files,  data={"type": "unknown"})
+        r = requests.post(url, files=files,  data={"type": last_doc.document_type})
         f.close()#closing file after a call with it
         print ("ID scan was uploaded")
 
@@ -176,8 +181,9 @@ def identity_verification_photo(request):
             # identity report is free available for sandbox. For sandbox use the variant without other reports
             check_data = {
                 "type": "express",
-                "reports[][name]": ["identity", "document", "facial_similarity"],
+                # "reports[][name]": ["identity", "document", "facial_similarity"],
                 # "reports[][name]": ["identity"]
+                "reports[][name]": ["facial_similarity"],
             }
             r = requests.post(url, data=check_data, headers=headers)
             result = r.json()

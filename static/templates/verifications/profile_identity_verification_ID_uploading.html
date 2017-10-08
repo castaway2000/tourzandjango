@@ -13,9 +13,18 @@
                     <p>
                         {% blocktrans %}Please add a scan photo of your passport or driving license{% endblocktrans %}
                     </p>
-                    <form class="form-inline" name="docs_form" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <form name="docs_form" method="post" enctype="multipart/form-data">{% csrf_token %}
                         <div class="form-group">
-                            <input type="file" multiple name="file" >
+                            <div class="form-group">
+                                <select name="document_type" class="form-control">
+                                    {% for document_type in document_types %}
+                                        <option value="{{ document_type }}">{{ document_type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" multiple name="file" >
+                            </div>
                         </div>
                         <div class="form-group">
                             <input type="submit" name="uploading_docs_button" class="btn btn-primary"
