@@ -40,6 +40,7 @@ def guides(request):
     service_input = request.GET.getlist(u'service_input')
     language_input = request.GET.getlist(u'language_input')
     is_company = request.GET.get('is_company')
+    is_verified = request.GET.get('is_verified')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -86,6 +87,13 @@ def guides(request):
     if not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 
+    if (request.GET and not is_verified):
+        pass #show all
+    else:
+        base_kwargs["user__generalprofile__is_verified"] = True
+    # print(request.GET)
+    # print(base_kwargs)
+
     #ordering
     if order_results:
         if order_results == "price":
@@ -116,12 +124,12 @@ def guides(request):
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
     elif place_id or city_input or guide_input:
-        # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
-        guides = guides_initial.filter(**base_kwargs)
+        guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
+        # guides = guides_initial.filter(**base_kwargs)
     elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
     else:
-        guides = guides_initial
+        guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
 
     if base_user_interests_kwargs:
         user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)

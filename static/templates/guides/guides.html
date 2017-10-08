@@ -129,6 +129,15 @@
                                                 {% blocktrans %}Include corporate tour guides{% endblocktrans %}
                                             </label>
                                         </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input class="i-check" type="checkbox" name="is_verified"
+                                                        {% if request.GET.is_verified or not request.GET %}
+                                                       checked {% endif %}
+                                                >
+                                                {% blocktrans %}Show only verified guides{% endblocktrans %}
+                                            </label>
+                                        </div>
                                     </li>
                                     <li>
                                         <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}

@@ -137,6 +137,15 @@
                                 </label>
                             </div>
                         </li>
+                        <div class="checkbox">
+                            <label>
+                                <input class="i-check" type="checkbox" name="is_verified"
+                                        {% if request.GET.is_verified or not request.GET %}
+                                       checked {% endif %}
+                                >
+                                {% blocktrans %}Show only verified guides{% endblocktrans %}
+                            </label>
+                        </div>
                         <li>
                             <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
                         </li>
