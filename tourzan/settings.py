@@ -153,7 +153,7 @@ SITE_ID = 1
 """
 for allauth
 """
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/after_login_router/"
 # LOGIN_URL = '/'
 
 

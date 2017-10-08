@@ -120,6 +120,8 @@ class GeneralProfile(models.Model):
     is_company = models.BooleanField(default=False)
     business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
 
+    is_previously_logged_in = models.BooleanField(default=False)
+
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 

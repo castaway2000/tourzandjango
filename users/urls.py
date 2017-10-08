@@ -6,6 +6,9 @@ urlpatterns = [
     url(r'^accounts/login/$', views.login_view, name='login'),
     url(r'^accounts/logout/$', views.logout_view, name='logout'),
 
+    url(r'^after_login_router/$', views.after_login_router, name='after_login_router'),
+
+
     url(r'^general_settings/$', views.general_settings, name='general_settings'),
 
 

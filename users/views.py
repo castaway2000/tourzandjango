@@ -59,6 +59,18 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("home"))
 
 
+@login_required()
+def after_login_router(request):
+    user = request.user
+    threshold = 20 #seconds
+    if user.generalprofile.is_previously_logged_in:
+        return HttpResponseRedirect(reverse("home"))
+    else:
+        user.generalprofile.is_previously_logged_in = True
+        user.generalprofile.save(force_update=True)
+        return HttpResponseRedirect(reverse("profile_settings_tourist"))
+
+
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
@@ -338,7 +350,6 @@ def sending_sms_code(request):
 
         #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
         phone = data.get("phone_formatted")
-
 
         sms = SendingSMS({"phone_to": phone, "user_id": user.id})
         sms_sending_status = sms.send_validation_sms()
