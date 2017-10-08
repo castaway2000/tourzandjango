@@ -137,19 +137,28 @@ def identity_verification_photo(request):
         last_doc = DocumentScan.objects.filter(general_profile=general_profile).last()
         url = "https://api.onfido.com/v2/applicants/%s/documents" % applicant.applicant_id
         f = last_doc.file.file
+        file_name = last_doc.file.name.split("/")[-1]
+        print(file_name)
         f.open(mode='rb')
-        files = {'file': f}
-        r = requests.post(url, files=files,  data={"type": last_doc.document_type})
+        files = {'file': (file_name, f, 'image/jpeg')} #('file.py', open('file.py', 'rb'), 'text/plain')
+        r = requests.post(url, files=files,  data={"type": last_doc.document_type},  headers=headers)
         f.close()#closing file after a call with it
+        print( r.json())
         print ("ID scan was uploaded")
 
         #live photo uploading
         url = "https://api.onfido.com/v2/live_photos"
         f = general_profile.webcam_image.file
+        file_name = last_doc.file.name.split("/")[-1]
+        print(file_name)
         f.open(mode='rb')
-        files = {'file': f}
-        r = requests.post(url, files=files, data={"applicant_id": applicant.applicant_id})
+        files = {'file': (file_name, f, 'image/jpeg')} #('file.py', open('file.py', 'rb'), 'text/plain')
+        r = requests.post(url, files=files, data={
+            "applicant_id": applicant.applicant_id,
+            "advanced_validation": "false"
+        }, headers=headers)
         f.close()#closing file after a call with it
+        print( r.json())
         print ("live photo was uploaded")
 
         #creating check and saving check link
@@ -181,13 +190,12 @@ def identity_verification_photo(request):
             # identity report is free available for sandbox. For sandbox use the variant without other reports
             check_data = {
                 "type": "express",
-                # "reports[][name]": ["identity", "document", "facial_similarity"],
-                # "reports[][name]": ["identity"]
-                "reports[][name]": ["facial_similarity"],
+                "reports[][name]": ["identity", "document",],
             }
             r = requests.post(url, data=check_data, headers=headers)
             result = r.json()
-            print ("check was created")
+            print(result)
+            print ("check was created1")
             check = IdentityVerificationCheck.objects.create(applicant=applicant,
                                                              check_id=result["id"],
                                                              check_url=result["href"]
