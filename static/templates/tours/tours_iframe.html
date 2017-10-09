@@ -155,6 +155,17 @@
                                     </div>
                                 </li>
                                 <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="i-check" type="checkbox" name="is_verified"
+                                                    {% if request.GET.is_verified or not request.GET %}
+                                                   checked {% endif %}
+                                            >
+                                            {% blocktrans %}Show tours from verified guides{% endblocktrans %}
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
                                     <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
                                 </li>
                             </ul>
@@ -253,6 +264,16 @@
                                                 {% blocktrans %}Go to Tour{% endblocktrans %}
                                             </a>
                                         </p>
+                                        {% if tour.guide.user.generalprofile.is_verified %}
+                                            <p>
+                                                <b>{% trans 'Guide is verified' %}</b>
+                                            </p>
+                                        {% endif %}
+                                        {% if tour.guide.user.generalprofile.is_trusted %}
+                                            <p>
+                                                <b>{% trans 'Guide is trusted' %}</b>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

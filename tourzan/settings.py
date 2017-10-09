@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'payments',
     'blog',
     'partners',
+    'guides_calendar',
+    'verifications',
 
     #external packages
     'allauth',
@@ -151,7 +153,7 @@ SITE_ID = 1
 """
 for allauth
 """
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/after_login_router/"
 # LOGIN_URL = '/'
 
 
@@ -250,8 +252,9 @@ PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
 AXES_COOLOFF_TIME = 3
-# AXES_BEHIND_REVERSE_PROXY = True
 
+# ONFIDO_TOKEN_TEST = "test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3"
+ONFIDO_TOKEN_TEST = "live_ZGcfPjhQQg9u1PbNxJktEr9n7B9W1EMP"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

@@ -6,6 +6,9 @@ urlpatterns = [
     url(r'^accounts/login/$', views.login_view, name='login'),
     url(r'^accounts/logout/$', views.logout_view, name='logout'),
 
+    url(r'^after_login_router/$', views.after_login_router, name='after_login_router'),
+
+
     url(r'^general_settings/$', views.general_settings, name='general_settings'),
 
 
@@ -20,11 +23,8 @@ urlpatterns = [
     url(r'^search_language/$', views.search_language, name='search_language'),
 
     url(r'^accounts/signup/$', views.SignupViewCustom.as_view(), name='account_signup'),
-
     url(r'^password_changing/$', views.password_changing, name='password_changing'),
 
-
     url(r'^sending_sms_code/$', views.sending_sms_code, name='sending_sms_code'),
-
 
 ]

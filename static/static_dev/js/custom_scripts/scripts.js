@@ -66,14 +66,23 @@ $(document).ready(function(){
     };
 
     $('#form_guide_scheduling .submit-button, #form_tour_scheduling .submit-button').on('click', function(e){
-        var booked_hours = updatingChosenHours();
+        //var booked_hours = updatingChosenHours();
+        //
+        //if (booked_hours>0){
+        //    $('.schedule-form').find('#booking_hours').val(booked_hours);
+        //}
 
-        if (booked_hours>0){
-            $('.schedule-form').find('#booking_hours').val(booked_hours);
-        }
+        time_slots_nmb = $('.time-slots-container .time-slot.chosen').length;
+        $('.schedule-form').find('#booking_hours').val(time_slots_nmb);
 
+        time_slots_chosen = [];
+        $.each($('.time-slots-container .time-slot.chosen'), function(){
+            console.log($(this));
+            console.log($(this).data("guide_time_slot"));
+            time_slots_chosen.push($(this).data("guide_time_slot"));
+        });
+        $('#time_slots_chosen').val(time_slots_chosen);
         $('#form_guide_scheduling').submit();
-
     });
 
     $(document).on('click', '.close-alert', function(){

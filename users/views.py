@@ -59,6 +59,18 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("home"))
 
 
+@login_required()
+def after_login_router(request):
+    user = request.user
+    threshold = 20 #seconds
+    if user.generalprofile.is_previously_logged_in:
+        return HttpResponseRedirect(reverse("home"))
+    else:
+        user.generalprofile.is_previously_logged_in = True
+        user.generalprofile.save(force_update=True)
+        return HttpResponseRedirect(reverse("profile_settings_tourist"))
+
+
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
@@ -94,9 +106,6 @@ def general_settings(request):
     page = "general_settings"
     user = request.user
     general_profile, created = GeneralProfile.objects.get_or_create(user=user)
-    document_uploaded = general_profile.documentscan_set.filter(is_active=True).last()#approved
-
-    docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
     form = GeneralProfileForm(data=request.POST or None, instance=general_profile)
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
@@ -176,29 +185,6 @@ def general_settings(request):
                     messages.error(request, 'Please enter validation code!')
 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        #documents uploading section
-        if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
-            if docs_form.is_valid():
-
-                #ADD some validation here for file size and extension
-                if request.FILES.get("file"):
-                    count = 0
-                    for file in request.FILES.getlist("file"):
-                        if count < 5:#uploading not more than 5 files
-                            DocumentScan.objects.create(file=file, general_profile=general_profile)
-                            count += 1
-                        else:
-                            break
-
-
-                    if count == 1:
-                        messages.success(request, 'File was successfully uploaded!')
-                    else:
-                        messages.success(request, 'Files were successfully uploaded!')
-
-                    #retrieve docs afrer uploading
-                    is_just_uploaded = True
 
     return render(request, 'users/general_settings.html', locals())
 
@@ -364,7 +350,6 @@ def sending_sms_code(request):
 
         #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
         phone = data.get("phone_formatted")
-
 
         sms = SendingSMS({"phone_to": phone, "user_id": user.id})
         sms_sending_status = sms.send_validation_sms()

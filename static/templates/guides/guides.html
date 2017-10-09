@@ -129,6 +129,15 @@
                                                 {% blocktrans %}Include corporate tour guides{% endblocktrans %}
                                             </label>
                                         </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input class="i-check" type="checkbox" name="is_verified"
+                                                        {% if request.GET.is_verified or not request.GET %}
+                                                       checked {% endif %}
+                                                >
+                                                {% blocktrans %}Show only verified guides{% endblocktrans %}
+                                            </label>
+                                        </div>
                                     </li>
                                     <li>
                                         <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}
@@ -280,6 +289,16 @@
                                                 {% blocktrans %}Go to Guide{% endblocktrans %}
                                             </a>
                                         </p>
+                                        {% if guide.user.generalprofile.is_verified %}
+                                            <p>
+                                                <b>{% trans 'Verified' %}</b>
+                                            </p>
+                                        {% endif %}
+                                        {% if guide.user.generalprofile.is_trusted %}
+                                            <p>
+                                                <b>{% trans 'Trusted' %}</b>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

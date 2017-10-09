@@ -160,20 +160,24 @@
                                 class="form-horizontal schedule-form"
                                 action="{% url 'making_booking' %}"
                             >{% csrf_token %}
-
-                                <input class="hidden" value="{{ guide.id }}" name="guide_id">
-
-                                <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
-                                    <div class="row">
-                                        <div class="col-md-6">
+                                <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
+                                <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
                                             <div class="form-group form-group-icon-left">
                                                 <i class="fa fa-calendar input-icon"></i>
                                                 <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                <input class="form-control" name="start" type="text" required />
+                                                <input id="booking_date" class="form-control d_picker" name="start" required />
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-lg-6">
+                                        <div id="time_slots" class="time-slots-container"
+                                             data-link="{% url 'available_date_timeslots' %}"></div>
+                                    </div>
                                 </div>
+
 
                                 {% if guide_services %}
                                     <div class="form-group">
@@ -234,7 +238,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-6 hidden">
 
                                         {% with guide.get_hours_nmb_range as hours_nmb_range %}
                                             <div id="hours_nmb_container" class="form-group form-group- form-group-select-plus">
@@ -446,6 +450,8 @@
         <div class="gap gap-small"></div>
     </div>
 
+    {% include 'guides/modals/calendar.html' %}
+
 {% endblock %}
 
 {% block js_stuff %}
@@ -454,5 +460,51 @@
         $('#additional_services_select').select2({
             placeholder: 'Select additional services'
         });
+    </script>
+
+    <script>
+        $(document).ready(function(){
+
+            function gettingTimeSlotsForDate(){
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["booking_date"] = $('#booking_date').val();
+                data["guide_id"] = $('#guide_id').val();
+                var url = $('#time_slots').data('link');
+                console.log(url);
+                $.ajax({
+                     url: url,
+                     type: 'POST',
+                     data: data,
+                     cache: true,
+                     success: function(data){
+                         console.log(data);
+                         available_time_slots = data.available_time_slots;
+                         console.log(available_time_slots);
+                         time_slots_container = $('#time_slots');
+                         time_slots_container.html("");
+                         $.each(available_time_slots, function(index, el){
+                            slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
+                             slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
+                            time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
+                         })
+                     }
+                })
+            }
+            gettingTimeSlotsForDate();
+
+            $('.d_picker').datepicker({
+                todayHighlight: true,
+                format: "mm.dd.yyyy"
+            }).on("changeDate", function(e) {
+                // `e` here contains the extra attributes
+                gettingTimeSlotsForDate();
+            });
+
+            $(document).on("click", '.time-slots-container .time-slot', function(){
+                $(this).toggleClass("chosen");
+            })
+        })
     </script>
 {% endblock js_stuff %}

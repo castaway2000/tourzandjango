@@ -35,6 +35,7 @@ def tours(request):
     filtered_is_fixed_price_included = request.GET.get('is_fixed_price_included')
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
     filtered_is_company = request.GET.get('is_company')
+    filtered_is_verified = request.GET.get('is_verified')
     city_input = request.GET.getlist(u'city_input')
     place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
@@ -87,6 +88,12 @@ def tours(request):
     #filtering by company
     if not filtered_is_company:
         base_kwargs['guide__user__generalprofile__is_company'] = False
+
+    #filtering by trusted guides
+    if (request.GET and not filtered_is_verified):
+        pass #show all
+    else:
+        base_kwargs["guide__user__generalprofile__is_verified"] = True
 
     print(base_kwargs)
 
@@ -156,7 +163,8 @@ def tours(request):
         # print ("15")
         tours = Tour.objects.none()
     else:
-        tours = tours_initial
+        tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
+
     tours_nmb = tours.count()
 
     cities_ids = list(set([item.city.id for item in tours_initial]))
@@ -331,8 +339,8 @@ def deactivate_tour_image(request):
         tour_id = data.get("tour_id")
         img_id = data.get("img_id")
         TourImage.objects.filter(tour_id=tour_id, id=img_id).update(is_active=False)
-    response_date = dict()
-    return JsonResponse(response_date)
+    response_data = dict()
+    return JsonResponse(response_data)
 
 
 @login_required()
@@ -344,8 +352,8 @@ def make_main_tour_image(request):
         tour_image = TourImage.objects.get(tour_id=tour_id, id=img_id)
         tour_image.is_main = True
         tour_image.save(force_update=True)
-    response_date = dict()
-    return JsonResponse(response_date)
+    response_data = dict()
+    return JsonResponse(response_data)
 
 
 @login_required()

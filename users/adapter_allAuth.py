@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from allauth.account.models import EmailAddress
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.exceptions import ImmediateHttpResponse
 try:
     from django.utils.encoding import force_text
 except ImportError:
@@ -16,6 +15,7 @@ from allauth.utils import (import_attribute,
                      serialize_instance,
                      deserialize_instance)
 
+from allauth.utils import resolve_url
 from allauth.account.utils import user_email, user_username, user_field
 from allauth.account.models import EmailAddress
 from allauth.account.adapter import get_adapter as get_account_adapter
@@ -26,12 +26,28 @@ from django.template import TemplateDoesNotExist
 from django.core.mail import EmailMultiAlternatives, EmailMessage
 from allauth.exceptions import ImmediateHttpResponse
 from django.core.urlresolvers import reverse
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, get_object_or_404
 from users.models import GeneralProfile
+from django.core.urlresolvers import reverse
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
     pass
+    # def get_login_redirect_url(self, request):
+    #     print("get login redirect")
+    #     user = get_object_or_404(User, pk=request.user.id)
+    #
+    #     is_first_time_login = False if user.last_login else True
+    #     print(is_first_time_login)
+    #     print(user.last_login)
+    #
+    #     if is_first_time_login:
+    #         url = reverse("profile_settings_tourist")
+    #     else:
+    #         url = settings.LOGIN_REDIRECT_URL
+    #
+    #     print(url)
+    #     return resolve_url(url)
 
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -149,4 +165,3 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # user = email_address.user #it is commented because above EmailAddress is replaced with User model
 
         sociallogin.connect(request, user)
-

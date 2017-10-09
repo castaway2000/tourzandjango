@@ -1,0 +1,83 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block content_profile %}
+<div class="col-md-9">
+    <h3>{% trans 'Identification step 1: documents scan uploading' %}</h3>
+    <div class="row">
+        <div class="col-lg-6">
+            <div>
+                {% if not document_uploaded and not is_just_uploaded %}
+                    <p>
+                        {% blocktrans %}Please add a scan photo of your passport or driving license{% endblocktrans %}
+                    </p>
+                    <form name="docs_form" method="post" enctype="multipart/form-data">{% csrf_token %}
+                        <div class="form-group">
+                            <div class="form-group">
+                                <select name="document_type" class="form-control">
+                                    {% for document_type in document_types %}
+                                        <option value="{{ document_type }}">{{ document_type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" multiple name="file" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" name="uploading_docs_button" class="btn btn-primary"
+                                   value="{% blocktrans %}submit{% endblocktrans %}">
+                        </div>
+                    </form>
+                {% else %}
+                    {% if document_uploaded.status.id == 1 or is_just_uploaded %}
+                        <div class="well">
+                            <p>
+                                {% blocktrans %}Your scan was successfully uploaded.
+                                    please proceed to
+                                {% endblocktrans %}
+                                <a href="{% url 'identity_verification_photo' %}">{% trans 'step' %} 2</a>
+                            </p>
+                        </div>
+                    {% elif document_uploaded.status.id == 2 %}
+                        <div class="well">
+                            <p>{% blocktrans %}Your identity was successfully verified!{% endblocktrans %}</p>
+                        </div>
+                    {% elif document_uploaded.status.id == 3 %}
+                        <p>
+                            <div class="well">
+                                {% blocktrans %}Your uploaded scan was rejected. Please upload it once again{% endblocktrans %}
+                            </div>
+                            <br>
+                            {% if document_uploaded.comments %}
+                                <b>{% blocktrans %}Comments: {% endblocktrans %}</b>
+                                {{ document_uploaded.comments|safe }}
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                    <br>
+                    <h5>{% blocktrans %}Why it matters:{% endblocktrans %}</h5>
+                    <p>{% blocktrans %}Think about this for a moment. A stranger is hiring a stranger to show them around. As such
+                        it’s nice to have peace of mind. Trusted profiles gain more views from tourists looking to
+                        hire guides and give guides peace of mind they are meeting up with safe and respectful
+                        tourists and vice versa.
+                        {% endblocktrans %}
+                    </p>
+
+                    <div>
+                        <a href="{% url 'identity_verification_photo' %}" class="btn btn-default">
+                            {% trans 'Go to step 2' %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content_profile %}
+
+
+{% block js_stuff %}
+{% endblock js_stuff %}

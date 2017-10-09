@@ -1,0 +1,66 @@
+<div id="modal_calendar" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Modal Header</h4>
+          </div>
+          <div class="modal-body">
+            <table class="table table-responsive table-calendar" id="table_calendar" data-link="{% url 'updating_calendar' %}">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        {% for hour in hours_list %}
+                            <th>
+                                <div class="time-title">
+                                    {{ hour }}:00
+                                </div>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    {% for calendar_item in calendar_items %}
+
+                        {% if calendar_item.is_day_start %}
+                            <td>
+                                <div class="day-title">
+                                     {{ calendar_item.date|date:"d.m.Y, D" }}
+                                </div>
+                            </td>
+                        {% endif %}
+                        <td
+                            class="calendar-item {{ calendar_item.status }}"
+                            data-id="{{ calendar_item.id }}"
+                        >
+                        </td>
+
+                        {% if forloop.counter|divisibleby:24 %}
+                            </tr>
+
+                             {% if calendar_item.time_from|date:"D" == "Fri" %}
+                                <tr>
+                                    <td>
+                                        Weekend
+                                    </td>
+                                </tr>
+                             {% endif %}
+
+                            <tr>
+                        {% endif %}
+
+                    {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+</div>
