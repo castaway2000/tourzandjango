@@ -15,7 +15,6 @@ from allauth.utils import (import_attribute,
                      serialize_instance,
                      deserialize_instance)
 
-from allauth.utils import resolve_url
 from allauth.account.utils import user_email, user_username, user_field
 from allauth.account.models import EmailAddress
 from allauth.account.adapter import get_adapter as get_account_adapter
