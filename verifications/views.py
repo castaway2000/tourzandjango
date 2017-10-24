@@ -8,6 +8,10 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from tourzan.settings import ONFIDO_TOKEN_TEST
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import requests
 
 
 @login_required()
@@ -233,3 +237,33 @@ def identity_verification_photo(request):
         return HttpResponseRedirect(reverse("identity_verification_router"))
     else:
         return render(request, 'verifications/profile_identity_verification_photo.html', locals())
+
+
+# https://a14d74be.ngrok.io/identity_verification/onfidowebhook/
+@csrf_exempt
+def identity_verification_webhook(request):
+    #Todo: add here infido ips to check + implement request token comparason
+    data = json.loads(request.body.decode('utf-8'))
+    data = data["payload"]
+    report_href = data["object"]["href"]
+    report_id = report_href.split("/")[-1]
+    report_status = data["object"]["status"]
+    try:
+        report = IdentityVerificationReport.objects.get(report_id=report_id)
+        status, created = VerificationReportStatus.objects.get_or_create(name=report_status)
+
+        token = "Token token=%s" % ONFIDO_TOKEN_TEST
+        headers = {'Authorization': token}
+        r = requests.get(report_href, headers=headers)
+        result = r.json()
+        report_result = result["result"]
+        result, created = VerificationReportResult.objects.get_or_create(name=report_result)
+        
+        report.status = status
+        report.result = result
+        report.save(force_update=True)
+
+    except Exception as e:
+        print(e)
+
+    return JsonResponse({})
