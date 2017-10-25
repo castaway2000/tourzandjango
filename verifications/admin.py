@@ -81,3 +81,12 @@ class DocumentScanAdmin(admin.ModelAdmin):
         model = DocumentScan
 
 admin.site.register(DocumentScan, DocumentScanAdmin)
+
+
+class WebhookLogAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in WebhookLog._meta.fields]
+
+    class Meta:
+        model = WebhookLog
+
+admin.site.register(WebhookLog, WebhookLogAdmin)

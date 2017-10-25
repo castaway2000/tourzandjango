@@ -78,7 +78,9 @@ class IdentityVerificationReport(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk or self.status != self._original_fields["status"]:
             general_profile = self.identification_checking.applicant.general_profile
-            if general_profile.is_verified == False and self.status.name=="clear":
+
+            #changing of verification status, when report status is changing and report result is "clear"
+            if general_profile.is_verified == False and self.result.name=="clear":
                 general_profile.is_verified=True
                 general_profile.save(force_update=True)
 
@@ -118,3 +120,13 @@ class DocumentScan(models.Model):
             return "%s %s" % (self.general_profile.user.username, self.document_type.name)
         else:
             return "%s" % self.general_profile.user.username
+
+
+class WebhookLog(models.Model):
+    url = models.CharField(max_length=256)
+    is_successfully_processed = models.BooleanField(default=False)
+    error_text = models.TextField(null=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+    def __str__(self):
+        return "%s" % self.id
