@@ -239,31 +239,49 @@ def identity_verification_photo(request):
         return render(request, 'verifications/profile_identity_verification_photo.html', locals())
 
 
-# https://a14d74be.ngrok.io/identity_verification/onfidowebhook/
 @csrf_exempt
 def identity_verification_webhook(request):
     #Todo: add here infido ips to check + implement request token comparason
     data = json.loads(request.body.decode('utf-8'))
     data = data["payload"]
     report_href = data["object"]["href"]
+    webhooklog = WebhookLog.objects.create(url=report_href)
+
     report_id = report_href.split("/")[-1]
-    report_status = data["object"]["status"]
+    # print(report_id)
+    #For testing purpose: replacing of onfido testing report id with some real report id from the testing database
+    if report_id == "12345-23122-32123":
+        report_id = "20a30bd1-03a7-4275-ab26-618e7850ffd9"
+
     try:
         report = IdentityVerificationReport.objects.get(report_id=report_id)
-        status, created = VerificationReportStatus.objects.get_or_create(name=report_status)
-
         token = "Token token=%s" % ONFIDO_TOKEN_TEST
         headers = {'Authorization': token}
-        r = requests.get(report_href, headers=headers)
+        report_url = report.report_url
+        r = requests.get(report_url, headers=headers)
         result = r.json()
+        # print(result)
         report_result = result["result"]
-        result, created = VerificationReportResult.objects.get_or_create(name=report_result)
-        
-        report.status = status
-        report.result = result
+        if report_result:
+            report_result, created = VerificationReportResult.objects.get_or_create(name=report_result)
+
+        report_status = result["status"]
+        if report_status:
+            report_status, created = VerificationReportStatus.objects.get_or_create(name=report_status)
+
+        # print(report_status)
+        # print(report_result)
+
+        report.status = report_status
+        report.result = report_result
         report.save(force_update=True)
 
+        #to track if a webhook was processed successfully
+        webhooklog.is_successfully_processed = True
+        webhooklog.save(force_update=True)
     except Exception as e:
-        print(e)
+        # print(e)
+        webhooklog.error_text = e
+        webhooklog.save(force_update=True)
 
     return JsonResponse({})
