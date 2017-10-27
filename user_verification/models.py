@@ -5,7 +5,7 @@ from users.models import GeneralProfile
 
 
 class IdentityVerificationApplicant(models.Model):
-    general_profile = models.OneToOneField(GeneralProfile)
+    general_profile = models.OneToOneField(GeneralProfile, related_name="user_verification")
     applicant_id = models.CharField(max_length=64, null=True)
     applicant_url = models.CharField(max_length=256, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -105,7 +105,7 @@ class ScanStatus(models.Model):
         return "%s" % self.name
 
 
-class DocumentScanNew(models.Model):
+class DocumentScan(models.Model):
     # test_field = models.CharField(max_length=12, null=True)
     general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
     # user = models.ForeignKey(User, blank=True, null=True, default=None)
