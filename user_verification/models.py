@@ -5,7 +5,7 @@ from users.models import GeneralProfile
 
 
 class IdentityVerificationApplicant(models.Model):
-    general_profile = models.OneToOneField(GeneralProfile)
+    general_profile = models.OneToOneField(GeneralProfile, related_name="user_verification")
     applicant_id = models.CharField(max_length=64, null=True)
     applicant_url = models.CharField(max_length=256, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -80,7 +80,7 @@ class IdentityVerificationReport(models.Model):
             general_profile = self.identification_checking.applicant.general_profile
 
             #changing of verification status, when report status is changing and report result is "clear"
-            if general_profile.is_verified == False and self.result.name=="clear":
+            if general_profile.is_verified == False and self.result and self.result.name=="clear":
                 general_profile.is_verified=True
                 general_profile.save(force_update=True)
 
@@ -106,7 +106,8 @@ class ScanStatus(models.Model):
 
 
 class DocumentScan(models.Model):
-    general_profile = models.ForeignKey(GeneralProfile)
+    # test_field = models.CharField(max_length=12, null=True)
+    general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
     # user = models.ForeignKey(User, blank=True, null=True, default=None)
     document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
     file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)

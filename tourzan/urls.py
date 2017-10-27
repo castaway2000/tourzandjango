@@ -28,7 +28,6 @@ from .api_router import SharedAPIRootRouter
 from axes.decorators import watch_login
 from django.contrib.auth.views import login as admin_login
 
-
 schema_view = get_schema_view(title='Pastebin API')
 
 #returning of all the SharedAPIRootRouter urls (which are added there in each app.api.url file)
@@ -56,7 +55,7 @@ urlpatterns = i18n_patterns(
 
     url(r'^', include('website_management.urls')),
     url(r'^', include('blog.urls')),
-    url(r'^', include('verifications.urls')),
+    url(r'^', include('user_verification.urls')),
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),
