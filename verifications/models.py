@@ -106,7 +106,7 @@ class ScanStatus(models.Model):
 
 
 class DocumentScan(models.Model):
-    general_profile = models.ForeignKey(GeneralProfile)
+    general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
     # user = models.ForeignKey(User, blank=True, null=True, default=None)
     document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
     file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)

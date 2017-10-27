@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import *
-from verifications.models import DocumentScan
 
 
 class InterestAdmin(admin.ModelAdmin):

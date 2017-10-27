@@ -74,13 +74,13 @@ class ScanStatusAdmin(admin.ModelAdmin):
 admin.site.register(ScanStatus, ScanStatusAdmin)
 
 
-class DocumentScanAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in DocumentScan._meta.fields]
-
-    class Meta:
-        model = DocumentScan
-
-admin.site.register(DocumentScan, DocumentScanAdmin)
+# class DocumentScanAdmin(admin.ModelAdmin):
+#     list_display = [field.name for field in DocumentScan._meta.fields]
+#
+#     class Meta:
+#         model = DocumentScan
+#
+# admin.site.register(DocumentScan, DocumentScanAdmin)
 
 
 class WebhookLogAdmin(admin.ModelAdmin):
