@@ -5,7 +5,7 @@ from users.models import GeneralProfile
 
 
 class IdentityVerificationApplicant(models.Model):
-    general_profile = models.OneToOneField(GeneralProfile)
+    general_profile = models.OneToOneField(GeneralProfile, related_name="user_verification")
     applicant_id = models.CharField(max_length=64, null=True)
     applicant_url = models.CharField(max_length=256, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
