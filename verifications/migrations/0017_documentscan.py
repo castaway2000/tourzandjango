@@ -10,8 +10,8 @@ import utils.uploadings
 class Migration(migrations.Migration):
 
     dependencies = [
-        # ('users', '0051_generalprofile_is_previously_logged_in'),
-        # ('verifications', '0016_auto_20171027_0523'),
+        ('users', '0051_generalprofile_is_previously_logged_in'),
+        ('verifications', '0016_auto_20171027_0523'),
     ]
 
     operations = [
