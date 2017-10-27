@@ -105,7 +105,7 @@ class ScanStatus(models.Model):
         return "%s" % self.name
 
 
-class DocumentScan(models.Model):
+class DocumentScanNew(models.Model):
     # test_field = models.CharField(max_length=12, null=True)
     general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
     # user = models.ForeignKey(User, blank=True, null=True, default=None)
