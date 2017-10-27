@@ -285,14 +285,14 @@ except:
 
 try:
     #delete '_2' on Testing server of AWS
-    from .test_settings_2 import *
+    from .test_settings import *
 except:
     pass
 
 
 try:
     #local settings, specific for your machine
-    from .local_settings import *
+    from .local_settings_2 import *
 except:
     pass
 
