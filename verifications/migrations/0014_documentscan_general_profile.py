@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0051_generalprofile_is_previously_logged_in'),
-        ('verifications', '0012_remove_documentscan_general_profile'),
+        ('verifications', '0013_remove_documentscan_general_profile'),
     ]
 
     operations = [
