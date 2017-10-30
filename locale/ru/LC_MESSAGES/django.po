@@ -23,53 +23,53 @@ msgstr ""
 #: .\static\templates\account\account_inactive.html:5
 #: .\static\templates\account\account_inactive.html:8
 msgid "Account Inactive"
-msgstr ""
+msgstr "Аккаунт не активный"
 
 #: .\static\templates\account\account_inactive.html:10
 msgid "This account is inactive."
-msgstr ""
+msgstr "Этот акаунт не активный"
 
 #: .\static\templates\account\email.html:5 .\static\templates\navbar.html:108
 msgid "Account"
-msgstr ""
+msgstr "Акаунт"
 
 #: .\static\templates\account\email.html:8
 msgid "E-mail Addresses"
-msgstr ""
+msgstr "Имейл акаунт"
 
 #: .\static\templates\account\email.html:10
 msgid "The following e-mail addresses are associated with your account:"
-msgstr ""
+msgstr "С Вашим акаунтом связаны такие имейл-адреса"
 
 #: .\static\templates\account\email.html:24
 msgid "Verified"
-msgstr ""
+msgstr "Подтвреждено"
 
 #: .\static\templates\account\email.html:26
 msgid "Unverified"
-msgstr ""
+msgstr "Не подтверждено"
 
 #: .\static\templates\account\email.html:28
 msgid "Primary"
-msgstr ""
+msgstr "Основой"
 
 #: .\static\templates\account\email.html:34
 msgid "Make Primary"
-msgstr ""
+msgstr "Сделать основным"
 
 #: .\static\templates\account\email.html:35
 msgid "Re-send Verification"
-msgstr ""
+msgstr "Отправить повторно имейл с подтверждением"
 
 #: .\static\templates\account\email.html:36
 #: .\static\templates\payments\payment_methods.html:49
 #: .\static\templates\socialaccount\connections.html:35
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: .\static\templates\account\email.html:43
 msgid "Warning:"
-msgstr ""
+msgstr "Внимание:"
 
 #: .\static\templates\account\email.html:43
 msgid ""
@@ -79,15 +79,15 @@ msgstr ""
 
 #: .\static\templates\account\email.html:48
 msgid "Add E-mail Address"
-msgstr ""
+msgstr "Добавить имейл адреса"
 
 #: .\static\templates\account\email.html:53
 msgid "Add E-mail"
-msgstr ""
+msgstr "Добавить имейл"
 
 #: .\static\templates\account\email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные имейл адреса?"
 
 #: .\static\templates\account\email\email_confirmation_message.txt:1
 #, python-format
@@ -1637,31 +1637,31 @@ msgstr ""
 
 #: .\static\templates\users\home.html:19
 msgid " Guides "
-msgstr ""
+msgstr "Гиды"
 
 #: .\static\templates\users\home.html:24
 msgid "Search on Local Guides"
-msgstr ""
+msgstr "Ищите местных гидов"
 
 #: .\static\templates\users\home.html:30
 msgid "Where are you going?"
-msgstr ""
+msgstr "Куда Вы собираетесь?"
 
 #: .\static\templates\users\home.html:45
 msgid " Which of your interests should the guide meet? "
-msgstr ""
+msgstr "Какие Ваши интересы должны быть у гида?"
 
 #: .\static\templates\users\home.html:55
 msgid "Search for Guides"
-msgstr ""
+msgstr "Искать гидов"
 
 #: .\static\templates\users\home.html:212
 msgid "Where are you going"
-msgstr ""
+msgstr "Куда Вы собираетесь?"
 
 #: .\static\templates\users\home.html:411
 msgid "Explore Our Top Guides"
-msgstr ""
+msgstr "Лучшие гилы"
 
 #: .\static\templates\users\home.html:412
 #: .\static\templates\users\home.html:423
@@ -1670,39 +1670,39 @@ msgstr "смотреть все"
 
 #: .\static\templates\users\home.html:422
 msgid " Explore Our Top Tours"
-msgstr ""
+msgstr "Лучшие экскурсии"
 
 #: .\static\templates\users\password_changing.html:13
 msgid "Current Password"
-msgstr ""
+msgstr "Текущий пароль"
 
 #: .\static\templates\users\password_changing.html:18
 msgid "New Password"
-msgstr ""
+msgstr "Новый пароль"
 
 #: .\static\templates\users\password_changing.html:23
 msgid "New Password Again"
-msgstr ""
+msgstr "Новый пароль повторно"
 
 #: .\static\templates\users\password_changing.html:30
 msgid "Back"
-msgstr ""
+msgstr "Назад"
 
 #: .\static\templates\users\profile_settings_tourist.html:17
 msgid "Tourist Profile"
-msgstr ""
+msgstr "Профиль туриста"
 
 #: .\static\templates\users\profile_settings_tourist.html:39
 msgid "About"
-msgstr ""
+msgstr "Про нас"
 
 #: .\static\templates\users\tourist.html:88
 msgid "Next Page"
-msgstr ""
+msgstr "Следующая страница"
 
 #: .\static\templates\website_management\contact_us.html:6
 msgid "Contact Us"
-msgstr ""
+msgstr "Связаться с нами"
 
 #: .\static\templates\website_management\contact_us.html:14
 msgid ""
@@ -1717,56 +1717,68 @@ msgid ""
 "                        and active 24/7 and someone will respond during "
 "normal hours"
 msgstr ""
+"Если Вам необходима помощь, пожалуйста, воспользуйтесь любым из"
+"способов, представленных ниже,\n"
+"                        чтобы связаться с нами. Нам кажется, что могут возникнуть много"
+"аопросов или проблем, которые не требуют телефонного звонка и \n"
+"                        мы заверяем Вас, что Ваши имейлы или сообщения "
+"в чате будут нами получены и прочитаны. Мы доступны втечении \n"
+"                        рабочего времени с понедельника по пятницу часовом поясе PST с 9 утра ло "
+"5 вечера. Вы можете отправить нам сообщение \n"
+"                        в любое время 24/7 и мы обязательно ответим, "
+"как только прочитаем"
 
 #: .\static\templates\website_management\contact_us.html:44
 msgid ""
 "\n"
 "                            Tourzan public support chatroom"
 msgstr ""
+"\n"
+"                            Открытый чат Tourzan для быстрой связи"
 
 #: .\tours\views.py:297
 msgid "Tour details have been successfully updated!"
-msgstr ""
+msgstr "Информация по экскурсии былы успешно обновлена!"
 
 #: .\tours\views.py:299
 msgid "Tour details have been successfully created!"
-msgstr ""
+msgstr "Экскурсия была успешно создан!"
 
 #: .\tourzan\settings.py:197
 msgid "English"
-msgstr "English"
+msgstr "Английский"
 
 #: .\tourzan\settings.py:198
 msgid "Spanish"
-msgstr ""
+msgstr "Испанский"
 
 #: .\tourzan\settings.py:199
 msgid "French"
-msgstr ""
+msgstr "Французский"
 
 #: .\tourzan\settings.py:200
 msgid "German"
-msgstr ""
+msgstr "Немецкий"
 
 #: .\tourzan\settings.py:201
 msgid "Portuguese"
-msgstr ""
+msgstr "Потругальский"
 
 #: .\tourzan\settings.py:202
 msgid "Japanese"
-msgstr ""
+msgstr "Японский"
 
 #: .\tourzan\settings.py:203
 msgid "Russian"
-msgstr "Russian"
+msgstr "Русский"
 
 #: .\website_management\views.py:40
 msgid "Your message has been successfully delivered!"
-msgstr ""
+msgstr "Ваше сообщение успешно отправлено!"
 
 #: .\website_management\views.py:42
 msgid "There is some error with submiting of your message!"
-msgstr ""
+msgstr "При отправке сообщения возникли ошибки!"
 
 #~ msgid "Welcome to my project!"
 #~ msgstr "Добро пожаловать в проект!"
