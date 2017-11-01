@@ -522,6 +522,15 @@ footer#main-footer {
     background-color: #5adc72;
 }
 
+.select2-selection--multiple{
+    overflow: hidden !important;
+    height: auto !important;
+}
+
+.text-black{
+    color: black!important;
+}
+
 @media (max-width:1260px) {
   .booking-filters-container{
       z-index: 100;

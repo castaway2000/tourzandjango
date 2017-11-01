@@ -72,17 +72,22 @@ $(document).ready(function(){
         //    $('.schedule-form').find('#booking_hours').val(booked_hours);
         //}
 
+        e.preventDefault();
         time_slots_nmb = $('.time-slots-container .time-slot.chosen').length;
         $('.schedule-form').find('#booking_hours').val(time_slots_nmb);
 
         time_slots_chosen = [];
         $.each($('.time-slots-container .time-slot.chosen'), function(){
-            console.log($(this));
-            console.log($(this).data("guide_time_slot"));
             time_slots_chosen.push($(this).data("guide_time_slot"));
         });
-        $('#time_slots_chosen').val(time_slots_chosen);
-        $('#form_guide_scheduling').submit();
+
+        if (time_slots_chosen.length>0){
+            $('#time_slots_chosen').val(time_slots_chosen);
+            $('#form_guide_scheduling').submit();
+        }else {
+            $('#booking_form_error_container').html("<div class='text-black text-center text-error'>Please select some time slot.</div>")
+        }
+
     });
 
     $(document).on('click', '.close-alert', function(){
@@ -150,10 +155,8 @@ $(document).ready(function(){
 
                 open: function(){
 
-                    console.log("open");
                     var $triggerEl = $(this.st.el);
                     var order_id = $triggerEl.data("order_id");
-                    console.log(order_id);
 
                     var self = $.magnificPopup.instance;
                     self.contentContainer.find('#order_id').val(order_id)
@@ -163,9 +166,7 @@ $(document).ready(function(){
     });
 
     $(document).on('change', '.service-name-checkbox', function() {
-        console.log("change");
         var current_row = $(this).closest('tr');
-        console.log(current_row);
         current_row.find('.service-price').toggleClass('hidden');
     });
 
@@ -238,14 +239,11 @@ window.setTimeout(function() {
 
 $(document).ready(function(){
     $(document).on('click', '#toggle_left_menu', function(e) {
-        console.log("aa");
          if($.cookie("left_menu_hided") == 1) {
              $.cookie("left_menu_hided", 0, {path: '/'});
-             console.log("set 0");
          }
          else{
             $.cookie("left_menu_hided", 1, {path: '/'});
-             console.log("set 1");
         }
         hidingLeftMenu()
     });
@@ -256,10 +254,8 @@ $(document).ready(function(){
 function hidingLeftMenu(){
     if ($.cookie("left_menu_hided") == 1) {
         $('.booking-filters-container').addClass("closed");
-        console.log("min");
     }else{
         $('.booking-filters-container').removeClass("closed");
-        console.log("max");
     }
 }
 hidingLeftMenu();
