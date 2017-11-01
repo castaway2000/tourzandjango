@@ -292,7 +292,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings import *
+    from .local_settings_2 import *
 except:
     pass
 
