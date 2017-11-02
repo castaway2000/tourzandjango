@@ -104,6 +104,8 @@
 
                             <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
                             <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
+                            <input class="hidden" id="booking_hours" name="booking_hours">
+                            <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ tour.min_hours }}">
 
                             <h3 class="text-center">
                                 {% blocktrans %}Book{% endblocktrans %} {{ tour.name }}
@@ -125,38 +127,11 @@
                                         <div class="col-md-4">
                                             <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
                                                 <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                <input class="form-control d_picker" id="booking_date" name="booking_date"
+                                                <input class="form-control d_picker" id="booking_date" name="start"
                                                        type="text" required value="{% now "mm.dd.yyyy" %}" />
                                             </div>
                                         </div>
-                                        <div class="col-md-5 text-center">
-                                            {% if tour.payment_type.id == 1 %}
-                                                {% with tour.get_hours_nmb_range as hours_nmb_range %}
-                                                    <div id="hours_nmb_container" class="form-group form-group- form-group-select-plus">
-                                                        <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
-                                                        <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                            {% for hour in hours_nmb_range.min_hours_nmb_range_basic %}
-                                                                <label class="btn btn-primary hours-nmb
-                                                                    {% if forloop.counter == 1 %} active{% endif %}">
-                                                                <input type="radio" name="booking_hours" value="{{ hour }}"/>
-                                                                    {{ hour }}{% if forloop.last %}+{% endif %}
-                                                                </label>
-                                                            {% endfor %}
-                                                        </div>
-                                                        <select class="form-control hidden" id="booking_hours" name="booking_hours">
-                                                            {% for hour in hours_nmb_range.min_hours_nmb_range_full %}
-                                                                <option value="{{ hour }}">{{ hour }}
-                                                                </option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </div>
-                                                {% endwith %}
-                                            {% elif tour.payment_type == 2 %}
-                                                {{ tour.price }} {{ tour.currency.name }}
-                                            {% endif %}
-                                        </div>
-
-                                        <div class="col-md-12 text-center">
+                                        <div class="col-md-8 text-center">
                                             <p>Time slots:</p>
                                             <div id="booking_form_error_container"></div>
                                             <div id="time_slots" class="time-slots-container"

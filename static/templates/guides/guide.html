@@ -156,12 +156,15 @@
                         {% endif %}
 
                         <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
-                            <form method="get" id="form_guide_scheduling"
+                            <form method="post" id="form_guide_scheduling"
                                 class="form-horizontal schedule-form"
                                 action="{% url 'making_booking' %}"
                             >{% csrf_token %}
                                 <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
                                 <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
+                                <input class="hidden" id="booking_hours" name="booking_hours">
+                                <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ guide.min_hours }}">
+
                                 {% if guide_services %}
                                     <div class="row">
                                         <div class="col-md-12">
@@ -239,36 +242,31 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 hidden">
-
-                                        {% with guide.get_hours_nmb_range as hours_nmb_range %}
-                                            <div id="hours_nmb_container" class="form-group form-group- form-group-select-plus">
-                                                <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
-                                                <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                    {% for hour in hours_nmb_range.min_hours_nmb_range_basic %}
-                                                        <label class="btn btn-primary hours-nmb
-                                                            {% if forloop.counter == 1 %} active{% endif %}">
-                                                        <input type="radio" name="options" value="{{ hour }}"/>
-                                                            {{ hour }}{% if forloop.last %}+{% endif %}
-                                                        </label>
-                                                    {% endfor %}
-                                                </div>
-                                                <select class="form-control hidden" id="booking_hours" name="booking_hours">
-                                                    {% for hour in hours_nmb_range.min_hours_nmb_range_full %}
-                                                        <option value="{{ hour }}">{{ hour }}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        {% endwith %}
-
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <div class="form-group text-right">
+                                             <button type="submit"
+                                                 class="btn btn-primary btn-lg submit-button">
+                                                    {% blocktrans %}Book Now{% endblocktrans %}
+                                             </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group text-right">
-                                     <button type="submit"
-                                         class="btn btn-primary btn-lg submit-button">
-                                            {% blocktrans %}Book Now{% endblocktrans %}
-                                     </button>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <p id="amount_container" class="lead hidden">
+                                            {% blocktrans %}Rate{% endblocktrans %}:
+                                            <b><span id="amount">{{ guide.rate|safe }}</span>
+                                            {{ guide.currency.name }} {% blocktrans %}per hour{% endblocktrans %}
+                                            </b>
+                                        </p>
+                                        <p>
+                                            {% blocktrans %}Minimum{% endblocktrans %}
+                                            {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
+
+                                        </p>
+                                    </div>
                                 </div>
                             </form>
                         </div>
