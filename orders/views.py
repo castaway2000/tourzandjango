@@ -45,7 +45,6 @@ def making_booking(request):
     else:
         data = request.GET
 
-
     #creating booked time slots in guide's schedule
     #if some of selected time slots is already booked or unavailable - return an error
     time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
@@ -56,6 +55,7 @@ def making_booking(request):
         tour_id = data.get("tour_id")
         guide_id = data.get("guide_id")
 
+        #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
         if tour_id:
             tour = Tour.objects.get(id=tour_id)
             guide = tour.guide
@@ -155,23 +155,21 @@ def making_booking(request):
                 calendar_item_guide.status_id = 1 #booked
                 calendar_item_guide.order = order
                 calendar_item_guide.save(force_update=True)
-
     else:
         messages.error(request, _('Some selected time slots are not available anymore!'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
     if request.POST:#it means that it is ajax request
-        return JsonResponse(return_dict)
-    else:#it means that it is creation of the new order with redirect to checkout page
         # return HttpResponseRedirect(reverse("my_bookings"))
         return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
+    else:#it means that it is creation of the new order with redirect to checkout page
+        return JsonResponse(return_dict)
 
 
 @login_required
 def bookings(request, status=None):
     current_page = "bookings"
-    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
     user = request.user
     kwargs = dict()
 
@@ -188,7 +186,7 @@ def bookings(request, status=None):
 
             kwargs["price_after_discount__gte"] = price[0]
             kwargs["price_after_discount__lte"] = price[1]
-            print (kwargs)
+            # print (kwargs)
 
     if filtered_cities:
         print (filtered_cities)
@@ -205,12 +203,12 @@ def bookings(request, status=None):
     if not status:
         # print (kwargs)
         initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
-        orders = initial_orders.filter(**kwargs).order_by('-id')
+        orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
     elif not user.is_anonymous():
         kwargs["status__name"] = status
         initial_orders = Order.objects.filter(tourist__user=user, status__name=status)#it is needed for citieas and guides list
-        orders = initial_orders.filter(**kwargs).order_by('-id')
+        orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
     else:
         current_url = request.path
@@ -240,7 +238,7 @@ def bookings(request, status=None):
 @login_required()
 def orders(request, status=None):
     current_page = "orders"
-    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
 
     user = request.user
 
@@ -260,14 +258,13 @@ def orders(request, status=None):
 
         if not status:
             kwargs["guide"] = guide
-            print("kwargs %s" % kwargs)
-            orders = Order.objects.filter(**kwargs).order_by("-id")
+            # print("kwargs %s" % kwargs)
+            orders = Order.objects.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
             # print("not status")
-
         else:
             kwargs["guide"] = guide
             kwargs["status__slug"] = status
-            orders = Order.objects.filter(**kwargs).order_by("-id")
+            orders = Order.objects.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
 
         orders_nmb = orders.count()
 

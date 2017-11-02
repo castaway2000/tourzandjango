@@ -12,7 +12,7 @@ $(document).ready(function(){
         $('#booking_hours').val(hours);
 
         return hours
-    };
+    }
 
     function priceCalculation(){
 
@@ -20,7 +20,7 @@ $(document).ready(function(){
         if ($('#amount_container').hasClass('hidden')){
             $('#amount_container').removeClass('hidden');
         }
-    };
+    }
 
     $(document).on('click', '.hours-nmb', function(){
         //$('#form_tour_scheduling .hours-nmb').removeClass('active');
@@ -56,14 +56,13 @@ $(document).ready(function(){
         });
 
         return indexed_array;
-    };
-
+    }
 
     function hidingNotification(){
          window.setTimeout(function() {
             $('.booking-result-message').addClass('hidden');
          }, 2500);
-    };
+    }
 
     $('#form_guide_scheduling .submit-button, #form_tour_scheduling .submit-button').on('click', function(e){
         //var booked_hours = updatingChosenHours();
@@ -81,11 +80,22 @@ $(document).ready(function(){
             time_slots_chosen.push($(this).data("guide_time_slot"));
         });
 
-        if (time_slots_chosen.length>0){
-            $('#time_slots_chosen').val(time_slots_chosen);
-            $('#form_guide_scheduling').submit();
-        }else {
-            $('#booking_form_error_container').html("<div class='text-black text-center text-error'>Please select some time slot.</div>")
+        console.log("aaaa");
+        console.log(time_slots_chosen.length);
+
+        minimum_hours = $('#minimum_hours').val();
+        if (time_slots_chosen.length>0 && minimum_hours && time_slots_chosen.length<minimum_hours){
+            $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
+                "Please select minimum "+minimum_hours+" hours.</div>")
+        }else{
+            $('#booking_hours').val(time_slots_chosen.length);
+
+            if (time_slots_chosen.length>0){
+                $('#time_slots_chosen').val(time_slots_chosen);
+                $(this).closest('form').submit();
+            }else {
+                $('#booking_form_error_container').html("<div class='text-black text-center text-error'>Please select some time slot.</div>")
+            }
         }
 
     });
@@ -98,8 +108,6 @@ $(document).ready(function(){
     if ($('#amount_container').length > 0){
         priceCalculation();
     }
-
-
 
     $('.change-language-link').on('click', function (e) {
         e.preventDefault();
