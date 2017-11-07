@@ -682,7 +682,7 @@ msgid "Booking a tour date:"
 msgstr "ツアーの日付を選んで予約:"
 
 #: static/templates/guides/guide.html:212
-msgid "Persons nmb:"
+msgid "Number of people:"
 msgstr "人数:"
 
 #: static/templates/guides/guide.html:245 static/templates/tours/tour.html:135
