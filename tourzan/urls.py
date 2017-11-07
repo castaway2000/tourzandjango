@@ -20,14 +20,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 
-from users.api.views import login_api_view, signup_api_view
+from users.api.views import login_api_view
 
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
 from .api_router import SharedAPIRootRouter
 from axes.decorators import watch_login
 from django.contrib.auth.views import login as admin_login
-
 
 schema_view = get_schema_view(title='Pastebin API')
 
@@ -53,10 +52,12 @@ urlpatterns = i18n_patterns(
     url(r'^', include('guides_calendar.urls')),
     url(r'^', include('tourists.urls')),
     url(r'^', include('payments.urls')),
+    url(r'^', include('partners.urls')),
+
 
     url(r'^', include('website_management.urls')),
     url(r'^', include('blog.urls')),
-
+    url(r'^', include('user_verification.urls')),
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),
@@ -73,7 +74,7 @@ urlpatterns = i18n_patterns(
                 url(r'^api/v1/api-token-verify/', verify_jwt_token),
 
                 url(r'^api/v1/login_client/$', login_api_view, name='login_client'),
-                url(r'^api/v1/signup_client/$', signup_api_view, name='signup_client'),
+                # url(r'^api/v1/signup_client/$', signup_api_view, name='signup_client'),
 
 
                 url(r'^api/v1/', include('chats.api.urls')),

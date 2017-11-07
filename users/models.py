@@ -7,11 +7,12 @@ from utils.internalization_wrapper import languages_english
 from django.db.models.signals import post_save
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from tourists.models import TouristProfile
-from utils.uploadings import upload_path_handler_user_scanned_docs
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from django.contrib.auth.signals import user_logged_in
 from payments.models import PaymentMethod
 from phonenumber_field.modelfields import PhoneNumberField
+from guides.models import GuideProfile
+from utils.uploadings import upload_path_handler_guide_webcam_image
 
 
 def user_login_function(sender, user, **kwargs):
@@ -100,7 +101,10 @@ class UserLanguage(models.Model):
 
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
-    is_trusted = models.BooleanField(default=False)
+    is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
+    is_verified = models.BooleanField(default=False)#is verified by docs
+    webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
+
     facebook = models.CharField(max_length=64, blank=True, null=True, default=None)
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
     google = models.CharField(max_length=64, blank=True, null=True, default=None)
@@ -116,12 +120,13 @@ class GeneralProfile(models.Model):
     is_company = models.BooleanField(default=False)
     business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
 
+    is_previously_logged_in = models.BooleanField(default=False)
+
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __str__(self):
         return "%s" % self.user.username
-
 
     def save(self, *args, **kwargs):
         self.address_full = "%s %s" % (self.city, self.address)
@@ -148,40 +153,6 @@ def socialtoken_post_save(sender, instance, **kwargs):
 post_save.connect(socialtoken_post_save, sender=SocialToken)
 
 
-class DocumentType(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True, default=None)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        return "%s" % self.name
-
-
-class ScanStatus(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True, default=None)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        return "%s" % self.name
-
-
-class DocumentScan(models.Model):
-    general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
-    document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
-    file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)
-    status = models.ForeignKey(ScanStatus, blank=True, null=True, default=1)#status "new" 2 - "approved", 3 - "rejected"
-    is_active = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        if self.document_type:
-            return "%s %s" % (self.general_profile.user.username, self.document_type.name)
-        else:
-            return "%s" % self.general_profile.user.username
-
-
 class SmsSendingHistory(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, default=None)
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)#including code
@@ -193,4 +164,3 @@ class SmsSendingHistory(models.Model):
 
     def __str__(self):
         return "%s" % self.phone
-

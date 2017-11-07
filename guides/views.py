@@ -10,7 +10,6 @@ from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg, Max, Min, Sum
-import requests
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 
@@ -41,6 +40,7 @@ def guides(request):
     service_input = request.GET.getlist(u'service_input')
     language_input = request.GET.getlist(u'language_input')
     is_company = request.GET.get('is_company')
+    is_verified = request.GET.get('is_verified')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -87,6 +87,13 @@ def guides(request):
     if not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 
+    if (request.GET and not is_verified):
+        pass #show all
+    else:
+        base_kwargs["user__generalprofile__is_verified"] = True
+    # print(request.GET)
+    # print(base_kwargs)
+
     #ordering
     if order_results:
         if order_results == "price":
@@ -117,12 +124,12 @@ def guides(request):
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
     elif place_id or city_input or guide_input:
-        # guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
-        guides = guides_initial.filter(**base_kwargs)
+        guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
+        # guides = guides_initial.filter(**base_kwargs)
     elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
     else:
-        guides = guides_initial
+        guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
 
     if base_user_interests_kwargs:
         user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)
@@ -371,8 +378,8 @@ def profile_settings_guide(request, guide_creation=True):
                 if "guide_registration_welcome_page_seen" in request.session:
                     del request.session["guide_registration_welcome_page_seen"]
                 request.session["current_role"] = "guide"
-                messages.success(request, 'Profile has been created!')
-                return HttpResponseRedirect(reverse("profile_settings_guide"))
+                messages.success(request, 'Profile has been created! Please complete identity verification process!')
+                return HttpResponseRedirect(reverse("identity_verification_router"))
             else:
                 messages.success(request, 'Profile has been updated!')
         # else: #if form is invalid
@@ -470,6 +477,7 @@ def guide_payouts(request):
     user = request.user
     try:
         guide = user.guideprofile
+        general_profile = user.generalprofile
         if not guide.uuid:
             guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
         payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()

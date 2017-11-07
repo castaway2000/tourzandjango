@@ -12,7 +12,7 @@ $(document).ready(function(){
         $('#booking_hours').val(hours);
 
         return hours
-    };
+    }
 
     function priceCalculation(){
 
@@ -20,7 +20,7 @@ $(document).ready(function(){
         if ($('#amount_container').hasClass('hidden')){
             $('#amount_container').removeClass('hidden');
         }
-    };
+    }
 
     $(document).on('click', '.hours-nmb', function(){
         //$('#form_tour_scheduling .hours-nmb').removeClass('active');
@@ -56,14 +56,13 @@ $(document).ready(function(){
         });
 
         return indexed_array;
-    };
-
+    }
 
     function hidingNotification(){
          window.setTimeout(function() {
             $('.booking-result-message').addClass('hidden');
          }, 2500);
-    };
+    }
 
     $('#form_guide_scheduling .submit-button, #form_tour_scheduling .submit-button').on('click', function(e){
         //var booked_hours = updatingChosenHours();
@@ -72,18 +71,33 @@ $(document).ready(function(){
         //    $('.schedule-form').find('#booking_hours').val(booked_hours);
         //}
 
+        e.preventDefault();
         time_slots_nmb = $('.time-slots-container .time-slot.chosen').length;
         $('.schedule-form').find('#booking_hours').val(time_slots_nmb);
 
         time_slots_chosen = [];
-        console.log("111111111");
         $.each($('.time-slots-container .time-slot.chosen'), function(){
-            console.log($(this));
-            console.log($(this).data("guide_time_slot"));
             time_slots_chosen.push($(this).data("guide_time_slot"));
         });
-        $('#time_slots_chosen').val(time_slots_chosen);
-        $('#form_guide_scheduling').submit();
+
+        console.log("aaaa");
+        console.log(time_slots_chosen.length);
+
+        minimum_hours = $('#minimum_hours').val();
+        if (time_slots_chosen.length>0 && minimum_hours && time_slots_chosen.length<minimum_hours){
+            $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
+                "Please select minimum "+minimum_hours+" hours.</div>")
+        }else{
+            $('#booking_hours').val(time_slots_chosen.length);
+
+            if (time_slots_chosen.length>0){
+                $('#time_slots_chosen').val(time_slots_chosen);
+                $(this).closest('form').submit();
+            }else {
+                $('#booking_form_error_container').html("<div class='text-black text-center text-error'>Please select some time slot.</div>")
+            }
+        }
+
     });
 
     $(document).on('click', '.close-alert', function(){
@@ -94,8 +108,6 @@ $(document).ready(function(){
     if ($('#amount_container').length > 0){
         priceCalculation();
     }
-
-
 
     $('.change-language-link').on('click', function (e) {
         e.preventDefault();
@@ -151,10 +163,8 @@ $(document).ready(function(){
 
                 open: function(){
 
-                    console.log("open");
                     var $triggerEl = $(this.st.el);
                     var order_id = $triggerEl.data("order_id");
-                    console.log(order_id);
 
                     var self = $.magnificPopup.instance;
                     self.contentContainer.find('#order_id').val(order_id)
@@ -164,9 +174,7 @@ $(document).ready(function(){
     });
 
     $(document).on('change', '.service-name-checkbox', function() {
-        console.log("change");
         var current_row = $(this).closest('tr');
-        console.log(current_row);
         current_row.find('.service-price').toggleClass('hidden');
     });
 
@@ -239,14 +247,11 @@ window.setTimeout(function() {
 
 $(document).ready(function(){
     $(document).on('click', '#toggle_left_menu', function(e) {
-        console.log("aa");
          if($.cookie("left_menu_hided") == 1) {
              $.cookie("left_menu_hided", 0, {path: '/'});
-             console.log("set 0");
          }
          else{
             $.cookie("left_menu_hided", 1, {path: '/'});
-             console.log("set 1");
         }
         hidingLeftMenu()
     });
@@ -257,10 +262,8 @@ $(document).ready(function(){
 function hidingLeftMenu(){
     if ($.cookie("left_menu_hided") == 1) {
         $('.booking-filters-container').addClass("closed");
-        console.log("min");
     }else{
         $('.booking-filters-container').removeClass("closed");
-        console.log("max");
     }
 }
 hidingLeftMenu();

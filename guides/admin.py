@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 
 
+
 class GuideProfileAdmin(admin.ModelAdmin):
     list_display = [field.name for field in GuideProfile._meta.fields]
 
@@ -28,3 +29,4 @@ class GuideServiceAdmin(admin.ModelAdmin):
         model = GuideService
 
 admin.site.register(GuideService, GuideServiceAdmin)
+

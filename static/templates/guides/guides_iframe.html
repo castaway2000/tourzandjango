@@ -9,7 +9,7 @@
 
 
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta name="keywords" content="Template, html, premium, themeforest" />
+    <meta name="keywords" content="Template, html, premium, themeforest"/>
     <meta name="description" content="Traveler - Premium template for travel companies">
     <meta name="author" content="Tsoy">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,362 +39,382 @@
 
 <body>
 
-    <!-- FACEBOOK WIDGET -->
-    <div id="fb-root"></div>
-    <!-- /FACEBOOK WIDGET -->
+<!-- FACEBOOK WIDGET -->
+<div id="fb-root"></div>
+<!-- /FACEBOOK WIDGET -->
 
-    <div class="global-wrap">
+<div class="global-wrap">
 
-        <aside class="booking-filters-container text-white">
-            <div class="left-menu-toggle-button">
-                <button class="btn btnprimary" id="toggle_left_menu">
-                    <i class="fa fa-filter" aria-hidden="true"></i>
-                </button>
-            </div>
-            <div class="booking-filters">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
+            </li>
+            <li class="active">
+                <a href="{% url 'guides' %}">
+                    {% blocktrans %}Guides {% endblocktrans %}
+                </a>
+            </li>
+        </ul>
+        <h3 class="booking-title">
+            {% if items_nmb == 0 %}
+                {% blocktrans %}No guides were found{% endblocktrans %}
+            {% elif items_nmb == 1 %}
+                {{ items_nmb }}  {% blocktrans %}guide was found!{% endblocktrans %}
+            {% elif items_nmb > 1 %}
+                {{ items_nmb }} {% blocktrans %}guides were found{% endblocktrans %}
+            {% else %}
+                {% blocktrans %}No guides were found{% endblocktrans %}
+            {% endif %}
+        </h3>
+        <div class="row">
+            <div class="col-md-3">
+                <aside class="booking-filters text-white">
+                        <h3 class="text-center">{% blocktrans %}Filter By: {% endblocktrans %}</h3>
+                        <form id="filtering_form" name="filtering_form" method="get" action="">
+                                <input id="order_results_input" name="order_results" class="hidden"
+                                       value="
+                                               {% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
+                                <ul class="list booking-filters-list">
+                                    <li>
+                                        <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
+                                        <input id="city_search_input" class="form-control"
+                                                {% if city_from_place_id %}
+                                               value="{{ city_from_place_id }}"
+                                                {% endif %}
+                                        >
+                                        <input id="place_id" name="place_id" class="hidden">
+                                    </li>
+                                    <li>
+                                        <h5 class="booking-filters-title">{% blocktrans %}
+                                            Interests{% endblocktrans %}</h5>
+                                        <select multiple class="form-control select2" id="interest_input"
+                                                name="interest_input"
+                                                data-search_url="{% url 'search_interest' %}">
 
-            <h3 class="text-center">{% blocktrans %}Filter By: {% endblocktrans %}</h3>
-            <form id="filtering_form" name="filtering_form" method="get" action="">
-                <div class="form-group">
-                    <input id="order_results_input" name="order_results" class="hidden"
-                           value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
-                </div>
-                <div class="form-group">
-                    <ul class="list booking-filters-list">
-                        <li>
-                            <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                            <input id="city_search_input" class="form-control"
-                                {% if city_from_place_id %}
-                                    value="{{ city_from_place_id }}"
-                                {% endif %}
-                            >
-                            <input id="place_id" name="place_id" class="hidden">
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">{% blocktrans %}Interests{% endblocktrans %}</h5>
-                            <select multiple class="form-control select2" id="interest_input" name="interest_input"
-                                    data-search_url="{% url 'search_interest' %}">
+                                            {% for item in interest_input %}
+                                                <option value="{{ item }}" selected>{{ item }}</option>
+                                            {% endfor %}
 
-                                    {% for item in interest_input %}
-                                        <option value="{{ item }}" selected>{{ item }}</option>
-                                    {% endfor %}
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <h5 class="booking-filters-title">{% blocktrans %}
+                                            Languages{% endblocktrans %}</h5>
+                                        <select multiple class="form-control select2" id="language_input"
+                                                name="language_input"
+                                                data-search_url="{% url 'search_language' %}">
 
-                            </select>
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">{% blocktrans %}Languages{% endblocktrans %}</h5>
-                            <select multiple class="form-control select2" id="language_input" name="language_input"
-                                    data-search_url="{% url 'search_language' %}">
+                                            {% for lang in languages %}
+                                                <option value="{{ lang.0 }}" selected>
+                                                    {{ lang.1 }}
+                                                </option>
+                                            {% endfor %}
 
-                                    {% for lang in languages %}
-                                        <option value="{{ lang.0}}" selected>
-                                            {{ lang.1}}
-                                        </option>
-                                    {% endfor %}
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
+                                        <select class="form-control select2" id="guide_input" name="guide_input"
+                                                data-search_url="{% url 'search_guide' %}">
+                                            {% if guide_input %}
+                                                <option value="{{ request.GET.guide_input }}"
+                                                        selected>{{ request.GET.guide_input }}</option>
+                                            {% endif %}
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <h5 class="booking-filters-title">{% blocktrans %}
+                                            Services{% endblocktrans %}</h5>
+                                        <select multiple class="form-control select2 js-example-basic-multiple"
+                                                id="service_input" name="service_input"
+                                                data-search_url="{% url 'search_service' %}">
 
-                            </select>
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
-                            <select class="form-control select2" id="guide_input" name="guide_input"
-                                    data-search_url="{% url 'search_guide' %}">
-                                {% if guide_input %}
-                                    <option value="{{ request.GET.guide_input }}" selected>{{ request.GET.guide_input }}</option>
-                                {% endif %}
-                            </select>
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">{% blocktrans %}Services{% endblocktrans %}</h5>
-                            <select multiple class="form-control select2 js-example-basic-multiple" id="service_input" name="service_input"
-                                    data-search_url="{% url 'search_service' %}">
-
-                                {% for item in services %}
-                                    <option value="{{ item.name }}" {% if item.name in service_input %} selected {% endif %}>
-                                        {{ item.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </li>
-                        <li>
-                            <h5 class="booking-filters-title">{% blocktrans %}Price per hour{% endblocktrans %}</h5>
-                            <input type="text" id="price-slider-1" name="hourly_price"
-                                   data-min="{{ request.session.guides_rate_min }}"
-                                   data-max="{{ request.session.guides_rate_max }}"
-                                   {% if request.GET.hourly_price %}
-                                        value="{{ request.GET.hourly_price }}"
-                                        data-from="{{ hourly_price_min }}"
-                                        data-to="{{ hourly_price_max }}"
-                                   {% endif %}
-                            >
-                        </li>
-                        <li>
-                            <div class="checkbox">
-                                <label>
-                                    <input class="i-check" type="checkbox" name="is_company"
-                                    {% if request.GET.is_company or not request.GET %} checked {% endif %}
-                                    >
-                                    {% blocktrans %}Include corporate tour guides{% endblocktrans %}
-                                </label>
-                            </div>
-                        </li>
-                        <li>
-                            <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}Apply{% endblocktrans %}</button>
-                        </li>
-                    </ul>
-                </div>
-            </form>
-            </div>
-        </aside>
-
-        <div class="container seacrch-results-container">
-            <ul class="breadcrumb">
-                <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
-                </li>
-                <li class="active">
-                    <a href="{% url 'guides' %}">
-                        {% blocktrans %}Guides {% endblocktrans %}
-                    </a>
-                </li>
-            </ul>
-
-            <div class="row">
-                <div class="col-md-7 col-sm-7 col-xs-7">
-                    <h3 class="booking-title">
-                        {% if items_nmb == 0 %}
-                           {% blocktrans %}No guides were found{% endblocktrans %}
-                        {% elif items_nmb == 1 %}
-                            {{ items_nmb }}  {% blocktrans %}guide was found!{% endblocktrans %}
-                        {% elif items_nmb > 1 %}
-                            {{ items_nmb }} {% blocktrans %}guides were found{% endblocktrans %}
-                        {% else %}
-                            {% blocktrans %}No guides were found{% endblocktrans %}
-                        {% endif %}
-                    </h3>
-                </div>
-                <div class="col-md-5 col-sm-5 col-xs-5">
-                    {% if guides %}
-                        <div class="nav-drop booking-sort">
-                            {% with request.GET.order_results as order_results %}
-                                <h5 class="booking-sort-title">
-                                    {% if not order_results or order_results == "price" %}
-                                        <a href="#">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
-                                    {% elif order_results == "-price" %}
-                                        <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
-                                    {% elif order_results == "rating" %}
-                                        <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
-                                    {% elif order_results == "-rating" %}
-                                        <a href="#">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
-                                    {% endif %}
-                                </h5>
-                                <ul class="nav-drop-menu" id="sorting_area">
-                                    {% if order_results and order_results != "price" %}
-                                        <li><a href="#" data-order_value="price">{% blocktrans %}Price (low to high){% endblocktrans %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if order_results != "-price" %}
-                                        <li><a href="#" data-order_value="-price">{% blocktrans %}Price (high to low){% endblocktrans %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if order_results != "rating" %}
-                                        <li><a href="#" data-order_value="rating">{% blocktrans %}Rating (low to high){% endblocktrans %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if order_results != "-rating" %}
-                                        <li><a href="#" data-order_value="-rating">{% blocktrans %}Rating (high to low){% endblocktrans %}</a>
-                                        </li>
-                                    {% endif %}
-
+                                            {% for item in services %}
+                                                <option value="{{ item.name }}" {% if item.name in service_input %}
+                                                        selected {% endif %}>
+                                                    {{ item.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <h5 class="booking-filters-title">{% blocktrans %}Price per
+                                            hour{% endblocktrans %}</h5>
+                                        <input type="text" id="price-slider-1" name="hourly_price"
+                                               data-min="{{ request.session.guides_rate_min }}"
+                                               data-max="{{ request.session.guides_rate_max }}"
+                                                {% if request.GET.hourly_price %}
+                                               value="{{ request.GET.hourly_price }}"
+                                               data-from="{{ hourly_price_min }}"
+                                               data-to="{{ hourly_price_max }}"
+                                                {% endif %}
+                                        >
+                                    </li>
+                                    <li>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input class="i-check" type="checkbox" name="is_company"
+                                                        {% if request.GET.is_company or not request.GET %}
+                                                       checked {% endif %}
+                                                >
+                                                {% blocktrans %}Include corporate tour guides{% endblocktrans %}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="i-check" type="checkbox" name="is_verified"
+                                                    {% if request.GET.is_verified or not request.GET %}
+                                                   checked {% endif %}
+                                            >
+                                            {% blocktrans %}Show only verified guides{% endblocktrans %}
+                                        </label>
+                                    </div>
+                                    </li>
+                                    <li>
+                                        <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}
+                                            Apply{% endblocktrans %}</button>
+                                    </li>
                                 </ul>
-                            {% endwith %}
-                        </div>
-                    {% endif %}
-                </div>
+                        </form>
+                </aside>
             </div>
-            <div class="row">
-                <div class="col-md-9 col-md-offset-3">
-                    <ul class="booking-list">
-                        {% for guide in guides %}
-                            <li>
-                                <div class="tour-item">
-                                    <div class="row">
-                                        <div class="col-md-3 col-sm-3 col-xs-3">
-                                            <div class="booking-item-img">
-                                                <a href="{% url 'guide' guide.user.username %}?ref_id={{ request.GET.ref_id }}">
-                                                    {% if guide.profile_image %}
-                                                        <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
+            <div class="col-md-9">
+                {% if guides %}
+                    <div class="nav-drop booking-sort">
+                        {% with request.GET.order_results as order_results %}
+                            <h5 class="booking-sort-title">
+                                {% if not order_results or order_results == "price" %}
+                                    <a href="#">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i
+                                            class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                {% elif order_results == "-price" %}
+                                    <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i
+                                            class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                {% elif order_results == "rating" %}
+                                    <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i
+                                            class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                {% elif order_results == "-rating" %}
+                                    <a href="#">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i
+                                            class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+                                {% endif %}
+                            </h5>
+                            <ul class="nav-drop-menu" id="sorting_area">
+                                {% if order_results and order_results != "price" %}
+                                    <li><a href="#" data-order_value="price">{% blocktrans %}Price (low to
+                                        high){% endblocktrans %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if order_results != "-price" %}
+                                    <li><a href="#" data-order_value="-price">{% blocktrans %}Price (high to
+                                        low){% endblocktrans %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if order_results != "rating" %}
+                                    <li><a href="#" data-order_value="rating">{% blocktrans %}Rating (low to
+                                        high){% endblocktrans %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if order_results != "-rating" %}
+                                    <li><a href="#" data-order_value="-rating">{% blocktrans %}Rating (high to
+                                        low){% endblocktrans %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        {% endwith %}
+                    </div>
+                {% endif %}
+                <ul class="booking-list">
+                    {% for guide in guides %}
+                        <li>
+                            <div class="tour-item">
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                        <div class="booking-item-img">
+                                            <a href="{% url 'guide' guide.user.username %}?ref_id={{ request.GET.ref_id }}">
+                                                {% if guide.profile_image %}
+                                                    <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
+                                                {% else %}
+                                                    <img src="{% static 'img/default_tour_image.jpg' %}">
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <br>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-5">
+                                        <div class="item-name">
+                                            {{ guide.user.username }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                {{ guide.overview|linebreaks|truncatewords_html:30 }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb10">
+                                                <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
+                                                {% for user_interest in guide.user.userinterest_set.all %}
+                                                    {% if user_interest.interest.name in interest_input %}
+                                                        <span class="label label-success label-tag">
+                                                                {{ user_interest.interest.name }}
+                                                            </span>
                                                     {% else %}
-                                                        <img src="{% static 'img/default_tour_image.jpg' %}">
+                                                        <span class="label label-default label-tag">
+                                                                {{ user_interest.interest.name }}
+                                                            </span>
                                                     {% endif %}
-                                                </a>
+                                                {% endfor %}
                                             </div>
-                                            <br>
                                         </div>
-                                        <div class="col-md-6 col-sm-6 col-xs-5">
-                                            <div class="item-name">
-                                                {{ guide.user.username }}
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    {{ guide.overview|linebreaks|truncatewords_html:30 }}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12 mb10">
-                                                    <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
-                                                    {% for user_interest in guide.user.userinterest_set.all %}
-                                                        {% if user_interest.interest.name in interest_input %}
-                                                            <span class="label label-success label-tag">
-                                                                {{ user_interest.interest.name }}
-                                                            </span>
-                                                        {% else %}
-                                                            <span class="label label-default label-tag">
-                                                                {{ user_interest.interest.name }}
-                                                            </span>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                            {% with guide.guideservice_set.all as guide_services %}
-                                                {% if guide_services %}
-                                                    <div class="row">
-                                                        <div class="col-md-12 mb10">
-                                                            <div><b>{% blocktrans %}Services:{% endblocktrans %}</b></div>
-                                                            {% for guide_service in guide.guideservice_set.all %}
-                                                                {% if guide_service.service.name in service_input %}
-                                                                    <span class="label label-success label-tag">
+                                        {% with guide.guideservice_set.all as guide_services %}
+                                            {% if guide_services %}
+                                                <div class="row">
+                                                    <div class="col-md-12 mb10">
+                                                        <div><b>{% blocktrans %}Services:{% endblocktrans %}</b></div>
+                                                        {% for guide_service in guide.guideservice_set.all %}
+                                                            {% if guide_service.service.name in service_input %}
+                                                                <span class="label label-success label-tag">
                                                                         {{ guide_service.service.name }}
                                                                     </span>
-                                                                {% else %}
-                                                                    <span class="label label-default label-tag">
+                                                            {% else %}
+                                                                <span class="label label-default label-tag">
                                                                         {{ guide_service.service.name }}
                                                                     </span>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </div>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     </div>
-                                                {% endif %}
-                                            {% endwith %}
-                                            {% with guide.user.userlanguage_set.all as user_languages %}
-                                                {% if user_languages %}
-                                                    <div class="row">
-                                                        <div class="col-md-12 mb10">
-                                                            <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
-                                                            {% for user_language in user_languages %}
-                                                                {% if user_language.language in language_input %}
-                                                                    <span class="label label-success label-tag">
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                        {% with guide.user.userlanguage_set.all as user_languages %}
+                                            {% if user_languages %}
+                                                <div class="row">
+                                                    <div class="col-md-12 mb10">
+                                                        <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
+                                                        {% for user_language in user_languages %}
+                                                            {% if user_language.language in language_input %}
+                                                                <span class="label label-success label-tag">
                                                                         {{ user_language.get_language_display }}
                                                                     </span>
-                                                                {% else %}
-                                                                    <span class="label label-default label-tag">
+                                                            {% else %}
+                                                                <span class="label label-default label-tag">
                                                                         {{ user_language.get_language_display }}
                                                                     </span>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </div>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     </div>
-                                                {% endif %}
-                                            {% endwith %}
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-4">
+                                        <div class="guide-rating">
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
                                         </div>
-                                        <div class="col-md-3 col-sm-3 col-xs-4">
-                                            <div class="guide-rating">
-                                                <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
-                                            </div>
-                                            <span class="guide-rate">
+                                        <span class="guide-rate">
                                                 <b>{% blocktrans %}Hourly rate: {% endblocktrans %}</b>
                                                 {{ guide.rate }} {{ guide.currency.name }}
                                             </span>
+                                        <p>
+                                            <a class="btn btn-primary"
+                                               href="{% url 'guide' guide.user.username %}?ref_id={{ request.GET.ref_id }}"
+                                               target="_blank">
+                                                {% blocktrans %}Go to Guide{% endblocktrans %}
+                                            </a>
+                                        </p>
+                                        {% if guide.user.generalprofile.is_verified %}
                                             <p>
-                                                <a class="btn btn-primary"
-                                                   href="{% url 'guide' guide.user.username %}?ref_id={{ request.GET.ref_id }}"
-                                                target="_blank">
-                                                    {% blocktrans %}Go to Guide{% endblocktrans %}
-                                                </a>
+                                                <b>{% trans 'Verified' %}</b>
                                             </p>
-                                        </div>
+                                        {% endif %}
+                                        {% if guide.user.generalprofile.is_trusted %}
+                                            <p>
+                                                <b>{% trans 'Trusted' %}</b>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            {% if guides.has_other_pages %}
-                                <ul class="pagination">
-                                    {% if guides.has_previous %}
-                                        <li class="next">
-                                            <a href="?page={{ guides.previous_page_number }}&ref_id={{ request.GET.ref_id }}">
-                                                {% trans 'Previous Page' %}
-                                            </a>
-                                        </li>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if guides.has_other_pages %}
+                            <ul class="pagination">
+                                {% if guides.has_previous %}
+                                    <li class="next">
+                                        <a href="?page={{ guides.previous_page_number }}&ref_id={{ request.GET.ref_id }}">
+                                            {% trans 'Previous Page' %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% for i in guides.paginator.page_range %}
+                                    {% if guides.number == i %}
+                                        <li class="active"><a
+                                                href="?page={{ i }}&ref_id={{ request.GET.ref_id }}">{{ i }}</a></li>
+                                    {% else %}
+                                        <li><a href="?page={{ i }}&ref_id={{ request.GET.ref_id }}">{{ i }}</a></li>
                                     {% endif %}
-                                    {% for i in guides.paginator.page_range %}
-                                        {% if guides.number == i %}
-                                            <li class="active"><a href="?page={{ i }}&ref_id={{ request.GET.ref_id }}">{{ i }}</a></li>
-                                          {% else %}
-                                            <li><a href="?page={{ i }}&ref_id={{ request.GET.ref_id }}">{{ i }}</a></li>
-                                          {% endif %}
-                                    {% endfor %}
-                                    {% if guides.has_next %}
-                                        <li class="next">
-                                            <a href="?page={{ guides.next_page_number }}&ref_id={{ request.GET.ref_id }}">
-                                                {% trans 'Next Page' %}
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            {% endif %}
-                        </div>
+                                {% endfor %}
+                                {% if guides.has_next %}
+                                    <li class="next">
+                                        <a href="?page={{ guides.next_page_number }}&ref_id={{ request.GET.ref_id }}">
+                                            {% trans 'Next Page' %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
                     </div>
-
                 </div>
-            </div>
-            <div class="gap"></div>
-        </div>
 
-        <form id="csrf_getting_form" class="hidden">{% csrf_token %}
-        </form>
+            </div>
+        </div>
+        <div class="gap"></div>
+    </div>
+</div>
+
+<form id="csrf_getting_form" class="hidden">{% csrf_token %}
+</form>
 
 
 {#        <script src="{% static 'js/jquery.js' %}"></script>#}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
-        <script src="{% static 'js/modernizr.js' %}"></script>
-        <script src="{% static 'js/bootstrap.js' %}"></script>
-        <script src="{% static 'js/slimmenu.js' %}"></script>
-        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
-        <script src="{% static 'js/bootstrap-timepicker.js' %}"></script>
-        <script src="{% static 'js/nicescroll.js' %}"></script>
-        <script src="{% static 'js/dropit.js' %}"></script>
-        <script src="{% static 'js/ionrangeslider.js' %}"></script>
+<script src="{% static 'js/modernizr.js' %}"></script>
+<script src="{% static 'js/bootstrap.js' %}"></script>
+<script src="{% static 'js/slimmenu.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/bootstrap-timepicker.js' %}"></script>
+<script src="{% static 'js/nicescroll.js' %}"></script>
+<script src="{% static 'js/dropit.js' %}"></script>
+<script src="{% static 'js/ionrangeslider.js' %}"></script>
 {#        <script src="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.2.0/js/ion.rangeSlider.min.js"></script>#}
 
-        <script src="{% static 'js/icheck.js' %}"></script>
-        <script src="{% static 'js/fotorama.js' %}"></script>
+<script src="{% static 'js/icheck.js' %}"></script>
+<script src="{% static 'js/fotorama.js' %}"></script>
 {#        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>#}
-        <script src="{% static 'js/typeahead.js' %}"></script>
-        <script src="{% static 'js/card-payment.js' %}"></script>
-        <script src="{% static 'js/magnific.js' %}"></script>
-        <script src="{% static 'js/owl-carousel.js' %}"></script>
-        <script src="{% static 'js/fitvids.js' %}"></script>
-        <script src="{% static 'js/tweet.js' %}"></script>
+<script src="{% static 'js/typeahead.js' %}"></script>
+<script src="{% static 'js/card-payment.js' %}"></script>
+<script src="{% static 'js/magnific.js' %}"></script>
+<script src="{% static 'js/owl-carousel.js' %}"></script>
+<script src="{% static 'js/fitvids.js' %}"></script>
+<script src="{% static 'js/tweet.js' %}"></script>
 {#        <script src="{% static 'js/countdown.js' %}"></script>#}
-        <script src="{% static 'js/gridrotator.js' %}"></script>
-        <script src="{% static 'js/custom.js' %}"></script>
+<script src="{% static 'js/gridrotator.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
 
-        <script src="{% static 'js/custom_scripts/scripts.js' %}"></script>
+<script src="{% static 'js/custom_scripts/scripts.js' %}"></script>
 
 
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-        <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
-        <script type="text/javascript"
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
-        </script>
-        <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
-
-    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+<script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+</script>
+<script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 </body>
 
 </html>

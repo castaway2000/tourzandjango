@@ -156,33 +156,19 @@
                         {% endif %}
 
                         <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
-                            <form method="get" id="form_guide_scheduling"
+                            <form method="post" id="form_guide_scheduling"
                                 class="form-horizontal schedule-form"
                                 action="{% url 'making_booking' %}"
                             >{% csrf_token %}
                                 <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
                                 <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
-                                            <div class="form-group form-group-icon-left">
-                                                <i class="fa fa-calendar input-icon"></i>
-                                                <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                <input id="booking_date" class="form-control d_picker" name="start" required />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div id="time_slots" class="time-slots-container"
-                                             data-link="{% url 'available_date_timeslots' %}"></div>
-                                    </div>
-                                </div>
-
+                                <input class="hidden" id="booking_hours" name="booking_hours">
+                                <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ guide.min_hours }}">
 
                                 {% if guide_services %}
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-lg-7">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
                                                 <label>Select additional services</label>
                                                 <select multiple class="form-control"
                                                     id="additional_services_select"
@@ -203,6 +189,24 @@
                                         </div>
                                     </div>
                                 {% endif %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
+                                            <div class="form-group form-group-icon-left">
+                                                <i class="fa fa-calendar input-icon"></i>
+                                                <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
+                                                <input id="booking_date" class="form-control d_picker"
+                                                       name="start" required value="{% now "mm.dd.yyyy" %}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <p>Time slots:</p>
+                                        <div id="booking_form_error_container"></div>
+                                        <div id="time_slots" class="time-slots-container"
+                                             data-link="{% url 'available_date_timeslots' %}"></div>
+                                    </div>
+                                </div>
 
                                 <div class="row">
                                     <div class="col-md-6">
@@ -238,36 +242,31 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 hidden">
-
-                                        {% with guide.get_hours_nmb_range as hours_nmb_range %}
-                                            <div id="hours_nmb_container" class="form-group form-group- form-group-select-plus">
-                                                <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
-                                                <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                    {% for hour in hours_nmb_range.min_hours_nmb_range_basic %}
-                                                        <label class="btn btn-primary hours-nmb
-                                                            {% if forloop.counter == 1 %} active{% endif %}">
-                                                        <input type="radio" name="options" value="{{ hour }}"/>
-                                                            {{ hour }}{% if forloop.last %}+{% endif %}
-                                                        </label>
-                                                    {% endfor %}
-                                                </div>
-                                                <select class="form-control hidden" id="booking_hours" name="booking_hours">
-                                                    {% for hour in hours_nmb_range.min_hours_nmb_range_full %}
-                                                        <option value="{{ hour }}">{{ hour }}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        {% endwith %}
-
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <div class="form-group text-right">
+                                             <button type="submit"
+                                                 class="btn btn-primary btn-lg submit-button">
+                                                    {% blocktrans %}Book Now{% endblocktrans %}
+                                             </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group text-right">
-                                     <button type="submit"
-                                         class="btn btn-primary btn-lg submit-button">
-                                            {% blocktrans %}Book Now{% endblocktrans %}
-                                     </button>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <p id="amount_container" class="lead hidden">
+                                            {% blocktrans %}Rate{% endblocktrans %}:
+                                            <b><span id="amount">{{ guide.rate|safe }}</span>
+                                            {{ guide.currency.name }} {% blocktrans %}per hour{% endblocktrans %}
+                                            </b>
+                                        </p>
+                                        <p>
+                                            {% blocktrans %}Minimum{% endblocktrans %}
+                                            {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
+
+                                        </p>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -472,35 +471,44 @@
                 data["booking_date"] = $('#booking_date').val();
                 data["guide_id"] = $('#guide_id').val();
                 var url = $('#time_slots').data('link');
-                console.log(url);
                 $.ajax({
                      url: url,
                      type: 'POST',
                      data: data,
                      cache: true,
                      success: function(data){
-                         console.log(data);
                          available_time_slots = data.available_time_slots;
-                         console.log(available_time_slots);
+
+                         $('#booking_form_error_container').html("");
                          time_slots_container = $('#time_slots');
                          time_slots_container.html("");
-                         $.each(available_time_slots, function(index, el){
-                            slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
-                             slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
-                            time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
-                         })
+
+                         if (available_time_slots.length > 0){
+                            $.each(available_time_slots, function(index, el){
+                                slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
+                                slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
+                                time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
+                             })
+                         }else{
+                             console.log("else");
+                             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
+                                     "There are no available time slots for this date. <br>" +
+                                     "Please select another date.</div>")
+                         }
                      }
                 })
             }
-            gettingTimeSlotsForDate();
 
             $('.d_picker').datepicker({
                 todayHighlight: true,
-                format: "mm.dd.yyyy"
-            }).on("changeDate", function(e) {
+                format: "mm.dd.yyyy",
+                weekStart: 1
+            }).datepicker("setDate", new Date()).on("changeDate", function(e) {
                 // `e` here contains the extra attributes
                 gettingTimeSlotsForDate();
             });
+
+            gettingTimeSlotsForDate();
 
             $(document).on("click", '.time-slots-container .time-slot', function(){
                 $(this).toggleClass("chosen");

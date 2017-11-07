@@ -3,6 +3,7 @@
 {% load staticfiles %}
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block content %}
     <div class="container">
@@ -18,10 +19,10 @@
                 <p>You may be authenticated, using social networks or sign in/sign up using username and password</p>
                 <div class="text-center">
                     <a title="Facebook" class="btn btn-default btn-facebook"
-                       {% if request.GET.next  %}
+                       {% if request.GET.next and request.GET.next|length > 4 %}
                            href="{% provider_login_url "facebook" method="oauth2"  next=request.GET.next %}"
                        {% else %}
-                            href="{% provider_login_url "facebook" method="oauth2" %}"
+                            href="{% provider_login_url "facebook" method="oauth2" next="/after_login_router/" %}"
                        {% endif %}
                     >
                         <i class="fa fa-2x fa-facebook" aria-hidden="true"></i>

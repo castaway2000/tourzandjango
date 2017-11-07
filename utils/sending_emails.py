@@ -5,6 +5,8 @@ from django.core.mail import EmailMessage
 
 from tourzan.settings import FROM_EMAIL
 from emails.models import EmailMessage as OwnEmailMessage
+from emails.models import EmailMessageType
+from django.contrib.auth.models import User
 
 
 class SendingEmail(object):
@@ -44,16 +46,17 @@ class SendingEmail(object):
         msg.send()
         print("send")
 
-        OwnEmailMessage.objects.create(type_id=self.email_type, email=to_email,
-                                                       order_id=self.order.id, user=to_user)
+        kwargs = dict()
+        kwargs = {"type_id":self.email_type_id, "email": to_email, "user": to_user}
+        if self.order:
+            kwargs["order_id"] = self.order.id
+        OwnEmailMessage.objects.create(**kwargs)
         print ('Email was sent successfully!')
 
 
     def email_for_order(self):
-        self.email_type = 1 #order info
-
+        self.email_type_id = 1 #order info
         order = self.order
-
         tour = order.tour if order.tour_id else None
         # print (tour)
 
@@ -87,4 +90,20 @@ class SendingEmail(object):
         #sending to user
         to_user = order.tourist.user
         to_email = [order.tourist.user.email] if order.tourist.user.email else [FROM_EMAIL]
+        self.sending_email(to_user, to_email, subject, message)
+
+
+    def email_for_partners(self):
+        api_token = self.data.get("api_token")
+        user_id = self.data.get("user_id")
+
+        email_type, created = EmailMessageType.objects.get_or_create(name="API Partner Welcome Email")
+        self.email_type_id = email_type.id
+        subject = "Receiving API token from Tourzan"
+        message = "<p> We have received your application for getting our API access.</p>" \
+                  "<p>It has been successfully approved.</p>" \
+                  "<p> Here is your API token for tourzan.com: %s</p>" % api_token
+        to_user = User.objects.get(id=user_id)
+        to_email = [to_user.email]
+        print("to email is tuple")
         self.sending_email(to_user, to_email, subject, message)
