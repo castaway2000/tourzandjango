@@ -135,6 +135,12 @@
                                         </li>
                                     </ul>
                                 </li>
+                            {% else %}
+                                <li class="{% if current_page != "guides" and current_page != "tours" %}active{% endif %}">
+                                     <a href="{% url 'guide_registration_welcome' %}">
+                                        {% blocktrans %}Sign up as a guide!{% endblocktrans %}
+                                     </a>
+                                </li>
                             {% endif %}
 
                         </ul>
