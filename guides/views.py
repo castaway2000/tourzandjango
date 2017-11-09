@@ -420,8 +420,13 @@ def search_guide(request):
 
 
 def guide_registration_welcome(request):
-    request.session["guide_registration_welcome_page_seen"] = True
     return render(request, 'guides/guide_registration_welcome.html', locals())
+
+
+#intermediate view to assign a session variable to those who wants to be a guide
+def guide_registration_welcome_confirmation(request):
+    request.session["guide_registration_welcome_page_seen"] = True
+    return HttpResponseRedirect(reverse("guide_registration"))
 
 
 def earnings(request):
