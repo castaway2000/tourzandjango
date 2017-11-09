@@ -62,13 +62,16 @@ def logout_view(request):
 @login_required()
 def after_login_router(request):
     user = request.user
-    threshold = 20 #seconds
-    if user.generalprofile.is_previously_logged_in:
-        return HttpResponseRedirect(reverse("home"))
+    pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
+    if pending_guide_registration:
+        return HttpResponseRedirect(reverse("guide_registration"))
     else:
-        user.generalprofile.is_previously_logged_in = True
-        user.generalprofile.save(force_update=True)
-        return HttpResponseRedirect(reverse("profile_settings_tourist"))
+        if user.generalprofile.is_previously_logged_in:
+            return HttpResponseRedirect(reverse("home"))
+        else:
+            user.generalprofile.is_previously_logged_in = True
+            user.generalprofile.save(force_update=True)
+            return HttpResponseRedirect(reverse("profile_settings_tourist"))
 
 
 def home(request):

@@ -268,6 +268,8 @@ def guide(request, username):
 
 @login_required()
 def profile_settings_guide(request, guide_creation=True):
+    print("profile_settings_guide")
+
     page = "profile_settings_guide"
     user = request.user
 
