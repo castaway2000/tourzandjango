@@ -59,6 +59,8 @@ class SendingEmail(object):
         order = self.order
         tour = order.tour if order.tour_id else None
         # print (tour)
+        order_msg = '\n\nto manage your customers please visit '
+        orders_link = '<a href="https://www.tourzan.com/en/settings/guide/orders/">your orders page.</a>'
 
         if tour:
             order_naming = '"%s"' % order.tour.name
@@ -67,20 +69,28 @@ class SendingEmail(object):
 
         if order.status.id == 1:# pending
             self.subject = 'Tour %s was created' % order_naming
+            self.message = 'Tour %s was created' % order_naming
         elif order.status.id == 2:# agreed
             self.subject = 'Tour %s was aggreed!' % order_naming
+            self.message = 'Tour %s was aggreed!' % order_naming
         elif order.status.id == 3: # cancelled by tourist
-            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.tourist.user.username)
+            self.subject = 'Tour %s was cancelled!' % order_naming
+            self.message = 'Tour %s was cancelled by %s! If you feel this an error please reach out to your customer' \
+                           'by going to %s' % (order_naming, order.tourist.user.username, orders_link)
 
         elif order.status.id == 4: # completed
-            self.subject = 'Tour %s was completed!' % order_naming
+            self.subject = 'Tour %s was completed!'
+            self.subject = 'Tour %s was completed! Please review your experience at %s' % (order_naming, orders_link)
         elif order.status.id == 5: # waiting for payment
-            self.subject = 'Tour %s is waiting for payment!' % order_naming
+            self.subject = 'Tour %s is waiting for payment! %s' % (order_naming, order_msg+orders_link)
+            self.message = 'Tour %s is waiting for payment! %s' % (order_naming, order_msg+orders_link)
         elif order.status.id == 6: # cancelled by guide
-            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.guide.user.username)
+            self.subject = 'Tour %s was cancelled'
+            self.message = 'Tour %s was cancelled by %s! %s' % (order_naming, order.guide.user.username,
+                                                                order_msg+orders_link)
 
         subject = self.subject
-        message = self.subject
+        message = self.message
 
         #sending to guide
         to_user = order.guide.user
