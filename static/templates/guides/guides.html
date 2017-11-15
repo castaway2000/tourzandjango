@@ -312,19 +312,19 @@
                             <ul class="pagination">
                                 {% if guides.has_previous %}
                                     <li class="next"><a
-                                            href="?page={{ guides.previous_page_number }}">{% trans 'Previous Page' %}</a>
+                                            href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ guides.previous_page_number }}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
                                 {% for i in guides.paginator.page_range %}
                                     {% if guides.number == i %}
-                                        <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                                        <li class="active"><a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
                                     {% else %}
-                                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                        <li><a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
                                     {% endif %}
                                 {% endfor %}
                                 {% if guides.has_next %}
                                     <li class="next"><a
-                                            href="?page={{ guides.next_page_number }}">{% trans 'Next Page' %}</a></li>
+                                            href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ guides.next_page_number }}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
                             </ul>
                         {% endif %}
