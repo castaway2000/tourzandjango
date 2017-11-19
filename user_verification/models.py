@@ -81,10 +81,10 @@ class IdentityVerificationReport(models.Model):
             general_profile = self.identification_checking.applicant.general_profile
 
             #changing of verification status, when report status is changing and report result is "clear"
-            if general_profile.is_verified == False and self.result and self.result.name=="clear":
-                general_profile.is_verified=True
+            if general_profile.is_verified == False and self.result and self.result.name == "clear":
+                general_profile.is_verified = True
                 general_profile.save(force_update=True)
-                data = {'user_id': general_profile.user.id }
+                data = {'user_id': general_profile.user.id}
                 SendingEmail(data=data).email_for_verficiation()
 
         super(IdentityVerificationReport, self).save(*args, **kwargs)

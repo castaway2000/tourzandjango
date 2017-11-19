@@ -120,9 +120,11 @@ class SendingEmail(object):
 
     def email_for_verficiation(self):
         user_id = self.data.get("user_id")
+        email_type, created = EmailMessageType.objects.get_or_create(name='Verification Notification Email')
+        self.email_type_id = email_type.id
         subject = "Tourzan Verification Completed"
         message = "<p>Tourzan.com has completed your identity verification check. " \
-                  "You can now enter your <a hfre='https://www.tourzan.com/en/guide/payouts/'>payout prefrences</a> " \
+                  "You can now enter your <a href='https://www.tourzan.com/guide/payouts/'>payout preferences</a> " \
                   "and set your <a href='https://www.tourzan.com/en/calendar/'>calendar</a> " \
                   "so that tourists can hire you.\n\n" \
                   "Have a great day.\n" \
