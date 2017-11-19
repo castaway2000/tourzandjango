@@ -70,7 +70,7 @@ def tours(request):
 
     #filtering by cities
     if place_id:
-        print("place_id %s" % place_id)
+        # print("place_id %s" % place_id)
         try:
             city = City.objects.get(place_id=place_id)
             print(city)
@@ -79,7 +79,7 @@ def tours(request):
             pass
         base_kwargs["city__place_id"] = place_id
     elif city_input:
-        base_kwargs["city__name__in"] = city_input
+        base_kwargs["city__original_name__in"] = city_input
 
     #filtering by guides
     if guide_input:

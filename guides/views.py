@@ -75,7 +75,7 @@ def guides(request):
             pass
         base_kwargs["city__place_id"] = place_id
     elif city_input:
-        base_kwargs["city__name__in"] = city_input
+        base_kwargs["city__original_name__in"] = city_input
 
     #filtering by guides
     if guide_input:
