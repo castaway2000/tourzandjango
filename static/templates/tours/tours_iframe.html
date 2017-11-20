@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
 
 <!DOCTYPE HTML>
 <html>
@@ -82,7 +83,11 @@
                                        value="{{ city_from_place_id }}"
                                         {% endif %}
                                 >
-                                <input id="place_id" name="place_id" class="hidden">
+                                <input id="place_id" name="place_id" class="hidden"
+                                    {% if place_id %}
+                                        value="{{ place_id }}"
+                                    {% endif %}
+                                >
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
@@ -152,7 +157,9 @@
                                 <div class="checkbox">
                                     <label>
                                         <input class="i-check" type="checkbox" name="is_company"
-                                                {% if request.GET.is_company or not request.GET %} checked {% endif %}
+                                        {% if not request.GET.is_company and request.GET.filter_form_data %}
+                                                        {% else %}
+                                                        checked {% endif %}
                                         >
                                         {% blocktrans %}Include tours through companies{% endblocktrans %}
                                     </label>
@@ -162,16 +169,17 @@
                                 <div class="checkbox">
                                     <label>
                                         <input class="i-check" type="checkbox" name="is_verified"
-                                                {% if request.GET.is_verified or not request.GET %}
-                                               checked {% endif %}
+                                                {% if not request.GET.is_verified and request.GET.filter_form_data %}
+                                                   {% else %}
+                                                   checked {% endif %}
                                         >
                                         {% blocktrans %}Show tours from verified guides{% endblocktrans %}
                                     </label>
                                 </div>
                             </li>
                             <li>
-                                <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}
-                                    Apply{% endblocktrans %}</button>
+                                <button type="submit" class="btn btn-primary btn-block" name="filter_form_data" value="True">
+                                    {% blocktrans %}Apply{% endblocktrans %}</button>
                             </li>
                         </ul>
                     </form>
@@ -302,7 +310,7 @@
                             <ul class="pagination">
                                 {% if tours.has_previous %}
                                     <li class="next">
-                                        <a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ tours.previous_page_number }}&ref_id={{ request.GET.ref_id }}">
+                                        <a href="?{% url_replace page=tours.previous_page_number ref_id=request.GET.ref_id %}">
                                             {% trans 'Previous Page' %}
                                         </a>
                                     </li>
@@ -310,17 +318,17 @@
                                 {% for i in tours.paginator.page_range %}
                                     {% if tours.number == i %}
                                         <li class="active">
-                                            <a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ i }}&ref_id={{ request.GET.ref_id }}">{{ i }}</a>
+                                            <a href="?{% url_replace page=i ref_id=request.GET.ref_id %}">{{ i }}</a>
                                         </li>
                                     {% else %}
                                         <li>
-                                            <a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ i }}&ref_id={{ request.GET.ref_id }}">{{ i }}</a>
+                                            <a href="?{% url_replace page=i ref_id=request.GET.ref_id %}">{{ i }}</a>
                                         </li>
                                     {% endif %}
                                 {% endfor %}
                                 {% if tours.has_next %}
                                     <li class="next">
-                                        <a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ tours.next_page_number }}&ref_id={{ request.GET.ref_id }}">
+                                        <a href="?{% url_replace page=tours.next_page_number ref_id=request.GET.ref_id %}">
                                             {% trans 'Next Page' %}
                                         </a>
                                     </li>

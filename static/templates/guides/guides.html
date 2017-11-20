@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -55,7 +56,12 @@
                                                value="{{ city_from_place_id }}"
                                                 {% endif %}
                                         >
-                                        <input id="place_id" name="place_id" class="hidden">
+                                        <input id="place_id" name="place_id" class="hidden"
+                                               {% if place_id %}
+                                                value="{{ place_id }}"
+                                               {% endif %}
+                                               >
+
                                     </li>
                                     <li>
                                         <h5 class="booking-filters-title">{% blocktrans %}Interests{% endblocktrans %}</h5>
@@ -123,16 +129,20 @@
                                         <div class="checkbox">
                                             <label>
                                                 <input class="i-check" type="checkbox" name="is_company"
-                                                        {% if request.GET.is_company or not request.GET %}
-                                                       checked {% endif %}
+                                                        {% if not request.GET.is_company and request.GET.filter_form_data %}
+                                                        {% else %}
+                                                        checked {% endif %}
                                                 >
                                                 {% blocktrans %}Include corporate tour guides{% endblocktrans %}
                                             </label>
                                         </div>
+                                    </li>
+                                    <li>
                                         <div class="checkbox">
                                             <label>
                                                 <input class="i-check" type="checkbox" name="is_verified"
-                                                        {% if request.GET.is_verified or not request.GET %}
+                                                        {% if not request.GET.is_verified and request.GET.filter_form_data %}
+                                                       {% else %}
                                                        checked {% endif %}
                                                 >
                                                 {% blocktrans %}Show only verified guides{% endblocktrans %}
@@ -140,7 +150,7 @@
                                         </div>
                                     </li>
                                     <li>
-                                        <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}
+                                        <button type="submit" class="btn btn-primary btn-block" name="filter_form_data" value="True">{% blocktrans %}
                                             Apply{% endblocktrans %}</button>
                                     </li>
                                 </ul>
@@ -312,19 +322,19 @@
                             <ul class="pagination">
                                 {% if guides.has_previous %}
                                     <li class="next"><a
-                                            href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ guides.previous_page_number }}">{% trans 'Previous Page' %}</a>
+                                            href="?{% url_replace page=guides.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
                                 {% for i in guides.paginator.page_range %}
                                     {% if guides.number == i %}
-                                        <li class="active"><a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
+                                        <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                     {% else %}
-                                        <li><a href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
+                                        <li><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                     {% endif %}
                                 {% endfor %}
                                 {% if guides.has_next %}
                                     <li class="next"><a
-                                            href="{{ request.get_full_path }}{% if request.GET %}&{% else %}?{% endif %}page={{ guides.next_page_number }}">{% trans 'Next Page' %}</a></li>
+                                            href="?{% url_replace page=guides.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
                             </ul>
                         {% endif %}

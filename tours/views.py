@@ -36,10 +36,11 @@ def tours(request):
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
     filtered_is_company = request.GET.get('is_company')
     filtered_is_verified = request.GET.get('is_verified')
-    city_input = request.GET.getlist(u'city_input')
+    city_input = request.GET.get(u'city_input')
     place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
     order_results = request.GET.get('order_results')
+    filter_form_data = request.GET.get('filter_form_data')
 
     #for filtering by price type we need to implement 2-levels logic.
     #all other filters except pricing will be based filter and each of 3 types of pricing
@@ -79,23 +80,32 @@ def tours(request):
             pass
         base_kwargs["city__place_id"] = place_id
     elif city_input:
-        base_kwargs["city__original_name__in"] = city_input
+        # base_kwargs["city__original_name__in"] = city_input
+        try:
+            city = City.objects.get(original_name=city_input)
+            # print(city)
+            city_from_place_id = city.full_location
+            place_id = city.place_id
+        except:
+            pass
+        base_kwargs["city__place_id"] = place_id
+
 
     #filtering by guides
     if guide_input:
         base_kwargs["guide__user__username__in"] = guide_input
 
     #filtering by company
-    if not filtered_is_company:
+    if filter_form_data and not filtered_is_company:
         base_kwargs['guide__user__generalprofile__is_company'] = False
 
     #filtering by trusted guides
-    if (request.GET and not filtered_is_verified):
+    if filter_form_data and not filtered_is_verified:
         pass #show all
     else:
         base_kwargs["guide__user__generalprofile__is_verified"] = True
 
-    print(base_kwargs)
+    # print(base_kwargs)
 
     # print ("guide_input: %s" % guide_input)
     #ordering
@@ -190,7 +200,7 @@ def tours(request):
         request.session["tours_rates_cached"] = True
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(tours, 5)
+    paginator = Paginator(tours, 10)
     try:
         tours = paginator.page(page)
     except PageNotAnInteger:
