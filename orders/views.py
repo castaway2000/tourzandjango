@@ -168,6 +168,7 @@ def making_booking(request):
 
 @login_required
 def bookings(request, status=None):
+    print ("bookings")
     current_page = "bookings"
     statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
     user = request.user
@@ -176,9 +177,12 @@ def bookings(request, status=None):
     # print (request.GET)
 
     filtered_prices = request.GET.get('price')
-    filtered_cities = request.GET.getlist('city')
+    filtered_city = request.GET.get('city')
     filtered_guides = request.GET.getlist('guide')
     filtered_statuses = request.GET.getlist('status_input')
+
+    place_id = request.GET.get("place_id")
+    # print(place_id)
 
     if filtered_prices:
         price = filtered_prices.split(";")
@@ -188,23 +192,43 @@ def bookings(request, status=None):
             kwargs["price_after_discount__lte"] = price[1]
             # print (kwargs)
 
-    if filtered_cities:
-        print (filtered_cities)
-        kwargs["guide__city__name__in"] = filtered_cities
+    # #filtering by cities
+    if place_id:
+        # print("place_id %s" % place_id)
+        try:
+            city = City.objects.get(place_id=place_id)
+            print(city)
+            city_from_place_id = city.full_location #this is inserted to the location search input
+        except:
+            pass
+        kwargs["guide__city__place_id"] = place_id
+    elif filtered_city:
+        # kwargs["guide__city__original_name"] = filtered_city
+        try:
+            city = City.objects.get(original_name=filtered_city)
+            # print(city)
+            city_from_place_id = city.full_location
+            place_id = city.place_id
+        except:
+            pass
+        kwargs["guide__city__place_id"] = place_id
+
 
     if filtered_guides:
         print (filtered_guides)
         kwargs["guide__user__username__in"] = filtered_guides
 
-    if filtered_statuses:
+    if filtered_statuses and len(filtered_statuses[0])>1:#to handle empty imputs
         kwargs["status__name__in"] = filtered_statuses
-
 
     if not status:
         # print (kwargs)
         initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
         orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
+        # print(kwargs)
+        # print (orders)
+
     elif not user.is_anonymous():
         kwargs["status__name"] = status
         initial_orders = Order.objects.filter(tourist__user=user, status__name=status)#it is needed for citieas and guides list

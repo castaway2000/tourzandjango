@@ -10,8 +10,18 @@
         <div class="col-lg-6">
             <div>
                 {% if not document_uploaded and not is_just_uploaded %}
+                    <p>{% blocktrans %}In order to provide top level trust and safety on this platform all guides
+                        must be validated before money changes hands. We use onfido.com for face matching,
+                        identity verification and document validity checks. These documents are encrypted and not used
+                        for anything but identity verification.
+                        {% endblocktrans %}
+                    </p>
+                    <br/>
                     <p>
-                        {% blocktrans %}Please add a scan photo of your passport or driving license{% endblocktrans %}
+                        {% blocktrans %}Please add a photo of your passport(preferred and more reliable) or driving license.
+                            please make sure it is clear and in focus. If you do not see yourself verified please
+                            reach out to customer support.
+                        {% endblocktrans %}
                     </p>
                     <form name="docs_form" method="post" enctype="multipart/form-data">{% csrf_token %}
                         <div class="form-group">

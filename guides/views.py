@@ -33,7 +33,7 @@ def guides(request):
     filtered_guides = request.GET.getlist('guide')
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
 
-    city_input = request.GET.getlist(u'city_input')
+    city_input = request.GET.get(u'city_input')
     place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
@@ -41,6 +41,7 @@ def guides(request):
     language_input = request.GET.getlist(u'language_input')
     is_company = request.GET.get('is_company')
     is_verified = request.GET.get('is_verified')
+    filter_form_data = request.GET.get('filter_form_data')
 
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
@@ -59,23 +60,30 @@ def guides(request):
             hourly_price_max = hourly_price[1]
             hourly_price_kwargs["rate__gte"] = hourly_price_min
             hourly_price_kwargs["rate__lte"] = hourly_price_max
-    # else:
-    #     #default values
-    #     hourly_price_kwargs["rate__gte"] = 0
-    #     hourly_price_kwargs["rate__lte"] = 50
 
     #filtering by cities
     if place_id:
-        print("place_id %s" % place_id)
+        # print("place_id %s" % place_id)
         try:
             city = City.objects.get(place_id=place_id)
-            print(city)
+            # print(city)
             city_from_place_id = city.full_location
         except:
             pass
         base_kwargs["city__place_id"] = place_id
     elif city_input:
-        base_kwargs["city__name__in"] = city_input
+        print(city_input)
+        # base_kwargs["city__original_name__in"] = city_input
+        try:
+            city = City.objects.get(original_name=city_input)
+            # print(city)
+            city_from_place_id = city.full_location
+            place_id = city.place_id
+        except:
+            pass
+        base_kwargs["city__place_id"] = place_id
+
+    # print(base_kwargs)
 
     #filtering by guides
     if guide_input:
@@ -84,10 +92,11 @@ def guides(request):
         base_user_interests_kwargs["interest__name__in"] = interest_input
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
-    if not is_company:
+
+    if filter_form_data and not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 
-    if (request.GET and not is_verified):
+    if filter_form_data and not is_verified:
         pass #show all
     else:
         base_kwargs["user__generalprofile__is_verified"] = True
@@ -117,7 +126,7 @@ def guides(request):
 
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
     # print("base kwargs")
-    # print (base_kwargs)
+    print (base_kwargs)
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()
@@ -125,6 +134,7 @@ def guides(request):
         guides = guides_initial.filter(**base_kwargs_mixed)
     elif place_id or city_input or guide_input:
         guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
+        print(guides)
         # guides = guides_initial.filter(**base_kwargs)
     elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
@@ -155,7 +165,7 @@ def guides(request):
         request.session["guides_rates_cached"] = True
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(guides, 5)
+    paginator = Paginator(guides, 10)
     try:
         guides = paginator.page(page)
     except PageNotAnInteger:
