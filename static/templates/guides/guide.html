@@ -14,9 +14,10 @@
         <ul class="breadcrumb">
             <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
-            <li><a href="/">Some country</a>
-            <li><a href="/">{{ guide.city.name }}</a>
-            </li>
+{#            <li><a href="/">Some country</a>#}
+{#            <li><a href="/">{{ guide.city.name }}</a></li>#}
+{#            <li><a href="/">Some country</a>#}
+            <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>
             <li class="active">{{ guide.user.username }}</li>
         </ul>
 
