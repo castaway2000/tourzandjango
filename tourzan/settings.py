@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'partners',
     'guides_calendar',
     'user_verification',
+    'utils',
 
     #external packages
     'allauth',

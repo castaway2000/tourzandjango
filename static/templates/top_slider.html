@@ -9,11 +9,11 @@
                 <div class="bg-img" style="background-image:url({% if city.image %}{% get_media_prefix %}{{ city.image }}{% endif %});"></div>
                 <div class="bg-front full-center">
                     <div class="owl-cap">
-                        <h1 class="owl-cap-title fittext">{{ city.name }}</h1>
+                        <h1 class="owl-cap-title fittext">{{ city.original_name }}</h1>
 {#                        <div class="owl-cap-price"><small>from</small>#}
 {#                            <h5>$2700</h5>#}
 {#                        </div>#}
-                        <a class="btn btn-white btn-ghost" href="{% url 'guides' %}?city_input={{ city.name }}">
+                        <a class="btn btn-white btn-ghost" href="{% url 'guides' %}?city_input={{ city.original_name }}">
                             <i class="fa fa-angle-right"></i>{% blocktrans %}Explore Guides{% endblocktrans %}</a>
                     </div>
                 </div>
