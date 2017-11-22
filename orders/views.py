@@ -273,6 +273,9 @@ def orders(request, status=None):
 
         kwargs = dict()
 
+        if data.get("id"):
+            kwargs["id"] = data.get("id")
+
         if filtered_statuses:
             kwargs["status__name__in"] = filtered_statuses
 
@@ -315,7 +318,18 @@ def guide_settings_orders(request):
     page = "settings_orders"
     user = request.user
     guide = user.guideprofile
-    orders = Order.objects.filter(guide=guide).order_by("-id")
+    data = request.GET
+    order_id = data.get("id")
+    if guide:
+        if order_id:
+            if Order.objects.filter(id=order_id, guide=guide).exclude(status_id=1).exists():
+                orders = Order.objects.filter(id=order_id, guide=guide).exclude(status_id=1)
+            else:
+                orders = Order.objects.filter(guide=guide).exclude(status_id=1).order_by("-id")
+        else:
+            orders = Order.objects.filter(guide=guide).exclude(status_id=1).order_by("-id")
+    else:
+        return HttpResponseRedirect(reverse("home"))
     return render(request, 'orders/profile_settings_guide_orders.html', locals())
 
 
@@ -389,7 +403,7 @@ def change_order_status(request, order_id, status_id):
                 print("else")
                 order.status_id = status_id
                 order.save(force_update=True)
-                messages.success(request, 'Order has been successfully cancelled!')
+                # messages.success(request, 'Order has been successfully cancelled!')
         except Exception as e:
             print(e)
             messages.error(request, 'You have no permissions for this action!')
@@ -411,7 +425,7 @@ def change_order_status(request, order_id, status_id):
             order.status_id = status_id
             print ("4")
             order.save(force_update=True)
-            messages.success(request, 'Order has been successfully cancelled!')
+            # messages.success(request, 'Order has been successfully cancelled!')
         except Exception as e:
             print (e)
             messages.error(request, 'You have no permissions for this action!')
@@ -479,7 +493,6 @@ def order_completing(request, order_id):
     if order.tourist.user == user:
         is_tourist = True
 
-
     if request.POST:
         data = request.POST
 
@@ -504,7 +517,8 @@ def order_completing(request, order_id):
 
                 order.status_id = 4 #completed
                 order.save(force_update=True)
-                print("ORDER with id %s WAS UPDATED %s" % (order.id, order.status.id))
+                Review.objects.update_or_create(order=order, defaults=kwargs)
+                messages.success(request, 'Review has been successfully created!')
 
             if order.tourist.user == user:
                 tourist_kwargs = {
@@ -519,10 +533,10 @@ def order_completing(request, order_id):
 
                 #completing payment
                 if order.status.id in [2, 4] and order.payment_status.id in [2, 3]:
-                    print("in")
+                    # print("in")
                     transaction_id = order.payment.uuid
                     result = braintree.Transaction.submit_for_settlement(transaction_id)
-                    print("result: %s" % result)
+                    # print("result: %s" % result)
                     if result.is_success:
                         order.status_id = 4 #completed
                         order.payment_status_id = 4 #fully paid
@@ -530,16 +544,16 @@ def order_completing(request, order_id):
 
                         order.payment.dt_paid = dt_now
                         order.payment.save(force_update=True)
+                        Review.objects.update_or_create(order=order, defaults=kwargs)
+                        messages.success(request, 'Review has been successfully created!')
 
                     else:
-                      print(result.errors)
+                        messages.error(request, 'Error while processing a payment!')
+                        print(result.errors)
 
         else:
+            messages.error(request, 'You do not have permissions to access to this page!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        Review.objects.update_or_create(order=order, defaults=kwargs)
-        messages.success(request, 'Review has been successfully created!')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
     return render(request, 'orders/order_completing.html', locals())
