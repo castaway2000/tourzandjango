@@ -97,3 +97,12 @@ ul.slimmenu li.active > a, ul.slimmenu li:hover > a {
   box-shadow: none;
   border: 1px solid #31dc72;
 }
+
+.post .post-header {
+    border-bottom: 2px solid #31dc72;
+}
+
+.sidebar-widget .icon-list.list-category li a:hover,
+.sidebar-widget .icon-list.list-category li.active a{
+    color: #31dc72;
+}

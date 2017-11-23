@@ -2,14 +2,13 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
-from .models import *
-from django.contrib.auth.models import User
 from utils.uploadings import upload_path_handler_blog
 from django.utils.text import slugify
 import uuid
 import unidecode
 from utils.general import random_string_creating
 from crequest.middleware import CrequestMiddleware
+from utils.images_resizing import optimize_size
 
 
 class BlogCategory(models.Model):
@@ -44,6 +43,7 @@ class BlogPost(models.Model):
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to=upload_path_handler_blog, blank=True, null=True, default="defaults/blog_post_default.jpg")
+    is_image_optimized = models.BooleanField(default=False)
     updated_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name="blog_post_updated_by")
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -74,6 +74,13 @@ class BlogPost(models.Model):
 
         if not self.pk:
             self.author = user
+
+        if self.image and not self.is_image_optimized:
+            try:
+                self.image = optimize_size(self.image, "medium")
+                self.is_image_optimized = True
+            except:
+                pass
 
         super(BlogPost, self).save(*args, **kwargs)
 
