@@ -8,13 +8,18 @@
                 <a class="btn btn-primary" href="{% url 'blog' %}">{% trans 'Back to posts list' %}</a>
             </div>
         {% endif %}
-        <div class="Form">
-            <input class="form-control" placeholder="Search..." type="text" />
-        </div>
+{#        <div class="Form">#}
+{#            <input class="form-control" placeholder="Search..." type="text" />#}
+{#        </div>#}
     </div>
     <div class="sidebar-widget">
         <h4>Categories</h4>
         <ul class="icon-list list-category">
+            <li {% if not category_slug  %}class="active"{% endif %}>
+                <a href="{% url 'blog' %}">
+                    <i class="fa fa-angle-right"></i>{% trans 'All categories' %}
+                </a>
+            </li>
             {% for category in categories %}
                 <li {% if category.slug == category_slug %}class="active"{% endif %}>
                     <a href="{% url 'blog_category_slug' category.slug %}">
