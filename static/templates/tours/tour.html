@@ -13,7 +13,7 @@
             <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
             </li>
             <li>
-                <a href="{% url 'guide' tour.guide.user.username %}">{{ tour.guide.user.username }}</a>
+                <a href="{% url 'guide' tour.guide.user.username %}">{{ tour.guide.name }}</a>
             </li>
             <li class="active">{{ tour.name }}</li>
         </ul>

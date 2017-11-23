@@ -111,7 +111,7 @@ class Order(models.Model):
 
     def __str__(self):
         if self.guide:
-            return "%s %s" % (self.id, self.guide.user.username)
+            return "%s %s" % (self.id, self.guide.name)
         else:
             return "%s" % (self.id)
 
@@ -282,7 +282,7 @@ class Review(models.Model):
             if self.order.tour:
                 return "%s" % self.order.tour.name
             else:
-                return "%s" % self.order.guide.user.username
+                return "%s" % self.order.guide.name
         else:
             return "%s" % self.id
 

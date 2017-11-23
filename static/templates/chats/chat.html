@@ -16,7 +16,7 @@
                             {% blocktrans %}with {% endblocktrans %}
                             {% if request.user != chat.guide %}
                                 <a href="{% url 'guide' chat.guide.username %}">
-                                    {{ chat.guide.username }}
+                                    {{ chat.guide.guideprofile.name }}
                                 </a>
                                 {% blocktrans %}(guide){% endblocktrans %}
                             {% else %}
