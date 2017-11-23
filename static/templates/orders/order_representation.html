@@ -7,8 +7,8 @@
         <div class="row">
             <div class="col-md-2">
                 <div class="booking-item-img">
-                    {% if order.guide.profile_image %}
-                        <img src="{% get_media_prefix %}{{ order.guide.profile_image }}"/>
+                    {% if order.tourist.image %}
+                        <img src="{% get_media_prefix %}{{ order.tourist.image }}"/>
                     {% endif %}
                 </div>
             </div>
@@ -18,14 +18,14 @@
                 </h3>
                 <div class="row">
                     <div class="col-md-12">
-                        {{ order.guide.overview|linebreaks|truncatewords_html:30 }}
+                        {{ order.tourist.about|linebreaks|truncatewords_html:30 }}
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-12 mb10">
                         <div><b>Interests:</b></div>
-                        {% for user_interest in order.guide.user.userinterest_set.all %}
+                        {% for user_interest in order.tourist.user.userinterest_set.all %}
                             {% if user_interest.interest.name in interest_input %}
                                 <span class="label label-success label-tag">
                                     {{ user_interest.interest.name }}
@@ -38,7 +38,7 @@
                         {% endfor %}
                     </div>
                 </div>
-                {% with order.guide.user.userlanguage_set.all as user_languages %}
+                {% with order.tourist.user.userlanguage_set.all as user_languages %}
                     {% if user_languages %}
                         <div class="row">
                             <div class="col-md-12 mb10">
