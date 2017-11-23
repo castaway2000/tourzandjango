@@ -65,26 +65,26 @@ def login_api_view(request):
 
 
 #Sign up for API tokens is done in other workflow
-# @api_view(["POST"])
-# def signup_api_view(request):
-#     username = request.data.get("username")
-#     email = request.data.get("email")
-#     password1 = request.data.get("password1")
-#     password2 = request.data.get("password2")
-#
-#     if User.objects.filter(username=username).exists():
-#         return Response({"error": "Signup failed: such username exists"}, status=HTTP_401_UNAUTHORIZED)
-#
-#     if User.objects.filter(email=email).exists():
-#         return Response({"error": "Signup failed: such email already exists"}, status=HTTP_401_UNAUTHORIZED)
-#
-#     if password1 != password2:
-#         return Response({"error": "Signup failed: passwords do not match"}, status=HTTP_401_UNAUTHORIZED)
-#
-#     user = User.objects.create_user(username=username, email=email, password=password1)
-#     if not user:
-#         return Response({"error": "Signup failed during creation a new user"}, status=HTTP_401_UNAUTHORIZED)
-#
-#
-#     token, _ = Token.objects.get_or_create(user=user)
-#     return Response({"token": token.key})
+@api_view(["POST"])
+def signup_api_view(request):
+    username = request.data.get("username")
+    email = request.data.get("email")
+    password1 = request.data.get("password1")
+    password2 = request.data.get("password2")
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Signup failed: such username exists"}, status=HTTP_401_UNAUTHORIZED)
+
+    if User.objects.filter(email=email).exists():
+        return Response({"error": "Signup failed: such email already exists"}, status=HTTP_401_UNAUTHORIZED)
+
+    if password1 != password2:
+        return Response({"error": "Signup failed: passwords do not match"}, status=HTTP_401_UNAUTHORIZED)
+
+    user = User.objects.create_user(username=username, email=email, password=password1)
+    if not user:
+        return Response({"error": "Signup failed during creation a new user"}, status=HTTP_401_UNAUTHORIZED)
+
+
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({"token": token.key})

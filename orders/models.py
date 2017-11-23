@@ -98,9 +98,20 @@ class Order(models.Model):
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
 
+
+    def __init__(self, *args, **kwargs):
+        super(Order, self).__init__(*args, **kwargs)
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
+
     def __str__(self):
         if self.guide:
-            return "%s %s" % (self.id, self.guide.user.username)
+            return "%s %s" % (self.id, self.guide.name)
         else:
             return "%s" % (self.id)
 
@@ -127,24 +138,14 @@ class Order(models.Model):
         #FEES RATES FOR TOURISTS AND GUIDES
         fees_tourist_rate = float(0.13)
         fees_guide_rate = float(0.13)
-
         fees_tourist = float(self.total_price_before_fees)*fees_tourist_rate
         fees_guide = float(self.total_price_before_fees)*fees_guide_rate
 
         self.fees_tourist = fees_tourist
         self.fees_guide = fees_guide
         self.fees_total = fees_tourist + fees_guide
-
         self.total_price = float(self.total_price_before_fees) + fees_tourist
         self.guide_payment = float(self.total_price_before_fees) - fees_guide
-
-
-        if not self.pk:#new item
-            print(self.pk)
-            data = {"order": self}
-            a = SendingEmail(data)
-            print("email was sent")
-
         super(Order, self).save(*args, **kwargs)
 
 
@@ -166,7 +167,7 @@ class Order(models.Model):
             }
         })
 
-        print (result)
+        # print (result)
 
         if result.is_success:
             data = result.transaction
@@ -206,6 +207,17 @@ def order_post_save(sender, instance, created, **kwargs):
         guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
         guide.rating = statistic_info["rating"]
         guide.save(force_update=True)
+
+
+    #sening email according to orders changing
+    current_request = CrequestMiddleware.get_request()
+    user = current_request.user
+    is_guide_saving = True if instance.guide.user == user else False
+
+    if instance._original_fields["status"] and int(instance.status_id) != instance._original_fields["status"].id and int(instance.status_id) != 1:#exclude pending status
+        # print ("pre sending")
+        data = {"order": instance, "is_guide_saving": is_guide_saving}
+        SendingEmail(data).email_for_order()
 
 post_save.connect(order_post_save, sender=Order)
 
@@ -270,7 +282,7 @@ class Review(models.Model):
             if self.order.tour:
                 return "%s" % self.order.tour.name
             else:
-                return "%s" % self.order.guide.user.username
+                return "%s" % self.order.guide.name
         else:
             return "%s" % self.id
 

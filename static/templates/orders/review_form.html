@@ -11,19 +11,19 @@
 
     <div class="form-group">
         <label>Review Title</label>
-        <input class="form-control" name="title">
+        <input class="form-control" name="title" {% if request.POST.title %}value="{{ request.POST.title }}"{% endif %}>
     </div>
 
     <div class="form-group">
         <label>Review Text</label>
-        <textarea rows="5" class="form-control" name="feedback"></textarea>
+        <textarea rows="5" class="form-control" name="feedback">{% if request.POST.feedback %}{{ request.POST.feedback }}{% endif %}</textarea>
     </div>
 
     <div class="form-group">
         <label>Put your score here</label>
-        <input type="number" step="0.1" value="5" min="1" max="5" required
+        <input type="number" step="1" min="1" max="5" required
                 id="rating" class="form-control"
-               name="rating">
+               name="rating" {% if request.POST.rating %} value="{{ request.POST.rating }}" {% else %} value="5" {% endif %}>
     </div>
 
 

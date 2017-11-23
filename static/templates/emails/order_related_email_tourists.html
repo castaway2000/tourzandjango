@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .footer{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>
+            Hi, {{ user.username }}
+        </p>
+        <p>
+            {{ message|safe }}
+        </p>
+    </div>
+    <div class="footer">
+        <p>
+            To manage your orders please visit <a href="https://www.tourzan.com/bookings/" target="_blank">your bookings page</a>.
+        </p>
+    </div>
+</body>
+</html>
