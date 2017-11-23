@@ -17,7 +17,7 @@ class Chat(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __unicode__(self):
-        return "%s-%s" % (self.guide.username, self.tourist.username)
+        return "%s-%s" % (self.guide.guideprofile.name, self.tourist.username)
 
 
 class ChatMessage(models.Model):

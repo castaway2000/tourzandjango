@@ -419,7 +419,7 @@ def search_guide(request):
         for guide in guides:
             results.append({
                 "id": guide.user.username,
-                "text": guide.user.username
+                "text": guide.name
             })
 
     response_data = {
