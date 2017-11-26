@@ -15,7 +15,7 @@ from django.contrib import messages
 def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
-    profile, created = TouristProfile.objects.get_or_create(user=user)
+    profile, profile_created = TouristProfile.objects.get_or_create(user=user)
 
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
@@ -29,8 +29,6 @@ def profile_settings_tourist(request):
 
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
-        print(request.POST)
-        print(request.FILES)
 
         #Interests creation
         interests = request.POST.getlist("interests")
@@ -73,15 +71,17 @@ def profile_settings_tourist(request):
                 else:
                     user_language_second = user_language
 
-
-
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
+        user_interests = UserInterest.objects.filter(user=user)
+
+        #redirect to pending order if tourist account was created
+        if request.session.get("pending_order_creation"):
+            return HttpResponseRedirect(reverse("making_booking"))
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
-
     return render(request, 'users/profile_settings_tourist.html', locals())
 
 
