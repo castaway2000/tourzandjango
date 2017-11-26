@@ -5,6 +5,15 @@
 {% get_providers as socialaccount_providers %}
 {% get_current_language as LANGUAGE_CODE %}
 
+
+{% block header_stuff %}
+    <!-- Event snippet for register tourist conversion page -->
+    <script>
+    gtag('event', 'conversion', {'send_to': 'AW-855709588/X2RNCIrv4HkQlK-EmAM'});
+    </script>
+{% endblock header_stuff %}
+
+
 {% block content %}
     <div class="container">
         <h1 class="page-title">Login/Register on Tourzan</h1>
@@ -31,7 +40,7 @@
             </div>
             <div class="col-md-4">
                 <h3>Login</h3>
-                <form method="post" action="{% url 'login' %}">{% csrf_token %}
+                <form method="post" action="{% url 'account_login' %}">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
                         <label>Username or email</label>
                         <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text" name="username" />

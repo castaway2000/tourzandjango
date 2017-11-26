@@ -27,7 +27,13 @@ from datetime import datetime
 
 
 def login_view(request):
+    """
+    this funtion re-applies /login funtion from django-allauth/
+    Login redirects are handled here
+    """
     form = LoginForm(request.POST or None)
+    print("login_view")
+    print(request.session.get("pending_order_creation"))
 
     if not "next" in request.GET:
         request.GET.next = reverse("home")
@@ -43,6 +49,10 @@ def login_view(request):
                     next_url = request.GET.get("next")
                     if next_url:
                         return HttpResponseRedirect(next_url)
+
+                if request.session.get("pending_order_creation"):
+                    return HttpResponseRedirect(reverse("making_booking"))
+
                 return HttpResponseRedirect(reverse("home"))
             else:
                 return HttpResponse("Your account is disabled.")
@@ -62,6 +72,9 @@ def logout_view(request):
 @login_required()
 def after_login_router(request):
     user = request.user
+    print("after_login_router")
+    print( HttpResponseRedirect(request.META.get('HTTP_REFERER')) )
+
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))
