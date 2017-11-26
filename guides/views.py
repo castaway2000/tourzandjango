@@ -401,6 +401,10 @@ def profile_settings_guide(request, guide_creation=True):
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)
     guide_services_ids = [item.service.id for item in guide_services]
+
+    #PAY attention: if a guide is new - the template with form should be guides/guide_registration.html
+    #for tourist it is always one template for new tourists and for editing of tourist profile,
+    # which is users/profile_settings_tourist.html
     if creating_guide:
         return render(request, 'guides/guide_registration.html', locals())
     else:
