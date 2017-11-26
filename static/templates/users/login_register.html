@@ -40,7 +40,7 @@
             </div>
             <div class="col-md-4">
                 <h3>Login</h3>
-                <form method="post" action="{% url 'login' %}">{% csrf_token %}
+                <form method="post" action="{% url 'account_login' %}">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
                         <label>Username or email</label>
                         <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text" name="username" />

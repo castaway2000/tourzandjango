@@ -28,10 +28,24 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import HttpResponseRedirect, get_object_or_404
 from users.models import GeneralProfile
 from django.core.urlresolvers import reverse
+from django.shortcuts import resolve_url
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
     pass
+    print ("MyAccountAdapter")
+    def get_login_redirect_url(self, request):
+        """
+        Returns the default URL to redirect to after logging in.  Note
+        that URLs passed explicitly (e.g. by passing along a `next`
+        GET parameter) take precedence over the value returned here.
+        """
+        assert request.user.is_authenticated
+        print("111")
+        print(settings.LOGIN_REDIRECT_URL)
+        url = settings.LOGIN_REDIRECT_URL
+        return resolve_url(url)
+
     # def get_login_redirect_url(self, request):
     #     print("get login redirect")
     #     user = get_object_or_404(User, pk=request.user.id)

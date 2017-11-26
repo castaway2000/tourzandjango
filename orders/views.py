@@ -31,16 +31,28 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
     )
 
 
-#both guide and tour
-@login_required()
+#this view is both for booking guides and tours
 def making_booking(request):
     print ("tour bookings123")
     print (request.POST)
     print (request.GET)
 
     user = request.user
+
+    #this code is used instead of login_required decorator to make it
+    if user.is_anonymous():
+        data = request.POST
+        request.session["pending_order_creation"] = data
+        # request.session["pending_order_creation"] = dict(request.POST.lists())
+
+        return HttpResponseRedirect(reverse("login"))
+
+    print(request.session.get("pending_order_creation"))
+
     return_dict = dict()
-    if request.POST:
+    if request.session.get("pending_order_creation"):
+        data = request.session.get("pending_order_creation")
+    elif request.POST:
         data = request.POST
     else:
         data = request.GET
@@ -159,11 +171,9 @@ def making_booking(request):
         messages.error(request, _('Some selected time slots are not available anymore!'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    if request.POST:#it means that it is ajax request
-        # return HttpResponseRedirect(reverse("my_bookings"))
-        return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
-    else:#it means that it is creation of the new order with redirect to checkout page
-        return JsonResponse(return_dict)
+    #got rid of returning data for ajax calls
+    #always return a redirect
+    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
 
 
 @login_required
