@@ -33,9 +33,9 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
 
 #this view is both for booking guides and tours
 def making_booking(request):
-    print ("tour bookings123")
-    print (request.POST)
-    print (request.GET)
+    # print ("tour bookings123")
+    # print (request.POST)
+    # print (request.GET)
 
     user = request.user
 
@@ -44,14 +44,12 @@ def making_booking(request):
         data = request.POST
         request.session["pending_order_creation"] = data
         # request.session["pending_order_creation"] = dict(request.POST.lists())
-
         return HttpResponseRedirect(reverse("login"))
-
-    print(request.session.get("pending_order_creation"))
 
     return_dict = dict()
     if request.session.get("pending_order_creation"):
         data = request.session.get("pending_order_creation")
+        del request.session["pending_order_creation"]
     elif request.POST:
         data = request.POST
     else:
@@ -158,11 +156,11 @@ def making_booking(request):
 
         for time_slot_chosen in time_slots_chosen:
             #get or update functionality, but without applying for booked items
-            print ("try")
-            print(time_slot_chosen)
+            # print ("try")
+            # print(time_slot_chosen)
             calendar_item_guide = CalendarItemGuide.objects.get(id=time_slot_chosen, guide=guide)
-            print(calendar_item_guide.id)
-            print(calendar_item_guide.calendar_item)
+            # print(calendar_item_guide.id)
+            # print(calendar_item_guide.calendar_item)
             if calendar_item_guide.status_id == 2: #available
                 calendar_item_guide.status_id = 1 #booked
                 calendar_item_guide.order = order

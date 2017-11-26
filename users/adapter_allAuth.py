@@ -33,7 +33,10 @@ from django.shortcuts import resolve_url
 
 class MyAccountAdapter(DefaultAccountAdapter):
     pass
-    print ("MyAccountAdapter")
+    """
+    It works only for sign up.
+    Sign in view is re-applied in users/views.py
+    """
     def get_login_redirect_url(self, request):
         """
         Returns the default URL to redirect to after logging in.  Note
@@ -41,8 +44,6 @@ class MyAccountAdapter(DefaultAccountAdapter):
         GET parameter) take precedence over the value returned here.
         """
         assert request.user.is_authenticated
-        print("111")
-        print(settings.LOGIN_REDIRECT_URL)
         url = settings.LOGIN_REDIRECT_URL
         return resolve_url(url)
 
