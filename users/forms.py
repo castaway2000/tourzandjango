@@ -70,4 +70,6 @@ class GeneralProfileForm(forms.ModelForm):
         model = GeneralProfile
 
         #city is added on form save in view
-        fields = ("address", "is_company", "business_id",)
+        fields = ("registration_country", "registration_state", "registration_city", "registration_street",
+                  "registration_building_nmb", "registration_flat_nmb", "registration_postcode", "is_company",
+                  "business_id",)

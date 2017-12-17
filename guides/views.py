@@ -360,6 +360,7 @@ def profile_settings_guide(request, guide_creation=True):
                                                        defaults={"full_location": full_location,
                                                                "original_name": city_original_name})
 
+        print("pre form is valid")
         if form.is_valid():
             new_form = form.save(commit=False)
             if place_id:
@@ -394,7 +395,8 @@ def profile_settings_guide(request, guide_creation=True):
                 return HttpResponseRedirect(reverse("identity_verification_router"))
             else:
                 messages.success(request, 'Profile has been updated!')
-        # else: #if form is invalid
+        else: #if form is invalid
+            print("form errors: %s" % form.errors)
         #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
