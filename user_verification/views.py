@@ -7,11 +7,12 @@ from .forms import *
 import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from tourzan.settings import ONFIDO_TOKEN_TEST
+from tourzan.settings import ONFIDO_TOKEN_TEST, ONFIDO_IS_TEST_MODE
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
+import pycountry
 
 
 @login_required()
@@ -48,6 +49,8 @@ def identity_verification_router(request):
 def identity_verification_ID_uploading(request):
     page = "identity_verification"
 
+    countries = [country.name for country in pycountry.countries]
+
     #remake this to decorator
     user = request.user
     try:
@@ -59,36 +62,48 @@ def identity_verification_ID_uploading(request):
         return render(request, 'users/home.html', locals())
 
     document_uploaded = user.generalprofile.documentscan_set.filter(is_active=True).last()#approved
-    docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
+    form = DocsUploadingForm(request.POST or None, request.FILES or None)
     document_types = ["passport", "driving_licence"]
 
     general_profile = user.generalprofile
     if request.POST:
+        print("post")
         #documents uploading section
-        if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
-            if docs_form.is_valid():
 
-                document_type = request.POST.get("document_type")
-                document_type, created = DocumentType.objects.get_or_create(name=document_type)
+        if form.is_valid():
+            # data = request.POST
+            data = form.cleaned_data
+            print("data: %s" % data)
 
-                #ADD some validation here for file size and extension
-                if request.FILES.get("file"):
-                    count = 0
-                    for file in request.FILES.getlist("file"):
-                        if count < 5:#uploading not more than 5 files
-                            DocumentScan.objects.create(file=file, general_profile=general_profile,
-                                                        document_type=document_type)
-                            count += 1
-                        else:
-                            break
+            general_profile.registration_country = data.get("registration_country")
+            general_profile.registration_state = data.get("registration_state")
+            general_profile.registration_city = data.get("registration_city")
+            general_profile.registration_street = data.get("registration_street")
+            general_profile.registration_building_nmb = data.get("registration_building_nmb")
+            general_profile.registration_flat_nmb = data.get("registration_flat_nmb")
+            general_profile.registration_postcode = data.get("registration_postcode")
+            general_profile.save(force_update=True)
 
-                    if count == 1:
-                        messages.success(request, 'File was successfully uploaded!')
+            document_type = data.get("document_type")
+            document_type, created = DocumentType.objects.get_or_create(name=document_type)
+
+            #ADD some validation here for file size and extension
+            if request.FILES.get("file"):
+                count = 0
+                for file in request.FILES.getlist("file"):
+                    if count < 5:#uploading not more than 5 files
+                        DocumentScan.objects.create(file=file, general_profile=general_profile,
+                                                    document_type=document_type)
+                        count += 1
                     else:
-                        messages.success(request, 'Files were successfully uploaded!')
+                        break
 
-                    #retrieve docs afrer uploading
-                    is_just_uploaded = True
+                if count == 1:
+                    messages.success(request, 'File was successfully uploaded!')
+                else:
+                    messages.success(request, 'Files were successfully uploaded!')
+
+            return HttpResponseRedirect(reverse("identity_verification_photo"))
     return render(request, 'verifications/profile_identity_verification_ID_uploading.html', locals())
 
 
@@ -116,7 +131,7 @@ def identity_verification_photo(request):
         general_profile.save(force_update=True)
 
         token = "Token token=%s" % ONFIDO_TOKEN_TEST
-        headers = {'Authorization': token}
+        headers = {'Content-type': 'application/json', 'Authorization': token}
 
         #applicant creation
         try:
@@ -125,10 +140,28 @@ def identity_verification_photo(request):
         except:
             url = "https://api.onfido.com/v2/applicants"
             applicant_data = {
-                "first_name": guide.name,
-                "last_name": guide.name
+                "first_name": guide.user.generalprofile.first_name,
+                "last_name": guide.user.generalprofile.last_name,
+                "email": guide.user.email,
             }
-            r = requests.post(url, data=applicant_data, headers=headers)
+            if guide.date_of_birth:
+                applicant_data["dob"] = guide.date_of_birth.strftime('%Y-%m-%d')
+
+            address = {
+                  "flat_number": general_profile.registration_flat_nmb,
+                  "building_number": general_profile.registration_building_nmb,
+                  # "building_name": null,
+                  "street": general_profile.registration_street,
+                  # "sub_street": null,
+                  "town": general_profile.registration_city,
+                  "state": general_profile.registration_state,
+                  "postcode": general_profile.registration_postcode,
+                  "country": general_profile.registration_country_ISO_3_digits,
+            }
+            applicant_data["addresses"] = [address]
+            json_data = json.dumps(applicant_data)
+
+            r = requests.post(url, data=json_data, headers=headers)
             print ("new applicant was created")
             result = r.json()
             applicant = IdentityVerificationApplicant.objects.create(general_profile=general_profile,
@@ -167,7 +200,6 @@ def identity_verification_photo(request):
 
         #creating check and saving check link
         url = "https://api.onfido.com/v2/applicants/%s/checks" % applicant.applicant_id
-            #if there is any existing check
         r = requests.get(url, headers=headers)
         result = r.json()
         print ("all applicant's checks were retrieved")
@@ -191,11 +223,14 @@ def identity_verification_photo(request):
 
         if not previous_check_is_found:#create new check
 
-            # identity report is free available for sandbox. For sandbox use the variant without other reports
+            #Only identity report is available for sandbox (test_mode). For sandbox use the variant without other reports
             check_data = {
                 "type": "express",
-                "reports[][name]": ["identity", "document",],
+                "reports[][name]": ["identity"],
             }
+            if ONFIDO_IS_TEST_MODE:
+                check_data["reports[][name]"].append("document")
+
             r = requests.post(url, data=check_data, headers=headers)
             result = r.json()
             print(result)

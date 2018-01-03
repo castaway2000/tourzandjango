@@ -106,7 +106,9 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
 
         if not request.user.is_anonymous():
             user = request.user
-            general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+
+            #populating user's GeneralProfile instance from the very beginning
+            general_profile, created = GeneralProfile.objects.get_or_create(user=user)
 
             #here is the logic for validating twitter and google account without creating a new associated user account
             #logic for facebook account which can be used for loging in as well - is placed in users.model

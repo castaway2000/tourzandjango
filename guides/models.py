@@ -17,6 +17,7 @@ class GuideProfile(models.Model):
     city = models.ForeignKey(City)
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     min_hours = models.IntegerField(default=1)
@@ -48,6 +49,7 @@ class GuideProfile(models.Model):
 
     def __str__(self):
         return "%s" % self.user.username
+
 
     #add logic to perform calculations only if the value was changed
     def save(self, *args, **kwargs):

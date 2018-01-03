@@ -12,7 +12,7 @@
                 </a>
                 <p class="booking-item-review-person-name">
                     <a href="{% url 'guide' review.order.guide.user.username %}">
-                        {{ review.order.guide.name }}
+                        {{ review.order.guide.user.generalprofile.first_name }}
                     </a>
                 </p>
                 <p class="booking-item-review-person-loc">{{ review.order.guide.city.original_name }}</p>

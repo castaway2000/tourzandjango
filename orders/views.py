@@ -528,6 +528,7 @@ def order_completing(request, order_id):
                 Review.objects.update_or_create(order=order, defaults=kwargs)
                 messages.success(request, 'Review has been successfully created!')
 
+
             if order.tourist.user == user:
                 tourist_kwargs = {
                     "tourist_feedback_name": name,
