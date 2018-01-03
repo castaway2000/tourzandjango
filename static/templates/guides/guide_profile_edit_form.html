@@ -30,6 +30,7 @@
                </div>
             {% endif %}
             <div class="form-group form-group-icon-left">
+                errors {{ form.errors }}
                 <label>{% blocktrans %}Name{% endblocktrans %}*:</label>
                 <span class="text-error">{{ form.name.errors }}</span>
                 <div class="div-input-icon">

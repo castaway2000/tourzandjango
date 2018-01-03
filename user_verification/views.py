@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
+import pycountry
 
 
 @login_required()
@@ -48,6 +49,8 @@ def identity_verification_router(request):
 def identity_verification_ID_uploading(request):
     page = "identity_verification"
 
+    countries = [country.name for country in pycountry.countries]
+
     #remake this to decorator
     user = request.user
     try:
@@ -59,16 +62,30 @@ def identity_verification_ID_uploading(request):
         return render(request, 'users/home.html', locals())
 
     document_uploaded = user.generalprofile.documentscan_set.filter(is_active=True).last()#approved
-    docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
+    form = DocsUploadingForm(request.POST or None, request.FILES or None)
     document_types = ["passport", "driving_licence"]
 
     general_profile = user.generalprofile
     if request.POST:
+        print("post")
         #documents uploading section
         if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
-            if docs_form.is_valid():
+            print("not if")
+            if form.is_valid():
+                # data = request.POST
+                data = form.cleaned_data
+                print("data: %s" % data)
 
-                document_type = request.POST.get("document_type")
+                general_profile.registration_country = data.get("registration_country")
+                general_profile.registration_state = data.get("registration_state")
+                general_profile.registration_city = data.get("registration_city")
+                general_profile.registration_street = data.get("registration_street")
+                general_profile.registration_building_nmb = data.get("registration_building_nmb")
+                general_profile.registration_flat_nmb = data.get("registration_flat_nmb")
+                general_profile.registration_postcode = data.get("registration_postcode")
+                general_profile.save(force_update=True)
+
+                document_type = data.get("document_type")
                 document_type, created = DocumentType.objects.get_or_create(name=document_type)
 
                 #ADD some validation here for file size and extension
@@ -126,8 +143,27 @@ def identity_verification_photo(request):
             url = "https://api.onfido.com/v2/applicants"
             applicant_data = {
                 "first_name": guide.name,
-                "last_name": guide.name
+                "last_name": guide.name,
+                "email": guide.user.email,
             }
+            if guide.date_of_birth:
+                applicant_data["dob"] = guide.date_of_birth.strftime('%m/%d/%Y')
+
+
+            if guide.registration_country:
+                address = {
+                      "flat_number": guide.registration_flat_nmb,
+                      "building_number": guide.registration_building_nmb,
+                      # "building_name": null,
+                      "street": guide.registration_street,
+                      # "sub_street": null,
+                      "town": guide.registration_city,
+                      "state": guide.registration_state,
+                      "postcode": guide.registration_postcode,
+                      "country": guide.registration_country_ISO_3_digits,
+                }
+                applicant_data["addresses"] = [address]
+
             r = requests.post(url, data=applicant_data, headers=headers)
             print ("new applicant was created")
             result = r.json()
@@ -167,7 +203,6 @@ def identity_verification_photo(request):
 
         #creating check and saving check link
         url = "https://api.onfido.com/v2/applicants/%s/checks" % applicant.applicant_id
-            #if there is any existing check
         r = requests.get(url, headers=headers)
         result = r.json()
         print ("all applicant's checks were retrieved")

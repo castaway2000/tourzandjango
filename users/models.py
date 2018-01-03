@@ -13,6 +13,7 @@ from payments.models import PaymentMethod
 from phonenumber_field.modelfields import PhoneNumberField
 from guides.models import GuideProfile
 from utils.uploadings import upload_path_handler_guide_webcam_image
+import pycountry
 
 
 def user_login_function(sender, user, **kwargs):
@@ -99,6 +100,8 @@ class UserLanguage(models.Model):
         return "%s" % self.language
 
 
+COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries )
+
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
@@ -112,10 +115,14 @@ class GeneralProfile(models.Model):
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
 
-    country = models.CharField(max_length=64, blank=True, null=True, default=None)
-    city = models.CharField(max_length=64, blank=True, null=True, default=None)
-    address = models.CharField(max_length=128, blank=True, null=True, default=None)
-    address_full = models.CharField(max_length=256, blank=True, null=True, default=None)
+    registration_country = models.CharField(max_length=256, blank=True, null=True, choices=COUNTRY_CHOICES)
+    registration_country_ISO_3_digits = models.CharField(max_length=8, blank=True, null=True)
+    registration_state = models.CharField(max_length=256, blank=True, null=True)
+    registration_city = models.CharField(max_length=256, blank=True, null=True)
+    registration_street = models.CharField(max_length=256, blank=True, null=True)
+    registration_building_nmb = models.CharField(max_length=256, blank=True, null=True)
+    registration_flat_nmb = models.CharField(max_length=256, blank=True, null=True)
+    registration_postcode = models.CharField(max_length=256, blank=True, null=True)
 
     is_company = models.BooleanField(default=False)
     business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
@@ -125,14 +132,24 @@ class GeneralProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+    def __init__(self, *args, **kwargs):
+        super(GeneralProfile, self).__init__(*args, **kwargs)
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
     def __str__(self):
         return "%s" % self.user.username
 
     def save(self, *args, **kwargs):
-        self.address_full = "%s %s" % (self.city, self.address)
 
+        if not self.pk or self.registration_country != self._original_fields["registration_country"]:
+            if self.registration_country:
+                self.registration_country_ISO_3_digits = pycountry.countries.get(name=self.registration_country).alpha_3
         super(GeneralProfile, self).save(*args, **kwargs)
-
 
 
 def socialtoken_post_save(sender, instance, **kwargs):

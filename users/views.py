@@ -24,6 +24,7 @@ from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
 from datetime import datetime
+import pycountry
 
 
 def login_view(request):
@@ -125,6 +126,8 @@ def general_settings(request):
     current_role = request.session.get("current_role")
     if current_role == "guide":
         guide = user.guideprofile
+
+    countries = [country.name for country in pycountry.countries]
 
     general_profile, created = GeneralProfile.objects.get_or_create(user=user)
     form = GeneralProfileForm(data=request.POST or None, instance=general_profile)
