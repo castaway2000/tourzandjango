@@ -16,20 +16,20 @@
     <h3 class="text-center">{% trans 'Verification' %}</h3>
     <div class="row">
         <div class="col-lg-12 text-center">
-
+            <div class="well">
+                {% if general_profile.is_verified %}
+                    <h3>{% trans 'Your profile has been verified' %}</h3>
+                {% else %}
+                    <h3>{% trans 'Your profile verification is pending' %}.</h3>
+                    <p>
+                        {% trans 'You will see a confirmation here, as soon as you are verified.' %}
+                        <br>
+                        {% trans 'In the meantime, set up your schedule in the' %}
+                        <a href="{% url 'guide_calendar' %}">{% trans 'calendar tab' %}</a>.
+                    </p>
+                {% endif %}
+            </div>
         </div>
-        {% if general_profile.is_verified %}
-            <h3>{% trans 'Your profile has been verified' %}</h3>
-        {% else %}
-            <h3>{% trans 'Your profile verification is pending' %}.</h3>
-            <p>{% trans 'You will see a confirmation here, as soon as you are verified. In the meantime, set up your schedule in the calendar tab.' %}</p>
-        {% endif %}
-{#        <div class="col-lg-6 text-center">#}
-{#            <a href="{% url 'identity_verification_ID_uploading' %}" class="btn btn-success">{% trans 'ID scan uploading' %}</a>#}
-{#        </div>#}
-{#        <div class="col-lg-6 text-center">#}
-{#            <a href="{% url 'identity_verification_photo' %}" class="btn btn-success">{% trans 'Live photo' %}</a>#}
-{#        </div>#}
     </div>
 </div>
 {% endblock content_profile %}

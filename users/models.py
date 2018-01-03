@@ -104,6 +104,9 @@ COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countri
 
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
+    first_name = models.CharField(max_length=256, blank=True, null=True)
+    last_name = models.CharField(max_length=256, blank=True, null=True)
+
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
     is_verified = models.BooleanField(default=False)#is verified by docs
     webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
@@ -152,6 +155,14 @@ class GeneralProfile(models.Model):
         super(GeneralProfile, self).save(*args, **kwargs)
 
 
+def general_profile_post_save(sender, instance, **kwargs):
+    if hasattr(instance.user, "guideprofile"):
+        guide = instance.user.guideprofile
+        guide.name = instance.first_name
+        guide.save(force_update=True)
+post_save.connect(general_profile_post_save, sender=GeneralProfile)
+
+
 def socialtoken_post_save(sender, instance, **kwargs):
     # print("social token post save")
     social_account = instance.account
@@ -159,7 +170,7 @@ def socialtoken_post_save(sender, instance, **kwargs):
     provider = social_account.provider
 
     if user:
-        general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+        general_profile, created = GeneralProfile.objects.get_or_create(user=user)
 
         #code for twitter and google authentication when no accounts and users should be created, is placed to
         #pre_social_login function of users.adapter_allAuth.MySocialAccountAdapter

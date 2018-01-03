@@ -91,7 +91,7 @@
                     <h5 class="text-center">
                         {% if is_tourist %}
                             <a href="{% url 'guide' order.guide.user.username %}">
-                                {{ order.guide.name }}
+                                {{ order.guide.user.generalprofile.first_name }}
                             </a>
                         {% elif is_guide %}
                             <a href="{% url 'tourist' order.tourist.user.username %}">
@@ -130,12 +130,12 @@
                                     <td>
                                         {% if order.tour %}
                                             <b>
-                                                A tour "{{ order.tour.name }}" with {{ order.guide.name }}
+                                                A tour "{{ order.tour.name }}" with {{ order.guide.user.generalprofile.first_name }}
                                              </b>
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}
                                         {% else %}
                                             <b>
-                                                A tour with {{ order.guide.name }}
+                                                A tour with {{ order.guide.user.generalprofile.first_name }}
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}:
                                             </b>
                                             {{ order.hours_nmb|safe }} hours *

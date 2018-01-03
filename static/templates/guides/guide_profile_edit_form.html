@@ -30,13 +30,22 @@
                </div>
             {% endif %}
             <div class="form-group form-group-icon-left">
-                errors {{ form.errors }}
-                <label>{% blocktrans %}Name{% endblocktrans %}*:</label>
+                <label>{% blocktrans %}First Name{% endblocktrans %}*:</label>
                 <span class="text-error">{{ form.name.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control" name="{{ form.name.html_name }}"
-                           value="{% if guide and guide.name %}{{ form.name.value }}{% endif %}">
+                    <input required class="form-control" name="first_name"
+                           value="{% if user.generalprofile.first_name %}{{ user.generalprofile.first_name }}{% endif %}">
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}Last Name{% endblocktrans %}*:</label>
+                <span class="text-error">{{ form.last_name.errors }}</span>
+                <div class="div-input-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input required class="form-control" name="last_name"
+                           value="{% if user.generalprofile.last_name %}{{ user.generalprofile.last_name }}{% endif %}">
                 </div>
             </div>
 

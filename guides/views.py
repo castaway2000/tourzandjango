@@ -311,6 +311,12 @@ def profile_settings_guide(request, guide_creation=True):
 
     if request.method == 'POST':
 
+        #creating or getting general profile to assign to it first_name and last_name
+        general_profile, created = GeneralProfile.objects.get_or_create(user=user)
+        general_profile.first_name = request.POST.get("first_name")
+        general_profile.last_name = request.POST.get("last_name")
+        general_profile.save(force_update=True)
+
         #Interests assigning
         interests = request.POST.getlist("interests")
         user_interest_list = list()
@@ -425,7 +431,7 @@ def search_guide(request):
         for guide in guides:
             results.append({
                 "id": guide.user.username,
-                "text": guide.name
+                "text": guide.user.generalprofile.first_name
             })
 
     response_data = {

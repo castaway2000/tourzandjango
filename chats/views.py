@@ -78,7 +78,7 @@ def chat_creation(request, tour_id=None, guide_id=None):
                                                              "topic": topic})
     elif guide_id:
         guide = GuideProfile.objects.get(id=guide_id)
-        topic = "Chat with %s" % guide.user.guideprofile.name
+        topic = "Chat with %s" % guide.user.generalprofile.first_name
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
 
     return HttpResponseRedirect(reverse("chat", kwargs={"uuid": chat.uuid} ))

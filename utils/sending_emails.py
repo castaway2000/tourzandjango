@@ -56,9 +56,9 @@ class SendingEmail(object):
             if tour:
                 order_naming = '"%s"' % order.tour.name
             else:
-                order_naming = 'with %s' % order.guide.name
+                order_naming = 'with %s' % order.guide.user.generalprofile.first_name
 
-            # cancelled by - for guide it is order.guide.name, but for tourists it us order.tourist.user.username
+            # cancelled by - for guide it is order.guide.user.generalprofile.first_name, but for tourists it us order.tourist.user.username
             if order.status_id == 2:# agreed
                 subject_tourist = 'Tour %s was confirmed by guide!' % order_naming
                 message_tourist = 'Tour %s was confirmed by guide!' % order_naming
@@ -72,8 +72,8 @@ class SendingEmail(object):
                 message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was cancelled by %s. If you feel this an error please reach out to your customer' % (order.id, order.id, order.tourist.user.username)
 
             elif order.status_id == 6: # cancelled by guide
-                subject_tourist = 'A tour %s was cancelled by %s!' % (order_naming, order.guide.name)
-                message_tourist = 'Order %s was cancelled by %s. If you feel this is an error please reach out to your guide.' % (order.id, order.guide.name)
+                subject_tourist = 'A tour %s was cancelled by %s!' % (order_naming, order.guide.user.generalprofile.first_name)
+                message_tourist = 'Order %s was cancelled by %s. If you feel this is an error please reach out to your guide.' % (order.id, order.guide.user.generalprofile.first_name)
                 subject_guide = 'You cancelled the order #%s!' % order.id
                 message_guide = 'You cancelled the order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a>!' % (order.id, order.id)
 
