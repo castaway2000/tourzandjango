@@ -42,7 +42,7 @@
 
                     <h5 class="text-center">
                         <a href="{% url 'guide' order.guide.user.username %}">
-                            {{ order.guide.name }}
+                            {{ order.guide.user.generalprofile.first_name }}
                         </a>
                     </h5>
 
@@ -72,7 +72,7 @@
                                     <td>
                                         {% if order.tour %}
                                             <b>
-                                                A tour "{{ order.tour.name }}" with {{ order.guide.name }}
+                                                A tour "{{ order.tour.name }}" with {{ order.guide.user.generalprofile.first_name }}
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}
                                             </b>
                                             {% if order.tour.payment_type.id == 1 %}
@@ -83,7 +83,7 @@
                                             {% endif %}
                                         {% else %}
                                             <b>
-                                                A tour with {{ order.guide.name }}
+                                                A tour with {{ order.guide.user.generalprofile.first_name }}
                                                 at {{ order.date_booked_for|date:"m.d.Y" }}:
                                             </b>
                                             {{ order.hours_nmb|safe }} hours *

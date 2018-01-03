@@ -61,6 +61,7 @@ class IdentityVerificationReport(models.Model):
     type = models.ForeignKey(VerificationReportType, blank=True, null=True, default=None)
     status = models.ForeignKey(VerificationReportStatus, blank=True, null=True, default=None)
     result = models.ForeignKey(VerificationReportResult, blank=True, null=True, default=None)
+    description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
