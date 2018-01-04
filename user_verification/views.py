@@ -7,7 +7,7 @@ from .forms import *
 import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from tourzan.settings import ONFIDO_TOKEN_TEST, ONFIDO_IS_TEST_MODE
+from tourzan.settings import ONFIDO_TOKEN, ONFIDO_IS_TEST_MODE
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
