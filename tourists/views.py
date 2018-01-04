@@ -16,17 +16,14 @@ def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
-
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
-
     user_language_native = None
     for user_language in user_languages:
         if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
         else:
             user_language_second = user_language
-
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
 
@@ -39,10 +36,8 @@ def profile_settings_tourist(request):
 
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
-
         UserInterest.objects.filter(user=user).delete()
         UserInterest.objects.bulk_create(user_interest_list)
-
 
         # Languages assigning
         # it is the same peace of code as at guide view - maybe to remake this in the future
@@ -61,7 +56,6 @@ def profile_settings_tourist(request):
 
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
-
 
             #dublication of the peace of code at the beginning of the function
             user_language_native = None
