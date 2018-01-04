@@ -282,9 +282,6 @@ DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
 AXES_COOLOFF_TIME = 3
 
-# ONFIDO_TOKEN_TEST = "test_tLlvRsGwFHHBHZr_mw02f372SkQwFAb3"
-ONFIDO_TOKEN_TEST = "live_ZGcfPjhQQg9u1PbNxJktEr9n7B9W1EMP"
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 

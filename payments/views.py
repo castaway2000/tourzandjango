@@ -200,7 +200,7 @@ def order_payment_checkout(request, order_id):
         data = request.POST
 
         guide = order.guide
-        topic = "Chat with %s" % guide.name
+        topic = "Chat with %s" % guide.user.generalprofile.first_name
 
         print(user)
         print(guide.user)

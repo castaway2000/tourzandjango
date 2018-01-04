@@ -64,14 +64,6 @@
                             {% if forloop.counter|divisibleby:24 %}
                                 </tr>
 
-                                 {% if calendar_item.time_from|date:"D" == "Fri" %}
-                                    <tr>
-                                        <td>
-                                            Weekend
-                                        </td>
-                                    </tr>
-                                 {% endif %}
-
                                 <tr>
                             {% endif %}
 

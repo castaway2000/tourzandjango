@@ -11,6 +11,128 @@
 
             <div class="col-md-7">
                 <div>
+                    <form class="form-horizontal" name="general_profile_form" method="post" autocomplete="off">{% csrf_token %}
+
+                        <div>
+                            <h4>{% trans 'Your Personal Info' %}</h4>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>{% trans 'First Name' %}*</label>
+                                    <input required class="form-control" name="first_name"
+                                               value="{{ general_profile.first_name|default_if_none:"" }}">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>{% trans 'Last Name' %}*</label>
+                                    <input required class="form-control" name="last_name"
+                                               value="{{ general_profile.last_name|default_if_none:"" }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if request.session.current_role == "guide" %}
+                            <div>
+                                <h4>{% trans 'Company Info' %}</h4>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                      <input type="checkbox" class=""
+                                            name="{{ form.is_company.html_name }}"
+                                            {% if form.is_company.value %}checked {% endif %}
+                                             id="is_company"
+                                      >{% blocktrans %}Do you represent a company?{% endblocktrans %}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="business_id_container" class="form-group form-group-icon-left
+                                {% if not form.is_company.value %}hidden{% endif %}"
+                            >
+                                <i class="fa fa-lock input-icon"></i>
+                                <label>{% blocktrans %}Business id{% endblocktrans %}:</label>
+                                <input class="form-control" name="{{ form.business_id.html_name }}" value="{% if form.business_id.value %}{{ form.business_id.value }}{% endif %}">
+                            </div>
+
+                            <div>
+                                <h4>{% trans 'Your Registration Address' %}</h4>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'Country' %}*</label>
+                                        <select required class="form-control" name="registration_country">
+                                            {% for country in countries %}
+                                                <option>{% trans 'Select a country' %}</option>
+                                                <option value="{{ country }}"
+                                                        {% if country == general_profile.registration_country %}selected{% endif %}>
+                                                    {{ country }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'State' %}</label>
+                                        <input class="form-control" name="registration_state"
+                                               value="{{ general_profile.registration_state|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'City' %}*</label>
+                                        <input required class="form-control" name="registration_city"
+                                               value="{{ general_profile.registration_city|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'Street' %}*</label>
+                                        <input required class="form-control" name="registration_street"
+                                               value="{{ general_profile.registration_street|default_if_none:"" }}">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label>{% trans 'Building' %}*</label>
+                                        <input required class="form-control" name="registration_building_nmb"
+                                               value="{{ general_profile.registration_building_nmb|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>{% trans 'Flat' %}</label>
+                                        <input class="form-control" name="registration_flat_nmb"
+                                               value="{{ general_profile.registration_flat_nmb|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>{% trans 'Postcode' %}</label>
+                                        <input class="form-control" name="registration_postcode"
+                                               value="{{ general_profile.registration_postcode|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
+                        </div>
+
+                    </form>
+                </div>
+
+                 <div>
+                    <hr>
+                    <h4>{% blocktrans %}Password management section{% endblocktrans %}</h4>
+                    <a href="{% url 'password_changing' %}" class="btn btn-danger">
+                        {% blocktrans %}Change password{% endblocktrans %}
+                    </a>
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-5">
+
+                <div>
                     <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
 
                     <div>
@@ -107,7 +229,7 @@
 
                                         <div class="form-group">
                                             <label>{% blocktrans %}Phone {% endblocktrans %}</label>
-                                            <span id="phone_error_message" class="text-error">{{ verification_form.phone.errors }}</span>
+                                            <span id="phone_error_message" class="text-error"></span>
                                             <input type="text" class="form-control intl-phone-input" name="{{ verification_form.phone.html_name }}"
                                                    id="{{ verification_form.phone.html_name }}"
 
@@ -165,61 +287,15 @@
                             </div>
                         </form>
                     </div>
-
-                    <div>
-                        <hr>
-                        <form class="form-horizontal" name="general_profile_form" method="post">{% csrf_token %}
-
-                            <div class="form-group form-group-icon-left">
-                                <i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Address{% endblocktrans %}:</label>
-                                <textarea class="form-control" name="{{ form.address.html_name }}">{% if form.address.value %}{{ form.address.value }}{% endif %}</textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <label>
-                                      <input type="checkbox" class=""
-                                            name="{{ form.is_company.html_name }}"
-                                            {% if form.is_company.value %}checked {% endif %}
-                                             id="is_company"
-                                      >{% blocktrans %}Do you represent a company?{% endblocktrans %}
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div id="business_id_container" class="form-group form-group-icon-left
-                                {% if not form.is_company.value %}hidden{% endif %}"
-                            >
-                                <i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Business id{% endblocktrans %}:</label>
-                                <input class="form-control" name="{{ form.business_id.html_name }}" value="{% if form.business_id.value %}{{ form.business_id.value }}{% endif %}">
-                            </div>
-
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
-                            </div>
-                        </form>
-                    </div>
-
                 </div>
 
-            </div>
-            <div class="col-lg-5">
-                <div>
-                    <h4>{% blocktrans %}Password management section{% endblocktrans %}</h4>
-                    <a href="{% url 'password_changing' %}" class="btn btn-danger">
-                        {% blocktrans %}Change password{% endblocktrans %}
-                    </a>
-                </div>
-
-                <div class="mt20">
+                <div class="">
                     <h5>{% blocktrans %}Trusted Status.{% endblocktrans %}</h5>
                     <p>{% blocktrans %}You can gain trusted status by connecting 2 of the following 3 things:{% endblocktrans %}</p>
                     <ul>
                         <li>{% blocktrans %}Your phone{% endblocktrans %}</li>
                         <li>
-                            {% blocktrans %}Home Address{% endblocktrans %}
+                            {% blocktrans %}Registration Address{% endblocktrans %}
                         </li>
                         <li>{% blocktrans %}Government issued ID{% endblocktrans %}</li>
                         <li>{% blocktrans %}Social Media{% endblocktrans %}</li>
