@@ -7,7 +7,7 @@ from .forms import *
 import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from tourzan.settings import ONFIDO_TOKEN_TEST, ONFIDO_IS_TEST_MODE
+from tourzan.settings import ONFIDO_TOKEN, ONFIDO_IS_TEST_MODE
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -130,7 +130,7 @@ def identity_verification_photo(request):
         general_profile.webcam_image = webcam_img_file
         general_profile.save(force_update=True)
 
-        token = "Token token=%s" % ONFIDO_TOKEN_TEST
+        token = "Token token=%s" % ONFIDO_TOKEN
         headers = {'Content-type': 'application/json', 'Authorization': token}
 
         #applicant creation
@@ -290,7 +290,7 @@ def identity_verification_webhook(request):
 
     try:
         report = IdentityVerificationReport.objects.get(report_id=report_id)
-        token = "Token token=%s" % ONFIDO_TOKEN_TEST
+        token = "Token token=%s" % ONFIDO_TOKEN
         headers = {'Authorization': token}
         report_url = report.report_url
         r = requests.get(report_url, headers=headers)
