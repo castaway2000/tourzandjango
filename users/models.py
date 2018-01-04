@@ -14,6 +14,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from guides.models import GuideProfile
 from utils.uploadings import upload_path_handler_guide_webcam_image
 import pycountry
+from datetime import date
 
 
 def user_login_function(sender, user, **kwargs):
@@ -106,6 +107,8 @@ class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
     first_name = models.CharField(max_length=256, blank=True, null=True)
     last_name = models.CharField(max_length=256, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True, default=None)
+    age = models.IntegerField(default=0)
 
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
     is_verified = models.BooleanField(default=False)#is verified by docs
@@ -152,6 +155,20 @@ class GeneralProfile(models.Model):
         if not self.pk or self.registration_country != self._original_fields["registration_country"]:
             if self.registration_country:
                 self.registration_country_ISO_3_digits = pycountry.countries.get(name=self.registration_country).alpha_3
+
+
+        if self.date_of_birth:
+            today = date.today()
+            print(today)
+            print(type(today))
+
+            date_of_birth = self.date_of_birth
+            print(date_of_birth)
+            print(type(date_of_birth))
+
+            age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+            self.age = age
+
         super(GeneralProfile, self).save(*args, **kwargs)
 
 
