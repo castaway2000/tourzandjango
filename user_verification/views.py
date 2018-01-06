@@ -126,8 +126,8 @@ def identity_verification_photo(request):
         general_profile.webcam_image = webcam_img_file
         general_profile.save(force_update=True)
 
-        token = "Token token=%s" % ONFIDO_TOKEN_TEST
-        headers = {'Content-type': 'application/json', 'Authorization': token}
+        token = "Token token=%s" % ONFIDO_TOKEN
+        headers = {'Authorization': token}
 
         #applicant creation
         try:
@@ -157,9 +157,11 @@ def identity_verification_photo(request):
             applicant_data["addresses"] = [address]
             json_data = json.dumps(applicant_data)
 
-            r = requests.post(url, data=json_data, headers=headers)
+            custom_headers = {'Content-type': 'application/json', 'Authorization': token}
+            r = requests.post(url, data=json_data, headers=custom_headers)
             print ("new applicant was created")
             result = r.json()
+            print(result)
             applicant = IdentityVerificationApplicant.objects.create(general_profile=general_profile,
                                                          applicant_id=result["id"],
                                                          applicant_url=result["href"]
@@ -224,13 +226,13 @@ def identity_verification_photo(request):
                 "type": "express",
                 "reports[][name]": ["identity"],
             }
-            if ONFIDO_IS_TEST_MODE:
+            if ONFIDO_IS_TEST_MODE==False:
                 check_data["reports[][name]"].append("document")
 
             r = requests.post(url, data=check_data, headers=headers)
             result = r.json()
             print(result)
-            print ("check was created1")
+            print ("check was created!!!")
             check = IdentityVerificationCheck.objects.create(applicant=applicant,
                                                              check_id=result["id"],
                                                              check_url=result["href"]
@@ -286,7 +288,7 @@ def identity_verification_webhook(request):
 
     try:
         report = IdentityVerificationReport.objects.get(report_id=report_id)
-        token = "Token token=%s" % ONFIDO_TOKEN_TEST
+        token = "Token token=%s" % ONFIDO_TOKEN
         headers = {'Authorization': token}
         report_url = report.report_url
         r = requests.get(report_url, headers=headers)

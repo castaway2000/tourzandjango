@@ -296,25 +296,28 @@ def profile_settings_guide(request, guide_creation=True):
 
     try:
         guide = user.guideprofile
-        creating_guide=False
+        creating_guide = False
     except:
         if request.session.get("guide_registration_welcome_page_seen") != True:
             return HttpResponseRedirect(reverse("guide_registration_welcome"))
         else:
             guide = None
-            creating_guide=True
+            creating_guide = True
 
     if guide:
         form = GuideProfileForm(request.POST or None, request.FILES or None, instance=guide)
     else:
         form = GuideProfileForm(request.POST or None, request.FILES or None)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.is_valid():
+
+        form_data = form.cleaned_data
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
         general_profile.first_name = request.POST.get("first_name")
         general_profile.last_name = request.POST.get("last_name")
+        general_profile.date_of_birth = form_data["date_of_birth"]
         general_profile.save(force_update=True)
 
         #Interests assigning
@@ -326,11 +329,8 @@ def profile_settings_guide(request, guide_creation=True):
 
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
-
-
         UserInterest.objects.filter(user=user).delete()
         UserInterest.objects.bulk_create(user_interest_list)
-
 
         # Languages assigning
         language_native = request.POST.get("language_native")
@@ -349,7 +349,6 @@ def profile_settings_guide(request, guide_creation=True):
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
-
             #dublication of the peace of code at the beginning of the function
             user_language_native = None
             for user_language in user_languages:
@@ -366,44 +365,42 @@ def profile_settings_guide(request, guide_creation=True):
                                                        defaults={"full_location": full_location,
                                                                "original_name": city_original_name})
 
-        print("pre form is valid")
-        if form.is_valid():
-            new_form = form.save(commit=False)
-            if place_id:
-                new_form.city = city
-            if not guide:
-                new_form.user = user
-                new_form.is_active = True
-            new_form = form.save()
 
-            #saving services
-            guide = new_form
-            guide_services_ids_list = list()
-            for name, value in request.POST.items():
-                string_key = "service_"
-                if name.startswith(string_key):
-                    cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
-                    service = Service.objects.get(html_field_name=cleared_name)
-                    price_field_name = "serviceprice_%s" % cleared_name
-                    price = request.POST.get(price_field_name, 0)
-                    guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
-                                                                                   is_active=True, defaults={"price": price})
-                    guide_services_ids_list.append(guide_service.id)
+        new_form = form.save(commit=False)
+        if place_id:
+            new_form.city = city
+        if not guide:
+            new_form.user = user
+            new_form.is_active = True
+        new_form = form.save()
 
-            GuideService.objects.filter(guide=guide).exclude(id__in=guide_services_ids_list).update(is_active=False)
+        #saving services
+        guide = new_form
+        guide_services_ids_list = list()
+        for name, value in request.POST.items():
+            string_key = "service_"
+            if name.startswith(string_key):
+                cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
+                service = Service.objects.get(html_field_name=cleared_name)
+                price_field_name = "serviceprice_%s" % cleared_name
+                price = request.POST.get(price_field_name, 0)
+                guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
+                                                                               is_active=True, defaults={"price": price})
+                guide_services_ids_list.append(guide_service.id)
 
-            if creating_guide:
-                #after success registration delete of pending variable which set redirect to Welcome page
-                if "guide_registration_welcome_page_seen" in request.session:
-                    del request.session["guide_registration_welcome_page_seen"]
-                request.session["current_role"] = "guide"
-                messages.success(request, 'Profile has been created! Please complete identity verification process!')
-                return HttpResponseRedirect(reverse("identity_verification_router"))
-            else:
-                messages.success(request, 'Profile has been updated!')
-        else: #if form is invalid
-            print("form errors: %s" % form.errors)
-        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        GuideService.objects.filter(guide=guide).exclude(id__in=guide_services_ids_list).update(is_active=False)
+
+        if creating_guide:
+            #after success registration delete of pending variable which set redirect to Welcome page
+            if "guide_registration_welcome_page_seen" in request.session:
+                del request.session["guide_registration_welcome_page_seen"]
+            request.session["current_role"] = "guide"
+            messages.success(request, 'Profile has been created! Please complete identity verification process!')
+            return HttpResponseRedirect(reverse("identity_verification_router"))
+        else:
+            messages.success(request, 'Profile has been updated!')
+
+        #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
     services = Service.objects.all()
