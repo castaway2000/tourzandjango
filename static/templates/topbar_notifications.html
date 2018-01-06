@@ -1,5 +1,11 @@
 {% load i18n %}
 <div class="messages-container">
+    {% if request.session.pending_order_creation %}
+        <div class="well">
+            {% trans 'You have a pending order' %}.
+            <a href="{% url 'making_booking' %}" class="btn btn-sm btn-primary">{% trans 'Click here' %}</a> {% trans 'to go to it' %}.
+        </div>
+    {% endif %}
 
     {% for message in messages %}
         {% if forloop.last %}

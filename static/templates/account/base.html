@@ -42,14 +42,12 @@
 
         {% include 'navbar.html' %}
 
-        {% include 'errors_notification.html' %}
+        {% include 'topbar_notifications.html' %}
 
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-lg-offset-3">
-
                     <div class="gap"></div>
-
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -60,7 +58,6 @@
 
         <form id="csrf_getting_form" class="hidden">{% csrf_token %}
         </form>
-
 
 {#        <script src="{% static 'js/jquery.js' %}"></script>#}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
