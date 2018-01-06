@@ -139,7 +139,7 @@ class SendingEmail(object):
                   "and set your <a href='https://www.tourzan.com/en/calendar/'>calendar</a> " \
                   "so that tourists can hire you.\n\n" \
                   "Have a great day.\n" \
-                  "-The Tourzan Team"
+                  "<br><br>The Tourzan Team</p>"
         to_user = User.objects.get(id=user_id)
         to_email = [to_user.email]
         self.sending_email(to_user, to_email, subject, message)
