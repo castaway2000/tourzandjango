@@ -15,4 +15,4 @@ class DocsUploadingForm(forms.Form):
     registration_street = forms.CharField(required=True)
     registration_building_nmb = forms.CharField(required=True)
     registration_flat_nmb = forms.CharField(required=False)
-    registration_postcode = forms.CharField(required=True)
+    registration_postcode = forms.CharField(required=False)

@@ -67,14 +67,10 @@ def identity_verification_ID_uploading(request):
 
     general_profile = user.generalprofile
     if request.POST:
-        print("post")
         #documents uploading section
-
         if form.is_valid():
             # data = request.POST
-            data = form.cleaned_data
-            print("data: %s" % data)
-
+            data = request.POST
             general_profile.registration_country = data.get("registration_country")
             general_profile.registration_state = data.get("registration_state")
             general_profile.registration_city = data.get("registration_city")
