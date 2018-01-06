@@ -13,6 +13,7 @@ def transfer_name():
     for guide in guides.iterator():
         profile, created = GeneralProfile.objects.get_or_create(user=guide.user)
         profile.first_name = guide.name
+        profile.date_of_birth = guide.date_of_birth
         profile.save(force_update=True)
 
 if __name__ == "__main__":

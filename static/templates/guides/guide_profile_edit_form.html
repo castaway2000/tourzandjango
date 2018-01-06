@@ -35,7 +35,8 @@
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
                     <input required class="form-control" name="first_name"
-                           value="{% if user.generalprofile.first_name %}{{ user.generalprofile.first_name }}{% endif %}">
+                           value="{% if request.POST.first_name %}{{ request.POST.first_name }}
+                           {% elif user.generalprofile.first_name %}{{ user.generalprofile.first_name }}{% endif %}">
                 </div>
             </div>
 
@@ -45,7 +46,8 @@
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
                     <input required class="form-control" name="last_name"
-                           value="{% if user.generalprofile.last_name %}{{ user.generalprofile.last_name }}{% endif %}">
+                           value="{% if request.POST.last_name %}
+                           {{ request.POST.last_name }}{% elif user.generalprofile.last_name %}{{ user.generalprofile.last_name }}{% endif %}">
                 </div>
             </div>
 
@@ -89,16 +91,16 @@
 
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
-                <span class="text-error">{{ form.date_of_birth.errors }}</span>
+{#                <span class="text-error">{{ form.date_of_birth.errors }}</span>#}
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control datepicker" data-date-format="mm.dd.yyyy"
+                    <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
                            id="date_of_birth"
-                           name="{{ form.date_of_birth.html_name }}"
+                           name="date_of_birth"
                            {% if request.POST.date_of_birth %}
                                 value="{{ request.POST.date_of_birth }}"
                            {% else %}
-                                value="{{ form.date_of_birth.value|date:'m.d.Y' }}"
+                                value="{{ user.generalprofile.date_of_birth|date:'m.d.Y' }}"
                            {% endif %}
                     >
                 </div>

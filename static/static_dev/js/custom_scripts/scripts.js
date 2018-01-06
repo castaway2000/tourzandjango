@@ -234,6 +234,7 @@ $(document).ready(function(){
 });
 
 $('.datepicker').datepicker();
+$('.datepicker-date').datepicker();
 
 //$('.datepicker.today-date').datepicker('setDate', 'today');
 //
