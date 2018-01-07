@@ -179,7 +179,7 @@ def guides(request):
         return render(request, 'guides/guides.html', locals())
 
 
-def guide(request, username):
+def guide(request, username, new_view=None):
     user = request.user
 
     #referal id for partner to track clicks in iframe
@@ -240,13 +240,19 @@ def guide(request, username):
     except EmptyPage:
         reviews = paginator.page(paginator.num_pages)
 
+    #it is not used so far
     context = {
         "guide": guide,
         "reviews": reviews,
         "guide_services": guide_services
     }
 
-    return render(request, 'guides/guide.html', locals())
+    guide_answers = GuideAnswer.objects.filter(guide=guide).order_by("order_priority", "id")
+
+    if new_view=="new":
+        return render(request, 'guides/guide_new.html', locals())
+    else:
+        return render(request, 'guides/guide.html', locals())
 
 
     """
