@@ -6,200 +6,92 @@
 {% get_language_info_list for LANGUAGES as languages %}
 
 
-<header id="main-header">
-    <div class="header-top header-white">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-2 hidden-sm hidden-xs">
-                    <div class="navbar-header">
-                        <div class="navbar-brand no-padding">
-                            <a class="navbar-brand navbar-logo" href="/">
-                                <span>
-                                    <img src="{% static 'img/tourzan_logo_white.jpg' %}" class="navbar-logo"
-                                     alt="Tourzan logo" title="Tourzan logo" />
-                                </span>
-                            </a>
-                            <div class="pull-left navbar-logo-text">
-                                <a href="{% url 'home' %}">Tourzan&trade;</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-7 col-sm-12 col-xs-12">
-                    <div class="nav nav-menu">
-                        <ul class="slimmenu top-menu" id="slimmenu">
-{#                            <li class="{% if current_page == "home" %}active{% endif %}">#}
-{#                                <a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>#}
-{#                            </li>#}
-
-                            {% if request.session.current_role != "guide"  %}
-                                <li class="{% if current_page == "guides" %}active{% endif %}">
-                                    <a href="{% url 'guides' %}">{% blocktrans %}GUIDES{% endblocktrans %}</a>
-                                </li>
-
-                                <li class="{% if current_page == "tours" %}active{% endif %}">
-                                    <a href="{% url 'tours' %}">{% blocktrans %}TOURS{% endblocktrans %}</a>
-                                </li>
-                            {% endif %}
-
-                            {% if not user.is_anonymous %}
-                                {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                    <li class="{% if current_page == "bookings" %}active{% endif %}">
-                                        <a href="{% url 'my_bookings' %}">{% blocktrans %}My Bookings{% endblocktrans %}</a>
-{#                                        <ul>#}
-{#                                            <li><a href="{% url 'my_bookings_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'my_bookings_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'my_bookings_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'my_bookings_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by guide{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'my_bookings_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                        </ul>#}
-                                    </li>
-                                {% else %}
-                                    <li class="{% if current_page == "orders" %}active{% endif %}">
-                                        <a href="{% url 'orders' %}">{% blocktrans %}Orders{% endblocktrans %}</a>
-{#                                        <ul>#}
-{#                                            <li><a href="{% url 'orders_status' 'pending' %}">{% blocktrans %}Pending{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'orders_status' 'waiting-for-payment'%}">{% blocktrans %}Waiting for payment{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'orders_status' 'agreed' %}">{% blocktrans %}Agreed{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'orders_status' 'cancelled-by-tourist' %}">{% blocktrans %}Cancelled by tourist{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'orders_status' 'cancelled-by-guide' %}">{% blocktrans %}Cancelled by me{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                            <li><a href="{% url 'orders_status' 'completed' %}">{% blocktrans %}Completed{% endblocktrans %}</a>#}
-{#                                            </li>#}
-{#                                        </ul>#}
-                                    </li>
-                                {% endif %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Static navbar -->
+              <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                  <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                      <span class="sr-only">Toggle navigation</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand navbar-logo" href="/">
+                        <span>
+                            <img src="{% static 'img/tourzan_logo_white.jpg' %}" class="navbar-logo"
+                             alt="Tourzan logo" title="Tourzan logo" />
+                        </span>
+                    </a>
+                    <a class="navbar-brand" href="/">Tourzan</a>
+                  </div>
 
 
-                                <li><a href="{% url 'chats' %}">{% blocktrans %}Chats{% endblocktrans %}</a>
+        {#        <div class="collapse navbar-collapse navbar-right">#}
+        {#          <!--                      pull-right keeps the drop-down in line -->#}
+        {#          <ul class="nav navbar-nav pull-right">#}
+        {#            <li><a href="/locator">Locator</a>#}
+        {#            </li>#}
+        {#            <li><a href="/extras">Extras</a>#}
+        {#            </li>#}
+        {#          </ul>#}
+        {#        </div>#}
 
 
-                                <li>
-                                    <a href="{% url 'settings_router' %}">
-                                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                            {% blocktrans %}Tourist Settings{% endblocktrans %}
-                                        {% else %}
-                                            {% blocktrans %}Guide Settings{% endblocktrans %}
-                                        {% endif %}
-                                    </a>
-                                    <ul>
-                                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                            <li><a href="{% url 'profile_settings_tourist' %}">{% blocktrans %}Profile{% endblocktrans %}</a>
-                                            </li>
-                                        {% else %}
-                                            <li><a href="{% url 'profile_settings_guide' %}">{% blocktrans %}Profile{% endblocktrans %}</a>
-                                            </li>
-                                        {% endif %}
-
-                                        <li>
-                                            <a href="{% url 'general_settings' %}">{% blocktrans %}Account{% endblocktrans %}</a>
-                                        </li>
-
-                                        {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                            <li>
-                                                <a href="{% url 'payments' %}">{% blocktrans %}My Payments{% endblocktrans %}</a>
-                                            </li>
-                                        {% elif  request.session.current_role == "guide" %}
-                                            <li>
-                                                <a href="{% url 'earnings' %}">{% blocktrans %}My Earnings{% endblocktrans %}</a>
-                                            </li>
-                                        {% endif %}
-
-                                        <li>
-                                            {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                                {% if user.guideprofile %}
-                                                    <a href="{% url 'change_role' %}">
-                                                        {% blocktrans %}Switch to Guide{% endblocktrans %}
-                                                    </a>
-                                                {% else %}
-                                                    <a href="{% url 'guide_registration_welcome' %}">
-                                                        {% blocktrans %}Want to be a guide?{% endblocktrans %}
-                                                    </a>
-                                                {% endif %}
-                                            {% else %}
-                                                <a href="{% url 'change_role' %}">
-                                                    {% blocktrans %}Switch to Tourist{% endblocktrans %}
-                                                </a>
-                                            {% endif %}
-                                        </li>
-                                    </ul>
-                                </li>
-                            {% else %}
-                                <li class="{% if current_page != "guides" and current_page != "tours" %}active{% endif %}">
-                                     <a href="{% url 'guide_registration_welcome' %}">
-                                        {% blocktrans %}Sign up as a guide!{% endblocktrans %}
-                                     </a>
-                                </li>
-                            {% endif %}
-
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12 col-xs-12">
-                    <div class="top-user-area clearfix">
-                        <ul class="top-user-area-list list list-horizontal list-border">
-                            {% if user.is_anonymous %}
-                                <li><a href="{% url 'login' %}">{% blocktrans %}Log In{% endblocktrans %}</a>
-                            {% else %}
-                                <li class="top-user-area-avatar">
-                                    <a href="{% url 'settings_router' %}">
-                                        Hi, {{ request.user.username }}
-                                    </a>
-                                </li>
-                                <li><a href="{% url 'logout' %}">{% blocktrans %}Logout{% endblocktrans %}</a>
-                                </li>
-                            {% endif %}
-
-                            <li class="top-user-area-lang nav-drop">
-
-                                <a href="#" class="change-language-link">
-                                    {{ LANGUAGE_CODE }}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i>
+                  <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        {% include 'navbar_main_menu_items.html' %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_anonymous %}
+                            <li><a href="{% url 'login' %}">{% blocktrans %}Log In{% endblocktrans %}</a>
+                        {% else %}
+                            <li class="top-user-area-avatar">
+                                <a href="{% url 'settings_router' %}">
+                                    Hi, {{ request.user.username }}
                                 </a>
-
-
-                                <ul class="list nav-drop-menu">
-                                    {% for language in languages %}
-                                        {% if language.code != LANGUAGE_CODE %}
-                                            <li>
-                                                <a href="{% url 'set_language' language.code %}" class="change-language-link">
-                                                    {{ language.code }}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                </ul>
                             </li>
+                            <li><a href="{% url 'logout' %}">{% blocktrans %}Logout{% endblocktrans %}</a>
+                            </li>
+                        {% endif %}
 
-                            {% if not user.is_anonymous %}
-                                <li>
-                                    {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                        <span class="">{% blocktrans %}Tourist{% endblocktrans %}</span>
-                                    {% else%}
-                                        <span class="">{% blocktrans %}Guide{% endblocktrans %}</span>
+                        <li class="top-user-area-lang nav-drop">
+
+                            <a href="#" class="change-language-link">
+                                {{ LANGUAGE_CODE }}<i class="fa fa-angle-down"></i>
+                            </a>
+                            <ul class="list nav-drop-menu">
+                                {% for language in languages %}
+                                    {% if language.code != LANGUAGE_CODE %}
+                                        <li>
+                                            <a href="{% url 'set_language' language.code %}" class="change-language-link">
+                                                {{ language.code }}
+                                            </a>
+                                        </li>
                                     {% endif %}
-                                    <a href="{% url 'change_role' %}">
-                                        <i class="fa fa-exchange" aria-hidden="true"></i>
-                                    </a>
-                                </li>
-                            {% endif %}
+                                {% endfor %}
 
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            </ul>
+                        </li>
+
+                        {% if not user.is_anonymous %}
+                            <li>
+                                {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                                    <span class="">{% blocktrans %}Tourist{% endblocktrans %}</span>
+                                {% else%}
+                                    <span class="">{% blocktrans %}Guide{% endblocktrans %}</span>
+                                {% endif %}
+                                <a href="{% url 'change_role' %}">
+                                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                  </div>
+                </div><!--/.container-fluid -->
+              </nav>
+         </div>
     </div>
-
-</header>
+</div>

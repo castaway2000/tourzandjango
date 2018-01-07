@@ -392,7 +392,7 @@ footer#main-footer {
 }
 
 .slimmenu-collapse-button .slimmenu-icon-bar {
-    background-color: #31dc72;;
+    background-color: #31dc72;
 }
 
 .booking-filters-container{
@@ -552,6 +552,63 @@ fieldset.verification-form legend {
     padding: 5px 5px 5px 10px;
     background-color: #31dc72;
     color: white;
+}
+
+.thumb{
+    text-align: center;
+}
+
+.navbar{
+    border: 0;
+    background-color: white;
+}
+
+.navbar-brand{
+    color: #31dc72!important;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.navbar li.active a{
+    background: #70fca5 !important;
+    color: white;
+    font-size: 18px;
+}
+
+.nav-drop .fa-angle-down {
+    position: absolute;
+    right: 0;
+    line-height: inherit;
+    top: 16px;
+    font-size: 90%;
+    opacity: 0.7;
+}
+
+.nav-drop.active-drop .fa-angle-up {
+    top: 15px;
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    right: 0;
+}
+
+.select2-container {
+    width: 100%
+}
+
+.navbar{
+    padding-top: 15px;
+    border-bottom: 1px solid #31dc72;
+    padding-bottom: 7px;
+    border-radius: 0;
+}
+
+.top-area.show-onload{
+    min-height: 700px;
+}
+
+.navbar-brand{
+    margin-left: 0;
 }
 
 @media (max-width:1260px) {

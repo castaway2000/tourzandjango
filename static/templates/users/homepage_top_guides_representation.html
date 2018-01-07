@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="col-md-3 col-sm-4 col-xs-4">
+<div class="col-md-3 col-sm-12 col-xs-12">
     <div class="thumb">
         <header class="thumb-header">
             <a href="{% url 'guide' guide.user__username %}" class="hover-img" href="#">
@@ -12,7 +12,6 @@
                 {% endif %}
                      alt="Image of {{ guide.user__first_name }} {{ guide.user__last_name }}"
                      title="{{ guide.user__first_name }} {{ guide.user__last_name }}" />
-                <i class="fa fa-plus box-icon-white box-icon-border hover-icon-top-right round"></i>
             </a>
         </header>
         <div class="thumb-caption">
