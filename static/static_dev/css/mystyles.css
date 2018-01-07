@@ -593,6 +593,10 @@ fieldset.verification-form legend {
     font-weight: 100;
 }
 
+.profile-container .social-networks{
+    padding: 25px 0 45px 0;
+}
+
 .profile-container .actions-panel{
     background: whitesmoke;
     padding: 10px;

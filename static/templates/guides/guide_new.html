@@ -40,7 +40,22 @@
                         <span class="name">{{ guide.user.generalprofile.first_name }}</span>, <span>{{ guide.user.generalprofile.age }}</span><br>
                         <span class="profession">{{ guide.user.generalprofile.profession }}</span>
                     </div>
+
                     <div class="answers">
+                        {% if guide.user.userinterest_set.all %}
+                            <div class="answer-container">
+                                <p class="question">{% trans 'ASK' %} {{ guide.user.generalprofile.first_name }} {% trans 'ABOUT' %}</p>
+                                <p class="answer">
+                                    {% for item in guide.user.userinterest_set.all %}
+                                        <span class="label label-default label-tag">
+                                            {{ item.interest.name }}
+                                        </span>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        {% endif %}
+
+
                         {% for guide_answer in guide_answers %}
                             <div class="answer-container">
                                 <p class="question">{{ guide_answer.question.text }}</p>
@@ -52,6 +67,24 @@
                                 {% endif %}
                             </div>
                         {% endfor %}
+                    </div>
+
+                    <div class="social-networks text-center">
+                        {% if guide.user.generalprofile.twitter %}
+                            <a href="https://twitter.com/intent/user?user_id={{ guide.user.generalprofile.twitter }}"
+                               target="_blank"
+                               class="btn btn-social-icon btn-twitter btn-lg"><span class="fa fa-twitter"></span></a>
+                        {% endif %}
+                        {% if guide.user.generalprofile.facebook %}
+                            <a href="https://facebook.com/{{ guide.user.generalprofile.facebook }}"
+                                target="_blank"
+                                class="btn btn-social-icon btn-facebook btn-lg"><span class="fa fa-facebook"></span></a>
+                        {% endif %}
+                        {% if guide.user.generalprofile.instagram %}
+                            <a href="https://instagram.com/{{ guide.user.generalprofile.instagram }}"
+                                target="_blank"
+                                class="btn btn-social-icon btn-instagram btn-lg"><span class="fa fa-instagram"></span></a>
+                        {% endif %}
                     </div>
 
                     <div class="actions-panel">

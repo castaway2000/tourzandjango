@@ -118,6 +118,7 @@ class GeneralProfile(models.Model):
     facebook = models.CharField(max_length=64, blank=True, null=True, default=None)
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
     google = models.CharField(max_length=64, blank=True, null=True, default=None)
+    instagram = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
