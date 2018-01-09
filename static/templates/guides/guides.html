@@ -141,9 +141,10 @@
                                         <div class="checkbox">
                                             <label>
                                                 <input class="i-check" type="checkbox" name="is_verified"
-                                                        {% if not request.GET.is_verified and request.GET.filter_form_data %}
+                                                        {% if request.GET.is_verified and request.GET.filter_form_data %}
+                                                       checked
                                                        {% else %}
-                                                       checked {% endif %}
+                                                        {% endif %}
                                                 >
                                                 {% blocktrans %}Show only verified guides{% endblocktrans %}
                                             </label>
