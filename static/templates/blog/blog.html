@@ -34,16 +34,10 @@
                                 <a class="text-darken" href="{% url 'blog_post' blog_post.slug %}">
                                     {{ blog_post.name }}
                                 </a></h4>
-{#                            <ul class="post-meta">#}
-{#                                <li><i class="fa fa-calendar"></i><a href="#">{{ blog_post.created|date:"m.d.Y" }}</a>#}
-{#                                </li>#}
-{#                                <li><i class="fa fa-user"></i><a href="#">{{ blog_post.author }}</a>#}
-{#                                </li>#}
-{#                                <li><i class="fa fa-tags"></i><a href="#">{{ blog_post.tags }}</a>#}
-{#                                </li>#}
-{#                                <li><i class="fa fa-comments"></i><a href="#">0 Comments</a>#}
-{#                                </li>#}
-{#                            </ul>#}
+                            <ul class="post-meta">
+                                <li><i class="fa fa-calendar"></i><a href="#">{{ blog_post.created|date:"m.d.Y" }}</a>
+                                </li>
+                            </ul>
                             <p class="blog-text">
                                 {{ blog_post.text|safe|truncatechars_html:200 }}
                             </p>
@@ -71,9 +65,7 @@
                         {% endif %}
                     </ul>
                 {% endif %}
-
                 <div class="gap"></div>
-
             </div>
             <div class="col-md-4">
                 {% include 'blog/blog_post_rightbar.html' %}
