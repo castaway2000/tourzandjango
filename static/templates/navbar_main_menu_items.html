@@ -1,0 +1,86 @@
+{% load static %}
+{% load i18n %}
+
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
+
+
+{% if request.session.current_role != "guide"  %}
+    <li class="{% if current_page == "guides" %}active{% endif %}">
+        <a href="{% url 'guides' %}">{% blocktrans %}GUIDES{% endblocktrans %}</a>
+    </li>
+
+    <li class="{% if current_page == "tours" %}active{% endif %}">
+        <a href="{% url 'tours' %}">{% blocktrans %}TOURS{% endblocktrans %}</a>
+    </li>
+{% endif %}
+
+{% if not user.is_anonymous %}
+    {% if request.session.current_role == "tourist" or not request.session.current_role %}
+        <li class="{% if current_page == "bookings" %}active{% endif %}">
+            <a href="{% url 'my_bookings' %}">{% blocktrans %}My Bookings{% endblocktrans %}</a>
+        </li>
+    {% else %}
+        <li class="{% if current_page == "orders" %}active{% endif %}">
+            <a href="{% url 'orders' %}">{% blocktrans %}Orders{% endblocktrans %}</a>
+        </li>
+    {% endif %}
+
+
+    <li><a href="{% url 'chats' %}">{% blocktrans %}Chats{% endblocktrans %}</a>
+
+
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+           aria-haspopup="true" aria-expanded="false">{% trans 'Settings' %} <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                <li><a href="{% url 'profile_settings_tourist' %}">{% blocktrans %}Profile{% endblocktrans %}</a>
+                </li>
+            {% else %}
+                <li><a href="{% url 'profile_settings_guide' %}">{% blocktrans %}Profile{% endblocktrans %}</a>
+                </li>
+            {% endif %}
+
+            <li>
+                <a href="{% url 'general_settings' %}">{% blocktrans %}Account{% endblocktrans %}</a>
+            </li>
+
+            {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                <li>
+                    <a href="{% url 'payments' %}">{% blocktrans %}My Payments{% endblocktrans %}</a>
+                </li>
+            {% elif  request.session.current_role == "guide" %}
+                <li>
+                    <a href="{% url 'earnings' %}">{% blocktrans %}My Earnings{% endblocktrans %}</a>
+                </li>
+            {% endif %}
+
+            <li>
+                {% if request.session.current_role == "tourist" or not request.session.current_role %}
+                    {% if user.guideprofile %}
+                        <a href="{% url 'change_role' %}">
+                            {% blocktrans %}Switch to Guide{% endblocktrans %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'guide_registration_welcome' %}">
+                            {% blocktrans %}Want to be a guide?{% endblocktrans %}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'change_role' %}">
+                        {% blocktrans %}Switch to Tourist{% endblocktrans %}
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    </li>
+{% else %}
+    <li class="{% if current_page != "guides" and current_page != "tours" %}active{% endif %}">
+         <a href="{% url 'guide_registration_welcome' %}">
+            {% blocktrans %}Sign up as a guide!{% endblocktrans %}
+         </a>
+    </li>
+{% endif %}
