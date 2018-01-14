@@ -52,13 +52,17 @@
 
 .facebook-btn {
     background:#3b5998;
-    color: white;
+    color: white!important;
     padding: 10px 10px 6px 10px;;
 }
 .google-plus {
     background:#dd4b39;
-    color: white;
+    color: white!important;
 }
 .btn.facebook:hover{
-    background-color: white;
+    background-color: white!important;
+}
+
+.btn > .fa {
+    margin: 0!important;
 }

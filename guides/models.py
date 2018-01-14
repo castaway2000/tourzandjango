@@ -9,6 +9,7 @@ from locations.models import City, Currency
 from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_profile_image,
                               upload_path_handler_guide_optional_image,
+                              upload_path_handler_guide_image
                               )
 
 
@@ -110,4 +111,20 @@ class GuideService(models.Model):
         return "%s" % self.service.name
 
 
+class Question(models.Model):
+    text = models.TextField()
 
+    def __str__(self):
+        return "%s" % self.text
+
+
+class GuideAnswer(models.Model):
+    guide = models.ForeignKey(GuideProfile)
+    question = models.ForeignKey(Question)
+    text = models.TextField()
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to=upload_path_handler_guide_image, blank=True, null=True)
+    order_priority = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "%s" % self.guide.user.generalprofile.first_name

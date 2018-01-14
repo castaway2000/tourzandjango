@@ -2,9 +2,14 @@ from django.contrib import admin
 from .models import *
 
 
+class GuideAnswerInline(admin.TabularInline):
+    model = GuideAnswer
+    extra = 0
+
 
 class GuideProfileAdmin(admin.ModelAdmin):
     list_display = [field.name for field in GuideProfile._meta.fields]
+    inlines = [GuideAnswerInline]
 
     class Meta:
         model = GuideProfile
@@ -29,4 +34,22 @@ class GuideServiceAdmin(admin.ModelAdmin):
         model = GuideService
 
 admin.site.register(GuideService, GuideServiceAdmin)
+
+
+class QuestionAdmin(admin.ModelAdmin):
+
+    class Meta:
+        model = Question
+
+admin.site.register(Question, QuestionAdmin)
+
+
+class GuideAnswerAdmin(admin.ModelAdmin):
+
+    class Meta:
+        model = GuideAnswer
+
+admin.site.register(GuideAnswer, GuideAnswerAdmin)
+
+
 
