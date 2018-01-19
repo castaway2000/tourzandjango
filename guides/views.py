@@ -96,10 +96,11 @@ def guides(request):
     if filter_form_data and not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 
-    if filter_form_data and not is_verified:
-        pass #show all
-    else:
+    if filter_form_data and is_verified:
         base_kwargs["user__generalprofile__is_verified"] = True
+        # pass #show all
+    # else:
+    #     base_kwargs["user__generalprofile__is_verified"] = True
     # print(request.GET)
     # print(base_kwargs)
 
