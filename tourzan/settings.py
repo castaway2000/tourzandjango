@@ -79,9 +79,12 @@ INSTALLED_APPS = [
     'phonenumber_field',
 
     'corsheaders',
+    'django_extensions',
 ]
 
 MIDDLEWARE_CLASSES = [
+    'django.middleware.cache.UpdateCacheMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
@@ -91,6 +94,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
 
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -176,6 +180,17 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'uuid-malloc01',
+        'TIMEOUT': 1209600,
+    }
+}
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 1209600
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 SITE_ID = 1
 
