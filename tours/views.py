@@ -20,6 +20,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 
 @xframe_options_exempt
 def tours(request):
+    current_page = "tours"
     user = request.user
     base_kwargs = dict()
     hourly_price_kwargs = dict()

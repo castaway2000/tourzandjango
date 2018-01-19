@@ -392,7 +392,7 @@ footer#main-footer {
 }
 
 .slimmenu-collapse-button .slimmenu-icon-bar {
-    background-color: #31dc72;;
+    background-color: #31dc72;
 }
 
 .booking-filters-container{
@@ -554,52 +554,86 @@ fieldset.verification-form legend {
     color: white;
 }
 
-.breadcrumb-guide-container{
-    margin: 20px;
+.thumb{
+    text-align: center;
 }
 
-.breadcrumb-guide-container .breadcrumb{
-    font-size: 18px;
-}
-
-.profile-container{
-    box-shadow: 0 0 20px rgba(0,0,0,.2);
-    min-height: 100vh;
-    background-color: #fff;
-    padding: 10px;
-}
-
-.profile-container .location{
-    font-size: 18px;
+.navbar-brand{
+    color: #31dc72!important;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 15px;
 }
 
-.profile-container .general-info{
-    background: #31dc72;
-    color: white;
-    padding: 10px 20px;
-    margin: 0 -10px;
+.navbar li.active a{
+    /*background: #70fca5 !important;*/
+    background-color: #7beda7 !important;
+    color: white!important;
     font-size: 18px;
 }
 
-.profile-container .answer-container{
-    margin: 15px 0 5px 0;
-    padding: 10px;
+.nav-drop .fa-angle-down {
+    position: relative;
+    line-height: inherit;
+    font-size: 90%;
+    opacity: 0.7;
+    padding-left: 12px;
 }
 
-.profile-container .question{
-    font-size: 18px;
-    font-weight: 100;
+.nav-drop.active-drop .fa-angle-up {
+    top: 15px;
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    right: 0;
 }
 
-.profile-container .social-networks{
-    padding: 25px 0 45px 0;
+.nav-drop.active-drop > .nav-drop-menu {
+    position: relative;
+    height: 100%;
 }
 
-.profile-container .actions-panel{
-    background: whitesmoke;
-    padding: 10px;
+.navbar-collapse.in {
+    height: auto;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+a{
+    outline:none!important;
+}
+
+.select2-container {
+    width: 100%
+}
+
+.navbar{
+    padding-top: 15px;
+    /*border-bottom: 1px solid #31dc72;*/
+    padding-bottom: 7px;
+    border-radius: 0;
+    border: 0;
+    background-color: white;
+    margin-bottom: 0;
+}
+
+.top-area.show-onload{
+    min-height: 700px;
+}
+
+.navbar-brand{
+    margin-left: 0;
+}
+
+@media (min-width: 768px) {
+    .navbar .navbar-nav {
+        display: inline-block;
+        float: none;
+        vertical-align: top;
+    }
+
+    .navbar .navbar-collapse {
+        text-align: center;
+    }
 }
 
 @media (max-width:1260px) {
