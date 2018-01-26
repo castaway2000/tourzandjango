@@ -10,6 +10,24 @@
 
 
 {% block content %}
+    <div class="booking-proposal-container">
+        <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
+            Click here to book a guide!
+        </a>
+    </div>
+
+    <div class="guide-action-container">
+        <div class="main-buttons">
+            <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.id %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
+            <a href="#booking_area" class="btn btn-primary btn-booking-proposal">{%  trans 'Book' %}</a>
+        </div>
+        <div class="scroll-top-container">
+            <a href="#profile_container" class="btn btn-primary" id="scroll_top">
+                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+
     <div class="container">
         <div class="breadcrumb-guide-container text-center">
             <ul class="breadcrumb">
@@ -22,10 +40,7 @@
 
         <div class="row">
             <div class="col-lg-6 col-lg-offset-3">
-                <div class="profile-container">
-                    <div class="location">
-                        {{ guide.city.full_location }}
-                    </div>
+                <div class="profile-container" id="profile_container">
                     <div class="images">
                         <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                             {% for guide_answer in guide_answers %}
@@ -36,15 +51,18 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="general-info">
+                    <div class="location">
+                        {{ guide.city.full_location }}
+                    </div>
+                    <div class="general-info" id="guide_general_info">
                         <span class="name">{{ guide.user.generalprofile.first_name }}</span>, <span>{{ guide.user.generalprofile.age }}</span><br>
-                        <span class="profession">{{ guide.user.generalprofile.profession }}</span>
+                        <span class="profession">{{ guide.user.generalprofile.profession|default_if_none:"" }}</span>
                     </div>
 
                     <div class="answers">
                         {% if guide.user.userinterest_set.all %}
                             <div class="answer-container">
-                                <p class="question">{% trans 'ASK' %} {{ guide.user.generalprofile.first_name }} {% trans 'ABOUT' %}</p>
+                                <p class="question">{% trans 'ASK' %} <b>{{ guide.user.generalprofile.first_name }}</b> {% trans 'ABOUT' %}</p>
                                 <p class="answer">
                                     {% for item in guide.user.userinterest_set.all %}
                                         <span class="label label-default label-tag">
@@ -58,8 +76,10 @@
 
                         {% for guide_answer in guide_answers %}
                             <div class="answer-container">
-                                <p class="question">{{ guide_answer.question.text }}</p>
-                                <p class="answer">{{ guide_answer.text }}</p>
+                                <p class="question">
+                                    <b>{{ guide_answer.question.text|safe }}</b>
+                                </p>
+                                <p class="answer">{{ guide_answer.text|safe }}</p>
                                 {% if guide_answer.image %}
                                     <div class="answer-image">
                                         <img src="{{ guide_answer.image.url }}" class="img-responsive">
@@ -90,12 +110,7 @@
                     <div class="actions-panel">
 
                         <div class="text-center mb10">
-                            {% if guide == request.user.guideprofile %}
-                                <a href="{% url 'chat_creation_guide' guide.id %}"
-                                   class="btn btn-default btn-lg" disabled="">
-                                    {% blocktrans %}Send Message{% endblocktrans %}
-                                </a>
-                            {% else %}
+                            {% if guide != request.user.guideprofile %}
                                 {% if current_order.status.id == 5 %}
                                     <a class="btn btn-primary btn-lg popup-text btn-order-review" href="#writing_feedback_modal"
                                     data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">
@@ -105,138 +120,137 @@
                                 <a class="btn btn-default btn-lg" href="{% url 'chat_creation_guide' guide.id %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
                             {% endif %}
                         </div>
+                    </div>
 
 
-                        <div class="booking-item-dates-change">
+                    <div class="booking-item-dates-change" id="booking_area">
+                        <h3 class="text-center">{% trans 'Booking area' %}</h3>
+                        {% if current_order %}
+                            <div class="text-center">
+                                <h4 class="text-center">
+                                    {% blocktrans %}You have already booked this guide{% endblocktrans %}
+                                </h4>
+                                <a href="" id="book_more">{% blocktrans %}book more{% endblocktrans %}</a>
+                                or
+                                <a href="{% url 'my_bookings' %}?guide={{ guide.user.username}}">{% blocktrans %}Edit{% endblocktrans %}</a>
+                            </div>
+                        {% endif %}
 
-                            {% if current_order %}
-                                <div class="text-center">
-                                    <h4 class="text-center">
-                                        {% blocktrans %}You have already booked this guide{% endblocktrans %}
-                                    </h4>
-                                    <a href="" id="book_more">{% blocktrans %}book more{% endblocktrans %}</a>
-                                    or
-                                    <a href="{% url 'my_bookings' %}?guide={{ guide.user.username}}">{% blocktrans %}Edit{% endblocktrans %}</a>
-                                </div>
-                            {% endif %}
+                        <div id="booking_form_area" class="text-center {% if current_order %}hidden{% endif %}">
+                            <form method="post" id="form_guide_scheduling"
+                                class="form-horizontal schedule-form"
+                                action="{% url 'making_booking' %}"
+                            >{% csrf_token %}
+                                <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
+                                <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
+                                <input class="hidden" id="booking_hours" name="booking_hours">
+                                <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ guide.min_hours }}">
 
-                            <div id="booking_form_area" class="{% if current_order %}hidden{% endif %}">
-                                <form method="post" id="form_guide_scheduling"
-                                    class="form-horizontal schedule-form"
-                                    action="{% url 'making_booking' %}"
-                                >{% csrf_token %}
-                                    <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
-                                    <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
-                                    <input class="hidden" id="booking_hours" name="booking_hours">
-                                    <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ guide.min_hours }}">
-
-                                    {% if guide_services %}
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Select additional services</label>
-                                                    <select multiple class="form-control"
-                                                        id="additional_services_select"
-                                                        name="additional_services_select"
-                                                    >
-                                                        {% for guide_service in guide_services %}
-                                                            <option value="{{ guide_service.id }}">
-                                                                {{ guide_service.service.name }} -
-                                                                {% if guide_service.price == 0 %}
-                                                                    free
-                                                                {% else %}
-                                                                    {{ guide_service.price }}USD
-                                                                {% endif %}
-                                                            </option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+                                {% if guide_services %}
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
-                                                <div class="form-group form-group-icon-left">
-                                                    <i class="fa fa-calendar input-icon"></i>
-                                                    <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                    <input id="booking_date" class="form-control d_picker"
-                                                           name="start" required value="{% now "mm.dd.yyyy" %}"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <p>Time slots:</p>
-                                            <div id="booking_form_error_container"></div>
-                                            <div id="time_slots" class="time-slots-container"
-                                                 data-link="{% url 'available_date_timeslots' %}"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group form-group- form-group-select-plus">
-                                                <label>{% blocktrans %}Number of people:{% endblocktrans %}</label>
-                                                <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                    <label class="btn btn-primary active">
-                                                        <input type="radio" name="options" />1</label>
-                                                    <label class="btn btn-primary">
-                                                        <input type="radio" name="options" />2</label>
-                                                    <label class="btn btn-primary">
-                                                        <input type="radio" name="options" />3</label>
-                                                    <label class="btn btn-primary">
-                                                        <input type="radio" name="options" />4</label>
-                                                    <label class="btn btn-primary">
-                                                        <input type="radio" name="options" />5+</label>
-                                                </div>
-                                                <select class="form-control hidden">
-                                                    <option>1</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option selected="selected">5</option>
-                                                    <option>6</option>
-                                                    <option>7</option>
-                                                    <option>8</option>
-                                                    <option>9</option>
-                                                    <option>10</option>
-                                                    <option>11</option>
-                                                    <option>12</option>
-                                                    <option>13</option>
-                                                    <option>14</option>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Select additional services</label>
+                                                <select multiple class="form-control"
+                                                    id="additional_services_select"
+                                                    name="additional_services_select"
+                                                >
+                                                    {% for guide_service in guide_services %}
+                                                        <option value="{{ guide_service.id }}">
+                                                            {{ guide_service.service.name }} -
+                                                            {% if guide_service.price == 0 %}
+                                                                free
+                                                            {% else %}
+                                                                {{ guide_service.price }}USD
+                                                            {% endif %}
+                                                        </option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12 text-center">
-                                            <div class="form-group text-right">
-                                                 <button type="submit"
-                                                     class="btn btn-primary btn-lg submit-button">
-                                                        {% blocktrans %}Book Now{% endblocktrans %}
-                                                 </button>
+                                {% endif %}
+                                <div class="row">
+                                    <div class="col-lg-4 col-lg-offset-4">
+                                        <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
+                                            <div class="form-group form-group-icon-left">
+                                                <i class="fa fa-calendar input-icon"></i>
+                                                <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
+                                                <input id="booking_date" class="form-control d_picker"
+                                                       name="start" required value="{% now "mm.dd.yyyy" %}"/>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12 text-center">
-                                            <p id="amount_container" class="lead hidden">
-                                                {% blocktrans %}Rate{% endblocktrans %}:
-                                                <b><span id="amount">{{ guide.rate|safe }}</span>
-                                                {{ guide.currency.name }} {% blocktrans %}per hour{% endblocktrans %}
-                                                </b>
-                                            </p>
-                                            <p>
-                                                {% blocktrans %}Minimum{% endblocktrans %}
-                                                {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
+                                    <div class="col-lg-12 text-center">
+                                        <p>Time slots:</p>
+                                        <div id="booking_form_error_container"></div>
+                                        <div id="time_slots" class="time-slots-container"
+                                             data-link="{% url 'available_date_timeslots' %}"></div>
+                                    </div>
+                                </div>
 
-                                            </p>
+                                <div class="row">
+                                    <div class="col-lg-4 col-lg-offset-4">
+                                        <div class="form-group form-group- form-group-select-plus">
+                                            <label>{% blocktrans %}Number of people:{% endblocktrans %}</label>
+                                            <div class="btn-group btn-group-select-num" data-toggle="buttons">
+                                                <label class="btn btn-primary active">
+                                                    <input type="radio" name="options" />1</label>
+                                                <label class="btn btn-primary">
+                                                    <input type="radio" name="options" />2</label>
+                                                <label class="btn btn-primary">
+                                                    <input type="radio" name="options" />3</label>
+                                                <label class="btn btn-primary">
+                                                    <input type="radio" name="options" />4</label>
+                                                <label class="btn btn-primary">
+                                                    <input type="radio" name="options" />5+</label>
+                                            </div>
+                                            <select class="form-control hidden">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option selected="selected">5</option>
+                                                <option>6</option>
+                                                <option>7</option>
+                                                <option>8</option>
+                                                <option>9</option>
+                                                <option>10</option>
+                                                <option>11</option>
+                                                <option>12</option>
+                                                <option>13</option>
+                                                <option>14</option>
+                                            </select>
                                         </div>
                                     </div>
-                                </form>
-                            </div>
-                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <div class="form-group text-center">
+                                             <button type="submit"
+                                                 class="btn btn-primary btn-lg submit-button">
+                                                    {% blocktrans %}Book Now{% endblocktrans %}
+                                             </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <p id="amount_container" class="lead hidden">
+                                            {% blocktrans %}Rate{% endblocktrans %}:
+                                            <b><span id="amount">{{ guide.rate|safe }}</span>
+                                            {{ guide.currency.name }} {% blocktrans %}per hour{% endblocktrans %}
+                                            </b>
+                                        </p>
+                                        <p>
+                                            {% blocktrans %}Minimum{% endblocktrans %}
+                                            {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
 
+                                        </p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -283,7 +297,7 @@
                              })
                          }else{
                              console.log("else");
-                             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
+                             $('#booking_form_error_container').html("<div class='text-center text-error'>" +
                                      "There are no available time slots for this date. <br>" +
                                      "Please select another date.</div>")
                          }
