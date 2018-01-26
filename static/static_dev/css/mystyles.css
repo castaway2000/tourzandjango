@@ -506,6 +506,7 @@ footer#main-footer {
 .time-slots-container{
     text-align: left;
     color: white;
+    margin-bottom: 10px;
 }
 
 .time-slots-container .time-slot{
@@ -624,6 +625,50 @@ a{
     margin-left: 0;
 }
 
+.answer-container{
+    margin-bottom: 30px;
+}
+
+.social-networks{
+    margin-bottom: 10px;
+}
+
+.booking-item-dates-change{
+    margin-bottom: 10px;
+}
+
+.booking-proposal-container{
+    position: fixed;
+    right: 20px;
+    padding: 25px 15px!important;
+    font-size: 18px;
+    z-index: 1000;
+}
+
+.guide-action-container{
+    visibility: hidden;
+    position: fixed;
+    width: 100%;
+    height: 50px;
+    bottom: 0;
+    z-index: 1000;
+    text-align: center;
+}
+
+.guide-action-container>div{
+    display: inline-block;
+}
+
+.guide-action-container .main-buttons{
+    max-width: 340px;
+    text-align: center;
+}
+
+.guide-action-container .scroll-top-container{
+    position: absolute;
+    right: 20px;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
@@ -649,6 +694,15 @@ a{
     .left-menu-toggle-button{
         visibility: visible;
     }
+
+    .booking-proposal-container{
+        visibility: hidden;
+    }
+
+    .guide-action-container{
+        visibility: visible;
+    }
+
 }
 
 @media (max-width:992px) {
@@ -661,6 +715,7 @@ a{
 }
 
 @media (max-width:768px) {
+
   .booking-filters-container{
       top: 0;
       left: 0;

@@ -1,13 +1,14 @@
 from django.contrib import admin
 from .models import *
+from django_summernote.admin import SummernoteModelAdmin, SummernoteInlineModelAdmin
 
 
-class GuideAnswerInline(admin.TabularInline):
+class GuideAnswerInline(admin.TabularInline, SummernoteInlineModelAdmin):
     model = GuideAnswer
     extra = 0
 
 
-class GuideProfileAdmin(admin.ModelAdmin):
+class GuideProfileAdmin(SummernoteModelAdmin):
     list_display = [field.name for field in GuideProfile._meta.fields]
     inlines = [GuideAnswerInline]
 

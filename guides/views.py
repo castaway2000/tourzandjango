@@ -182,7 +182,7 @@ def guides(request):
 
 def guide(request, username, new_view=None):
     user = request.user
-
+    print("new view %s" % new_view)
     #referal id for partner to track clicks in iframe
     ref_id = request.GET.get("ref_id")
     if ref_id and not "ref_id" in request.session:

@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
 
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'crequest.middleware.CrequestMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 # CORS_ORIGIN_WHITELIST = (
@@ -297,6 +298,7 @@ DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
 AXES_COOLOFF_TIME = 3
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
@@ -334,6 +336,10 @@ except:
 try:
     #local settings, specific for your machine
     from .local_settings import *
+
+    #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+    MIDDLEWARE_CLASSES.remove("django.middleware.cache.UpdateCacheMiddleware")\
+        .remove("django.middleware.cache.FetchFromCacheMiddleware")
 except:
     pass
 
