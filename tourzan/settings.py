@@ -83,7 +83,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
-    # 'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
 
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'crequest.middleware.CrequestMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 # CORS_ORIGIN_WHITELIST = (
@@ -335,6 +336,10 @@ except:
 try:
     #local settings, specific for your machine
     from .local_settings import *
+
+    #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+    MIDDLEWARE_CLASSES.remove("django.middleware.cache.UpdateCacheMiddleware")\
+        .remove("django.middleware.cache.FetchFromCacheMiddleware")
 except:
     pass
 
