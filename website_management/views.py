@@ -27,6 +27,10 @@ def faq(request):
     return render(request, 'website_management/faq.html', locals())
 
 
+def sitemap(request):
+    return render(request, 'website_management/sitemap.xml', locals())
+
+
 def contact_us(request):
     user = request.user
     if not user.is_anonymous():
