@@ -77,6 +77,8 @@ INSTALLED_APPS = [
     'storages',
     'axes',
     'phonenumber_field',
+    'drip',
+    'django_social_share',
 
     'corsheaders',
     'django_extensions',
@@ -282,7 +284,7 @@ EMAIL_HOST_USER = 'Django_testing'
 EMAIL_HOST_PASSWORD = 'Testing12#$'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
+DRIP_FROM_EMAIL = 'contactus@tourzan.com'
 FROM_EMAIL = "noreply@tourzan.com"
 
 
