@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'axes',
     'phonenumber_field',
     'drip',
+    'django_social_share',
 
     'corsheaders',
     'django_extensions',
