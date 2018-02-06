@@ -77,11 +77,16 @@ INSTALLED_APPS = [
     'storages',
     'axes',
     'phonenumber_field',
+    'drip',
+    'django_social_share',
 
     'corsheaders',
+    'django_extensions',
 ]
 
 MIDDLEWARE_CLASSES = [
+    'django.middleware.cache.UpdateCacheMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
@@ -91,6 +96,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
 
     'django.middleware.common.CommonMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -98,6 +104,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'crequest.middleware.CrequestMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 # CORS_ORIGIN_WHITELIST = (
@@ -176,6 +183,17 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'uuid-malloc01',
+        'TIMEOUT': 1209600,
+    }
+}
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 1209600
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 SITE_ID = 1
 
@@ -266,7 +284,7 @@ EMAIL_HOST_USER = 'Django_testing'
 EMAIL_HOST_PASSWORD = 'Testing12#$'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
+DRIP_FROM_EMAIL = 'contactus@tourzan.com'
 FROM_EMAIL = "noreply@tourzan.com"
 
 
@@ -281,6 +299,7 @@ PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
 AXES_COOLOFF_TIME = 3
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
@@ -319,6 +338,10 @@ except:
 try:
     #local settings, specific for your machine
     from .local_settings import *
+
+    #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+    MIDDLEWARE_CLASSES.remove("django.middleware.cache.UpdateCacheMiddleware")\
+        .remove("django.middleware.cache.FetchFromCacheMiddleware")
 except:
     pass
 
