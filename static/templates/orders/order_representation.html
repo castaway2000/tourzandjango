@@ -118,7 +118,7 @@
                     {% endif %}
                 </p>
                 <p>
-                    <a href="{% url 'tourist' order.tourist.user.username %}"
+                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid%}"
                         class="btn btn-default btn-sm">
                         Tourist Profile
                     </a>

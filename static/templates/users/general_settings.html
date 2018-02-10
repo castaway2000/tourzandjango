@@ -11,26 +11,41 @@
 
             <div class="col-md-7">
                 <div>
-                    <form class="form-horizontal" name="general_profile_form" method="post" autocomplete="off">{% csrf_token %}
+                    <form class="" name="general_profile_form" method="post" autocomplete="off">{% csrf_token %}
 
                         <div>
                             <h4>{% trans 'Your Personal Info' %}</h4>
                         </div>
 
-                        <div class="form-group">
+
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <label>{% trans 'First Name' %}*</label>
-                                    <input required class="form-control" name="first_name"
-                                               value="{{ general_profile.first_name|default_if_none:"" }}">
-                                </div>
-                                <div class="col-lg-6">
-                                    <label>{% trans 'Last Name' %}*</label>
-                                    <input required class="form-control" name="last_name"
-                                               value="{{ general_profile.last_name|default_if_none:"" }}">
+                                    <div class="form-group">
+                                        <label>{% trans 'First Name' %}*</label>
+                                        <input required class="form-control" name="first_name"
+                                                   value="{{ general_profile.first_name|default_if_none:general_profile.user.first_name }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>{% trans 'Last Name' %}*</label>
+                                        <input required class="form-control" name="last_name"
+                                                   value="{{ general_profile.last_name|default_if_none:general_profile.user.last_name }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>{% trans 'Email' %}*</label>
+                                        <input required class="form-control" name="email"
+                                                   value="{{ general_profile.user.email|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+
 
                         {% if request.session.current_role == "guide" %}
                             <div>

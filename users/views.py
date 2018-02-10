@@ -25,6 +25,8 @@ import requests
 from utils.sending_sms import SendingSMS
 from datetime import datetime
 import pycountry
+from allauth.account.models import EmailAddress
+from django.utils.translation import ugettext as _
 
 
 def login_view(request):
@@ -98,7 +100,7 @@ def home(request):
     hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
     fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
     free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
-    cities = City.objects.filter(is_active=True, is_featured=True).values("original_name", "image", "name")[:5]
+    cities = City.objects.filter(is_active=True, is_featured=True).values("original_name", "image", "image_medium", "name")[:5]
     return render(request, 'users/home.html', locals())
 
 
@@ -140,6 +142,32 @@ def general_settings(request):
         if form.is_valid():
             new_form = form.save(commit=False)
             new_form = form.save()
+
+            user_email = user.email
+            email = form.cleaned_data.get("email")
+            if user_email.lower() != email.lower():
+                #this validation is here and not in forms for not showing error message on form and for preventing signup users emails leak
+                email_address_exists = EmailAddress.objects.filter(email=email).exclude(user=user).exists()
+
+                #additional check to cope with lowercase emails, etc
+                email_in_user_exists = User.objects.filter(is_active=True, email=email).exclude(id=user.id).exists()
+                if email_address_exists or email_in_user_exists:
+                    # print("ERROR")
+                    pass
+                else:
+                    user.email = email
+                    user.save()
+
+                    #there is no email field on GeneralProfile model, so the logic for changing email is in this view only.
+                    #this code is for triggering sending confirmation email function from django allauth
+                    email_address = EmailAddress.objects.create(
+                        user=request.user,
+                        email=email,
+                    )
+                    email_address.send_confirmation(request)
+
+                #this message is here to prevent signup users emails leaking
+                messages.success(request, _('Your email address has been changed, please check you mailbox to confirm a new email address!'))
 
         #phone validation section
         data = request.POST

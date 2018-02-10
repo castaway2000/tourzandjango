@@ -82,16 +82,17 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'django_extensions',
+    'django_user_agents',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     #middleware for localization
-    # 'users.default_language_middleware.ForceDefaultLanguageMiddleware',
+    # 'users.middleware.ForceDefaultLanguageMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
 
@@ -103,8 +104,12 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'django_user_agents.middleware.UserAgentMiddleware',
     'crequest.middleware.CrequestMiddleware',
+    'users.middleware.TrackingActiveUserMiddleware',
+
     'django.middleware.cache.FetchFromCacheMiddleware',
+
 ]
 
 # CORS_ORIGIN_WHITELIST = (
@@ -298,7 +303,16 @@ USER_SMS_NMB_LIMIT = 3
 PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
+
 AXES_COOLOFF_TIME = 3
+
+
+# Number of seconds of inactivity before a user is marked offline
+USER_ONLINE_TIMEOUT = 5
+
+# Number of seconds that we will keep track of inactive users for before
+# their last seen is removed from the cache
+USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
 
 
 # Static files (CSS, JavaScript, Images)
@@ -340,9 +354,8 @@ try:
     from .local_settings import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
-    MIDDLEWARE_CLASSES.remove("django.middleware.cache.UpdateCacheMiddleware")\
+    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
         .remove("django.middleware.cache.FetchFromCacheMiddleware")
 except:
     pass
-
 

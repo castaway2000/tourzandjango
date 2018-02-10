@@ -13,6 +13,8 @@ class SendingEmail(object):
     from_email = FROM_EMAIL
     reply_to_emails = [from_email]
     bcc_emails = [from_email]
+    order = None
+    chat = None
 
     def __init__(self, data):
         data = data
@@ -40,9 +42,11 @@ class SendingEmail(object):
         msg.send()
 
         kwargs = dict()
-        kwargs = {"type_id":self.email_type_id, "email": to_email, "user": to_user}
+        kwargs = {"type_id":self.email_type_id, "email": ''.join(to_email), "user": to_user}
         if self.order:
             kwargs["order_id"] = self.order.id
+        if self.chat_message:
+            kwargs["chat_message"] = self.chat_message
         OwnEmailMessage.objects.create(**kwargs)
         # print ('Email was sent successfully!')
 
@@ -143,3 +147,36 @@ class SendingEmail(object):
         to_user = User.objects.get(id=user_id)
         to_email = [to_user.email]
         self.sending_email(to_user, to_email, subject, message)
+
+
+    def send_new_message_email(self):
+        email_type, created = EmailMessageType.objects.get_or_create(name='Chat')
+        self.email_type_id = email_type.id
+
+        chat_message = self.data.get("chat_message")
+        chat = chat_message.chat
+
+        self.chat_message = chat_message
+        message = chat_message.message
+        user_from = self.data.get("user_from")
+        user_to = self.data.get("user_to")
+
+        #user_from.first_name - just for prevention of missed data for some early users
+        if user_from.generalprofile.first_name:
+            user_from_name = user_from.generalprofile.first_name
+        elif user_from.first_name:
+            user_from_name = user_from.first_name
+        else:
+            user_from_name = user_from.username
+
+        subject = "Notification about new message on tourzan.com from %s" % user_from_name
+        message = "<p>You have received a new message from %s.</p>" \
+                  "<p><b>Message: </b>%s</p>\n" \
+                  "<p>Go by this <a href='https://www.tourzan.com/chats/chat_uuid/%s/' target='_blank'>link</a> for response. \n\n</p>" \
+                  "<p>Have a great day.\n" \
+                  "<br><br>The Tourzan Team</p>" % (user_from_name, message, chat.uuid)
+
+        if user_to:
+            to_email = [user_to.email]
+            self.sending_email(user_to, to_email, subject, message)
+
