@@ -5,8 +5,8 @@ from allauth.account.models import EmailAddress
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
+    username = forms.CharField(required=True)
+    password = forms.CharField(widget=forms.PasswordInput(), required=True)
 
     class Meta:
         widgets = {'password': forms.PasswordInput()}

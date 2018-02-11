@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block header_stuff %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
 {% endblock %}
 
 {% block content %}
@@ -22,10 +22,10 @@
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="tab-1">
                         <h2>{% blocktrans %}Search Local Guides{% endblocktrans %}</h2>
-                        <form method="get" action="{% url 'guides' %}">
+                        <form method="get" action="{% url 'guides' %}" class="homepage-form">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="form-group form-group-lg form-group-icon-left">
+                                    <div class="form-group form-group-lg">
 {#                                        <i class="fa fa-globe input-icon"></i>#}
                                          <label>{% blocktrans %}Where are you going?{% endblocktrans %}</label>
 {#                                         <select class="form-control select2" id="city_input" name="city_input"#}
@@ -38,17 +38,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group form-group-lg form-group-icon-left">
+                                    <div class="form-group form-group-lg">
 {#                                                <i class="fa fa-book input-icon input-icon-highlight"></i>#}
-                                                <label>{% blocktrans %} Which of your interests should the guide meet? {% endblocktrans %}</label>
-                                                <select multiple class="form-control select2" id="interest_input" name="interest_input"
-                                                    data-search_url="{% url 'search_interest' %}"
-                                                    placeholder="Interests, hobbys"
-                                                ></select>
-                                            </div>
-                                        </div>
+                                        <label>{% blocktrans %} Which of your interests should the guide meet? {% endblocktrans %}</label>
+                                        <select multiple class="form-control select2" id="interest_input" name="interest_input"
+                                            data-search_url="{% url 'search_interest' %}"
+                                            data-placeholder="Interests, hobbies"
+                                        ></select>
                                     </div>
                                 </div>
                             </div>
@@ -432,7 +428,7 @@
 {% endblock %}
 
 {% block js_stuff %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
 
     <script type="text/javascript"

@@ -5,7 +5,6 @@ function initialize(){
         enablePoweredByContainer: false
     };
     var autocomplete = new google.maps.places.Autocomplete(input, options);
-    console.log(1)
     google.maps.event.addListener(autocomplete, 'place_changed', function(){
         place = autocomplete.getPlace();
         document.getElementById('place_id').value = place.place_id;
@@ -14,6 +13,7 @@ function initialize(){
         console.log("full location: "+city_input);
         name_original = city_input.split(",")[0];
         console.log("name_original: "+name_original);
+        $('#city_search_input').focus();
     })
 }
 google.maps.event.addDomListener(window, 'load', initialize);

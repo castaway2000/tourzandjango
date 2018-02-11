@@ -87,7 +87,8 @@ def guides(request):
 
     #filtering by guides
     if guide_input:
-        base_kwargs["user__username__in"] = guide_input
+        base_kwargs["uuid__in"] = guide_input
+        guide = GuideProfile.objects.get(uuid__in=guide_input)
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
     if service_input:
@@ -430,11 +431,10 @@ def search_guide(request):
     if request.GET:
         data = request.GET
         username = data.get(u"q")
-        guides = GuideProfile.objects.filter(user__username__icontains=username)
-
+        guides = GuideProfile.objects.filter(user__first_name__icontains=username, is_active=True)
         for guide in guides:
             results.append({
-                "id": guide.user.username,
+                "id": guide.uuid,
                 "text": guide.user.generalprofile.first_name
             })
 

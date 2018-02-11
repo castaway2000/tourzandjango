@@ -35,8 +35,6 @@ def login_view(request):
     Login redirects are handled here
     """
     form = LoginForm(request.POST or None)
-    print("login_view")
-    print(request.session.get("pending_order_creation"))
 
     if not "next" in request.GET:
         request.GET.next = reverse("home")
@@ -62,7 +60,7 @@ def login_view(request):
         else:
             messages.error(request, 'Login credentials are incorrect!')
 
-    return render(request, 'users/login_register.html', {})
+    return render(request, 'users/login_register.html', {"form": form})
 
 
 def logout_view(request):
@@ -93,7 +91,7 @@ def after_login_router(request):
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__first_name", "user__last_name", "user__username", "profile_image", "overview")[:4]
+        .values("user__generalprofile__first_name", "profile_image", "overview")[:4]
 
     tours = Tour.objects.filter(is_active=True).order_by("-rating")
     all_tours = tours.order_by("-rating")[:4]
@@ -107,18 +105,17 @@ def home(request):
 @login_required()
 def password_changing(request):
     user = request.user
+    form = PasswordChangeForm(data=request.POST or None, user=user)
     if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST or None, user=user)
         if "change_password_btn" in request.POST:
-            print ("CHANGE PASSWORD IN REQUEST")
             if form.is_valid():
                 new_form = form.save(commit=False)
                 new_form = form.save()
                 messages.success(request, 'Password was successfully updated!')
                 update_session_auth_hash(request, user)
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
     return render(request, 'users/password_changing.html', locals())
+
 
 @login_required()
 def general_settings(request):
@@ -215,7 +212,8 @@ def general_settings(request):
                     messages.success(request, 'SMS with validation code was sent!')
                     request.session["pending_validating_phone"] = phone
                 else:#error
-                    message_text = sms_sending_info["message"]
+                    # message_text = sms_sending_info["message"]
+                    message_text = _("Phone format is incorrect")
                     messages.error(request, message_text)
 
             #this approach is needed to prevent
@@ -372,10 +370,10 @@ class SignupViewCustom(SignupView):
                 pass
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
         form_class = self.get_form_class()
