@@ -23,7 +23,7 @@
                             <h4>{% blocktrans %}Tourist Profile{% endblocktrans %}</h4>
                         </div>
                         <div class="col-lg-5">
-                             <a href="{% url 'tourist' profile.user.username %}">
+                             <a href="{% url 'tourist' profile.user.generalprofile.uuid %}">
                                  See Public Page
                              </a>
                         </div>

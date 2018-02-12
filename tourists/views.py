@@ -9,6 +9,7 @@ from orders.models import *
 from tours.models import *
 from users.models import UserLanguage, LanguageLevel
 from django.contrib import messages
+from users.models import GeneralProfile
 
 
 @login_required()
@@ -135,18 +136,17 @@ def profile_photos(request, username = None):
 
 
 @login_required()
-def tourist(request, username):
+def tourist(request, uuid):
     try:
-        user = User.objects.get(username=username)
+        general_profile = GeneralProfile.objects.get(uuid=uuid)
+        user = general_profile.user
     except:
         return HttpResponseRedirect(reverse("home"))
 
     tourist = user.touristprofile
     orders = Order.objects.filter(tourist=tourist).order_by('-id')
     tours = tourist.order_set.all().order_by("-id")
-
     travel_photos = user.touristtravelphoto_set.all().order_by("-id")
-
     reviews = Review.objects.filter(order__tourist=tourist, is_guide_feedback=True)
     return render(request, 'tourists/tourist.html', locals())
 

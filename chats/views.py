@@ -37,9 +37,7 @@ def chats(request):
 @login_required()
 def chat(request, uuid):
     user = request.user
-
     chat = Chat.objects.get(uuid=uuid)
-
     if chat.guide != user and chat.tourist != user:
         return HttpResponseRedirect(reverse("home"))
 

@@ -1,11 +1,12 @@
 from django import forms
 from .models import *
 from phonenumber_field.widgets import PhonePrefixSelect, PhoneNumberPrefixWidget
+from allauth.account.models import EmailAddress
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
+    username = forms.CharField(required=True)
+    password = forms.CharField(widget=forms.PasswordInput(), required=True)
 
     class Meta:
         widgets = {'password': forms.PasswordInput()}
@@ -65,6 +66,7 @@ class VerificationCodeForm(forms.Form):
 
 
 class GeneralProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = GeneralProfile
@@ -75,3 +77,4 @@ class GeneralProfileForm(forms.ModelForm):
                   "registration_building_nmb", "registration_flat_nmb", "registration_postcode", "is_company",
                   "business_id",
                   )
+

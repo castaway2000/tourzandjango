@@ -1,5 +1,8 @@
 def upload_path_handler_city(instance, filename):
-    return "locations/cities/%s" % (filename)
+    if instance.name:
+        return "locations/cities/%s_%s" % (instance.name, filename)
+    else:
+        return "locations/cities/%s" % (filename)
 
 
 def upload_path_handler_tour(instance, filename):
