@@ -47,7 +47,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_anonymous %}
-                            <li><a href="{% url 'login' %}">{% blocktrans %}Log In{% endblocktrans %}</a>
+                            <li><a href="{% url 'login' %}">{% blocktrans %}Sign In/Sign Up{% endblocktrans %}</a>
                         {% else %}
                             <li class="top-user-area-avatar">
                                 <a href="{% url 'settings_router' %}">
@@ -77,18 +77,21 @@
                             </ul>
                         </li>
 
-                        {% if not user.is_anonymous %}
-                            <li>
-                                {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                                    <span class="">{% blocktrans %}Tourist{% endblocktrans %}</span>
-                                {% else%}
-                                    <span class="">{% blocktrans %}Guide{% endblocktrans %}</span>
-                                {% endif %}
-                                <a href="{% url 'change_role' %}">
-                                    <i class="fa fa-exchange" aria-hidden="true"></i>
-                                </a>
-                            </li>
-                        {% endif %}
+{#                        {% if not user.is_anonymous %}#}
+{#                            <li>#}
+{#                                <a href="{% url 'change_role' %}" class="">#}
+{#                                    {% if request.session.current_role == "tourist" or not request.session.current_role %}#}
+{#                                        {% if user.guideprofile %}#}
+{#                                            <span class="">{% blocktrans %}Switch to Guide profile{% endblocktrans %}</span>#}
+{#                                        {% else %}#}
+{#                                            <span class="">{% blocktrans %}Switch to Want to be a guide?{% endblocktrans %}</span>#}
+{#                                        {% endif %}#}
+{#                                    {% else%}#}
+{#                                        <span class="">{% blocktrans %}Switch to Tourist profile{% endblocktrans %}</span>#}
+{#                                    {% endif %}#}
+{#                                </a>#}
+{#                            </li>#}
+{#                        {% endif %}#}
                     </ul>
                   </div>
                 </div><!--/.container-fluid -->

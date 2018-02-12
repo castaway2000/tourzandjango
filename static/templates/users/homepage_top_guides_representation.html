@@ -10,12 +10,12 @@
                 {% else %}
                      src="{% static 'img/300x300.png' %}"
                 {% endif %}
-                     alt="Image of {{ guide.user__first_name }} {{ guide.user__last_name }}"
-                     title="{{ guide.user__first_name }} {{ guide.user__last_name }}" />
+                     alt="Image of {{ guide.user__generalprofile__first_name }}"
+                     title="{{ guide.user__generalprofile__first_name }}" />
             </a>
         </header>
         <div class="thumb-caption">
-            <h4 class="thumb-title">{{ guide.user__username }}</h4>
+            <h4 class="thumb-title">{{ guide.user__generalprofile__first_name}}</h4>
             {% if guide.overview %}
                 <p class="thumb-desc">{{ guide.overview|truncatewords:20 }}</p>
             {% else %}

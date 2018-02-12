@@ -68,7 +68,6 @@
             </div>
             <div class="col-md-4">
                 <h3>{% blocktrans %}New To Tourzan?{% endblocktrans %}</h3>
-                {{ form.errors }}
                 <form method="post" action="{% url 'account_signup' %}">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
                         <label>{% blocktrans %}Username{% endblocktrans %}</label>
@@ -98,7 +97,7 @@
                     </div>
                     <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
                     </div>
-                    <input class="btn btn-primary" type="submit" value="Sign Up for Tourzan" />
+                    <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
                 </form>
             </div>
         </div>

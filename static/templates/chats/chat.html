@@ -20,7 +20,7 @@
                                 </a>
                                 {% blocktrans %}(guide){% endblocktrans %}
                             {% else %}
-                                 <a href="{% url 'tourist' chat.tourist.generalprofile.first_name %}">
+                                 <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
                                     {{ chat.tourist.generalprofile.first_name }}
                                 </a>
                                 {% blocktrans %}(tourist){% endblocktrans %}
