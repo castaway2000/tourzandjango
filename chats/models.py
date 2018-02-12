@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from tours.models import Tour
-
 import uuid
+from utils.sending_emails import SendingEmail
+from django.db.models.signals import post_save
+from utils.disabling_signals_for_load_data import disable_for_loaddata
 
 
 class Chat(models.Model):
@@ -16,7 +18,7 @@ class Chat(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s-%s" % (self.guide.generalprofile.first_name, self.tourist.generalprofile.first_name)
 
 
@@ -28,7 +30,33 @@ class ChatMessage(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.chat.created, self.user.username)
+
+
+    def save(self, *args, **kwargs):
+        super(ChatMessage, self).save(*args, **kwargs)
+
+    def get_receiver_user(self):
+        current_user = self.user
+        chat = self.chat
+        if current_user:
+            receiver_user = chat.tourist if chat.tourist != current_user else chat.guide
+        else:
+            receiver_user = None
+        return receiver_user
+
+
+@disable_for_loaddata
+def chat_message_post_save(sender, instance, created, **kwargs):
+    receiver_user = instance.get_receiver_user()
+    print("chat message saving")
+    print(receiver_user.generalprofile.get_is_user_online())
+
+    if receiver_user and not receiver_user.generalprofile.get_is_user_online():
+        data = {"chat_message": instance, "user_from": instance.user, "user_to": receiver_user}
+        SendingEmail(data).send_new_message_email()
+
+post_save.connect(chat_message_post_save, sender=ChatMessage)
 
 

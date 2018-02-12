@@ -9,4 +9,4 @@ class GuideProfileForm(forms.ModelForm):
         model = GuideProfile
 
         #city is added on form save in view
-        fields = ("overview", "profile_image", "rate", "is_active",)
+        fields = ("overview", "profile_image", "rate", "is_active", "min_hours")

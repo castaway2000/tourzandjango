@@ -15,6 +15,11 @@ from guides.models import GuideProfile
 from utils.uploadings import upload_path_handler_guide_webcam_image
 import pycountry
 from datetime import date
+from utils.general import uuid_creating
+
+from django.core.cache import cache
+import datetime
+from tourzan.settings import USER_ONLINE_TIMEOUT
 
 
 def user_login_function(sender, user, **kwargs):
@@ -105,6 +110,7 @@ COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countri
 
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
+    uuid = models.CharField(max_length=48, null=True)
     first_name = models.CharField(max_length=256, blank=True, null=True)
     last_name = models.CharField(max_length=256, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True, default=None)
@@ -165,7 +171,32 @@ class GeneralProfile(models.Model):
             age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
             self.age = age
 
+        if (self.first_name != self.user.first_name or self.last_name != self.user.last_name) \
+                and (self.first_name or self.last_name):
+            if self.first_name:
+                self.user.first_name = self.first_name
+            if self.last_name:
+                self.user.last_name = self.last_name
+            self.user.save(force_update=True)
+
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
         super(GeneralProfile, self).save(*args, **kwargs)
+
+    def last_seen(self):
+        return cache.get('seen_%s' % self.user.id)
+
+    def get_is_user_online(self):
+        if self.last_seen():
+            now = datetime.datetime.now()
+            if now > self.last_seen() + datetime.timedelta(
+                         seconds=USER_ONLINE_TIMEOUT):
+                return False
+            else:
+                return True
+        else:
+            return False
 
 
 def general_profile_post_save(sender, instance, **kwargs):

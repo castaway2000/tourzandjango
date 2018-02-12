@@ -94,7 +94,7 @@
                                 {{ order.guide.user.generalprofile.first_name }}
                             </a>
                         {% elif is_guide %}
-                            <a href="{% url 'tourist' order.tourist.user.username %}">
+                            <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
                                 {% if order.tourist.name %}
                                     {{ order.tourist.name }}
                                 {% else %}
