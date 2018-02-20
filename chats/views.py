@@ -13,10 +13,16 @@ from django.contrib.auth.decorators import login_required
 def chats(request):
     user = request.user
     chats = list(Chat.objects.filter(Q(guide=user)|Q(tourist=user))
-                 .values("guide__username", "tourist__username", "uuid", "id", "topic", "created").order_by('-id'))
+                 .values("guide__generalprofile__first_name", "tourist__generalprofile__first_name",
+                         "guide__generalprofile__uuid",
+                         "tourist__generalprofile__uuid",
+                         "tourist__username", "guide__username",
+                         "uuid", "id", "topic", "created").order_by('-id'))
     chat_ids = [item["id"] for item in chats]
 
-    chat_messages = ChatMessage.objects.filter(chat_id__in=chat_ids).values("chat__id", "message", "created", "user__username").order_by("id")
+    chat_messages = ChatMessage.objects.filter(chat_id__in=chat_ids).values("chat__id", "message", "created",
+                                                                            "user__generalprofile__first_name",
+                                                                            "user__username").order_by("id")
 
     touched_chat_ids = list()
     last_messages_dict = dict()
@@ -24,7 +30,7 @@ def chats(request):
         if not chat_message["chat__id"] in touched_chat_ids:
             last_messages_dict[chat_message["chat__id"]] = {
                 "text": chat_message["message"],
-                "from": chat_message["user__username"],
+                "from": chat_message["user__generalprofile__first_name"],
                 "created": chat_message["created"],
             }
 
@@ -41,7 +47,8 @@ def chat(request, uuid):
     if chat.guide != user and chat.tourist != user:
         return HttpResponseRedirect(reverse("home"))
 
-    chat_messages = chat.chatmessage_set.all().values("chat_id", "message", "created", "user__username").order_by("created")
+    chat_messages = chat.chatmessage_set.all().values("chat_id", "message", "created", "user__username",
+                                                      "user__generalprofile__first_name").order_by("created")
     return render(request, 'chats/chat.html', locals())
 
 
