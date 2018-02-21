@@ -23,7 +23,6 @@ def blog(request, category_slug=None):
         kwargs["category__slug"] = category_slug
     blog_posts = BlogPost.objects.filter(**kwargs).order_by("-id").values()
 
-
     page = request.GET.get('page', 1)
     paginator = Paginator(blog_posts, 10)
     try:

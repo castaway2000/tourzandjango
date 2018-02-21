@@ -13,6 +13,13 @@ from payments.models import PaymentMethod
 from phonenumber_field.modelfields import PhoneNumberField
 from guides.models import GuideProfile
 from utils.uploadings import upload_path_handler_guide_webcam_image
+import pycountry
+from datetime import date
+from utils.general import uuid_creating
+
+from django.core.cache import cache
+import datetime
+from tourzan.settings import USER_ONLINE_TIMEOUT
 
 
 def user_login_function(sender, user, **kwargs):
@@ -99,8 +106,17 @@ class UserLanguage(models.Model):
         return "%s" % self.language
 
 
+COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries )
+
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
+    uuid = models.CharField(max_length=48, null=True)
+    first_name = models.CharField(max_length=256, blank=True, null=True)
+    last_name = models.CharField(max_length=256, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True, default=None)
+    age = models.IntegerField(default=0)
+    profession = models.CharField(max_length=256, blank=True, null=True)
+
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
     is_verified = models.BooleanField(default=False)#is verified by docs
     webcam_image = models.ImageField(upload_to=upload_path_handler_guide_webcam_image, blank=True, null=True, default=None)
@@ -108,14 +124,19 @@ class GeneralProfile(models.Model):
     facebook = models.CharField(max_length=64, blank=True, null=True, default=None)
     twitter = models.CharField(max_length=64, blank=True, null=True, default=None)
     google = models.CharField(max_length=64, blank=True, null=True, default=None)
+    instagram = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
 
-    country = models.CharField(max_length=64, blank=True, null=True, default=None)
-    city = models.CharField(max_length=64, blank=True, null=True, default=None)
-    address = models.CharField(max_length=128, blank=True, null=True, default=None)
-    address_full = models.CharField(max_length=256, blank=True, null=True, default=None)
+    registration_country = models.CharField(max_length=256, blank=True, null=True, choices=COUNTRY_CHOICES)
+    registration_country_ISO_3_digits = models.CharField(max_length=8, blank=True, null=True)
+    registration_state = models.CharField(max_length=256, blank=True, null=True)
+    registration_city = models.CharField(max_length=256, blank=True, null=True)
+    registration_street = models.CharField(max_length=256, blank=True, null=True)
+    registration_building_nmb = models.CharField(max_length=256, blank=True, null=True)
+    registration_flat_nmb = models.CharField(max_length=256, blank=True, null=True)
+    registration_postcode = models.CharField(max_length=256, blank=True, null=True)
 
     is_company = models.BooleanField(default=False)
     business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
@@ -125,14 +146,65 @@ class GeneralProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+    def __init__(self, *args, **kwargs):
+        super(GeneralProfile, self).__init__(*args, **kwargs)
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
     def __str__(self):
         return "%s" % self.user.username
 
     def save(self, *args, **kwargs):
-        self.address_full = "%s %s" % (self.city, self.address)
+
+        if not self.pk or self.registration_country != self._original_fields["registration_country"]:
+            if self.registration_country:
+                self.registration_country_ISO_3_digits = pycountry.countries.get(name=self.registration_country).alpha_3
+
+        if self.date_of_birth:
+            today = date.today()
+            date_of_birth = self.date_of_birth
+
+            age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+            self.age = age
+
+        if (self.first_name != self.user.first_name or self.last_name != self.user.last_name) \
+                and (self.first_name or self.last_name):
+            if self.first_name:
+                self.user.first_name = self.first_name
+            if self.last_name:
+                self.user.last_name = self.last_name
+            self.user.save(force_update=True)
+
+        if not self.uuid:
+            self.uuid = uuid_creating()
 
         super(GeneralProfile, self).save(*args, **kwargs)
 
+    def last_seen(self):
+        return cache.get('seen_%s' % self.user.id)
+
+    def get_is_user_online(self):
+        if self.last_seen():
+            now = datetime.datetime.now()
+            if now > self.last_seen() + datetime.timedelta(
+                         seconds=USER_ONLINE_TIMEOUT):
+                return False
+            else:
+                return True
+        else:
+            return False
+
+
+def general_profile_post_save(sender, instance, **kwargs):
+    if hasattr(instance.user, "guideprofile"):
+        guide = instance.user.guideprofile
+        guide.name = instance.first_name
+        guide.save(force_update=True)
+post_save.connect(general_profile_post_save, sender=GeneralProfile)
 
 
 def socialtoken_post_save(sender, instance, **kwargs):
@@ -142,7 +214,7 @@ def socialtoken_post_save(sender, instance, **kwargs):
     provider = social_account.provider
 
     if user:
-        general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+        general_profile, created = GeneralProfile.objects.get_or_create(user=user)
 
         #code for twitter and google authentication when no accounts and users should be created, is placed to
         #pre_social_login function of users.adapter_allAuth.MySocialAccountAdapter

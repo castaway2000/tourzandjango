@@ -12,7 +12,6 @@ from crequest.middleware import CrequestMiddleware
 from utils.sending_emails import SendingEmail
 from locations.models import Currency
 from utils.disabling_signals_for_load_data import disable_for_loaddata
-
 from payments.models import Payment, PaymentMethod
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
@@ -111,7 +110,7 @@ class Order(models.Model):
 
     def __str__(self):
         if self.guide:
-            return "%s %s" % (self.id, self.guide.name)
+            return "%s %s" % (self.id, self.guide.user.generalprofile.first_name)
         else:
             return "%s" % (self.id)
 
@@ -196,7 +195,6 @@ saving ratings from review to Order object
 """
 @disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
-    print("order post save")
     guide = instance.guide
 
     statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
@@ -282,7 +280,7 @@ class Review(models.Model):
             if self.order.tour:
                 return "%s" % self.order.tour.name
             else:
-                return "%s" % self.order.guide.name
+                return "%s" % self.order.guide.user.generalprofile.first_name
         else:
             return "%s" % self.id
 

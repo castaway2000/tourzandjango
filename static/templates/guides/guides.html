@@ -35,11 +35,11 @@
         <div class="row">
             <div class="col-md-3">
                 <aside class="booking-filters text-white">
-                    <div class="left-menu-toggle-button">
-                        <button class="btn btnprimary" id="toggle_left_menu">
-                            <i class="fa fa-filter" aria-hidden="true"></i>
-                        </button>
-                    </div>
+{#                    <div class="left-menu-toggle-button">#}
+{#                        <button class="btn btnprimary" id="toggle_left_menu">#}
+{#                            <i class="fa fa-filter" aria-hidden="true"></i>#}
+{#                        </button>#}
+{#                    </div>#}
 
                         <h3>{% blocktrans %}Filter By: {% endblocktrans %}</h3>
                         <form id="filtering_form" name="filtering_form" method="get" action="">
@@ -92,9 +92,9 @@
                                         <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
                                         <select class="form-control select2" id="guide_input" name="guide_input"
                                                 data-search_url="{% url 'search_guide' %}">
-                                            {% if guide_input %}
-                                                <option value="{{ request.GET.guide_input }}"
-                                                        selected>{{ request.GET.guide_input }}</option>
+                                            {% if guide %}
+                                                <option value="{{ guide.uuid }}"
+                                                        selected>{{ guide.user.generalprofile.first_name }}</option>
                                             {% endif %}
                                         </select>
                                     </li>
@@ -141,9 +141,10 @@
                                         <div class="checkbox">
                                             <label>
                                                 <input class="i-check" type="checkbox" name="is_verified"
-                                                        {% if not request.GET.is_verified and request.GET.filter_form_data %}
+                                                        {% if request.GET.is_verified and request.GET.filter_form_data %}
+                                                       checked
                                                        {% else %}
-                                                       checked {% endif %}
+                                                        {% endif %}
                                                 >
                                                 {% blocktrans %}Show only verified guides{% endblocktrans %}
                                             </label>
@@ -208,7 +209,7 @@
                         <li>
                             <div class="tour-item">
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <div class="col-md-3 col-sm-6 col-xs-6">
                                         <div class="booking-item-img">
                                             <a href="{% url 'guide' guide.user.username %}">
                                                 {% if guide.profile_image %}
@@ -220,9 +221,9 @@
                                         </div>
                                         <br>
                                     </div>
-                                    <div class="col-md-6 col-sm-6 col-xs-5">
+                                    <div class="col-md-6 col-sm-6 col-xs-6 pull-right">
                                         <div class="item-name">
-                                            {{ guide.name }}
+                                            {{ guide.user.generalprofile.first_name }}
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
@@ -286,7 +287,7 @@
                                             {% endif %}
                                         {% endwith %}
                                     </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-4">
+                                    <div class="col-md-3 col-sm-6 col-xs-6 pull-left">
                                         <div class="guide-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
                                         </div>
@@ -296,7 +297,7 @@
                                         </span>
                                         <p>
                                             <a class="btn btn-primary" href="{% url 'guide' guide.user.username %}">
-                                                {% blocktrans %}Go to Guide{% endblocktrans %}
+                                                {% blocktrans %}View profile{% endblocktrans %}
                                             </a>
                                         </p>
                                         {% if guide.user.generalprofile.is_verified %}

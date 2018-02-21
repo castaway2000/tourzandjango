@@ -13,6 +13,8 @@ class SendingEmail(object):
     from_email = FROM_EMAIL
     reply_to_emails = [from_email]
     bcc_emails = [from_email]
+    order = None
+    chat = None
 
     def __init__(self, data):
         data = data
@@ -40,9 +42,11 @@ class SendingEmail(object):
         msg.send()
 
         kwargs = dict()
-        kwargs = {"type_id":self.email_type_id, "email": to_email, "user": to_user}
+        kwargs = {"type_id":self.email_type_id, "email": ''.join(to_email), "user": to_user}
         if self.order:
             kwargs["order_id"] = self.order.id
+        if self.chat_message:
+            kwargs["chat_message"] = self.chat_message
         OwnEmailMessage.objects.create(**kwargs)
         # print ('Email was sent successfully!')
 
@@ -56,9 +60,9 @@ class SendingEmail(object):
             if tour:
                 order_naming = '"%s"' % order.tour.name
             else:
-                order_naming = 'with %s' % order.guide.name
+                order_naming = 'with %s' % order.guide.user.generalprofile.first_name
 
-            # cancelled by - for guide it is order.guide.name, but for tourists it us order.tourist.user.username
+            # cancelled by - for guide it is order.guide.user.generalprofile.first_name, but for tourists it us order.tourist.user.username
             if order.status_id == 2:# agreed
                 subject_tourist = 'Tour %s was confirmed by guide!' % order_naming
                 message_tourist = 'Tour %s was confirmed by guide!' % order_naming
@@ -72,8 +76,8 @@ class SendingEmail(object):
                 message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was cancelled by %s. If you feel this an error please reach out to your customer' % (order.id, order.id, order.tourist.user.username)
 
             elif order.status_id == 6: # cancelled by guide
-                subject_tourist = 'A tour %s was cancelled by %s!' % (order_naming, order.guide.name)
-                message_tourist = 'Order %s was cancelled by %s. If you feel this is an error please reach out to your guide.' % (order.id, order.guide.name)
+                subject_tourist = 'A tour %s was cancelled by %s!' % (order_naming, order.guide.user.generalprofile.first_name)
+                message_tourist = 'Order %s was cancelled by %s. If you feel this is an error please reach out to your guide.' % (order.id, order.guide.user.generalprofile.first_name)
                 subject_guide = 'You cancelled the order #%s!' % order.id
                 message_guide = 'You cancelled the order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a>!' % (order.id, order.id)
 
@@ -139,7 +143,40 @@ class SendingEmail(object):
                   "and set your <a href='https://www.tourzan.com/en/calendar/'>calendar</a> " \
                   "so that tourists can hire you.\n\n" \
                   "Have a great day.\n" \
-                  "-The Tourzan Team"
+                  "<br><br>The Tourzan Team</p>"
         to_user = User.objects.get(id=user_id)
         to_email = [to_user.email]
         self.sending_email(to_user, to_email, subject, message)
+
+
+    def send_new_message_email(self):
+        email_type, created = EmailMessageType.objects.get_or_create(name='Chat')
+        self.email_type_id = email_type.id
+
+        chat_message = self.data.get("chat_message")
+        chat = chat_message.chat
+
+        self.chat_message = chat_message
+        message = chat_message.message
+        user_from = self.data.get("user_from")
+        user_to = self.data.get("user_to")
+
+        #user_from.first_name - just for prevention of missed data for some early users
+        if user_from.generalprofile.first_name:
+            user_from_name = user_from.generalprofile.first_name
+        elif user_from.first_name:
+            user_from_name = user_from.first_name
+        else:
+            user_from_name = user_from.username
+
+        subject = "Notification about new message on tourzan.com from %s" % user_from_name
+        message = "<p>You have received a new message from %s.</p>" \
+                  "<p><b>Message: </b>%s</p>\n" \
+                  "<p>Go by this <a href='https://www.tourzan.com/chats/chat_uuid/%s/' target='_blank'>link</a> for response. \n\n</p>" \
+                  "<p>Have a great day.\n" \
+                  "<br><br>The Tourzan Team</p>" % (user_from_name, message, chat.uuid)
+
+        if user_to:
+            to_email = [user_to.email]
+            self.sending_email(user_to, to_email, subject, message)
+

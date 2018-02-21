@@ -4,11 +4,17 @@
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+
+    <!-- Event snippet for post tourist register conversion page -->
+    <script>
+    gtag('event', 'conversion', {'send_to': 'AW-855709588/TjmsCIjw4HkQlK-EmAM'});
+    </script>
 {% endblock %}
 
 
 {% block content_profile %}
     <div class="col-md-9">
+        {{ form.errors }}
         <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
             <div class="row">
                 <div class="col-md-5">
@@ -17,7 +23,7 @@
                             <h4>{% blocktrans %}Tourist Profile{% endblocktrans %}</h4>
                         </div>
                         <div class="col-lg-5">
-                             <a href="{% url 'tourist' profile.user.username %}">
+                             <a href="{% url 'tourist' profile.user.generalprofile.uuid %}">
                                  See Public Page
                              </a>
                         </div>

@@ -2,6 +2,8 @@
 {% load static %}
 {% load i18n %}
 {% load stars_rating %}
+{% load social_share %}
+
 
 
 {% block header_stuff %}
@@ -18,7 +20,7 @@
 {#            <li><a href="/">{{ guide.city.name }}</a></li>#}
 {#            <li><a href="/">Some country</a>#}
             <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>
-            <li class="active">{{ guide.name }}</li>
+            <li class="active">{{ guide.user.generalprofile.first_name }}</li>
         </ul>
 
         <div class="booking-item-details">
@@ -26,7 +28,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h2 class="lh1em">
-                            {{ guide.name }}
+                            {{ guide.user.generalprofile.first_name }}
                         </h2>
 
                         {% if guide == request.user.guideprofile and request.session.current_role == "guide"%}
@@ -50,6 +52,7 @@
                                        class="btn btn-default btn-sm" disabled="">
                                         {% blocktrans %}Send Message{% endblocktrans %}
                                     </a>
+
                                 {% else %}
                                     {% if current_order.status.id == 5 %}
                                         <a class="btn btn-primary btn-sm popup-text btn-order-review" href="#writing_feedback_modal"
@@ -59,6 +62,9 @@
                                     {% endif %}
                                     <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
                                 {% endif %}
+                            <br/>
+                                <button class="btn-link">{% post_to_facebook %}</button>
+                                <button class="btn-link">{% post_to_twitter  "Check out this tourzan guide!" '' 'Share on Twitter'%}</button>
                             </div>
                         </div>
                         <div class="col-md-7">

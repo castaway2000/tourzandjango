@@ -28,10 +28,25 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import HttpResponseRedirect, get_object_or_404
 from users.models import GeneralProfile
 from django.core.urlresolvers import reverse
+from django.shortcuts import resolve_url
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
     pass
+    """
+    It works only for sign up.
+    Sign in view is re-applied in users/views.py
+    """
+    def get_login_redirect_url(self, request):
+        """
+        Returns the default URL to redirect to after logging in.  Note
+        that URLs passed explicitly (e.g. by passing along a `next`
+        GET parameter) take precedence over the value returned here.
+        """
+        assert request.user.is_authenticated
+        url = settings.LOGIN_REDIRECT_URL
+        return resolve_url(url)
+
     # def get_login_redirect_url(self, request):
     #     print("get login redirect")
     #     user = get_object_or_404(User, pk=request.user.id)
@@ -91,7 +106,9 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
 
         if not request.user.is_anonymous():
             user = request.user
-            general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+
+            #populating user's GeneralProfile instance from the very beginning
+            general_profile, created = GeneralProfile.objects.get_or_create(user=user)
 
             #here is the logic for validating twitter and google account without creating a new associated user account
             #logic for facebook account which can be used for loging in as well - is placed in users.model
