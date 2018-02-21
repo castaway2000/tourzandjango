@@ -3,6 +3,9 @@
 {% load i18n %}
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
+{% if request.session.current_role != "guide" %}
+    {% load crispy_forms_tags %}
+{% endif %}
 
 
 {% block content_profile %}
@@ -17,13 +20,17 @@
                             <h4>{% trans 'Your Personal Info' %}</h4>
                         </div>
 
+                        {% if request.session.current_role != "guide" %}
+                            {{ form|crispy }}
+                        {% endif %}
 
+                        {% if request.session.current_role == "guide" %}
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label>{% trans 'First Name' %}*</label>
                                         <input required class="form-control" name="first_name"
-                                                   value="{{ general_profile.first_name|default_if_none:general_profile.user.first_name }}">
+                                                   value="{{ general_profile.first_name|default_if_none:"" }}">
                                     </div>
                                 </div>
                             </div>
@@ -32,7 +39,7 @@
                                     <div class="form-group">
                                         <label>{% trans 'Last Name' %}*</label>
                                         <input required class="form-control" name="last_name"
-                                                   value="{{ general_profile.last_name|default_if_none:general_profile.user.last_name }}">
+                                                   value="{{ general_profile.last_name|default_if_none:"" }}">
                                     </div>
                                 </div>
                             </div>
@@ -45,9 +52,27 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group form-group-icon-left">
+                                        <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
+                                        <span class="text-error">{{ form.date_of_birth.errors }}</span>
+                                        <div class="div-input-icon">
+                                            <i class="fa fa-lock input-icon"></i>
+                                            <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
+                                                   id="date_of_birth"
+                                                   name="date_of_birth"
+                                                   {% if request.POST.date_of_birth %}
+                                                        value="{{ request.POST.date_of_birth }}"
+                                                   {% else %}
+                                                        value="{{ user.generalprofile.date_of_birth|date:'m.d.Y' }}"
+                                                   {% endif %}
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-
-                        {% if request.session.current_role == "guide" %}
                             <div>
                                 <h4>{% trans 'Company Info' %}</h4>
                             </div>
