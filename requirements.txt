@@ -36,3 +36,5 @@ pycountry==17.9.23
 -e git://github.com/castaway2000/django-drip.git@#egg=django_drip
 django-social-share==1.1.2
 django-user-agents==0.3.2
+
+django-crispy-forms==1.7.0
