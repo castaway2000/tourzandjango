@@ -112,11 +112,11 @@
                         </fieldset>
 
                         <fieldset class="verification-form">
-                            <legend>Uploading data:</legend>
+                            <legend>{% trans 'Uploading data' %}:</legend>
                             <div class="form-group">
                                 <p>
                                     <b>{% trans 'Your date of birth' %}: </b>
-                                    {{ user.guideprofile.date_of_birth|date:"d F Y" }}
+                                    {{ request.user.generalprofile.date_of_birth|date:"d F Y" }}
                                 </p>
                             </div>
                             <div class="form-group">

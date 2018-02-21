@@ -107,37 +107,41 @@
                 </div>
                 <div class="col-md-5">
                     <div class="booking-item-meta">
-                        <h2 class="lh1em">{% blocktrans %}Great!{% endblocktrans %}</h2>
-                        <h3>
-                            {% if guide.orders_with_review_rate == 100.00 %}
-                                {{ guide.orders_with_review_rate|floatformat }}%
-                            {% else %}
-                                {{ guide.orders_with_review_rate }}%
-                            {% endif %}
-                            <small>
-                                {% blocktrans %}of tours were reviewed {% endblocktrans %}
-                            </small>
-                        </h3>
-                        <div class="booking-item-rating">
-                            <ul class="icon-list icon-group booking-item-rating-stars">
-                                {{ guide.rating|rendering_stars|safe }}
-                            </ul>
-                            <span class="booking-item-rating-number">
-                                <b>{{ guide.rating }}</b>
-                                of 5
-                                <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small>
-                            </span>
-                            <p>
-                                <a class="text-default" href="#">
-                                    {% blocktrans %}based on{% endblocktrans %} {{ guide.orders_with_review_nmb }}
-                                    {% if guide.orders_with_review_nmb == 1 %}
-                                        {% blocktrans %}review{% endblocktrans %}
-                                    {% else %}
-                                        {% blocktrans %}reviews{% endblocktrans %}
-                                    {% endif %}
-                                </a>
-                            </p>
-                        </div>
+                        {% if not guide.rating %}
+                            <h2 class="lh1em">{% blocktrans %}New!{% endblocktrans %}</h2>
+                        {% else %}
+                            <h2 class="lh1em">{% blocktrans %}Great!{% endblocktrans %}</h2>
+                            <h3>
+                                {% if guide.orders_with_review_rate == 100.00 %}
+                                    {{ guide.orders_with_review_rate|floatformat }}%
+                                {% else %}
+                                    {{ guide.orders_with_review_rate }}%
+                                {% endif %}
+                                <small>
+                                    {% blocktrans %}of tours were reviewed {% endblocktrans %}
+                                </small>
+                            </h3>
+                            <div class="booking-item-rating">
+                                <ul class="icon-list icon-group booking-item-rating-stars">
+                                    {{ guide.rating|rendering_stars|safe }}
+                                </ul>
+                                <span class="booking-item-rating-number">
+                                    <b>{{ guide.rating }}</b>
+                                    of 5
+                                    <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small>
+                                </span>
+                                <p>
+                                    <a class="text-default" href="#">
+                                        {% blocktrans %}based on{% endblocktrans %} {{ guide.orders_with_review_nmb }}
+                                        {% if guide.orders_with_review_nmb == 1 %}
+                                            {% blocktrans %}review{% endblocktrans %}
+                                        {% else %}
+                                            {% blocktrans %}reviews{% endblocktrans %}
+                                        {% endif %}
+                                    </a>
+                                </p>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="booking-item-dates-change">
                         <div class="booking-result-message alert hidden">

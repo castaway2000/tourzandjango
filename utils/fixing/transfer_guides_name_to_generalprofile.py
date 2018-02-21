@@ -12,8 +12,20 @@ def transfer_name():
     guides = GuideProfile.objects.all()
     for guide in guides.iterator():
         profile, created = GeneralProfile.objects.get_or_create(user=guide.user)
-        profile.first_name = guide.name
-        profile.date_of_birth = guide.date_of_birth
+        if not profile.first_name:
+            if profile.user.first_name:
+                profile.first_name = profile.user.first_name
+            elif guide.name:
+                profile.first_name = guide.name
+            else:
+                profile.first_name = guide.user.username
+
+        if not profile.last_name:
+            if profile.user.last_name:
+                profile.last_name = profile.user.last_name
+
+        if not profile.date_of_birth:
+            profile.date_of_birth = guide.date_of_birth
         profile.save(force_update=True)
 
 if __name__ == "__main__":

@@ -80,9 +80,10 @@ INSTALLED_APPS = [
     'drip',
     'django_social_share',
 
-    'corsheaders',
+    # 'corsheaders',
     'django_extensions',
     'django_user_agents',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -119,8 +120,10 @@ MIDDLEWARE = [
 #     'paymentrails.com'
 # )
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tourzan.urls'
 
