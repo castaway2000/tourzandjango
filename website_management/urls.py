@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^tos/$', views.tos, name='tos'),
     url(r'^contact_us/$', views.contact_us, name='contact_us'),
     url(r'^faq/$', views.faq, name='faq'),
+    url(r'^sitemap/$', views.sitemap, name='sitemap'),
 
 ]

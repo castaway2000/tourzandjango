@@ -84,19 +84,19 @@
                                                  {% blocktrans %}by{% endblocktrans %}
 
                                             <a href="{% url 'guide' order.guide.user.username %}">
-                                                {{ order.guide.name }}
+                                                {{ order.guide.user.generalprofile.first_name }}
                                             </a>
 
                                         {% else %}
                                             Tour with
                                             <a href="{% url 'guide' order.guide.user.username %}">
-                                                {{ order.guide.name }}
+                                                {{ order.guide.user.generalprofile.first_name }}
                                             </a>
 
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{% url 'tourist' order.tourist.user.username %}">
+                                        <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
                                             {% if order.tourist.name %}
                                                 {{ order.tourist.name }}
                                             {% else %}

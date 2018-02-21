@@ -9,28 +9,24 @@ from orders.models import *
 from tours.models import *
 from users.models import UserLanguage, LanguageLevel
 from django.contrib import messages
+from users.models import GeneralProfile
 
 
 @login_required()
 def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
-    profile, created = TouristProfile.objects.get_or_create(user=user)
-
+    profile, profile_created = TouristProfile.objects.get_or_create(user=user)
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
-
     user_language_native = None
     for user_language in user_languages:
         if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
         else:
             user_language_second = user_language
-
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
-        print(request.POST)
-        print(request.FILES)
 
         #Interests creation
         interests = request.POST.getlist("interests")
@@ -41,10 +37,8 @@ def profile_settings_tourist(request):
 
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
-
         UserInterest.objects.filter(user=user).delete()
         UserInterest.objects.bulk_create(user_interest_list)
-
 
         # Languages assigning
         # it is the same peace of code as at guide view - maybe to remake this in the future
@@ -64,7 +58,6 @@ def profile_settings_tourist(request):
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
-
             #dublication of the peace of code at the beginning of the function
             user_language_native = None
             for user_language in user_languages:
@@ -73,15 +66,17 @@ def profile_settings_tourist(request):
                 else:
                     user_language_second = user_language
 
-
-
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
+        user_interests = UserInterest.objects.filter(user=user)
+
+        #redirect to pending order if tourist account was created
+        if request.session.get("pending_order_creation"):
+            return HttpResponseRedirect(reverse("making_booking"))
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     user_interests = UserInterest.objects.filter(user=user)
-
     return render(request, 'users/profile_settings_tourist.html', locals())
 
 
@@ -141,18 +136,17 @@ def profile_photos(request, username = None):
 
 
 @login_required()
-def tourist(request, username):
+def tourist(request, uuid):
     try:
-        user = User.objects.get(username=username)
+        general_profile = GeneralProfile.objects.get(uuid=uuid)
+        user = general_profile.user
     except:
         return HttpResponseRedirect(reverse("home"))
 
     tourist = user.touristprofile
     orders = Order.objects.filter(tourist=tourist).order_by('-id')
     tours = tourist.order_set.all().order_by("-id")
-
     travel_photos = user.touristtravelphoto_set.all().order_by("-id")
-
     reviews = Review.objects.filter(order__tourist=tourist, is_guide_feedback=True)
     return render(request, 'tourists/tourist.html', locals())
 

@@ -9,6 +9,7 @@ from locations.models import City, Currency
 from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_profile_image,
                               upload_path_handler_guide_optional_image,
+                              upload_path_handler_guide_image
                               )
 
 
@@ -17,6 +18,7 @@ class GuideProfile(models.Model):
     city = models.ForeignKey(City)
 
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     min_hours = models.IntegerField(default=1)
@@ -48,6 +50,7 @@ class GuideProfile(models.Model):
 
     def __str__(self):
         return "%s" % self.user.username
+
 
     #add logic to perform calculations only if the value was changed
     def save(self, *args, **kwargs):
@@ -108,4 +111,20 @@ class GuideService(models.Model):
         return "%s" % self.service.name
 
 
+class Question(models.Model):
+    text = models.TextField()
 
+    def __str__(self):
+        return "%s" % self.text
+
+
+class GuideAnswer(models.Model):
+    guide = models.ForeignKey(GuideProfile)
+    question = models.ForeignKey(Question)
+    text = models.TextField()
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to=upload_path_handler_guide_image, blank=True, null=True)
+    order_priority = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "%s" % self.guide.user.generalprofile.first_name

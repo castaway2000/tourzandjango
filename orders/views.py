@@ -31,16 +31,26 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
     )
 
 
-#both guide and tour
-@login_required()
+#this view is both for booking guides and tours
 def making_booking(request):
-    print ("tour bookings123")
-    print (request.POST)
-    print (request.GET)
+    # print ("tour bookings123")
+    # print (request.POST)
+    # print (request.GET)
 
     user = request.user
+
+    #this code is used instead of login_required decorator to make it
+    if user.is_anonymous():
+        data = request.POST
+        request.session["pending_order_creation"] = data
+        # request.session["pending_order_creation"] = dict(request.POST.lists())
+        return HttpResponseRedirect(reverse("login"))
+
     return_dict = dict()
-    if request.POST:
+    if request.session.get("pending_order_creation"):
+        data = request.session.get("pending_order_creation")
+        del request.session["pending_order_creation"]
+    elif request.POST:
         data = request.POST
     else:
         data = request.GET
@@ -146,11 +156,11 @@ def making_booking(request):
 
         for time_slot_chosen in time_slots_chosen:
             #get or update functionality, but without applying for booked items
-            print ("try")
-            print(time_slot_chosen)
+            # print ("try")
+            # print(time_slot_chosen)
             calendar_item_guide = CalendarItemGuide.objects.get(id=time_slot_chosen, guide=guide)
-            print(calendar_item_guide.id)
-            print(calendar_item_guide.calendar_item)
+            # print(calendar_item_guide.id)
+            # print(calendar_item_guide.calendar_item)
             if calendar_item_guide.status_id == 2: #available
                 calendar_item_guide.status_id = 1 #booked
                 calendar_item_guide.order = order
@@ -159,11 +169,9 @@ def making_booking(request):
         messages.error(request, _('Some selected time slots are not available anymore!'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    if request.POST:#it means that it is ajax request
-        # return HttpResponseRedirect(reverse("my_bookings"))
-        return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
-    else:#it means that it is creation of the new order with redirect to checkout page
-        return JsonResponse(return_dict)
+    #got rid of returning data for ajax calls
+    #always return a redirect
+    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
 
 
 @login_required
@@ -519,6 +527,7 @@ def order_completing(request, order_id):
                 order.save(force_update=True)
                 Review.objects.update_or_create(order=order, defaults=kwargs)
                 messages.success(request, 'Review has been successfully created!')
+
 
             if order.tourist.user == user:
                 tourist_kwargs = {

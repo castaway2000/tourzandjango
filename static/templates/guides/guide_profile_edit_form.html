@@ -30,12 +30,24 @@
                </div>
             {% endif %}
             <div class="form-group form-group-icon-left">
-                <label>{% blocktrans %}Name{% endblocktrans %}*:</label>
+                <label>{% blocktrans %}First Name{% endblocktrans %}*:</label>
                 <span class="text-error">{{ form.name.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control" name="{{ form.name.html_name }}"
-                           value="{% if guide and guide.name %}{{ form.name.value }}{% endif %}">
+                    <input required class="form-control" name="first_name"
+                           value="{% if request.POST.first_name %}{{ request.POST.first_name }}
+                           {% elif user.generalprofile.first_name %}{{ user.generalprofile.first_name }}{% endif %}">
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}Last Name{% endblocktrans %}*:</label>
+                <span class="text-error">{{ form.last_name.errors }}</span>
+                <div class="div-input-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input required class="form-control" name="last_name"
+                           value="{% if request.POST.last_name %}
+                           {{ request.POST.last_name }}{% elif user.generalprofile.last_name %}{{ user.generalprofile.last_name }}{% endif %}">
                 </div>
             </div>
 
@@ -67,7 +79,7 @@
                 </label>
                 <div class="div-input-icon">
                     <i class="fa fa-money input-icon"></i>
-                    <input required type="number" step="0.1" name="{{ form.rate.html_name }}" class="form-control w100"
+                    <input required type="number" min="0" step="1" name="{{ form.rate.html_name }}" class="form-control w100"
                         {% if request.POST.rate %}
                            value="{{ request.POST.rate|safe }}"
                         {% elif guide %}
@@ -78,17 +90,34 @@
             </div>
 
             <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}Min hours{% endblocktrans %}*:
+                    <span class="text-error">{{ form.min_hours.errors }}</span>
+                </label>
+                <div class="div-input-icon">
+                    <i class="fa fa-clock-o input-icon"></i>
+                    <input required type="number" min="1" step="1" name="{{ form.min_hours.html_name }}"
+                           class="form-control w100"
+                        {% if request.POST.rate %}
+                           value="{{ request.POST.min_hours|safe }}"
+                        {% elif guide %}
+                           value="{{ guide.min_hours|safe }}"
+                        {% endif %}
+                    >
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
-                <span class="text-error">{{ form.date_of_birth.errors }}</span>
+{#                <span class="text-error">{{ form.date_of_birth.errors }}</span>#}
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control datepicker" data-date-format="mm.dd.yyyy"
+                    <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
                            id="date_of_birth"
-                           name="{{ form.date_of_birth.html_name }}"
+                           name="date_of_birth"
                            {% if request.POST.date_of_birth %}
                                 value="{{ request.POST.date_of_birth }}"
                            {% else %}
-                                value="{{ form.date_of_birth.value|date:'m.d.Y' }}"
+                                value="{{ user.generalprofile.date_of_birth|date:'m.d.Y' }}"
                            {% endif %}
                     >
                 </div>

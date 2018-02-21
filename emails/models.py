@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from chats.models import ChatMessage
 from django.contrib.auth.models import User
 
 
@@ -19,7 +18,7 @@ class EmailMessage(models.Model):
     email = models.EmailField()
     user = models.ForeignKey(User, blank=True, null=True, default=None)
     order = models.ForeignKey("orders.Order", blank=True, null=True, default=None)
-    chat_message = models.ForeignKey(ChatMessage, blank=True, null=True, default=None)
+    chat_message = models.ForeignKey("chats.ChatMessage", blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 

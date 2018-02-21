@@ -2,6 +2,12 @@
 {% load static %}
 {% load i18n %}
 
+{% block header_stuff %}
+    <!-- Event snippet for verification webcam conversion page -->
+    <script>
+    gtag('event', 'conversion', {'send_to': 'AW-855709588/NoQ8CM_UyXkQlK-EmAM'});
+    </script>
+{% endblock %}
 
 {% block content_profile %}
 <div class="col-md-9">
@@ -27,7 +33,7 @@
         <div class="col-lg-12">
             <div>
                 <a href="{% url 'identity_verification_ID_uploading' %}" class="btn btn-default">
-                    {% trans 'Go back to step 1' %}</a>
+                    {% trans 'Go back to step' %} 1</a>
             </div>
         </div>
     </div>

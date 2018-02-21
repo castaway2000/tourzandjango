@@ -1,5 +1,44 @@
 $(document).ready(function(){
 
+    //function showBookingButton(){
+    //    var scroll = $(window).scrollTop();
+    //    var width = $(window).width();
+    //    console.log(222);
+    //    console.log(scroll);
+    //    guide_general_info_from_top = $('#guide_general_info').offset().top;
+    //    booking_area_from_top = $('#booking_area').offset().top;
+    //    console.log(guide_general_info_from_top);
+    //    if (scroll >= guide_general_info_from_top && scroll <= booking_area_from_top && width>1200) {
+    //        $('#booking_proposal').removeClass('hidden');
+    //    } else  {
+    //        $('#booking_proposal').addClass('hidden');
+    //    }
+    //}
+    //
+    //$(window).on('scroll', function(){
+    //    if('#booking_proposal'){
+    //        console.log("1111");
+    //        showBookingButton();
+    //    }
+    //});
+    //
+    //$(window).resize(function () {
+    //    showBookingButton();
+    //});
+
+    //there are at least 2 buttons with this class
+    $('.btn-booking-proposal').on('click', function(e){
+        e.preventDefault();
+        var link = $(this).attr('href');
+        $('html, body').animate({scrollTop: ($(link).offset().top-10)}, 500);
+    });
+
+    $('#scroll_top').on('click', function(e){
+        e.preventDefault();
+        var link = $(this).attr('href');
+        $('html, body').animate({scrollTop: ($(link).offset().top)}, 500);
+    });
+
     function updatingChosenHours(){
         var form = $('.schedule-form');
         hours = $('#booking_hours:not(.hidden) option:selected').val();
@@ -234,6 +273,7 @@ $(document).ready(function(){
 });
 
 $('.datepicker').datepicker();
+$('.datepicker-date').datepicker();
 
 //$('.datepicker.today-date').datepicker('setDate', 'today');
 //

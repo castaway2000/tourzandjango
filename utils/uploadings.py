@@ -1,5 +1,8 @@
 def upload_path_handler_city(instance, filename):
-    return "locations/cities/%s" % (filename)
+    if instance.name:
+        return "locations/cities/%s_%s" % (instance.name, filename)
+    else:
+        return "locations/cities/%s" % (filename)
 
 
 def upload_path_handler_tour(instance, filename):
@@ -29,6 +32,9 @@ def upload_path_handler_blog(instance, filename):
 def upload_path_handler_user_scanned_docs(instance, filename):
     return "users/%s/docs/%s" % (instance.general_profile.user.id, filename)
 
+
+def upload_path_handler_guide_image(instance, filename):
+    return "users/%s/guide/profile_image/%s" % (instance.guide.user.id, filename)
 
 def upload_path_handler_guide_header_images(instance, filename):
     return "users/%s/guide/header_images/%s" % (instance.user.id, filename)
