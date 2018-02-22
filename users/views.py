@@ -122,14 +122,17 @@ def general_settings(request):
     page = "general_settings"
     user = request.user
 
-    current_role = request.session.get("current_role")
-    if current_role == "guide":
-        guide = user.guideprofile
-
     countries = [country.name for country in pycountry.countries]
 
     general_profile, created = GeneralProfile.objects.get_or_create(user=user)
-    form = GeneralProfileForm(data=request.POST or None, instance=general_profile)
+
+    current_role = request.session.get("current_role")
+    if current_role == "guide":
+        guide = user.guideprofile
+        form = GeneralProfileAsGuideForm(data=request.POST or None, instance=general_profile, request=request)
+    else:
+        form = GeneralProfileAsTouristForm(data=request.POST or None, instance=general_profile, request=request)
+
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':

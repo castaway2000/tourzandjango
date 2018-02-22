@@ -80,9 +80,10 @@ INSTALLED_APPS = [
     'drip',
     'django_social_share',
 
-    'corsheaders',
+    # 'corsheaders',
     'django_extensions',
     'django_user_agents',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -119,8 +120,10 @@ MIDDLEWARE = [
 #     'paymentrails.com'
 # )
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tourzan.urls'
 
@@ -336,8 +339,8 @@ except:
 
 
 try:
-    #delete '_2' on Production server of AWS
-    from .prod_settings_2 import *
+    #delete '_2' on AWS
+    from .prod_settings import *
 except:
     pass
 
@@ -351,7 +354,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings import *
+    from .local_settings_2 import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\

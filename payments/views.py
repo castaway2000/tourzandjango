@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
-braintree.Configuration.configure(braintree.Environment.Sandbox,
+braintree.Configuration.configure(braintree.Environment.Production,
     merchant_id=BRAINTREE_MERCHANT_ID,
     public_key=BRAINTREE_PUBLIC_KEY,
     private_key=BRAINTREE_PRIVATE_KEY
