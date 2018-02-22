@@ -72,13 +72,10 @@ urlpatterns = i18n_patterns(
                 #to access protected api urls you must include the Authorization: JWT <your_token> header.
                 #https://getblimp.github.io/django-rest-framework-jwt/
                 #http://polyglot.ninja/django-rest-framework-json-web-tokens-jwt/
-
                 url(r'^api/v1/api-token-auth/', obtain_jwt_token),
                 url(r'^api/v1/api-token-verify/', verify_jwt_token),
-
                 url(r'^api/v1/login_client/$', login_api_view, name='login_client'),
                 url(r'^api/v1/signup_user/$', signup_api_view, name='signup_client'),
-
                 url(r'^api/v1/', include('chats.api.urls')),
                 url(r'^api/v1/', include('tourists.api.urls')),
                 url(r'^api/v1/', include('guides.api.urls')),
@@ -88,7 +85,6 @@ urlpatterns = i18n_patterns(
                 url(r'^api/v1/', include('users.api.urls')),
                 url(r'^api/v1/', include('blog.api.urls')),
                 url(r'^api/v1/', include('website_management.api.urls')),
-
                 url(r'^api/v1/', include(api_urls())),#for the main representation page of Django Rest Framework
                 url(r'^api/v1/schema/$', schema_view),
                 url(r'^api/v1/docs/', include_docs_urls(title='Tourzan API Documentation'))
