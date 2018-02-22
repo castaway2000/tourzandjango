@@ -24,6 +24,8 @@ from users.api.views import login_api_view, signup_api_view
 
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
+from rest_framework.documentation import include_docs_urls
+
 from .api_router import SharedAPIRootRouter
 from axes.decorators import watch_login
 from django.contrib.auth.views import login as admin_login
@@ -70,12 +72,12 @@ urlpatterns = i18n_patterns(
                 #to access protected api urls you must include the Authorization: JWT <your_token> header.
                 #https://getblimp.github.io/django-rest-framework-jwt/
                 #http://polyglot.ninja/django-rest-framework-json-web-tokens-jwt/
+
                 url(r'^api/v1/api-token-auth/', obtain_jwt_token),
                 url(r'^api/v1/api-token-verify/', verify_jwt_token),
 
                 url(r'^api/v1/login_client/$', login_api_view, name='login_client'),
                 url(r'^api/v1/signup_user/$', signup_api_view, name='signup_client'),
-
 
                 url(r'^api/v1/', include('chats.api.urls')),
                 url(r'^api/v1/', include('tourists.api.urls')),
@@ -88,6 +90,6 @@ urlpatterns = i18n_patterns(
                 url(r'^api/v1/', include('website_management.api.urls')),
 
                 url(r'^api/v1/', include(api_urls())),#for the main representation page of Django Rest Framework
-
                 url(r'^api/v1/schema/$', schema_view),
+                url(r'^api/v1/docs/', include_docs_urls(title='Tourzan API Documentation'))
               ]
