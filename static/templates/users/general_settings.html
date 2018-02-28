@@ -151,14 +151,11 @@
                                 </div>
                             </div>
                         {% endif %}
-
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
                         </div>
-
                     </form>
                 </div>
-
                  <div>
                     <hr>
                     <h4>{% blocktrans %}Password management section{% endblocktrans %}</h4>
@@ -169,12 +166,18 @@
 
             </div>
 
-
             <div class="col-lg-5">
-
+            <div>
+                    <h4>{% blocktrans %}Trusted Status.{% endblocktrans %}</h4>
+                    <p>{% blocktrans %}You can gain trusted status by connecting the following 3 things:{% endblocktrans %}</p>
+                    <ul>
+                        <li>{% blocktrans %}Your phone{% endblocktrans %}</li>
+                        <li>{% blocktrans %}Registration Address{% endblocktrans %}</li>
+                        <li>{% blocktrans %}A Social Media account{% endblocktrans %}</li>
+                    </ul>
+                </div>
+                <br/>
                 <div>
-                    <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
-
                     <div>
                         <p>{% blocktrans %}Social networks {% endblocktrans %}</p>
                         <ul>
@@ -193,7 +196,7 @@
                                     </a>
 
                                 {% else %}
-                                    {% blocktrans %}connect your facebook account {% endblocktrans %}
+                                    {% blocktrans %}connect your facebook {% endblocktrans %}
                                     <a title="Facebook" class=""
                                        href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
                                     >
@@ -217,7 +220,7 @@
                                     </a>
 
                                 {% else %}
-                                    {% blocktrans %}connect your twitter account {% endblocktrans %}
+                                    {% blocktrans %}connect your twitter {% endblocktrans %}
                                     <a title="Twitter" class=""
                                        href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
                                     >
@@ -239,7 +242,6 @@
                                             <i class="fa fa-plus" aria-hidden="true"></i> connect new?
                                         {% endblocktrans %}
                                     </a>
-
                                 {% else %}
                                     {% blocktrans %}connect your google account {% endblocktrans %}
                                     <a title="Google" class=""
@@ -247,15 +249,12 @@
                                     >
                                         {% blocktrans %}here{% endblocktrans %}
                                     </a>
-
                                 {% endif %}
                             </li>
                         </ul>
-                    </div>
-                    <div>
                         <form id="phone_form" class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
                             <div class="row">
-                                <div class="col-lg-7">
+                                <div class="col-lg-9">
                                     {% if not request.session.pending_validating_phone and general_profile.phone_is_validated and general_profile.phone %}
                                         <label>{% blocktrans %}Phone{% endblocktrans %}</label>
                                         <span>{{ general_profile.phone }}</span>
@@ -264,9 +263,7 @@
                                         >
                                             {% blocktrans %}Edit{% endblocktrans %}
                                         </button>
-
                                     {% else %}
-
                                         <div class="form-group">
                                             <label>{% blocktrans %}Phone {% endblocktrans %}</label>
                                             <span id="phone_error_message" class="text-error"></span>
@@ -303,12 +300,10 @@
                                                     {% blocktrans %}Cancel{% endblocktrans %}
                                                 </button>
                                             {% endif %}
-
                                         </div>
                                     {% endif %}
 
                                     {% if request.session.pending_sms_code and request.session.pending_validating_phone %}
-
                                         <div class="form-group" id="sms_code_container">
                                             <label>{% blocktrans %}Enter validation code here{% endblocktrans %}</label>
                                             <span class="text-error">{{ verification_form.sms_code.errors }}</span>
@@ -327,26 +322,6 @@
                             </div>
                         </form>
                     </div>
-                </div>
-
-                <div class="">
-                    <h5>{% blocktrans %}Trusted Status.{% endblocktrans %}</h5>
-                    <p>{% blocktrans %}You can gain trusted status by connecting 2 of the following 3 things:{% endblocktrans %}</p>
-                    <ul>
-                        <li>{% blocktrans %}Your phone{% endblocktrans %}</li>
-                        <li>
-                            {% blocktrans %}Registration Address{% endblocktrans %}
-                        </li>
-                        <li>{% blocktrans %}Government issued ID{% endblocktrans %}</li>
-                        <li>{% blocktrans %}Social Media{% endblocktrans %}</li>
-                    </ul>
-                    <h5>{% blocktrans %}Why it matters.{% endblocktrans %}</h5>
-                    <p>{% blocktrans %}Think about this for a moment. A stranger is hiring a stranger to show them around. As such, it’s nice to
-                        have some peace of mind. Trusted profiles gain more views from tourists looking to hire safe and
-                        respectful guides. They also give guides the peace of mind that they are meeting up with safe and
-                        respectful tourists.
-                        {% endblocktrans %}
-                    </p>
                 </div>
             </div>
         </div>
