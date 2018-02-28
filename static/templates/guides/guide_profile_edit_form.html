@@ -23,9 +23,13 @@
                         <label>
                           <input type="checkbox" class=""
                                 name="{{ form.is_active.html_name }}"
-                                {% if form.is_active.value != False %}checked {% endif %}
-                          >{% blocktrans %}Is visible{% endblocktrans %}
+                                {% if form.is_active.value != False %}checked {% endif %}>
+                            {% blocktrans %}Is visible{% endblocktrans %}
                         </label>
+                        <br/>
+                        {% if form.is_active.value != True %}
+                            <h3>{% blocktrans %}Heads up: Any tours you created will remain visible even if you are not.{% endblocktrans %}</h3>
+                        {% endif %}
                     </div>
                </div>
             {% endif %}
