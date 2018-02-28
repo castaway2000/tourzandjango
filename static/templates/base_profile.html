@@ -123,12 +123,11 @@
                                         {% blocktrans %}Orders{% endblocktrans %}</a>
                                 </li>
 
-                                <li>
+                                <li {% if '/earnings' in request.path  %}class="active"{% endif %}>
                                     <a href="{% url 'earnings' %}"><i class="fa fa-usd"></i>
                                         {% blocktrans %}Earnings{% endblocktrans %}
                                     </a>
                                 </li>
-                                
                                 <li {% if page == "payment_methods" %}class="active"{% endif %}>
                                     <a href="{% url 'payment_methods' %}">
                                         <i class="fa fa-credit-card"></i>
