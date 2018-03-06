@@ -38,7 +38,6 @@ def login_view(request):
 
     if not "next" in request.GET:
         request.GET.next = reverse("home")
-
     if request.method == 'POST' and form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -50,7 +49,8 @@ def login_view(request):
                     next_url = request.GET.get("next")
                     if next_url:
                         return HttpResponseRedirect(next_url)
-
+                if user.guideprofile.is_default_guide:
+                    request.session["current_role"] = "guide"
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
 
@@ -74,8 +74,8 @@ def logout_view(request):
 def after_login_router(request):
     user = request.user
     print("after_login_router")
-    print( HttpResponseRedirect(request.META.get('HTTP_REFERER')) )
-
+    print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
+    print(user.guideprofile.is_default_guide)
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))
@@ -85,6 +85,9 @@ def after_login_router(request):
         else:
             user.generalprofile.is_previously_logged_in = True
             user.generalprofile.save(force_update=True)
+            print('VALUE: %s ' % user.guideprofile.value)
+            # if user.guideprofile.is_default_guide.value:
+            #     return HttpResponseRedirect(reverse("profile_settings_guide"))
             return HttpResponseRedirect(reverse("profile_settings_tourist"))
 
 
