@@ -318,13 +318,12 @@ def profile_settings_guide(request, guide_creation=True):
         form = GuideProfileForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
-
         form_data = form.cleaned_data
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
-        general_profile.first_name = request.POST.get("first_name")
-        general_profile.last_name = request.POST.get("last_name")
+        # general_profile.first_name = request.POST.get("first_name")
+        # general_profile.last_name = request.POST.get("last_name")
         general_profile.date_of_birth = form_data["date_of_birth"]
         general_profile.save(force_update=True)
 
@@ -357,7 +356,7 @@ def profile_settings_guide(request, guide_creation=True):
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
-            #dublication of the peace of code at the beginning of the function
+            # duplication of the peace of code at the beginning of the function
             user_language_native = None
             for user_language in user_languages:
                 if user_language.level_id == 1 and not user_language_native:
@@ -367,19 +366,18 @@ def profile_settings_guide(request, guide_creation=True):
 
         place_id = request.POST.get("place_id")
         full_location = request.POST.get("city_search_input")
-        if place_id :
+        if place_id:
             city_original_name = full_location.split(",")[0]#first part - city name
             city, created = City.objects.get_or_create(place_id =place_id ,
                                                        defaults={"full_location": full_location,
-                                                               "original_name": city_original_name})
-
-
+                                                                 "original_name": city_original_name})
         new_form = form.save(commit=False)
         if place_id:
             new_form.city = city
         if not guide:
             new_form.user = user
             new_form.is_active = True
+
         new_form = form.save()
 
         #saving services

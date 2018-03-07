@@ -38,7 +38,6 @@ def login_view(request):
 
     if not "next" in request.GET:
         request.GET.next = reverse("home")
-
     if request.method == 'POST' and form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -50,7 +49,8 @@ def login_view(request):
                     next_url = request.GET.get("next")
                     if next_url:
                         return HttpResponseRedirect(next_url)
-
+                if user.guideprofile.is_default_guide:
+                    request.session["current_role"] = "guide"
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
 
@@ -74,8 +74,7 @@ def logout_view(request):
 def after_login_router(request):
     user = request.user
     print("after_login_router")
-    print( HttpResponseRedirect(request.META.get('HTTP_REFERER')) )
-
+    print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))
@@ -122,14 +121,17 @@ def general_settings(request):
     page = "general_settings"
     user = request.user
 
-    current_role = request.session.get("current_role")
-    if current_role == "guide":
-        guide = user.guideprofile
-
     countries = [country.name for country in pycountry.countries]
 
     general_profile, created = GeneralProfile.objects.get_or_create(user=user)
-    form = GeneralProfileForm(data=request.POST or None, instance=general_profile)
+
+    current_role = request.session.get("current_role")
+    if current_role == "guide":
+        guide = user.guideprofile
+        form = GeneralProfileAsGuideForm(data=request.POST or None, instance=general_profile, request=request)
+    else:
+        form = GeneralProfileAsTouristForm(data=request.POST or None, instance=general_profile, request=request)
+
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':
