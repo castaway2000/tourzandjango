@@ -23,8 +23,18 @@
                         <label>
                           <input type="checkbox" class=""
                                 name="{{ form.is_active.html_name }}"
-                                {% if form.is_active.value != False %}checked {% endif %}
-                          >{% blocktrans %}Is visible{% endblocktrans %}
+                                {% if form.is_active.value != False %}checked {% endif %}>
+                            {% blocktrans %}Is visible{% endblocktrans %}
+                        </label>
+                        <br/>
+                        {% if form.is_active.value != True %}
+                            <h3>{% blocktrans %}Heads up: Any tours you created will remain visible even if you are not.{% endblocktrans %}</h3>
+                        {% endif %}
+                        <label>
+                        <input type="checkbox" class=""
+                                name="{{ form.is_default_guide.html_name }}"
+                                {% if form.is_default_guide.value %}checked {% endif %}>
+                            {% blocktrans %}Guide profile is default{% endblocktrans %}
                         </label>
                     </div>
                </div>
@@ -286,8 +296,9 @@
             <hr>
             <input type="submit" class="btn btn-primary" value="Save Changes">
             <br/><br/>
-            <strong>{% blocktrans %}Reminder:{% endblocktrans %}<br/></strong>
-            <strong>{% blocktrans %}Make sure keep your payout preferences current to avoid delayed payouts.{% endblocktrans %}</strong>
+            <p class="lead">{% blocktrans %}Reminder:{% endblocktrans %}<br/></p>
+            <strong>{% blocktrans %}Your schedule must be set in order for tourists to book you out. Make sure it reflects
+                your current availability.{% endblocktrans %}</strong>
         </div>
     </div>
 </form>

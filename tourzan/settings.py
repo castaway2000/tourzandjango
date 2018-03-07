@@ -74,6 +74,8 @@ INSTALLED_APPS = [
     'django_summernote',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework.schemas',
+    'rest_framework.documentation',
     'storages',
     'axes',
     'phonenumber_field',
@@ -246,7 +248,6 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': (
     #     'rest_framework.permissions.IsAuthenticated',
     # ),
-
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -339,8 +340,8 @@ except:
 
 
 try:
-    #delete '_2' on Production server of AWS
-    from .prod_settings_2 import *
+    #delete '_2' on AWS
+    from .prod_settings import *
 except:
     pass
 
@@ -354,7 +355,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings import *
+    from .local_settings_2 import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\

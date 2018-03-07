@@ -37,6 +37,5 @@ PAYMENT_RAILS_SECRET = os.environ.get('PAYMENT_RAILS_SECRET', '')
 
 FROM_EMAIL = "noreply@tourzan.com"
 
-
 ONFIDO_TOKEN = os.environ.get('ONFIDO_TOKEN', 'live_ZGcfPjhQQg9u1PbNxJktEr9n7B9W1EMP')
 ONFIDO_IS_TEST_MODE = os.environ.get('ONFIDO_IS_TEST_MODE ', False)
