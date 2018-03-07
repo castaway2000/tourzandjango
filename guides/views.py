@@ -12,6 +12,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Avg, Max, Min, Sum
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
+from users.models import GeneralProfile
 
 
 @xframe_options_exempt
@@ -181,7 +182,7 @@ def guides(request):
         return render(request, 'guides/guides.html', locals())
 
 
-def guide(request, username, new_view=None):
+def guide(request, general_profile_uuid, new_view=None):
     user = request.user
     print("new view %s" % new_view)
     #referal id for partner to track clicks in iframe
@@ -189,15 +190,16 @@ def guide(request, username, new_view=None):
     if ref_id and not "ref_id" in request.session:
         request.session["ref_id"] = ref_id
 
-    if username:
+    if general_profile_uuid:
         try:
-            guide_user = User.objects.get(username=username)
+            general_profile = GeneralProfile.objects.get(uuid=general_profile_uuid)
+            guide_user = general_profile.user
         except:
             return HttpResponseRedirect(reverse("home"))
     else:
         return HttpResponseRedirect(reverse("home"))
 
-    if not guide_user.guideprofile:
+    if not hasattr(guide_user, "guideprofile"):
         return HttpResponseRedirect(reverse("home"))
 
     guide = guide_user.guideprofile
@@ -318,7 +320,6 @@ def profile_settings_guide(request, guide_creation=True):
         form = GuideProfileForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
-
         form_data = form.cleaned_data
 
         #creating or getting general profile to assign to it first_name and last_name
@@ -357,7 +358,7 @@ def profile_settings_guide(request, guide_creation=True):
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
-            #dublication of the peace of code at the beginning of the function
+            # duplication of the peace of code at the beginning of the function
             user_language_native = None
             for user_language in user_languages:
                 if user_language.level_id == 1 and not user_language_native:
@@ -367,19 +368,18 @@ def profile_settings_guide(request, guide_creation=True):
 
         place_id = request.POST.get("place_id")
         full_location = request.POST.get("city_search_input")
-        if place_id :
+        if place_id:
             city_original_name = full_location.split(",")[0]#first part - city name
             city, created = City.objects.get_or_create(place_id =place_id ,
                                                        defaults={"full_location": full_location,
-                                                               "original_name": city_original_name})
-
-
+                                                                 "original_name": city_original_name})
         new_form = form.save(commit=False)
         if place_id:
             new_form.city = city
         if not guide:
             new_form.user = user
             new_form.is_active = True
+
         new_form = form.save()
 
         #saving services
