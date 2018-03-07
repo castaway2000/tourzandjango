@@ -318,9 +318,7 @@ def profile_settings_guide(request, guide_creation=True):
         form = GuideProfileForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
-
         form_data = form.cleaned_data
-        print(request.POST.items)
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
