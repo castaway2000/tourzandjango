@@ -3,7 +3,7 @@
 <div class="col-md-3 col-sm-12 col-xs-12">
     <div class="thumb">
         <header class="thumb-header">
-            <a href="{% url 'guide' guide.user__username %}" class="hover-img" href="#">
+            <a href="{% url 'guide' guide.user__generalprofile__uuid %}" class="hover-img">
                 <img class="guide-image-small"
                 {% if guide.profile_image %}
                      src="{% get_media_prefix %}{{ guide.profile_image }}"
