@@ -91,7 +91,7 @@ def after_login_router(request):
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__generalprofile__first_name", "profile_image", "overview")[:4]
+        .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
 
     tours = Tour.objects.filter(is_active=True).order_by("-rating")
     all_tours = tours.order_by("-rating")[:4]
