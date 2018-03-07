@@ -24,7 +24,7 @@ class GuideProfile(models.Model):
     min_hours = models.IntegerField(default=1)
 
     is_active = models.BooleanField(default=True)
-    is_default_guide = models.BooleanField(default=False)
+    is_default_guide = models.BooleanField(default=True)
     overview = models.TextField(blank=True, null=True, default=None)
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)

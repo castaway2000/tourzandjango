@@ -33,7 +33,7 @@
                         <label>
                         <input type="checkbox" class=""
                                 name="{{ form.is_default_guide.html_name }}"
-                                {% if form.is_default_guide.value != False %} checked{% endif %}>
+                                {% if form.is_default_guide.value %}checked {% endif %}>
                             {% blocktrans %}Guide profile is default{% endblocktrans %}
                         </label>
                     </div>

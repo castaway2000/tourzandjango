@@ -75,7 +75,6 @@ def after_login_router(request):
     user = request.user
     print("after_login_router")
     print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
-    print(user.guideprofile.is_default_guide)
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))
@@ -85,9 +84,6 @@ def after_login_router(request):
         else:
             user.generalprofile.is_previously_logged_in = True
             user.generalprofile.save(force_update=True)
-            print('VALUE: %s ' % user.guideprofile.value)
-            # if user.guideprofile.is_default_guide.value:
-            #     return HttpResponseRedirect(reverse("profile_settings_guide"))
             return HttpResponseRedirect(reverse("profile_settings_tourist"))
 
 
