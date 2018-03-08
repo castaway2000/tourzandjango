@@ -324,8 +324,11 @@ def profile_settings_guide(request, guide_creation=True):
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
-        # general_profile.first_name = request.POST.get("first_name")
-        # general_profile.last_name = request.POST.get("last_name")
+        if request.POST.get("first_name"):
+            general_profile.first_name = request.POST.get("first_name")
+        if request.POST.get("last_name"):
+            general_profile.last_name = request.POST.get("last_name")
+
         general_profile.date_of_birth = form_data["date_of_birth"]
         general_profile.save(force_update=True)
 
