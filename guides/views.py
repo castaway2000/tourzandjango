@@ -1,11 +1,16 @@
+import csv
+from tourzan.settings import MEDIA_ROOT
+
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
 from users.models import Interest, UserInterest, UserLanguage, LanguageLevel, GeneralProfile
 from django.contrib.auth.decorators import login_required
+from django_summernote.models import Attachment
 from django.http import JsonResponse
 from orders.models import Review
+from locations.models import City
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -511,6 +516,16 @@ def guide_payouts(request):
     try:
         guide = user.guideprofile
         general_profile = user.generalprofile
+        city = user.guideprofile.city_id
+        country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+        attachment = MEDIA_ROOT + '/' +Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+        illegal_country = False
+        with open(attachment) as csv_file:
+            reader = csv.reader(csv_file)
+            for col in reader:
+                if col[0].strip() == country:
+                    illegal_country = True
+                    break
         if not guide.uuid:
             guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
         payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
