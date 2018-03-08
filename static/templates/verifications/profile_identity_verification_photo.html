@@ -19,6 +19,24 @@
         </div>
         <div class="col-lg-6">
             <form method="post">{% csrf_token %}
+                {% if not request.user.generalprofile.first_name or not request.user.generalprofile.last_name %}
+                    <fieldset class="verification-form">
+                        <legend>{%  trans 'Please add your first name and last name' %}:</legend>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>{%  trans 'First name' %}</label>
+                                    <input required class="form-control" name="first_name">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>{%  trans 'Last name' %}*</label>
+                                    <input required class="form-control" name="last_name">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                {% endif %}
+
                 <div id="webcam_image_preview_container"></div>
                 <div class="form-group">
                     <input id="webcam_image" name="webcam_image" class="hidden">
