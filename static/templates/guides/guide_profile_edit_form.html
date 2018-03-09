@@ -8,7 +8,7 @@
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.username %}">
+             <a href="{% url 'guide' guide.user.generalprofile.uuid %}">
                  {% blocktrans %}See Public Page{% endblocktrans %}
              </a>
         </div>
@@ -23,16 +23,56 @@
                         <label>
                           <input type="checkbox" class=""
                                 name="{{ form.is_active.html_name }}"
-                                {% if form.is_active.value != False %}checked {% endif %}
-                          >{% blocktrans %}Is visible{% endblocktrans %}
+                                {% if form.is_active.value != False %}checked {% endif %}>
+                            {% blocktrans %}Is visible{% endblocktrans %}
+                        </label>
+                        <br/>
+                        {% if guide.is_active.value != True %}
+                            <p><b>{% blocktrans %}Heads up: Any tours you created will remain visible even if you are not.{% endblocktrans %}</b></p>
+                        {% endif %}
+                        <label>
+                        <input type="checkbox" class=""
+                                name="{{ form.is_default_guide.html_name }}"
+                                {% if form.is_default_guide.value %}checked {% endif %}>
+                            {% blocktrans %}Guide profile is default when sign in{% endblocktrans %}
                         </label>
                     </div>
                </div>
             {% endif %}
 
             <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}First Name{% endblocktrans %}*:</label>
+                <span class="text-error">{{ form.first_name.errors }}</span>
+                <div class="div-input-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input required class="form-control" id="first_name_input" name="first_name"
+                    {% if request.POST.first_name %}
+                        value="{{ request.POST.first_name }}"
+                    {% elif guide and guide.first_name %}
+                        value="{{ guide.first_name }}"
+                    {% endif %}
+                    >
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}Last Name{% endblocktrans %}*:</label>
+                <span class="text-error">{{ form.last_name.errors }}</span>
+                <div class="div-input-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input required class="form-control" id="last_name_input" name="last_name"
+                    {% if request.POST.last_name %}
+                        value="{{ request.POST.last_name }}"
+                    {% elif guide and guide.last_name %}
+                        value="{{ guide.last_name }}"
+                    {% endif %}
+                    >
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}City{% endblocktrans %}*:</label>
-                <span class="text-error">{{ form.name.errors }}</span>
+                <span class="text-error">{{ form.city_search_input.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
                     <input required class="typeahead form-control" id="city_search_input" name="city_search_input"
@@ -286,8 +326,9 @@
             <hr>
             <input type="submit" class="btn btn-primary" value="Save Changes">
             <br/><br/>
-            <strong>{% blocktrans %}Reminder:{% endblocktrans %}<br/></strong>
-            <strong>{% blocktrans %}Make sure keep your payout preferences current to avoid delayed payouts.{% endblocktrans %}</strong>
+            <p class="lead">{% blocktrans %}Reminder:{% endblocktrans %}<br/></p>
+            <strong>{% blocktrans %}Your schedule must be set in order for tourists to book you out. Make sure it reflects
+                your current availability.{% endblocktrans %}</strong>
         </div>
     </div>
 </form>
