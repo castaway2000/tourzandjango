@@ -188,7 +188,8 @@
                         </div>
                     </div>
                 {% else %}
-                    {% if not user_payment_method %}
+                    {% if not user_payment_method and not illegal_country %}
+                        {{ illegal_country }}
                         <div class="well">
                             {% blocktrans %}
                                 You do not have any connected payment method. Please add at least one
@@ -198,7 +199,6 @@
                             </a>
                         </div>
                     {% else %}
-
                         <h3>Send a message to your guide</h3>
 
                         Tell your guide a little about yourself

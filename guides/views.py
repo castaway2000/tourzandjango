@@ -209,6 +209,15 @@ def guide(request, username, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
+    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+    attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+    illegal_country = False
+    with open(attachment) as csv_file:
+        reader = csv.reader(csv_file)
+        for col in reader:
+            if col[0].strip() == country:
+                illegal_country = True
+                break
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
