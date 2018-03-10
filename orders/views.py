@@ -153,7 +153,7 @@ def making_booking(request):
                 print (e)
 
             return_dict["status"] = "success"
-            return_dict["message"] = "Request has been submitted! Please waite for confirmation!"
+            return_dict["message"] = "Request has been submitted! Please wait for confirmation!"
 
         for time_slot_chosen in time_slots_chosen:
             #get or update functionality, but without applying for booked items
@@ -173,7 +173,6 @@ def making_booking(request):
     country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     print(country)
     attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
-    print('AWRG!: ', attachment)
     illegal_country = False
     with open(attachment) as csv_file:
         reader = csv.reader(csv_file)
