@@ -530,11 +530,14 @@ def guide_payouts(request):
         general_profile = user.generalprofile
         city = user.guideprofile.city_id
         country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+        print(country)
         attachment = MEDIA_ROOT + '/' +Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+        print('AWRG!: ', attachment)
         illegal_country = False
         with open(attachment) as csv_file:
             reader = csv.reader(csv_file)
             for col in reader:
+                print(col[0].strip(), country)
                 if col[0].strip() == country:
                     illegal_country = True
                     break

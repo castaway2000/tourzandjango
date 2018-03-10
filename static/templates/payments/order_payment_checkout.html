@@ -127,9 +127,15 @@
                                             {% endblocktrans %}
                                         </b>
                                     </td>
-                                    <td>
-                                        {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
-                                    </td>
+                                    {% if illegal_country %}
+                                         <td>
+                                            0 {{ order.currency.name }}
+                                         </td>
+                                    {% else %}
+                                        <td>
+                                            {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
+                                        </td>
+                                    {% endif %}
                                 </tr>
                                 <tr>
                                     <td>
@@ -152,9 +158,15 @@
                                             {% endblocktrans %}
                                         </b>
                                     </td>
+                                     {% if illegal_country %}
+                                         <td>
+                                            {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
+                                         </td>
+                                    {% else %}
                                     <td>
                                         {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
                                     </td>
+                                    {% endif %}
                                 </tr>
                             </tbody>
                         </table>
@@ -189,7 +201,6 @@
                     </div>
                 {% else %}
                     {% if not user_payment_method and not illegal_country %}
-                        {{ illegal_country }}
                         <div class="well">
                             {% blocktrans %}
                                 You do not have any connected payment method. Please add at least one
@@ -199,6 +210,23 @@
                             </a>
                         </div>
                     {% else %}
+                        {% if illegal_country %}
+                            <h4>
+                                {% blocktrans %}
+                                    This is a mutual agreement and not a purchase.
+                                {% endblocktrans %}
+                            </h4>
+                            <p>
+                                {% blocktrans %}
+                                    In order to provide a mutual aggrement the guide must be identity verified.
+                                    Mutual agreements are to let Tourzan.com connect travelers to local guides in areas
+                                    our payments processor does not serve. Because money exchanges directly between
+                                    traveler and the guide or business, mutual agreements are not covered under our
+                                    insurance and assurances.
+                                {% endblocktrans %}
+                            </p>
+                            <br><br>
+                        {% endif %}
                         <h3>Send a message to your guide</h3>
 
                         Tell your guide a little about yourself

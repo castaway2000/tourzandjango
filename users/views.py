@@ -49,8 +49,12 @@ def login_view(request):
                     next_url = request.GET.get("next")
                     if next_url:
                         return HttpResponseRedirect(next_url)
-                if user.guideprofile.is_default_guide:
-                    request.session["current_role"] = "guide"
+                try:
+                    if user.guideprofile.is_default_guide:
+                        request.session["current_role"] = "guide"
+                except Exception as err:
+                    print(err)
+                    pass
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
 
