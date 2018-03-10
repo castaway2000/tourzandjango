@@ -150,7 +150,16 @@
                             </button>
                             <div class="message-text"></div>
                         </div>
-
+                        {% if illegal_country %}
+                            <strong>
+                                {% blocktrans %}
+                                    This guide is in a country our payment processor does not serve.
+                                    Your booking can serve as a mutual agreement between you and your guide.
+                                    Mutual agreements are not mediated or covered under our assurances and insurances.
+                                {% endblocktrans %}
+                            </strong>
+                            <br/><br/>
+                        {% endif %}
                         {% if current_order %}
                             <div class="text-center">
                                 <h4 class="text-center">
@@ -271,7 +280,6 @@
                                         <p>
                                             {% blocktrans %}Minimum{% endblocktrans %}
                                             {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
-
                                         </p>
                                     </div>
                                 </div>

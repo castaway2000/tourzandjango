@@ -3,13 +3,16 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_obj
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django_summernote.models import Attachment
 from .models import *
 from orders.models import Order
 from chats.models import Chat, ChatMessage
+from locations.models import City
 from django.utils.translation import ugettext as _
 
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, MEDIA_ROOT
+import csv
 
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
 braintree.Configuration.configure(braintree.Environment.Production,
     merchant_id=BRAINTREE_MERCHANT_ID,
@@ -169,6 +172,16 @@ def order_payment_checkout(request, order_id):
     order = get_object_or_404(Order, id=order_id, tourist__user=user) #fix for preventing accessing to other tourist orders
     services_in_order = order.serviceinorder_set.all()
 
+    country = City.objects.filter(id=order.guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+    attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+    illegal_country = False
+    with open(attachment) as csv_file:
+        reader = csv.reader(csv_file)
+        for col in reader:
+            if col[0].strip() == country:
+                illegal_country = True
+                break
+
     #adding variable to session for redirecting after adding a payment method
     user_payment_method = PaymentMethod.objects.filter(user=user, is_active=True).exists()
     if not user_payment_method:
@@ -187,12 +200,14 @@ def order_payment_checkout(request, order_id):
         message = data.get("message")
         if message:
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
-
-        payment_processed = order.making_order_payment()
-        if payment_processed == False:
-            messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
+        if not illegal_country:
+            payment_processed = order.making_order_payment()
+            if payment_processed == False:
+                messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
+            else:
+                messages.success(request, 'The payment has been successfully reserved!')
         else:
-            messages.success(request, 'The payment has been successfully reserved!')
+            messages.success(request, 'The guide has been successfully reserved!')
 
         #refresh a page to show "reserved payment" stamp
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
