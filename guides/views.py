@@ -335,6 +335,7 @@ def profile_settings_guide(request, guide_creation=True):
 
     if request.method == 'POST' and form.is_valid():
         form_data = form.cleaned_data
+        print(form_data.items())
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
