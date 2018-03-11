@@ -66,7 +66,13 @@
                                 <button class="btn-link">{% post_to_facebook %}</button>
                                 <button class="btn-link">{% post_to_twitter  "Check out this tourzan guide!" '' 'Share on Twitter'%}</button>
                             </div>
-                        </div>
+                            {% if guide.license_image and 'optional_images/300x300.png' not in guide.license_image.url  %}
+                                    <br><br>
+                                    <strong>Certified Guide License:</strong>
+                                    <img src="{{ guide.license_image.url }}" class="img-responsive">
+                                    <p>{{ guide.license.url }}</p>
+                            {% endif %}
+                            </div>
                         <div class="col-md-7">
                             {% if guide.overview %}
                                 <p>{{ guide.overview|linebreaks }}</p>
@@ -150,7 +156,16 @@
                             </button>
                             <div class="message-text"></div>
                         </div>
-
+                        {% if illegal_country %}
+                            <strong>
+                                {% blocktrans %}
+                                    This guide is in a country our payment processor does not serve.
+                                    Your booking can serve as a mutual agreement between you and your guide.
+                                    Mutual agreements are not mediated or covered under our assurances and insurances.
+                                {% endblocktrans %}
+                            </strong>
+                            <br/><br/>
+                        {% endif %}
                         {% if current_order %}
                             <div class="text-center">
                                 <h4 class="text-center">
@@ -271,7 +286,6 @@
                                         <p>
                                             {% blocktrans %}Minimum{% endblocktrans %}
                                             {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
-
                                         </p>
                                     </div>
                                 </div>
