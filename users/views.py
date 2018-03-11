@@ -49,8 +49,8 @@ def login_view(request):
                     next_url = request.GET.get("next")
                     if next_url:
                         return HttpResponseRedirect(next_url)
-                    if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
-                        request.session["current_role"] = "guide"
+                if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
+                    request.session["current_role"] = "guide"
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
 
