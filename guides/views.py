@@ -187,7 +187,7 @@ def guides(request):
         return render(request, 'guides/guides.html', locals())
 
 
-def guide(request, general_profile_uuid, new_view=None):
+def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     user = request.user
     print("new view %s" % new_view)
     #referal id for partner to track clicks in iframe
@@ -211,15 +211,19 @@ def guide(request, general_profile_uuid, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
-    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-    attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
     illegal_country = False
-    with open(attachment) as csv_file:
-        reader = csv.reader(csv_file)
-        for col in reader:
-            if col[0].strip() == country:
-                illegal_country = True
-                break
+    try:
+        country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+        attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+        with open(attachment) as csv_file:
+            reader = csv.reader(csv_file)
+            for col in reader:
+                if col[0].strip() == country:
+                    illegal_country = True
+                    break
+    except:
+        pass
+
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()

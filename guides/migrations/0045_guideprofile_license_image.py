@@ -9,7 +9,7 @@ import utils.uploadings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('guides', '0048_merge_20180309_1254'),
+        ('guides', '0044_guideprofile_is_default_guide'),
     ]
 
     operations = [

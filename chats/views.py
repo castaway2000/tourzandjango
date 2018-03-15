@@ -18,6 +18,7 @@ def chats(request):
                          "tourist__generalprofile__uuid",
                          "tourist__username", "guide__username",
                          "uuid", "id", "topic", "created").order_by('-id'))
+
     chat_ids = [item["id"] for item in chats]
 
     chat_messages = ChatMessage.objects.filter(chat_id__in=chat_ids).values("chat__id", "message", "created",

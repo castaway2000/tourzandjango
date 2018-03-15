@@ -41,7 +41,7 @@
                     </div>
 
                     <h5 class="text-center">
-                        <a href="{% url 'guide' order.guide.user.username %}">
+                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
                             {{ order.guide.user.generalprofile.first_name }}
                         </a>
                     </h5>

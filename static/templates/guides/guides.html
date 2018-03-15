@@ -211,7 +211,7 @@
                                 <div class="row">
                                     <div class="col-md-3 col-sm-6 col-xs-6">
                                         <div class="booking-item-img">
-                                            <a href="{% url 'guide' guide.user.generalprofile.uuid %}">
+                                            <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                                                 {% if guide.profile_image %}
                                                     <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                 {% else %}
@@ -299,7 +299,7 @@
                                             {{ guide.rate }} {{ guide.currency.name }}
                                         </span>
                                         <p>
-                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.generalprofile.uuid %}">
+                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                                                 {% blocktrans %}View profile{% endblocktrans %}
                                             </a>
                                         </p>
