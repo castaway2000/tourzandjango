@@ -36,6 +36,7 @@ def upload_path_handler_user_scanned_docs(instance, filename):
 def upload_path_handler_guide_image(instance, filename):
     return "users/%s/guide/profile_image/%s" % (instance.guide.user.id, filename)
 
+
 def upload_path_handler_guide_header_images(instance, filename):
     return "users/%s/guide/header_images/%s" % (instance.user.id, filename)
 
@@ -46,6 +47,10 @@ def upload_path_handler_guide_profile_image(instance, filename):
 
 def upload_path_handler_guide_optional_image(instance, filename):
     return "users/%s/guide/optional_image/%s" % (instance.user.id, filename)
+
+
+def upload_path_handler_guide_license(instance, filename):
+    return "users/%s/guide/license/%s" % (instance.user.id, filename)
 
 
 def upload_path_handler_guide_webcam_image(instance, filename):
