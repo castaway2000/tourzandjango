@@ -288,6 +288,9 @@
                                         {% endwith %}
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-6 pull-left">
+                                        {% if 'optional_images/300x300.png' not in guide.license_image.url %}
+                                            <h5>Licensed</h5>
+                                        {% endif %}
                                         <div class="guide-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
                                         </div>
