@@ -28,19 +28,8 @@
                             {% if tourist.image %}
                                 <img src="{{ tourist.image.url }}" class="img-responsive">
                             {% endif %}
-                        </div>
-                        <div class="col-md-8">
-                            <h3>{{ tourist.user.generalprofile.first_name }}</h3>
-                            {% if tourist.about %}
-                                <p>{{ tourist.about|safe|linebreaks }}</p>
-                            {% else %}
-                                <p>{% trans 'Some description will be here' %}</p>
-                            {% endif %}
-                        </div>
-                    </div>
 
-                    <div class="row">
-                         <div class="col-md-4">
+                            <div class="gap gap-small"></div>
                             <h3>{% trans 'Interests' %}</h3>
                             {% if user.userinterest_set.all %}
                                 {% for item in user.userinterest_set.all %}
@@ -51,6 +40,23 @@
                             {% else %}
                                 <p>{% trans 'No interests' %}</p>
                             {% endif %}
+                            <div class="gap gap-small"></div>
+
+                        </div>
+                        <div class="col-md-8">
+                            <h3>
+                                {% if tourist.user.generalprofile.first_name %}
+                                    {{ tourist.user.generalprofile.first_name }}
+                                {% else %}
+                                    {{ tourist.user.first_name }}
+                                {% endif %}
+                            </h3>
+                            {% if tourist.about %}
+                                <p>{{ tourist.about|safe|linebreaks }}</p>
+                            {% else %}
+                                <p>{% trans 'Some description will be here' %}</p>
+                            {% endif %}
+
                         </div>
                     </div>
 
