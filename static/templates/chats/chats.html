@@ -17,7 +17,7 @@
                                         {% blocktrans %}Chat {% endblocktrans %}
                                         {% blocktrans %}with {% endblocktrans %}
                                         {% if request.user.username != chat.guide__username %}
-                                            <a href="{% url 'guide' chat.guide__username %}">
+                                            <a href="{% url 'guide' chat.guide__generalprofile__first_name chat.guide__generalprofile__uuid %}">
                                                 {% if chat.guide__generalprofile__first_name %}
                                                     {{ chat.guide__generalprofile__first_name }}
                                                 {% else %}

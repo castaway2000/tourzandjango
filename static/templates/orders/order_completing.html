@@ -90,7 +90,7 @@
 
                     <h5 class="text-center">
                         {% if is_tourist %}
-                            <a href="{% url 'guide' order.guide.user.username %}">
+                            <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
                                 {{ order.guide.user.generalprofile.first_name }}
                             </a>
                         {% elif is_guide %}
@@ -98,7 +98,7 @@
                                 {% if order.tourist.name %}
                                     {{ order.tourist.name }}
                                 {% else %}
-                                    {{ order.tourist.user.username }}
+                                    {{ order.tourist.user.generlaprofile.first_name }}
                                 {% endif %}
                             </a>
                         {% endif %}

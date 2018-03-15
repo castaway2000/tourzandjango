@@ -238,7 +238,7 @@
                                 <div class="row">
                                     <div class="col-md-3 col-sm-3 col-xs-3">
                                         <div class="booking-item-img">
-                                            <a href="{% url 'guide' guide.user.generalprofile.uuid %}?ref_id={{ request.GET.ref_id }}">
+                                            <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}?ref_id={{ request.GET.ref_id }}">
                                                 {% if guide.profile_image %}
                                                     <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                 {% else %}
@@ -324,7 +324,7 @@
                                             </span>
                                         <p>
                                             <a class="btn btn-primary"
-                                               href="{% url 'guide' guide.user.generalprofile.uuid %}?ref_id={{ request.GET.ref_id }}"
+                                               href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}?ref_id={{ request.GET.ref_id }}"
                                                target="_blank">
                                                 {% blocktrans %}Go to Guide{% endblocktrans %}
                                             </a>

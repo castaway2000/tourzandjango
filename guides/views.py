@@ -182,7 +182,7 @@ def guides(request):
         return render(request, 'guides/guides.html', locals())
 
 
-def guide(request, general_profile_uuid, new_view=None):
+def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     user = request.user
     print("new view %s" % new_view)
     #referal id for partner to track clicks in iframe

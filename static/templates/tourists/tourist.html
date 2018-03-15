@@ -1,143 +1,94 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block content %}
     <div class="container">
 
         <div class="booking-item-details">
-            <div class="bg-darken profile-info-top">
-                <header class="booking-item-header">
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <h2 class="lh1em">
-                                {% if tourist.user.first_name or tourist.user.last_name %}
-                                    {{ tourist.user.first_name }} {{ tourist.user.last_name }}
-                                    ({{ tourist.user.username }})
-                                {% else %}
-                                    {{ tourist.user.username }}
-                                {% endif %}
-                            </h2>
-
-                            {% if tourist == request.user.profile and request.session.current_role != "touris" %}
-                                <a href="{% url 'settings_router' %}">
-                                     Go to Settings
-                                 </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </header>
-                <div class="row">
-                    <div class="col-md-10 col-md-offset-1">
-                         <div class="row">
-                            <div class="col-md-2">
-                                {% if tourist.image %}
-                                    <img src="{{ tourist.image.url }}" class="img-responsive">
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <h3>About</h3>
-                                {% if tourist.about %}
-                                    <p>{{ tourist.about|linebreaks }}</p>
-                                {% else %}
-                                    <p>Some description will be here</p>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-4">
-                                <h3>Interests</h3>
-                                {% if user.userinterest_set.all %}
-                                    {% for item in user.userinterest_set.all %}
-                                        <span class="label label-default label-tag">
-                                            {{ item.interest.name }}
-                                        </span>
-                                    {% endfor %}
-                                {% else %}
-                                    <p>No interests</p>
-                                {% endif %}
-                            </div>
-                         </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                {% for travel_photo in travel_photos %}
+                                    <img src="{% get_media_prefix %}{{ travel_photo.image }}" alt=""
+                                         class="img-responsive"
+                                         title="" />
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="gap gap-small"></div>
 
                     <div class="row">
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
-                                        {% for travel_photo in travel_photos %}
-                                            <img src="{% get_media_prefix %}{{ travel_photo.image }}" alt=""
-                                                 class="img-responsive"
-                                                 title="" />
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <h3 class="mb20">Reviews</h3>
-                                    {% if reviews %}
-                                        <ul class="booking-item-reviews list">
-                                            {% for review in reviews %}
-                                                {% include 'users/review_representation_tourist.html' %}
-                                            {% endfor %}
-                                        </ul>
-
-{#                                        <div class="row wrap">#}
-{#                                            <div class="col-md-5">#}
-{#                                                <p><small>1358 reviews on this property. &nbsp;&nbsp;Showing 1 to 7</small>#}
-{#                                                </p>#}
-{#                                            </div>#}
-{#                                            <div class="col-md-7">#}
-{#                                                <ul class="pagination">#}
-{#                                                    <li class="active"><a href="#">1</a>#}
-{#                                                    </li>#}
-{#                                                    <li><a href="#">2</a>#}
-{#                                                    </li>#}
-{#                                                    <li><a href="#">3</a>#}
-{#                                                    </li>#}
-{#                                                    <li><a href="#">4</a>#}
-{#                                                    </li>#}
-{#                                                    <li><a href="#">5</a>#}
-{#                                                    </li>#}
-{#                                                    <li><a href="#">6</a>#}
-{#                                                    </li>#}
-{#                                                    <li><a href="#">7</a>#}
-{#                                                    </li>#}
-{#                                                    <li class="dots">...</li>#}
-{#                                                    <li><a href="#">43</a>#}
-{#                                                    </li>#}
-{#                                                    <li class="next"><a href="#">Next Page</a>#}
-{#                                                    </li>#}
-{#                                                </ul>#}
-{#                                            </div>#}
-{#                                        </div>#}
-                                    {% else %}
-                                        <p>No reviews so far...</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-md-4">
-                            <h3 class="mb20">Tours</h3>
-                            {% if tours %}
-                                <ul class="booking-list">
-                                    {% for order in orders %}
-                                        {% include 'order_tour_item_representation.html' %}
+                            {% if tourist.image %}
+                                <img src="{{ tourist.image.url }}" class="img-responsive">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h3>{{ tourist.user.generalprofile.first_name }}</h3>
+                            {% if tourist.about %}
+                                <p>{{ tourist.about|safe|linebreaks }}</p>
+                            {% else %}
+                                <p>{% trans 'Some description will be here' %}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                         <div class="col-md-4">
+                            <h3>{% trans 'Interests' %}</h3>
+                            {% if user.userinterest_set.all %}
+                                {% for item in user.userinterest_set.all %}
+                                    <span class="label label-default label-tag">
+                                        {{ item.interest.name }}
+                                    </span>
+                                {% endfor %}
+                            {% else %}
+                                <p>{% trans 'No interests' %}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="gap gap-small"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="mb20">{% trans 'Reviews' %}</h3>
+                            {% if reviews %}
+                                <ul class="booking-item-reviews list">
+                                    {% for review in reviews %}
+                                        {% include 'users/review_representation_tourist.html' %}
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p>No tours so far...</p>
+                                <p>{% trans 'No reviews so far' %}...</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <h3 class="mb20">{% trans 'Tours' %}</h3>
+                    {% if tours %}
+                        <ul class="booking-list">
+                            {% for order in orders %}
+                                {% include 'order_tour_item_representation.html' %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>{% trans 'No tours so far' %}...</p>
+                    {% endif %}
+                </div>
             </div>
 
         </div>
+
         <div class="gap gap-small"></div>
+
     </div>
 
 {% endblock %}
