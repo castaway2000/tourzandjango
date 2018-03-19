@@ -189,6 +189,12 @@ class Order(models.Model):
         else:
             return {"result": False}
 
+    def making_mutual_agreement(self):
+        order = self
+        order.status_id = 9 # payment reserved
+        order.save(force_update=True)
+        return {"result": True}
+
 
 """
 saving ratings from review to Order object

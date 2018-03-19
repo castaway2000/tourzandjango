@@ -76,16 +76,21 @@
 
                                 </div>
                                 <div class="col-md-8">
-                                    <h3>{{ guide.user.generalprofile.first_name }}</h3>
-                                    <div>
-                                        {% if guide.license_image and 'optional_images/300x300.png' not in guide.license_image.url  %}
-                                            <br><br>
-                                            <strong>Certified Guide License:</strong>
-                                            <img src="{{ guide.license_image.url }}" class="img-responsive">
-                                            <p>{{ guide.license.url }}</p>
-                                        {% endif %}
-                                    </div>
-
+                                    <h3>{{ guide.user.generalprofile.first_name }}
+                                    {% if guide.license_image and 'optional_images/300x300.png' not in guide.license_image.url %}
+                                        - <a href="{{ guide.license_image.url }}" target="_blank">Licensed</a>
+                                    {% endif %}
+                                    </h3>
+                                {% if illegal_country %}
+                                    <p>
+                                        {% blocktrans %}
+                                            This guide is in a country our payment processor does not serve.
+                                            Your booking can serve as a mutual agreement between you and your guide.
+                                            Mutual agreements are not mediated or covered under our assurances and insurances.
+                                        {% endblocktrans %}
+                                    </p>
+                                    <br/><br/>
+                                {% endif %}
                                     <div>
                                         <b>{% blocktrans %}Interests: {% endblocktrans %}</b><br>
                                         {% if guide.user.userinterest_set.all %}
@@ -174,16 +179,6 @@
                                     </button>
                                     <div class="message-text"></div>
                                 </div>
-                                {% if illegal_country %}
-                                    <strong>
-                                        {% blocktrans %}
-                                            This guide is in a country our payment processor does not serve.
-                                            Your booking can serve as a mutual agreement between you and your guide.
-                                            Mutual agreements are not mediated or covered under our assurances and insurances.
-                                        {% endblocktrans %}
-                                    </strong>
-                                    <br/><br/>
-                                {% endif %}
                                 {% if current_order %}
                                     <div class="text-center">
                                         <h4 class="text-center">

@@ -202,11 +202,12 @@ def order_payment_checkout(request, order_id):
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
         if not illegal_country:
             payment_processed = order.making_order_payment()
-            if payment_processed == False:
+            if not payment_processed:
                 messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
             else:
-                messages.success(request, 'The payment has been successfully reserved!')
+                messages.success(request, 'The payment has been successf ully reserved!')
         else:
+            order.making_mutual_agreement()
             messages.success(request, 'The guide has been successfully reserved!')
 
         #refresh a page to show "reserved payment" stamp
