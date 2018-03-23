@@ -170,6 +170,7 @@ def travel_photos(request):
     return render(request, 'tourists/travel_photos.html', locals())
 
 
+@login_required()
 def deleting_travel_photo(request, photo_id):
     user = request.user
     try:

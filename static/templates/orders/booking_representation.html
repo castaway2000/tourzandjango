@@ -17,7 +17,7 @@
                 </h3>
                 <div class="row">
                     <div class="col-md-12">
-                        {{ order.guide.overview|linebreaks|truncatewords_html:30 }}
+                        {{ order.guide.overview|safe|linebreaks|truncatewords_html:30 }}
                     </div>
                 </div>
 
@@ -99,7 +99,7 @@
                             Tour page
                         </a>
                     {% else %}
-                        <a href="{% url 'guide' order.guide.user.username %}"
+                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}"
                             class="btn btn-success btn-sm">
                             {% blocktrans %}
                                 Guide Profile

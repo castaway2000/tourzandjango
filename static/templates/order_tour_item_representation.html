@@ -48,7 +48,7 @@
                             Go to Tour
                         </a>
                     {% elif order.guide %}
-                        <a href="{% url 'guide' order.guide.user.username %}" class="btn btn-primary btn-xs">
+                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}" class="btn btn-primary btn-xs">
                             Go to Guide
                         </a>
                     {% endif %}

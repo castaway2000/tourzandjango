@@ -8,7 +8,7 @@
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.generalprofile.uuid %}">
+             <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                  {% blocktrans %}See Public Page{% endblocktrans %}
              </a>
         </div>
@@ -329,6 +329,27 @@
             <p class="lead">{% blocktrans %}Reminder:{% endblocktrans %}<br/></p>
             <strong>{% blocktrans %}Your schedule must be set in order for tourists to book you out. Make sure it reflects
                 your current availability.{% endblocktrans %}</strong>
+            <br><br>
+            <h4>{% blocktrans %}Guide License{% endblocktrans %}</h4>
+            {% if user.guideprofile and user.guideprofile.license_image %}
+                <div>
+                    <img src="{{ user.guideprofile.license_image.url }}" class="img-responsive img-rounded">
+                </div>
+                <div class="form-group">
+                    <label>{% blocktrans %}Upload new guide license{% endblocktrans %}:</label>
+                    <span class="text-error">{{ form.license_image.errors }}</span>
+                    <input type="file" name="{{ form.license_image.html_name }}">
+                </div>
+            {% else %}
+                <div>
+                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                </div>
+                <div class="form-group">
+                    <label>{% blocktrans %}Upload Guide License{% endblocktrans %}:</label>
+                    <span class="text-error">{{ form.profile_image.errors }}</span>
+                    <input type="file" name="{{ form.license_image.html_name }}">
+                </div>
+            {% endif %}
         </div>
     </div>
 </form>
