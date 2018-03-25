@@ -16,10 +16,8 @@ import datetime
 from guides.models import GuideService
 from payments.models import PaymentMethod
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django_summernote.models import Attachment
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, MEDIA_ROOT
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES
 import braintree
-import csv
 from partners.models import Partner
 from guides_calendar.models import CalendarItemGuide, CalendarItem
 from django.utils.translation import ugettext as _
@@ -171,16 +169,11 @@ def making_booking(request):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-    print(country)
-    attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
     illegal_country = False
-    with open(attachment) as csv_file:
-        reader = csv.reader(csv_file)
-        for col in reader:
-            print(col[0].strip(), country)
-            if col[0].strip() == country:
-                illegal_country = True
-                break
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
     #got rid of returning data for ajax calls
     #always return a redirect
     return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))

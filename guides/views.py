@@ -1,5 +1,4 @@
-import csv
-from tourzan.settings import MEDIA_ROOT
+from tourzan.settings import ILLEGAL_COUNTRIES
 
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -7,7 +6,6 @@ from .forms import *
 from .models import *
 from users.models import Interest, UserInterest, UserLanguage, LanguageLevel, GeneralProfile
 from django.contrib.auth.decorators import login_required
-from django_summernote.models import Attachment
 from django.http import JsonResponse
 from orders.models import Review
 from locations.models import City
@@ -211,18 +209,12 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
+    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
-    try:
-        country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-        attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
-        with open(attachment) as csv_file:
-            reader = csv.reader(csv_file)
-            for col in reader:
-                if col[0].strip() == country:
-                    illegal_country = True
-                    break
-    except:
-        pass
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
 
     try:
         tourist = user.touristprofile
@@ -530,29 +522,20 @@ def search_service(request):
 @login_required()
 def guide_payouts(request):
     user = request.user
-    try:
-        guide = user.guideprofile
-        general_profile = user.generalprofile
-        city = user.guideprofile.city_id
-        country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
-        print(country)
-        attachment = MEDIA_ROOT + '/' +Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
-        print('AWRG!: ', attachment)
-        illegal_country = False
-        with open(attachment) as csv_file:
-            reader = csv.reader(csv_file)
-            for col in reader:
-                print(col[0].strip(), country)
-                if col[0].strip() == country:
-                    illegal_country = True
-                    break
-        if not guide.uuid:
-            guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
-        payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
-        return render(request, 'guides/guide_payouts.html', locals())
-    except:
-        messages.error(request, 'You have no permissions for this action!')
-        return render(request, 'users/home.html', locals())
+    guide = user.guideprofile
+    general_profile = user.generalprofile
+    city = user.guideprofile.city_id
+    country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+    print(country)
+    illegal_country = False
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
+    if not guide.uuid:
+        guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
+    payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
+    return render(request, 'guides/guide_payouts.html', locals())
 
 
 def guides_for_clients(request):

@@ -31,8 +31,10 @@ SECRET_KEY = 'd370859b5!ee4ea_9c5e%d11m7qin7lr*c&6#8e@9cf151b3ec'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
+ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
+                     "Côte d'Ivoire", 'North Korea', 'Lebanon', 'Liberia', 'Libya',
+                     'Myanmar (Burma)', 'Somalia', 'Sudan', 'Syria', 'Venezuela',
+                     'Yemen', 'Zaire', 'Zimbabwe']
 # Application definition
 
 INSTALLED_APPS = [

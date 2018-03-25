@@ -94,6 +94,9 @@
                             <input type="number" step="0.01" class="form-control"
                                    name="price" value="{{ tour.price|safe }}">
                         </div>
+                        <p>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
+                            might also charge a processing fee. Please charge for services accordingly.
+                        {% endblocktrans %}</p>
 
                         <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
                             <label>{% blocktrans %}Hours duration:{% endblocktrans %}</label>
