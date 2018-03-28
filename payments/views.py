@@ -3,15 +3,13 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_obj
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django_summernote.models import Attachment
 from .models import *
 from orders.models import Order
 from chats.models import Chat, ChatMessage
 from locations.models import City
 from django.utils.translation import ugettext as _
 
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, MEDIA_ROOT
-import csv
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES
 
 import braintree
 braintree.Configuration.configure(braintree.Environment.Production,
@@ -171,17 +169,13 @@ def order_payment_checkout(request, order_id):
     user = request.user
     order = get_object_or_404(Order, id=order_id, tourist__user=user) #fix for preventing accessing to other tourist orders
     services_in_order = order.serviceinorder_set.all()
-
-    country = City.objects.filter(id=order.guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-    attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+    city = user.guideprofile.city_id
+    country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
-    with open(attachment) as csv_file:
-        reader = csv.reader(csv_file)
-        for col in reader:
-            if col[0].strip() == country:
-                illegal_country = True
-                break
-
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
     #adding variable to session for redirecting after adding a payment method
     user_payment_method = PaymentMethod.objects.filter(user=user, is_active=True).exists()
     if not user_payment_method:

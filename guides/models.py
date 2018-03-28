@@ -23,6 +23,7 @@ class GuideProfile(models.Model):
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     min_hours = models.IntegerField(default=1)
+    additional_person_cost = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     is_active = models.BooleanField(default=True)
     is_default_guide = models.BooleanField(default=True)
