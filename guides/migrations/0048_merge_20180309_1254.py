@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('guides', '0047_auto_20180307_0756'),
         ('guides', '0044_guideprofile_is_default_guide'),
-        ('guides', 'test_0042_guideprofile_is_default_guide'),
+        ('guides', '0042_guideprofile_is_default_guide'),
     ]
 
     operations = [

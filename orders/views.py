@@ -82,13 +82,13 @@ def making_booking(request):
 
         hours_nmb = data.get("booking_hours", 0)
         print(data)
-        num_people = int(data.get('options', 0))
+        number_people = int(data.get("number_people", 0))
         # price_hourly = data.get("price_hourly", 0)
         price_hourly = data.get("price_hourly", 0)
         kwargs["hours_nmb"] = hours_nmb
 
-        if num_people >= 2:
-            additional_person_cost = guide.additional_person_cost * num_people
+        if number_people >= 2:
+            additional_person_cost = guide.additional_person_cost * number_people
         else:
             additional_person_cost = 0
 
@@ -110,6 +110,8 @@ def making_booking(request):
             price_fixed = 0
             price_hourly = guide.rate
 
+        kwargs["number_persons"] = number_people
+        kwargs["price_per_additional_person"] = guide.additional_person_cost
         kwargs["additional_person_total"] = additional_person_cost
         kwargs["price"] = price_fixed
         kwargs["price_hourly"] = price_hourly
