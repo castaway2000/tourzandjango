@@ -17,13 +17,21 @@
                                         {% blocktrans %}Chat {% endblocktrans %}
                                         {% blocktrans %}with {% endblocktrans %}
                                         {% if request.user.username != chat.guide__username %}
-                                            <a href="{% url 'guide' chat.guide__username %}">
-                                                {{ chat.guide__username }}
+                                            <a href="{% url 'guide' chat.guide__generalprofile__first_name chat.guide__generalprofile__uuid %}">
+                                                {% if chat.guide__generalprofile__first_name %}
+                                                    {{ chat.guide__generalprofile__first_name }}
+                                                {% else %}
+                                                    {{ chat.guide__username }}
+                                                {% endif %}
                                             </a>
                                             {% blocktrans %}(guide){% endblocktrans %}
                                         {% else %}
-                                            <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
-                                                {{ chat.tourist__username }}
+                                            <a href="{% url 'tourist' chat.tourist__generalprofile__uuid %}">
+                                                {% if chat.tourist__generalprofile__first_name %}
+                                                    {{ chat.tourist__generalprofile__first_name }}
+                                                {% else %}
+                                                    {{ chat.tourist__username }}
+                                                {% endif %}
                                             </a>
                                             {% blocktrans %}(tourist){% endblocktrans %}
                                         {% endif %}

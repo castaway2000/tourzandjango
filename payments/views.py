@@ -6,12 +6,13 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 from orders.models import Order
 from chats.models import Chat, ChatMessage
+from locations.models import City
 from django.utils.translation import ugettext as _
 
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES
 
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
-braintree.Configuration.configure(braintree.Environment.Sandbox,
+braintree.Configuration.configure(braintree.Environment.Production,
     merchant_id=BRAINTREE_MERCHANT_ID,
     public_key=BRAINTREE_PUBLIC_KEY,
     private_key=BRAINTREE_PRIVATE_KEY
@@ -168,7 +169,13 @@ def order_payment_checkout(request, order_id):
     user = request.user
     order = get_object_or_404(Order, id=order_id, tourist__user=user) #fix for preventing accessing to other tourist orders
     services_in_order = order.serviceinorder_set.all()
-
+    city = user.guideprofile.city_id
+    country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+    illegal_country = False
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
     #adding variable to session for redirecting after adding a payment method
     user_payment_method = PaymentMethod.objects.filter(user=user, is_active=True).exists()
     if not user_payment_method:
@@ -187,12 +194,15 @@ def order_payment_checkout(request, order_id):
         message = data.get("message")
         if message:
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
-
-        payment_processed = order.making_order_payment()
-        if payment_processed == False:
-            messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
+        if not illegal_country:
+            payment_processed = order.making_order_payment()
+            if not payment_processed:
+                messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
+            else:
+                messages.success(request, 'The payment has been successf ully reserved!')
         else:
-            messages.success(request, 'The payment has been successfully reserved!')
+            order.making_mutual_agreement()
+            messages.success(request, 'The guide has been successfully reserved!')
 
         #refresh a page to show "reserved payment" stamp
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

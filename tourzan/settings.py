@@ -31,8 +31,10 @@ SECRET_KEY = 'd370859b5!ee4ea_9c5e%d11m7qin7lr*c&6#8e@9cf151b3ec'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
+ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
+                     "Côte d'Ivoire", 'North Korea', 'Lebanon', 'Liberia', 'Libya',
+                     'Myanmar (Burma)', 'Somalia', 'Sudan', 'Syria', 'Venezuela',
+                     'Yemen', 'Zaire', 'Zimbabwe']
 # Application definition
 
 INSTALLED_APPS = [
@@ -74,15 +76,18 @@ INSTALLED_APPS = [
     'django_summernote',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework.schemas',
+    'rest_framework.documentation',
     'storages',
     'axes',
     'phonenumber_field',
     'drip',
     'django_social_share',
 
-    'corsheaders',
+    # 'corsheaders',
     'django_extensions',
     'django_user_agents',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -119,8 +124,10 @@ MIDDLEWARE = [
 #     'paymentrails.com'
 # )
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tourzan.urls'
 
@@ -243,7 +250,6 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': (
     #     'rest_framework.permissions.IsAuthenticated',
     # ),
-
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -336,7 +342,7 @@ except:
 
 
 try:
-    #delete '_2' on Production server of AWS
+    #delete '_2' on AWS
     from .prod_settings_2 import *
 except:
     pass

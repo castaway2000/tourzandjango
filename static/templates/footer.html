@@ -6,9 +6,8 @@
         <div class="row row-wrap">
             <div class="col-md-3">
                 <a class="logo" href="/">
-                    <img src="{% static 'img/tourzan_logo.png' %}" class="footer-logo"
+                    <img src="{% static 'img/Tourzan-LinedLogoTransparentTeal.png' %}"
                          alt="Tourzan logo" title="Tourzan logo" />
-
                 </a>
                 <h4>Tourzan&trade;</h4>
                 <p class="mb20">
@@ -41,12 +40,18 @@
             <div class="col-md-3">
                 <ul class="list list-footer">
                     <li>
-                        <a href="{% url 'blog' %}">
-                            <p class="lead">{% blocktrans %}Blog{% endblocktrans %}</p>
+                        <a href="{% url 'faq' %}">
+                            {% blocktrans %}Frequently Asked Questions{% endblocktrans %}
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'faq' %}">{% blocktrans %}Frequently Asked Questions{% endblocktrans %}</a>
+                        <a href="{% url 'api_partner_application' %}">{% blocktrans %}API Application{% endblocktrans %}</a>
+                    </li>
+                <br>
+                    <li>
+                        <a href="{% url 'blog' %}">
+                            <p class="lead">{% blocktrans %}News{% endblocktrans %}</p>
+                        </a>
                     </li>
                 </ul>
             </div>

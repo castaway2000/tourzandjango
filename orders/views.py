@@ -16,8 +16,7 @@ import datetime
 from guides.models import GuideService
 from payments.models import PaymentMethod
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES
 import braintree
 from partners.models import Partner
 from guides_calendar.models import CalendarItemGuide, CalendarItem
@@ -58,8 +57,8 @@ def making_booking(request):
     #creating booked time slots in guide's schedule
     #if some of selected time slots is already booked or unavailable - return an error
     time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
-    is_unuavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
-    if is_unuavailable_or_booked_timeslot == False:
+    is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
+    if is_unavailable_or_booked_timeslot == False:
 
         kwargs = dict()
         tour_id = data.get("tour_id")
@@ -73,10 +72,7 @@ def making_booking(request):
             kwargs["tour_id"] = tour_id
         else:
             guide = GuideProfile.objects.get(id=guide_id)
-
-
         tourist = TouristProfile.objects.get(user=user)
-
         date_booked_for = data["start"]
         try:
             date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
@@ -85,25 +81,36 @@ def making_booking(request):
 
 
         hours_nmb = data.get("booking_hours", 0)
+        print(data)
+        num_people = int(data.get('options', 0))
         # price_hourly = data.get("price_hourly", 0)
         price_hourly = data.get("price_hourly", 0)
         kwargs["hours_nmb"] = hours_nmb
 
+        if num_people >= 2:
+            additional_person_cost = guide.additional_person_cost * num_people
+        else:
+            additional_person_cost = 0
 
         if tour_id:
             if tour.payment_type.id==1:#hourly
                 price_fixed = 0
                 price_hourly = tour.price_hourly
+
             elif tour.payment_type.id == 2:#fixed
                 price_fixed = tour.price
                 price_hourly=0
+
             else:#free tours
                 price_fixed = 0
                 price_hourly = 0
+                additional_person_cost = 0
+
         else:#guide
             price_fixed = 0
             price_hourly = guide.rate
 
+        kwargs["additional_person_total"] = additional_person_cost
         kwargs["price"] = price_fixed
         kwargs["price_hourly"] = price_hourly
 
@@ -116,6 +123,7 @@ def making_booking(request):
         # print (kwargs)
 
         if user.is_anonymous():
+            print('anon my dude')
             if "bookings" in request.session:
                 request.session["bookings"].append(kwargs)
                 return HttpResponseRedirect(reverse("my_bookings"))
@@ -146,13 +154,14 @@ def making_booking(request):
 
                 order.additional_services_price = additional_services_price
                 order.save(force_update=True)
+                print('SUCCESS!! >> ', order)
 
             except Exception as e:
                 print("exception")
-                print (e)
+                print(e)
 
             return_dict["status"] = "success"
-            return_dict["message"] = "Request has been submitted! Please waite for confirmation!"
+            return_dict["message"] = "Request has been submitted! Please wait for confirmation!"
 
         for time_slot_chosen in time_slots_chosen:
             #get or update functionality, but without applying for booked items
@@ -169,6 +178,12 @@ def making_booking(request):
         messages.error(request, _('Some selected time slots are not available anymore!'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+    illegal_country = False
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
     #got rid of returning data for ajax calls
     #always return a redirect
     return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))

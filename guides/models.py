@@ -9,7 +9,8 @@ from locations.models import City, Currency
 from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_profile_image,
                               upload_path_handler_guide_optional_image,
-                              upload_path_handler_guide_image
+                              upload_path_handler_guide_image,
+                              upload_path_handler_guide_license
                               )
 
 
@@ -22,8 +23,10 @@ class GuideProfile(models.Model):
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     min_hours = models.IntegerField(default=1)
+    additional_person_cost = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     is_active = models.BooleanField(default=True)
+    is_default_guide = models.BooleanField(default=True)
     overview = models.TextField(blank=True, null=True, default=None)
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
@@ -31,6 +34,8 @@ class GuideProfile(models.Model):
     header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default="guides/header_images/300x300.png")
     profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default="guides/profile_images/300x300.png")
     optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default="guides/optional_images/300x300.png")
+    license_image = models.ImageField(upload_to=upload_path_handler_guide_license, blank=True, null=True, default="guides/optional_images/300x300.png")
+
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
     uuid = models.CharField(max_length=48, null=True)
 

@@ -8,7 +8,7 @@
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.username %}">
+             <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                  {% blocktrans %}See Public Page{% endblocktrans %}
              </a>
         </div>
@@ -23,20 +23,35 @@
                         <label>
                           <input type="checkbox" class=""
                                 name="{{ form.is_active.html_name }}"
-                                {% if form.is_active.value != False %}checked {% endif %}
-                          >{% blocktrans %}Is visible{% endblocktrans %}
+                                {% if form.is_active.value != False %}checked {% endif %}>
+                            {% blocktrans %}Is visible{% endblocktrans %}
+                        </label>
+                        <br/>
+                        {% if guide.is_active.value != True %}
+                            <p><b>{% blocktrans %}Heads up: Any tours you created will remain visible even if you are not.{% endblocktrans %}</b></p>
+                        {% endif %}
+                        <label>
+                        <input type="checkbox" class=""
+                                name="{{ form.is_default_guide.html_name }}"
+                                {% if form.is_default_guide.value %}checked {% endif %}>
+                            {% blocktrans %}Guide profile is default when sign in{% endblocktrans %}
                         </label>
                     </div>
                </div>
             {% endif %}
+
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}First Name{% endblocktrans %}*:</label>
-                <span class="text-error">{{ form.name.errors }}</span>
+                <span class="text-error">{{ form.first_name.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control" name="first_name"
-                           value="{% if request.POST.first_name %}{{ request.POST.first_name }}
-                           {% elif user.generalprofile.first_name %}{{ user.generalprofile.first_name }}{% endif %}">
+                    <input required class="form-control" id="first_name_input" name="first_name"
+                    {% if request.POST.first_name %}
+                        value="{{ request.POST.first_name }}"
+                    {% elif guide and guide.first_name %}
+                        value="{{ guide.first_name }}"
+                    {% endif %}
+                    >
                 </div>
             </div>
 
@@ -45,15 +60,19 @@
                 <span class="text-error">{{ form.last_name.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control" name="last_name"
-                           value="{% if request.POST.last_name %}
-                           {{ request.POST.last_name }}{% elif user.generalprofile.last_name %}{{ user.generalprofile.last_name }}{% endif %}">
+                    <input required class="form-control" id="last_name_input" name="last_name"
+                    {% if request.POST.last_name %}
+                        value="{{ request.POST.last_name }}"
+                    {% elif guide and guide.last_name %}
+                        value="{{ guide.last_name }}"
+                    {% endif %}
+                    >
                 </div>
             </div>
 
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}City{% endblocktrans %}*:</label>
-                <span class="text-error">{{ form.name.errors }}</span>
+                <span class="text-error">{{ form.city_search_input.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
                     <input required class="typeahead form-control" id="city_search_input" name="city_search_input"
@@ -87,6 +106,23 @@
                         {% endif %}
                     >
                 </div>
+                <label>{% blocktrans %}Cost per additional person{% endblocktrans %}:
+                    <span class="text-error">{{ form.additional_person_cost.errors }}</span>
+                </label>
+                <div class="div-input-icon">
+                    <i class="fa fa-money input-icon"></i>
+                    <input type="number" min="1" step="1" name="{{ form.additional_person_cost.html_name }}"
+                           class="form-control w100"
+                        {% if request.POST.rate %}
+                           value="{{ request.POST.additional_person_cost|safe }}"
+                        {% elif guide %}
+                           value="{{ guide.additional_person_cost|safe }}"
+                        {% endif %}
+                    > per additional person
+                </div>
+            <strong>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
+                might also charge a processing fee. Please charge for services accordingly.
+            {% endblocktrans %}</strong>
             </div>
 
             <div class="form-group form-group-icon-left">
@@ -105,10 +141,9 @@
                     >
                 </div>
             </div>
-
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
-{#                <span class="text-error">{{ form.date_of_birth.errors }}</span>#}
+                <span class="text-error">{{ form.date_of_birth.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
                     <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
@@ -307,8 +342,30 @@
             <hr>
             <input type="submit" class="btn btn-primary" value="Save Changes">
             <br/><br/>
-            <strong>{% blocktrans %}Reminder:{% endblocktrans %}<br/></strong>
-            <strong>{% blocktrans %}Make sure keep your payout preferences current to avoid delayed payouts.{% endblocktrans %}</strong>
+            <p class="lead">{% blocktrans %}Reminder:{% endblocktrans %}<br/></p>
+            <strong>{% blocktrans %}Your schedule must be set in order for tourists to book you out. Make sure it reflects
+                your current availability.{% endblocktrans %}</strong>
+            <br><br>
+            <h4>{% blocktrans %}Guide License{% endblocktrans %}</h4>
+            {% if user.guideprofile and user.guideprofile.license_image %}
+                <div>
+                    <img src="{{ user.guideprofile.license_image.url }}" class="img-responsive img-rounded">
+                </div>
+                <div class="form-group">
+                    <label>{% blocktrans %}Upload new guide license{% endblocktrans %}:</label>
+                    <span class="text-error">{{ form.license_image.errors }}</span>
+                    <input type="file" name="{{ form.license_image.html_name }}">
+                </div>
+            {% else %}
+                <div>
+                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                </div>
+                <div class="form-group">
+                    <label>{% blocktrans %}Upload Guide License{% endblocktrans %}:</label>
+                    <span class="text-error">{{ form.profile_image.errors }}</span>
+                    <input type="file" name="{{ form.license_image.html_name }}">
+                </div>
+            {% endif %}
         </div>
     </div>
 </form>

@@ -69,6 +69,9 @@ class Order(models.Model):
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
+    number_persons = models.IntegerField(default=1)
+    additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
 
     #if a fixed-price tour is ordered, its price goes here
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -129,7 +132,7 @@ class Order(models.Model):
         price_after_discount = float(self.price) - float(self.discount)
         self.price_after_discount = price_after_discount
 
-        self.total_price_before_fees = price_after_discount + float(self.additional_services_price)
+        self.total_price_before_fees = price_after_discount + float(self.additional_services_price) + float(self.additional_person_total)
 
         if not self.currency and self.guide.currency:
             self.currency = self.guide.currency
@@ -188,6 +191,12 @@ class Order(models.Model):
 
         else:
             return {"result": False}
+
+    def making_mutual_agreement(self):
+        order = self
+        order.status_id = 9 # payment reserved
+        order.save(force_update=True)
+        return {"result": True}
 
 
 """

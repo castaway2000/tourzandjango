@@ -35,8 +35,9 @@ def populating_time_periods():
     # for testing purposes uncomment a line below
 
     #START ONLY with that date, which is new for prod
-    start = datetime.datetime.strptime('01.01.2018 0:00:00', '%d.%m.%Y %H:%M:%S').replace(tzinfo=pytz.utc)
-    date_end = datetime.datetime.strptime('31.12.2018 23:00:00', '%d.%m.%Y %H:%M:%S').replace(tzinfo=pytz.utc)
+    start = datetime.datetime.strptime('01.10.2017 0:00:00', '%d.%m.%Y %H:%M:%S').replace(tzinfo=pytz.utc)
+    date_end = datetime.datetime.strptime('31.10.2019 23:00:00', '%d.%m.%Y %H:%M:%S').replace(tzinfo=pytz.utc)
+
     populating_hours(start, date_end)
 
     # print calendar_list

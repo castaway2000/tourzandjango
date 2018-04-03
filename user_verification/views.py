@@ -119,12 +119,21 @@ def identity_verification_photo(request):
 
     general_profile = user.generalprofile
     if request.POST:
+        print(request.POST)
         webcam_img = request.POST.get("webcam_image")
         format, imgstr = webcam_img.split(';base64,')
         ext = format.split('/')[-1]
         webcam_img_file = ContentFile(base64.b64decode(imgstr), name='webcam.' + ext)
+
+        #08032018 temporary workaround solution for cases when there are no first_name and last name on general profile
+        if not general_profile.first_name and request.POST.get("first_name"):
+            general_profile.first_name = request.POST.get("first_name")
+        if not general_profile.last_name and request.POST.get("last_name"):
+            general_profile.last_name = request.POST.get("last_name")
+
         general_profile.webcam_image = webcam_img_file
         general_profile.save(force_update=True)
+
 
         token = "Token token=%s" % ONFIDO_TOKEN
         headers = {'Authorization': token}

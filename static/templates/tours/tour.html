@@ -13,7 +13,7 @@
             <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
             </li>
             <li>
-                <a href="{% url 'guide' tour.guide.user.username %}">{{ tour.guide.user.generalprofile.first_name }}</a>
+                <a href="{% url 'guide' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid %}">{{ tour.guide.user.generalprofile.first_name }}</a>
             </li>
             <li class="active">{{ tour.name }}</li>
         </ul>
@@ -61,26 +61,30 @@
 {#                        {% endfor %}#}
 {#                    </div>#}
                     <!-- END LIGHTBOX GALLERY -->
-                </div>
-                <div class="col-md-4">
-                    <div class="booking-item-meta">
-                        <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
-{#                        <h3>97% <small >of guests recommend</small></h3>#}
-                        <div class="booking-item-rating">
-                            <ul class="icon-list icon-group booking-item-rating-stars">
-                                {{ tour.rating|rendering_stars|safe }}
-                            </ul>
-                            <span class="booking-item-rating-number"><b >{{ tour.rating}}</b> {% blocktrans %}of{% endblocktrans %} 5
-                                <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small></span>
-{#                            <p><a class="text-default" href="#">based on 1535 reviews</a>#}
-{#                            </p>#}
-                        </div>
-                    </div>
                     <div class="booking-item-meta">
                         {% if tour.overview  %}
                             {{ tour.overview|linebreaks }}
                         {% else %}
                             <p class="lead">{% blocktrans %}No tour overview so far...{% endblocktrans %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="booking-item-meta">
+                        {% if not tour.rating %}
+                            <h2 class="lh1em">{% blocktrans %}New!{% endblocktrans %}</h2>
+                        {% else %}
+                            <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
+    {#                        <h3>97% <small >of guests recommend</small></h3>#}
+                            <div class="booking-item-rating">
+                                <ul class="icon-list icon-group booking-item-rating-stars">
+                                    {{ tour.rating|rendering_stars|safe }}
+                                </ul>
+                                <span class="booking-item-rating-number"><b >{{ tour.rating}}</b> {% blocktrans %}of{% endblocktrans %} 5
+                                    <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small></span>
+    {#                            <p><a class="text-default" href="#">based on 1535 reviews</a>#}
+    {#                            </p>#}
+                            </div>
                         {% endif %}
                     </div>
                 </div>

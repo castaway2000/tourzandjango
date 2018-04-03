@@ -211,7 +211,7 @@
                                 <div class="row">
                                     <div class="col-md-3 col-sm-6 col-xs-6">
                                         <div class="booking-item-img">
-                                            <a href="{% url 'guide' guide.user.username %}">
+                                            <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                                                 {% if guide.profile_image %}
                                                     <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                 {% else %}
@@ -227,7 +227,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                {{ guide.overview|linebreaks|truncatewords_html:30 }}
+                                                {{ guide.overview|safe|linebreaks|truncatewords_html:30 }}
                                             </div>
                                         </div>
                                         <div class="row">
@@ -288,6 +288,9 @@
                                         {% endwith %}
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-6 pull-left">
+                                        {% if 'optional_images/300x300.png' not in guide.license_image.url %}
+                                            <h5>Licensed</h5>
+                                        {% endif %}
                                         <div class="guide-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
                                         </div>
@@ -296,7 +299,7 @@
                                             {{ guide.rate }} {{ guide.currency.name }}
                                         </span>
                                         <p>
-                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.username %}">
+                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                                                 {% blocktrans %}View profile{% endblocktrans %}
                                             </a>
                                         </p>

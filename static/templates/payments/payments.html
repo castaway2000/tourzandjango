@@ -70,13 +70,13 @@
                                             </a>
                                                  {% blocktrans %}by{% endblocktrans %}
 
-                                            <a href="{% url 'guide' payment.order.guide.user.username %}">
+                                            <a href="{% url 'guide' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid %}">
                                                 {{ payment.order.guide.user.generalprofile.first_name }}
                                             </a>
 
                                         {% else %}
                                             Tour with
-                                            <a href="{% url 'guide' payment.order.guide.user.username %}">
+                                            <a href="{% url 'guide' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid %}">
                                                 {{ payment.order.guide.user.generalprofile.first_name }}
                                             </a>
                                         {% endif %}
