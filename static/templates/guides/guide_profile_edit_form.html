@@ -48,6 +48,8 @@
                     <input required class="form-control" id="first_name_input" name="first_name"
                     {% if request.POST.first_name %}
                         value="{{ request.POST.first_name }}"
+                    {% elif user.generalprofile.first_name %}
+                        value="{{ user.generalprofile.first_name }}"
                     {% elif guide and guide.first_name %}
                         value="{{ guide.first_name }}"
                     {% endif %}
@@ -63,6 +65,8 @@
                     <input required class="form-control" id="last_name_input" name="last_name"
                     {% if request.POST.last_name %}
                         value="{{ request.POST.last_name }}"
+                    {% elif user.generalprofile.last_name %}
+                        value="{{ user.generalprofile.last_name }}"
                     {% elif guide and guide.last_name %}
                         value="{{ guide.last_name }}"
                     {% endif %}
@@ -106,26 +110,42 @@
                         {% endif %}
                     >
                 </div>
-            <strong>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
-                might also charge a processing fee. Please charge for services accordingly.
-            {% endblocktrans %}</strong>
-            </div>
-
-            <div class="form-group form-group-icon-left">
-                <label>{% blocktrans %}Min hours{% endblocktrans %}*:
-                    <span class="text-error">{{ form.min_hours.errors }}</span>
+                <div class="form-group form-group-icon-left">
+                    <label>{% blocktrans %}Min hours{% endblocktrans %}*:
+                        <span class="text-error">{{ form.min_hours.errors }}</span>
+                    </label>
+                    <div class="div-input-icon">
+                        <i class="fa fa-clock-o input-icon"></i>
+                        <input required type="number" min="1" step="1" name="{{ form.min_hours.html_name }}"
+                               class="form-control w100"
+                            {% if request.POST.rate %}
+                               value="{{ request.POST.min_hours|safe }}"
+                            {% elif guide %}
+                               value="{{ guide.min_hours|safe }}"
+                            {% endif %}
+                        >
+                    </div>
+                </div>
+                <label>{% blocktrans %}Cost per additional person, USD{% endblocktrans %}*:
+                    <span class="text-error">{{ form.additional_person_cost.errors }}</span>
                 </label>
                 <div class="div-input-icon">
-                    <i class="fa fa-clock-o input-icon"></i>
-                    <input required type="number" min="1" step="1" name="{{ form.min_hours.html_name }}"
+                    <i class="fa fa-money input-icon"></i>
+                    <input type="number" min="1" step="1" name="{{ form.additional_person_cost.html_name }}"
                            class="form-control w100"
                         {% if request.POST.rate %}
-                           value="{{ request.POST.min_hours|safe }}"
+                           value="{{ request.POST.additional_person_cost|safe }}"
                         {% elif guide %}
-                           value="{{ guide.min_hours|safe }}"
+                           value="{{ guide.additional_person_cost|safe }}"
                         {% endif %}
                     >
                 </div>
+
+                <div class="gap gap-small"></div>
+
+                <strong>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
+                    might also charge a processing fee. Please charge for services accordingly.
+                {% endblocktrans %}</strong>
             </div>
 
             <div class="form-group form-group-icon-left">

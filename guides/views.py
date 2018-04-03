@@ -215,7 +215,6 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
         if i == country:
             illegal_country = True
             break
-
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
@@ -306,7 +305,7 @@ def profile_settings_guide(request, guide_creation=True):
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
 
-    #dublication of this peace of code below in POST area - remake it later
+    # duplication of this peace of code below in POST area - remake it later
     user_language_native = None
     for user_language in user_languages:
         if user_language.level_id == 1 and not user_language_native:
@@ -384,7 +383,7 @@ def profile_settings_guide(request, guide_creation=True):
         full_location = request.POST.get("city_search_input")
         if place_id:
             city_original_name = full_location.split(",")[0]#first part - city name
-            city, created = City.objects.get_or_create(place_id =place_id ,
+            city, created = City.objects.get_or_create(place_id=place_id,
                                                        defaults={"full_location": full_location,
                                                                  "original_name": city_original_name})
         new_form = form.save(commit=False)
@@ -393,7 +392,6 @@ def profile_settings_guide(request, guide_creation=True):
         if not guide:
             new_form.user = user
             new_form.is_active = True
-
         new_form = form.save()
 
         #saving services
@@ -496,12 +494,12 @@ def earnings(request):
 
 
 def search_service(request):
-    print ("search_service")
+    print("search_service")
     results = list()
 
     if request.GET:
         data = request.GET
-        print (data)
+        print(data)
         service_name = data.get(u"q")
         services = Service.objects.filter(name__icontains=service_name)
 
@@ -526,7 +524,6 @@ def guide_payouts(request):
     general_profile = user.generalprofile
     city = user.guideprofile.city_id
     country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
-    print(country)
     illegal_country = False
     for i in ILLEGAL_COUNTRIES:
         if i == country:
