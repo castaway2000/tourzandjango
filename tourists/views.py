@@ -19,12 +19,18 @@ def profile_settings_tourist(request):
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
+
+    # duplication of the peace of code at the end of the function
     user_language_native = None
+    user_language_second = None
     for user_language in user_languages:
         if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
+        elif user_language_native and user_language_second:
+            user_language_third = user_language
         else:
             user_language_second = user_language
+
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
 
@@ -45,8 +51,10 @@ def profile_settings_tourist(request):
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
         language_second_proficiency = request.POST.get("language_second_proficiency")
+        language_third = request.POST.get("language_third")
+        language_third_proficiency = request.POST.get("language_third_proficiency")
 
-        if language_native or language_second:
+        if language_native or language_second or language_third:
             user_languages_list = list()
             if language_native:
                 user_languages_list.append(UserLanguage(language=language_native, user=user,
@@ -54,15 +62,19 @@ def profile_settings_tourist(request):
             if language_second:
                 user_languages_list.append(UserLanguage(language=language_second, user=user,
                                                         level_id=language_second_proficiency))
+            if language_third:
+                user_languages_list.append(UserLanguage(language=language_third, user=user,
+                                                        level_id=language_third_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
-            #dublication of the peace of code at the beginning of the function
-            user_language_native = None
+            # duplication of the peace of code at the beginning of the function
             for user_language in user_languages:
                 if user_language.level_id == 1 and not user_language_native:
                     user_language_native = user_language
+                elif user_language_native and user_language_second:
+                    user_language_third = user_language
                 else:
                     user_language_second = user_language
 
