@@ -199,7 +199,7 @@
                                         <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
                                         <input class="hidden" id="booking_hours" name="booking_hours">
                                         <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ guide.min_hours }}">
-                                        <input class="hidden" id="number_people" name="number_people">
+{#                                        <input class="hidden" id="number_people" name="number_people">#}
 
                                         {% if guide_services %}
                                             <div class="row">
@@ -250,31 +250,31 @@
                                                     <label>{% blocktrans %}Number of people:{% endblocktrans %}</label>
                                                     <div class="btn-group btn-group-select-num" data-toggle="buttons">
                                                         <label class="btn btn-primary active">
-                                                            <input type="radio" name="options" value="1" />1</label>
+                                                            <input type="radio" name="number_people" value="1" />1</label>
                                                         <label class="btn btn-primary">
-                                                            <input type="radio" name="options" value="2" />2</label>
+                                                            <input type="radio" name="number_people" value="2" />2</label>
                                                         <label class="btn btn-primary">
-                                                            <input type="radio" name="options" value="3"/>3</label>
+                                                            <input type="radio" name="number_people" value="3"/>3</label>
                                                         <label class="btn btn-primary">
-                                                            <input type="radio" name="options" value="4"/>4</label>
+                                                            <input type="radio" name="number_people" value="4"/>4</label>
                                                         <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />5+</label>
+                                                            <input type="radio" name="number_people" />5+</label>
                                                     </div>
                                                     <select class="form-control hidden">
-                                                        <option name='num_person' value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                        <option value="5" selected="selected">5</option>
-                                                        <option value="6">6</option>
-                                                        <option value="7">7</option>
-                                                        <option name='num_person' value="8">8</option>
-                                                        <option value="9">9</option>
-                                                        <option value="10">10</option>
-                                                        <option value="11">11</option>
-                                                        <option value="12">12</option>
-                                                        <option value="13">13</option>
-                                                        <option value="14">14</option>
+                                                        <option name="number_people" value="1">1</option>
+                                                        <option name="number_people" value="2">2</option>
+                                                        <option name="number_people" value="3">3</option>
+                                                        <option name="number_people" value="4">4</option>
+                                                        <option name="number_people" value="5" selected="selected">5</option>
+                                                        <option name="number_people" value="6">6</option>
+                                                        <option name="number_people" value="7">7</option>
+                                                        <option name="number_people" value="8">8</option>
+                                                        <option name="number_people" value="9">9</option>
+                                                        <option name="number_people" value="10">10</option>
+                                                        <option name="number_people" value="11">11</option>
+                                                        <option name="number_people" value="12">12</option>
+                                                        <option name="number_people" value="13">13</option>
+                                                        <option name="number_people" value="14">14</option>
                                                     </select>
                                                 </div>
                                             </div>

@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('guides', '0045_remove_guideprofile_is_default_guide'),
+        ('guides', '0045_guideprofile_license_image'),
     ]
 
     operations = [
