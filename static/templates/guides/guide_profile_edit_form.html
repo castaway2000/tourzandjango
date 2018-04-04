@@ -48,8 +48,8 @@
                     <input required class="form-control" id="first_name_input" name="first_name"
                     {% if request.POST.first_name %}
                         value="{{ request.POST.first_name }}"
-                    {% elif guide and guide.first_name %}
-                        value="{{ guide.first_name }}"
+                    {% elif general_profile.first_name %}
+                        value="{{ general_profile.first_name|default_if_none:""}}"
                     {% endif %}
                     >
                 </div>
@@ -63,10 +63,10 @@
                     <input required class="form-control" id="last_name_input" name="last_name"
                     {% if request.POST.last_name %}
                         value="{{ request.POST.last_name }}"
-                    {% elif guide and guide.last_name %}
-                        value="{{ guide.last_name }}"
+                    {% elif general_profile.last_name %}
+                           value="{{ general_profile.last_name|default_if_none:"" }}"
                     {% endif %}
-                    >
+                >
                 </div>
             </div>
 

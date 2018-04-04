@@ -419,9 +419,9 @@ def profile_settings_guide(request, guide_creation=True):
             return HttpResponseRedirect(reverse("identity_verification_router"))
         else:
             messages.success(request, 'Profile has been updated!')
-
+    else:
+        general_profile = GeneralProfile.objects.get(user=user)
         #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
     user_interests = UserInterest.objects.filter(user=user)
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)
