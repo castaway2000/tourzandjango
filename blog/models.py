@@ -85,7 +85,8 @@ class BlogPost(models.Model):
         super(BlogPost, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('post', kwargs={'slug': self.slug})
+        return '/en/blog_post/%s' % self.slug
+        # return reverse('post', kwargs={'slug': self.slug})
 
 
 class BlogTag(models.Model):

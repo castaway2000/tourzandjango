@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
@@ -30,20 +32,23 @@ from .api_router import SharedAPIRootRouter
 from axes.decorators import watch_login
 from django.contrib.auth.views import login as admin_login
 
+from .sitemaps import BlogSitemap, TourSitemap, GuideSitemap, StaticSitemap
+
 schema_view = get_schema_view(title='Pastebin API')
+
 
 #returning of all the SharedAPIRootRouter urls (which are added there in each app.api.url file)
 #before returning of them they are being imported dynamically here
 def api_urls():
     return SharedAPIRootRouter.shared_router.urls
 
-
+# views.sitemap(request, sitemaps, section=None, template_name='sitemap.xml', content_type='application/xml')¶
+sitemaps = {'static': StaticSitemap, 'guides': GuideSitemap, 'tours': TourSitemap, 'blogs': BlogSitemap}
 #added here i18n_patterns for localization
 urlpatterns = i18n_patterns(
 
     url(r'^admin/', admin.site.urls),
-
-
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     url(r'^', include('chats.urls')),
     url(r'^', include('locations.urls')),
     url(r'^', include('orders.urls')),

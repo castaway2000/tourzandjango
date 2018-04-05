@@ -40,6 +40,7 @@ ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

@@ -5,6 +5,7 @@ from django.shortcuts import render
 from .models import PageContent
 from .forms import ContactUsMessageNotSignedInForm, ContactUsMessageSignedInForm
 from django.contrib import messages
+
 from django.utils.translation import ugettext as _
 
 
@@ -29,10 +30,6 @@ def integration_contract(request):
 
 def faq(request):
     return render(request, 'website_management/faq.html', locals())
-
-
-def sitemap(request):
-    return render(request, 'website_management/sitemap.xml', locals())
 
 
 def contact_us(request):

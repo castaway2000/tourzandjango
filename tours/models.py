@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
 from utils.uploadings import *
@@ -103,6 +104,10 @@ class Tour(models.Model):
 
         return {"min_hours_nmb_range_basic": min_hours_nmb_range_basic,
                 "min_hours_nmb_range_full": min_hours_nmb_range_full}
+
+    def get_absolute_url(self):
+        # return reverse('tour', kwargs={'name': self.name, 'tour_id': self.id})
+        return '/en/tour/%s/%s' % (self.name, self.id)
 
 class TourImage(models.Model):
     tour = models.ForeignKey(Tour, blank=True, null=True)
