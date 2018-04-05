@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.contrib.sitemaps import ping_google
 from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
 from utils.uploadings import *
@@ -95,6 +95,10 @@ class Tour(models.Model):
             self.image_medium = optimize_size(self.image, "medium")
 
         super(Tour, self).save(*args, **kwargs)
+        try:
+            ping_google()
+        except Exception:
+            pass
 
     def get_hours_nmb_range(self):
         min_hours_nmb = self.min_hours

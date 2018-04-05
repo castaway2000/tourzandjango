@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.sitemaps import ping_google
 
 from utils.general import random_string_creating, uuid_creating
 from django.utils.text import slugify
@@ -78,7 +79,10 @@ class GuideProfile(models.Model):
             self.uuid = uuid_creating()
 
         super(GuideProfile, self).save(*args, **kwargs)
-
+        try:
+            ping_google()
+        except Exception:
+            pass
 
     def get_hours_nmb_range(self):
         min_hours_nmb = self.min_hours
