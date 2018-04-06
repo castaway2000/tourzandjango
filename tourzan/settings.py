@@ -201,11 +201,11 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'uuid-malloc01',
-        'TIMEOUT': 1209600,
+        'TIMEOUT': 61000,
     }
 }
 CACHE_MIDDLEWARE_ALIAS = 'default'
-CACHE_MIDDLEWARE_SECONDS = 1209600
+CACHE_MIDDLEWARE_SECONDS = 61000
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 SITE_ID = 1
