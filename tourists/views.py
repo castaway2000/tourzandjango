@@ -19,7 +19,10 @@ def profile_settings_tourist(request):
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
-
+    try:
+        guide_status = bool(profile.user.guideprofile)
+    except:
+        guide_status = False
     # duplication of the peace of code at the end of the function
     user_language_native = None
     user_language_second = None
