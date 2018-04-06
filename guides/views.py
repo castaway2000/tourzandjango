@@ -1,6 +1,7 @@
 from tourzan.settings import ILLEGAL_COUNTRIES
 
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
@@ -23,6 +24,12 @@ def guides(request):
     current_page = "guides"
     user = request.user
     services = Service.objects.filter(is_active=True).values()
+    try:
+       is_guide = bool(user.guideprofile)
+    except ObjectDoesNotExist:
+       is_guide = False
+    except AttributeError:
+        is_guide = 'Anon'
 
     base_kwargs = dict()
     base_user_interests_kwargs = dict()
@@ -307,9 +314,12 @@ def profile_settings_guide(request, guide_creation=True):
 
     # duplication of this peace of code below in POST area - remake it later
     user_language_native = None
+    user_language_second = None
     for user_language in user_languages:
         if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
+        elif user_language_native and user_language_second:
+            user_language_third = user_language
         else:
             user_language_second = user_language
 
@@ -358,8 +368,10 @@ def profile_settings_guide(request, guide_creation=True):
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
         language_second_proficiency = request.POST.get("language_second_proficiency")
+        language_third = request.POST.get("language_third")
+        language_third_proficiency = request.POST.get("language_third_proficiency")
 
-        if language_native or language_second:
+        if language_native or language_second or language_third:
             user_languages_list = list()
             if language_native:
                 user_languages_list.append(UserLanguage(language=language_native, user=user,
@@ -367,15 +379,19 @@ def profile_settings_guide(request, guide_creation=True):
             if language_second:
                 user_languages_list.append(UserLanguage(language=language_second, user=user,
                                                         level_id=language_second_proficiency))
+            if language_third:
+                user_languages_list.append(UserLanguage(language=language_third, user=user,
+                                                        level_id=language_third_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
             # duplication of the peace of code at the beginning of the function
-            user_language_native = None
             for user_language in user_languages:
                 if user_language.level_id == 1 and not user_language_native:
                     user_language_native = user_language
+                elif user_language_native and user_language_second:
+                    user_language_third = user_language
                 else:
                     user_language_second = user_language
 
@@ -419,9 +435,9 @@ def profile_settings_guide(request, guide_creation=True):
             return HttpResponseRedirect(reverse("identity_verification_router"))
         else:
             messages.success(request, 'Profile has been updated!')
-
+    else:
+        general_profile = GeneralProfile.objects.get(user=user)
         #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
     user_interests = UserInterest.objects.filter(user=user)
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)

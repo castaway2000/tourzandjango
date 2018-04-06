@@ -40,6 +40,7 @@ ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -200,11 +201,11 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'uuid-malloc01',
-        'TIMEOUT': 1209600,
+        'TIMEOUT': 61000,
     }
 }
 CACHE_MIDDLEWARE_ALIAS = 'default'
-CACHE_MIDDLEWARE_SECONDS = 1209600
+CACHE_MIDDLEWARE_SECONDS = 61000
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 SITE_ID = 1
