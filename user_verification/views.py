@@ -6,6 +6,7 @@ from .models import *
 from .forms import *
 import requests
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.contrib import messages
 from tourzan.settings import ONFIDO_TOKEN, ONFIDO_IS_TEST_MODE
 from django.http import JsonResponse
@@ -16,6 +17,7 @@ import pycountry
 
 
 @login_required()
+@never_cache
 def identity_verification_router(request):
     """
     This is a kind of routing view. Depending on already done scan docs uploading of live photo making, the script
@@ -46,6 +48,7 @@ def identity_verification_router(request):
 
 
 @login_required()
+@never_cache
 def identity_verification_ID_uploading(request):
     page = "identity_verification"
 
@@ -104,6 +107,7 @@ def identity_verification_ID_uploading(request):
 
 
 @login_required()
+@never_cache
 def identity_verification_photo(request):
     page = "identity_verification"
 
@@ -282,6 +286,7 @@ def identity_verification_photo(request):
 
 
 @csrf_exempt
+@never_cache
 def identity_verification_webhook(request):
     #Todo: add here infido ips to check + implement request token comparason
     data = json.loads(request.body.decode('utf-8'))

@@ -1,13 +1,12 @@
-import csv
-from tourzan.settings import MEDIA_ROOT
+from tourzan.settings import ILLEGAL_COUNTRIES
 
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
 from users.models import Interest, UserInterest, UserLanguage, LanguageLevel, GeneralProfile
 from django.contrib.auth.decorators import login_required
-from django_summernote.models import Attachment
 from django.http import JsonResponse
 from orders.models import Review
 from locations.models import City
@@ -25,6 +24,12 @@ def guides(request):
     current_page = "guides"
     user = request.user
     services = Service.objects.filter(is_active=True).values()
+    try:
+       is_guide = bool(user.guideprofile)
+    except ObjectDoesNotExist:
+       is_guide = False
+    except AttributeError:
+        is_guide = 'Anon'
 
     base_kwargs = dict()
     base_user_interests_kwargs = dict()
@@ -211,19 +216,12 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
+    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
-    try:
-        country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-        attachment = MEDIA_ROOT + '/' + Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
-        with open(attachment) as csv_file:
-            reader = csv.reader(csv_file)
-            for col in reader:
-                if col[0].strip() == country:
-                    illegal_country = True
-                    break
-    except:
-        pass
-
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
@@ -314,11 +312,14 @@ def profile_settings_guide(request, guide_creation=True):
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
 
-    #dublication of this peace of code below in POST area - remake it later
+    # duplication of this peace of code below in POST area - remake it later
     user_language_native = None
+    user_language_second = None
     for user_language in user_languages:
         if user_language.level_id == 1 and not user_language_native:
             user_language_native = user_language
+        elif user_language_native and user_language_second:
+            user_language_third = user_language
         else:
             user_language_second = user_language
 
@@ -367,8 +368,10 @@ def profile_settings_guide(request, guide_creation=True):
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
         language_second_proficiency = request.POST.get("language_second_proficiency")
+        language_third = request.POST.get("language_third")
+        language_third_proficiency = request.POST.get("language_third_proficiency")
 
-        if language_native or language_second:
+        if language_native or language_second or language_third:
             user_languages_list = list()
             if language_native:
                 user_languages_list.append(UserLanguage(language=language_native, user=user,
@@ -376,15 +379,19 @@ def profile_settings_guide(request, guide_creation=True):
             if language_second:
                 user_languages_list.append(UserLanguage(language=language_second, user=user,
                                                         level_id=language_second_proficiency))
+            if language_third:
+                user_languages_list.append(UserLanguage(language=language_third, user=user,
+                                                        level_id=language_third_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
             user_languages = UserLanguage.objects.bulk_create(user_languages_list)
 
             # duplication of the peace of code at the beginning of the function
-            user_language_native = None
             for user_language in user_languages:
                 if user_language.level_id == 1 and not user_language_native:
                     user_language_native = user_language
+                elif user_language_native and user_language_second:
+                    user_language_third = user_language
                 else:
                     user_language_second = user_language
 
@@ -392,7 +399,7 @@ def profile_settings_guide(request, guide_creation=True):
         full_location = request.POST.get("city_search_input")
         if place_id:
             city_original_name = full_location.split(",")[0]#first part - city name
-            city, created = City.objects.get_or_create(place_id =place_id ,
+            city, created = City.objects.get_or_create(place_id=place_id,
                                                        defaults={"full_location": full_location,
                                                                  "original_name": city_original_name})
         new_form = form.save(commit=False)
@@ -401,7 +408,6 @@ def profile_settings_guide(request, guide_creation=True):
         if not guide:
             new_form.user = user
             new_form.is_active = True
-
         new_form = form.save()
 
         #saving services
@@ -429,9 +435,9 @@ def profile_settings_guide(request, guide_creation=True):
             return HttpResponseRedirect(reverse("identity_verification_router"))
         else:
             messages.success(request, 'Profile has been updated!')
-
+    else:
+        general_profile = GeneralProfile.objects.get(user=user)
         #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
     user_interests = UserInterest.objects.filter(user=user)
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)
@@ -504,12 +510,12 @@ def earnings(request):
 
 
 def search_service(request):
-    print ("search_service")
+    print("search_service")
     results = list()
 
     if request.GET:
         data = request.GET
-        print (data)
+        print(data)
         service_name = data.get(u"q")
         services = Service.objects.filter(name__icontains=service_name)
 
@@ -530,29 +536,19 @@ def search_service(request):
 @login_required()
 def guide_payouts(request):
     user = request.user
-    try:
-        guide = user.guideprofile
-        general_profile = user.generalprofile
-        city = user.guideprofile.city_id
-        country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
-        print(country)
-        attachment = MEDIA_ROOT + '/' +Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
-        print('AWRG!: ', attachment)
-        illegal_country = False
-        with open(attachment) as csv_file:
-            reader = csv.reader(csv_file)
-            for col in reader:
-                print(col[0].strip(), country)
-                if col[0].strip() == country:
-                    illegal_country = True
-                    break
-        if not guide.uuid:
-            guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
-        payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
-        return render(request, 'guides/guide_payouts.html', locals())
-    except:
-        messages.error(request, 'You have no permissions for this action!')
-        return render(request, 'users/home.html', locals())
+    guide = user.guideprofile
+    general_profile = user.generalprofile
+    city = user.guideprofile.city_id
+    country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+    illegal_country = False
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
+    if not guide.uuid:
+        guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
+    payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
+    return render(request, 'guides/guide_payouts.html', locals())
 
 
 def guides_for_clients(request):

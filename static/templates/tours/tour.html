@@ -63,9 +63,18 @@
                     <!-- END LIGHTBOX GALLERY -->
                     <div class="booking-item-meta">
                         {% if tour.overview  %}
+                            <h3>{% blocktrans %}About this tour:{% endblocktrans %}</h3>
                             {{ tour.overview|linebreaks }}
                         {% else %}
                             <p class="lead">{% blocktrans %}No tour overview so far...{% endblocktrans %}</p>
+                        {% endif %}
+                        {% if tour.included %}
+                            <h3>{% blocktrans %}Whats Included:{% endblocktrans %}</h3>
+                            {{ tour.included|linebreaks }}
+                        {% endif %}
+                        {% if tour.excluded %}
+                            <h3>{% blocktrans %}Whats Not Included:{% endblocktrans %}</h3>
+                            {{ tour.excluded|linebreaks }}
                         {% endif %}
                     </div>
                 </div>

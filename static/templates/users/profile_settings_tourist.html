@@ -22,7 +22,9 @@
                         <div class="col-lg-7">
                             <h4>{% blocktrans %}Tourist Profile{% endblocktrans %}</h4>
                         </div>
+
                         <div class="col-lg-5">
+
                              <a href="{% url 'tourist' profile.user.generalprofile.uuid %}">
                                  See Public Page
                              </a>
@@ -30,6 +32,9 @@
                     </div>
 
                     <div class="form-group">
+                        {% if not guide_status %}
+                            <strong><h5><a href="{% url 'change_role' %}">{% blocktrans %}Consider becoming a local guide?{% endblocktrans %}</a></h5></strong>
+                        {% endif %}
                         <label>{% blocktrans %}Interests{% endblocktrans %}:</label>
                         <select multiple class="form-control select2"
                             id="interest_input" name="interests"
@@ -75,8 +80,7 @@
                             <div class="col-lg-6">
                                 <label>{% blocktrans %}Proficiency{% endblocktrans %}:</label>
                                 <select class="form-control select2"
-                                    id="language_second_proficiency" name="language_second_proficiency"
-                                >
+                                    id="language_second_proficiency" name="language_second_proficiency">
                                     <option selected>{% blocktrans %}Select level{% endblocktrans %}</option>
                                     {% for language_level in language_levels %}
                                         <option value="{{ language_level.id }}"
@@ -85,11 +89,41 @@
                                             {{ language_level.name }}
                                         </option>
                                     {% endfor %}
-
                                 </select>
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>{% blocktrans %}Third Language{% endblocktrans %}:</label>
+                                <select class="form-control select2" id="language_third" name="language_third">
+                                    {% if user_language_third %}
+                                        <option value="{{ user_language_third.language}}" selected>
+                                            {{ user_language_third.get_language_display}}
+                                        </option>
+                                    {% endif %}
+                                </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label>{% blocktrans %}Proficiency{% endblocktrans %}:</label>
+                            <select class="form-control select2"
+                                id="language_third_proficiency" name="language_third_proficiency">
+                                <option selected>{% blocktrans %}Select level{% endblocktrans %}</option>
+                                {% for language_level in language_levels %}
+                                    <option value="{{ language_level.id }}"
+                                            {% if language_level.id == user_language_third.level.id %}
+                                            selected="selected"
+                                            {% endif %}>
+                                        {{ language_level.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
                 </div>
                 <div class="col-md-4 col-md-offset-1">
