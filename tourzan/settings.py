@@ -198,11 +198,11 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'uuid-malloc01',
-        'TIMEOUT': 1209600,
+        'TIMEOUT': 30000,
     }
 }
 CACHE_MIDDLEWARE_ALIAS = 'default'
-CACHE_MIDDLEWARE_SECONDS = 1209600
+CACHE_MIDDLEWARE_SECONDS = 30000
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 SITE_ID = 1
@@ -355,7 +355,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings import *
+    from .local_settings_2 import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
