@@ -111,7 +111,7 @@ class Tour(models.Model):
 
     def get_absolute_url(self):
         # return reverse('tour', kwargs={'name': self.name, 'tour_id': self.id})
-        return '/en/tour/%s/%s' % (self.name, self.id)
+        return '/en/tour/%s/%s/' % (self.slug, self.id)
 
 class TourImage(models.Model):
     tour = models.ForeignKey(Tour, blank=True, null=True)
