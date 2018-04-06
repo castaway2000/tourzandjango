@@ -1,6 +1,7 @@
 from tourzan.settings import ILLEGAL_COUNTRIES
 
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from .forms import *
 from .models import *
@@ -23,6 +24,12 @@ def guides(request):
     current_page = "guides"
     user = request.user
     services = Service.objects.filter(is_active=True).values()
+    try:
+       is_guide = bool(user.guideprofile)
+    except ObjectDoesNotExist:
+       is_guide = False
+    except AttributeError:
+        is_guide = 'Anon'
 
     base_kwargs = dict()
     base_user_interests_kwargs = dict()

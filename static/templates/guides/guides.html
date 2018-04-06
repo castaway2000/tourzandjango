@@ -33,6 +33,8 @@
             {% endif %}
             {% if not is_guide %}
               - <a href="{% url 'change_role' %}">{% blocktrans %}Consider becoming a local guide!{% endblocktrans %}</a>
+            {% elif is_guide == 'Anon' %}
+              - <a href="{% url 'guide_registration_welcome' %}">{% blocktrans %}Consider becoming a local guide!{% endblocktrans %}</a>
             {% endif %}
         </h3>
         <div class="row">
