@@ -95,7 +95,7 @@ class GuideProfile(models.Model):
 
     def get_absolute_url(self):
         # return reverse('guides', kwargs={'name': self.name, 'uuid': self.uuid, 'overview': 'overview'})
-        return '/en/guides/%s/%s/overview' % (self.name, self.uuid)
+        return '/guides/%s/%s/overview/' % (self.user.generalprofile.first_name, self.uuid)
 
 
 class Service(models.Model):
