@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+from collections import defaultdict
+from django.template.defaulttags import register
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
 from .models import Order, Review, ServiceInOrder, OrderStatus
@@ -193,13 +194,11 @@ def making_booking(request):
 
 @login_required
 def bookings(request, status=None):
-    print ("bookings")
+    print("bookings")
     current_page = "bookings"
     statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
     user = request.user
     kwargs = dict()
-
-    # print (request.GET)
 
     filtered_prices = request.GET.get('price')
     filtered_city = request.GET.get('city')
@@ -207,7 +206,6 @@ def bookings(request, status=None):
     filtered_statuses = request.GET.getlist('status_input')
 
     place_id = request.GET.get("place_id")
-    # print(place_id)
 
     if filtered_prices:
         price = filtered_prices.split(";")
@@ -240,7 +238,7 @@ def bookings(request, status=None):
 
 
     if filtered_guides:
-        print (filtered_guides)
+        print(filtered_guides)
         kwargs["guide__user__username__in"] = filtered_guides
 
     if filtered_statuses and len(filtered_statuses[0])>1:#to handle empty imputs
@@ -270,7 +268,6 @@ def bookings(request, status=None):
 
     guides_ids = [item.guide.id for item in initial_orders]
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
-
 
     page = request.GET.get('page', 1)
     paginator = Paginator(orders, 10)
@@ -330,10 +327,9 @@ def orders(request, status=None):
         except EmptyPage:
             orders = paginator.page(paginator.num_pages)
 
-
         return render(request, 'orders/orders.html', locals())
     except Exception as e:
-        print (e)
+        print(e)
         messages.error(request, 'You have no permissions for this action!')
         return HttpResponseRedirect(reverse("home"))
 
@@ -355,6 +351,7 @@ def guide_settings_orders(request):
             orders = Order.objects.filter(guide=guide).exclude(status_id=1).order_by("-id")
     else:
         return HttpResponseRedirect(reverse("home"))
+
     return render(request, 'orders/profile_settings_guide_orders.html', locals())
 
 

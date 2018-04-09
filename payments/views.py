@@ -169,7 +169,7 @@ def order_payment_checkout(request, order_id):
     user = request.user
     order = get_object_or_404(Order, id=order_id, tourist__user=user) #fix for preventing accessing to other tourist orders
     services_in_order = order.serviceinorder_set.all()
-    city = user.guideprofile.city_id
+    city = order.guide.city_id
     country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
     for i in ILLEGAL_COUNTRIES:
@@ -199,7 +199,7 @@ def order_payment_checkout(request, order_id):
             if not payment_processed:
                 messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
             else:
-                messages.success(request, 'The payment has been successf ully reserved!')
+                messages.success(request, 'The payment has been successfully reserved!')
         else:
             order.making_mutual_agreement()
             messages.success(request, 'The guide has been successfully reserved!')
