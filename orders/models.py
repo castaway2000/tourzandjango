@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from tours.models import Tour
 from django.utils.text import slugify
 from guides.models import GuideProfile, Service
+from guides_calendar.models import CalendarItemGuide
 from tourists.models import TouristProfile
 from django.db.models.signals import post_save
 from django.db.models import Sum, Count, Avg
@@ -100,6 +101,7 @@ class Order(models.Model):
 
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
+    times_toured = models.ForeignKey(CalendarItemGuide, blank=True, null=True, default=0)
 
 
     def __init__(self, *args, **kwargs):
