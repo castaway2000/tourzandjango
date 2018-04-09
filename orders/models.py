@@ -195,7 +195,7 @@ class Order(models.Model):
 
     def making_mutual_agreement(self):
         order = self
-        order.status_id = 9 # payment reserved
+        order.status_id = 9 # mutual agreemnt type
         order.save(force_update=True)
         return {"result": True}
 

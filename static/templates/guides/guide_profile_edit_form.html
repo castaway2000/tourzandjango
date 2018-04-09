@@ -131,7 +131,7 @@
                 </label>
                 <div class="div-input-icon">
                     <i class="fa fa-money input-icon"></i>
-                    <input type="number" min="1" step="1" name="{{ form.additional_person_cost.html_name }}"
+                    <input type="number" min="0" step="1" name="{{ form.additional_person_cost.html_name }}"
                            class="form-control w100"
                         {% if request.POST.rate %}
                            value="{{ request.POST.additional_person_cost|safe }}"
