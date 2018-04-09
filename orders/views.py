@@ -398,10 +398,11 @@ def cancel_order(request, order_id):
 
 @login_required()
 def change_order_status(request, order_id, status_id):
-    print ("change order status")
+    print("change order status")
     user = request.user
 
     current_role = request.session.get("current_role")
+    print(current_role)
     if current_role == "tourist" or not current_role:
         #check if a user is a tourist in an order
         try:
@@ -410,7 +411,7 @@ def change_order_status(request, order_id, status_id):
 
             # checking status transition consistancy for preventing hacking
             checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
-            print ("checking: %s" % checking)
+            print("checking: %s" % checking)
             if checking == False:
                 print("False")
                 messages.error(request, 'You have no permissions for this action!')
@@ -432,24 +433,27 @@ def change_order_status(request, order_id, status_id):
     else:
         #check if a user is a guide
         try:
+            print('TRY GUIDE')
             guide = user.guideprofile
             order = Order.objects.get(id=order_id, guide=guide)
+            print('ORDER STATUS: ', order.status.id)
+            print('NEW STATUS: ', status_id)
 
             # checking status transition consistancy for preventing hacking
             checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
-            print (checking)
+            print('CHECKIG: ', checking)
             if checking == False:
                 messages.error(request, 'You have no permissions for this action!')
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-            print ("3")
-            print (status_id)
+            print("3")
+            print(status_id)
             order.status_id = status_id
-            print ("4")
+            print("4")
             order.save(force_update=True)
             # messages.success(request, 'Order has been successfully cancelled!')
         except Exception as e:
-            print (e)
+            print(e)
             messages.error(request, 'You have no permissions for this action!')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -3,8 +3,6 @@ def checking_statuses(current_status_id, new_status_id):
     current_status_id = int(current_status_id)
     new_status_id = int(new_status_id)
 
-    print (new_status_id)
-    print (new_status_id==2)
     if new_status_id == 1:
         return False
 
@@ -12,8 +10,7 @@ def checking_statuses(current_status_id, new_status_id):
     elif new_status_id == 4:
         return True
 
-
-    elif new_status_id == 2 and current_status_id != 5:
+    elif new_status_id == 2 and current_status_id not in [5, 9]:
         return False
 
     elif new_status_id in [3, 6] and not current_status_id in [1, 2, 5]:
