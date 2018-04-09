@@ -89,7 +89,7 @@ class BlogPost(models.Model):
             pass
 
     def get_absolute_url(self):
-        return '/en/blog_post/%s/' % self.slug
+        return '/blog_post/%s/' % self.slug
         # return reverse('post', kwargs={'slug': self.slug})
 
 
