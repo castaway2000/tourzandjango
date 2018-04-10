@@ -1,6 +1,5 @@
 from django.db import models
 from guides.models import GuideProfile
-from orders.models import Order
 
 
 class CalendarItem(models.Model):
@@ -43,7 +42,7 @@ class CalendarItemStatus(models.Model):
 class CalendarItemGuide(models.Model):
     calendar_item = models.ForeignKey(CalendarItem)
     guide = models.ForeignKey(GuideProfile)
-    order = models.ForeignKey(Order, blank=True, null=True, default=None)
+    order = models.ForeignKey("order.Order", blank=True, null=True, default=None)
     status = models.ForeignKey(CalendarItemStatus, blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)

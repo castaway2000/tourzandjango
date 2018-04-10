@@ -1,6 +1,7 @@
 import os
 DEBUG = False
 ALLOWED_HOSTS = ['*']
+ON_PRODUCTION = True
 
 DATABASES = {
     'default': {
