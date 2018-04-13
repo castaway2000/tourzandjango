@@ -21,7 +21,7 @@ AWS_ACCESS_KEY_ID = 'AKIAJE5BFN42CHVOOZJA'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'tourzan-testing'
 
-AWS_S3_FILE_OVERWRITE = True #to append extra characters to the file with the same name as existing file
+AWS_S3_FILE_OVERWRITE = False #to append extra characters to the file with the same name as existing file
 AWS_S3_ENCRYPTION = True
 
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
