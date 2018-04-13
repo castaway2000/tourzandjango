@@ -4,7 +4,7 @@ from . import settings
 
 class PublicMediaStorageSameLocation(S3Boto3Storage):
     # location = settings.AWS_PUBLIC_MEDIA_LOCATION
-    default_acl = 'public'
+    # default_acl = 'public'
     file_overwrite = False
 
 
