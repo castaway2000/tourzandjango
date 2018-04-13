@@ -24,7 +24,11 @@ AWS_STORAGE_BUCKET_NAME = 'tourzan'
 AWS_S3_FILE_OVERWRITE = True #to append extra characters to the file with the same name as existing file
 AWS_S3_ENCRYPTION = True
 
-MEDIA_URL = 'https://tourzan.s3.amazonaws.com/'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+# AWS_PRIVATE_MEDIA_LOCATION = "media/private"
 
 AXES_BEHIND_REVERSE_PROXY = True
 
