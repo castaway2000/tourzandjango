@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from tours.models import Tour
 from django.utils.text import slugify
 from guides.models import GuideProfile, Service
-from guides_calendar.models import CalendarItemGuide
 from tourists.models import TouristProfile
 from django.db.models.signals import post_save
 from django.db.models import Sum, Count, Avg
@@ -14,16 +13,23 @@ from utils.sending_emails import SendingEmail
 from locations.models import Currency
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from payments.models import Payment, PaymentMethod
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ON_PRODUCTION
 import braintree
 from partners.models import Partner
 
 
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=BRAINTREE_MERCHANT_ID,
-    public_key=BRAINTREE_PUBLIC_KEY,
-    private_key=BRAINTREE_PRIVATE_KEY
-    )
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 
 class OrderStatus(models.Model):
@@ -101,8 +107,6 @@ class Order(models.Model):
 
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
-    times_toured = models.ForeignKey(CalendarItemGuide, blank=True, null=True, default=0)
-
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
@@ -113,13 +117,11 @@ class Order(models.Model):
             except:
                 pass
 
-
     def __str__(self):
         if self.guide:
             return "%s %s" % (self.id, self.guide.user.generalprofile.first_name)
         else:
             return "%s" % (self.id)
-
 
     def save(self, *args, **kwargs):
 

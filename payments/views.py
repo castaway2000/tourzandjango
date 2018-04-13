@@ -9,26 +9,23 @@ from chats.models import Chat, ChatMessage
 from locations.models import City
 from django.utils.translation import ugettext as _
 
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
 
 import braintree
-try:
-    from tourzan.settings import BRAINTREE_ENV
-except:
-    BRAINTREE_ENV = 'Prod'
 
-if BRAINTREE_ENV == 'Sandbox':
-    braintree.Configuration.configure(braintree.Environment.Sandbox,
-                                      merchant_id=BRAINTREE_MERCHANT_ID,
-                                      public_key=BRAINTREE_PUBLIC_KEY,
-                                      private_key=BRAINTREE_PRIVATE_KEY
-                                      )
-else:
+
+if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
-                                      merchant_id=BRAINTREE_MERCHANT_ID,
-                                      public_key=BRAINTREE_PUBLIC_KEY,
-                                      private_key=BRAINTREE_PRIVATE_KEY
-                                      )
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 @login_required()
 def payment_methods(request):

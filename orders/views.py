@@ -17,19 +17,25 @@ import datetime
 from guides.models import GuideService
 from payments.models import PaymentMethod
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
 import braintree
 from partners.models import Partner
 from guides_calendar.models import CalendarItemGuide, CalendarItem
 from django.utils.translation import ugettext as _
 
 
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=BRAINTREE_MERCHANT_ID,
-    public_key=BRAINTREE_PUBLIC_KEY,
-    private_key=BRAINTREE_PRIVATE_KEY
-    )
-
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 #this view is both for booking guides and tours
 def making_booking(request):
