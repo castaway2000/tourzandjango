@@ -15,8 +15,8 @@ DATABASES = {
 }
 
 #for media files
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DEFAULT_FILE_STORAGE = 'tourzan.storage_backends.PublicMediaStorageSameLocation'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# DEFAULT_FILE_STORAGE = 'tourzan.storage_backends.PublicMediaStorageSameLocation'
 
 AWS_ACCESS_KEY_ID = 'AKIAJIYAQ4HEEI6HHQ3Q'
 AWS_SECRET_ACCESS_KEY = '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'
