@@ -8,5 +8,8 @@ def random_string_creating():
 
 
 def uuid_creating():
-    random_string = uuid.uuid4()
-    return random_string.hex
+    return uuid.uuid4().hex
+
+
+def uuid_size_6():
+    return uuid.uuid4().hex[:6].upper()

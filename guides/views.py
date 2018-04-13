@@ -308,7 +308,7 @@ def profile_settings_guide(request, guide_creation=True):
 
     page = "profile_settings_guide"
     user = request.user
-
+    ref_code = user.generalprofile.referral_code
     user_languages = UserLanguage.objects.filter(user=user)
     language_levels = LanguageLevel.objects.all().values()
 
@@ -341,6 +341,14 @@ def profile_settings_guide(request, guide_creation=True):
     if request.method == 'POST' and form.is_valid():
         form_data = form.cleaned_data
         print(form_data.items())
+        if request.POST.get('referral') is not None:
+            code = request.POST.get('referral').upper()
+            try:
+                referred = GeneralProfile.objects.get(referral_code=code)
+                referred.total_guides_referred += 1
+                referred.save(update_fields=['total_guides_referred'])
+            except:
+                pass
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)

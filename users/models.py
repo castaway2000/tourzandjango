@@ -15,7 +15,7 @@ from guides.models import GuideProfile
 from utils.uploadings import upload_path_handler_guide_webcam_image
 import pycountry
 from datetime import date
-from utils.general import uuid_creating
+from utils.general import uuid_creating, uuid_size_6
 
 from django.core.cache import cache
 import datetime
@@ -108,6 +108,7 @@ class UserLanguage(models.Model):
 
 COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries )
 
+
 class GeneralProfile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True, default=None)
     uuid = models.CharField(max_length=48, null=True)
@@ -116,6 +117,9 @@ class GeneralProfile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
     profession = models.CharField(max_length=256, blank=True, null=True)
+    referral_code = models.CharField(max_length=8, null=True, blank=True)
+    total_tourists_referred = models.IntegerField(default=0)
+    total_guides_referred = models.IntegerField(default=0)
 
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
     is_verified = models.BooleanField(default=False)#is verified by docs
@@ -181,6 +185,8 @@ class GeneralProfile(models.Model):
 
         if not self.uuid:
             self.uuid = uuid_creating()
+        if not self.referral_code:
+            self.referral_code = uuid_size_6()
 
         super(GeneralProfile, self).save(*args, **kwargs)
 

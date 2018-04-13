@@ -367,7 +367,6 @@ def tourist_settings_orders(request):
 @login_required()
 def cancel_order(request, order_id):
     user = request.user
-
     current_role = request.session.get("current_role")
     if current_role == "tourist" or not current_role:
         #check if a user is a tourist in an order
@@ -376,7 +375,7 @@ def cancel_order(request, order_id):
             order = Order.objects.get(id=order_id, tourist=tourist)
             order.status_id = 3
             order.save(force_update=True)
-            print ("try 2")
+            print("try 2")
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')
@@ -387,8 +386,8 @@ def cancel_order(request, order_id):
             order = Order.objects.get(id=order_id, guide=guide)
             order.status_id = 6
             order.save(force_update=True)
-            print ("try 1")
-            print (order.status)
+            print("try 1")
+            print(order.status)
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')

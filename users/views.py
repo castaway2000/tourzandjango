@@ -35,12 +35,12 @@ def login_view(request):
     Login redirects are handled here
     """
     form = LoginForm(request.POST or None)
-
     if not "next" in request.GET:
         request.GET.next = reverse("home")
     if request.method == 'POST' and form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
+
         user = authenticate(username=username, password=password)
         if user:
             if user.is_active:
@@ -382,8 +382,17 @@ class SignupViewCustom(SignupView):
 
         form_class = self.get_form_class()
         form = self.get_form(form_class)
+        print(form)
         if form.is_valid():
             response = self.form_valid(form)
+            if request.POST.get('tourist_referral') is not None:
+                code = request.POST.get('tourist_referral').upper()
+                try:
+                    referred = GeneralProfile.objects.get(referral_code=code)
+                    referred.total_tourists_referred += 1
+                    referred.save(update_fields=['total_tourists_referred'])
+                except Exception as err:
+                    pass
         else:
             response = self.form_invalid(form)
 

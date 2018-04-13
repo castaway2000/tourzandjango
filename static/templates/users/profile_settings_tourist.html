@@ -127,6 +127,7 @@
 
                 </div>
                 <div class="col-md-4 col-md-offset-1">
+                    <h5><strong>Your referral code:</strong><br/> {{ ref_code }}</h5>
                     <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
                     {% if user.touristprofile.image %}
                         <div>
@@ -137,10 +138,8 @@
                         <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
                         <input type="file" name="{{ form.image.html_name }}">
                     </div>
-
                     <hr>
                     <input type="submit" class="btn btn-primary" value="Save Changes">
-
                 </div>
             </div>
         </form>

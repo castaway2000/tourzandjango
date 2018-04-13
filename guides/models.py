@@ -38,7 +38,6 @@ class GuideProfile(models.Model):
     profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default="guides/profile_images/300x300.png")
     optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default="guides/optional_images/300x300.png")
     license_image = models.ImageField(upload_to=upload_path_handler_guide_license, blank=True, null=True, default="guides/optional_images/300x300.png")
-
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
     uuid = models.CharField(max_length=48, null=True)
 
