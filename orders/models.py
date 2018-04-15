@@ -13,16 +13,23 @@ from utils.sending_emails import SendingEmail
 from locations.models import Currency
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from payments.models import Payment, PaymentMethod
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ON_PRODUCTION
 import braintree
 from partners.models import Partner
 
 
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=BRAINTREE_MERCHANT_ID,
-    public_key=BRAINTREE_PUBLIC_KEY,
-    private_key=BRAINTREE_PRIVATE_KEY
-    )
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 
 class OrderStatus(models.Model):

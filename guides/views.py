@@ -305,6 +305,7 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 @login_required()
 def profile_settings_guide(request, guide_creation=True):
     print("profile_settings_guide")
+    print(request.POST)
 
     page = "profile_settings_guide"
     user = request.user
@@ -375,9 +376,9 @@ def profile_settings_guide(request, guide_creation=True):
         # Languages assigning
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
-        language_second_proficiency = request.POST.get("language_second_proficiency")
+        language_second_proficiency = request.POST.get("language_second_proficiency") if request.POST.get("language_second_proficiency") != "" else 3
         language_third = request.POST.get("language_third")
-        language_third_proficiency = request.POST.get("language_third_proficiency")
+        language_third_proficiency = request.POST.get("language_third_proficiency") if request.POST.get("language_third_proficiency") != "" else 3
 
         if language_native or language_second or language_third:
             user_languages_list = list()
@@ -392,16 +393,8 @@ def profile_settings_guide(request, guide_creation=True):
                                                         level_id=language_third_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
-            user_languages = UserLanguage.objects.bulk_create(user_languages_list)
+            UserLanguage.objects.bulk_create(user_languages_list)
 
-            # duplication of the peace of code at the beginning of the function
-            for user_language in user_languages:
-                if user_language.level_id == 1 and not user_language_native:
-                    user_language_native = user_language
-                elif user_language_native and user_language_second:
-                    user_language_third = user_language
-                else:
-                    user_language_second = user_language
 
         place_id = request.POST.get("place_id")
         full_location = request.POST.get("city_search_input")
@@ -446,6 +439,10 @@ def profile_settings_guide(request, guide_creation=True):
     else:
         general_profile = GeneralProfile.objects.get(user=user)
         #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    language_levels = LanguageLevel.objects.all().values()
+    user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
+
     user_interests = UserInterest.objects.filter(user=user)
     services = Service.objects.all()
     guide_services = GuideService.objects.filter(guide=guide)

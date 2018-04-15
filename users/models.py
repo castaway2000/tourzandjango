@@ -190,6 +190,23 @@ class GeneralProfile(models.Model):
 
         super(GeneralProfile, self).save(*args, **kwargs)
 
+    def get_languages(self):
+        user_languages = UserLanguage.objects.filter(user=self.user)
+        print(user_languages)
+        #Refactor this!!!
+        user_language_native = None
+        user_language_second = None
+        user_language_third = None
+        for user_language in user_languages:
+            if user_language.level_id == 1 and not user_language_native:
+                user_language_native = user_language
+            elif user_language_native and user_language_second:
+                user_language_third = user_language
+            else:
+                user_language_second = user_language
+
+        return (user_language_native, user_language_second, user_language_third)
+
     def last_seen(self):
         return cache.get('seen_%s' % self.user.id)
 

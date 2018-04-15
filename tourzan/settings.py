@@ -336,6 +336,7 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
+ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 
 try:
     from .allauth_settings import *
