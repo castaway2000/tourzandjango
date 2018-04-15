@@ -533,19 +533,19 @@ def guide_payouts(request):
     try:
         guide = user.guideprofile
         general_profile = user.generalprofile
-        city = user.guideprofile.city_id
-        country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
-        print(country)
-        attachment = MEDIA_ROOT + '/' +Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
-        print('AWRG!: ', attachment)
-        illegal_country = False
-        with open(attachment) as csv_file:
-            reader = csv.reader(csv_file)
-            for col in reader:
-                print(col[0].strip(), country)
-                if col[0].strip() == country:
-                    illegal_country = True
-                    break
+#        city = user.guideprofile.city_id
+#        country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+#        print(country)
+#        attachment = MEDIA_ROOT + '/' +Attachment.objects.filter(name='PaymentsBlackList').values()[0]['file']
+#        print('AWRG!: ', attachment)
+#        illegal_country = False
+#        with open(attachment) as csv_file:
+#            reader = csv.reader(csv_file)
+#            for col in reader:
+#                print(col[0].strip(), country)
+#                if col[0].strip() == country:
+#                    illegal_country = True
+#                    break
         if not guide.uuid:
             guide.save(force_update=True)#this will populate automatically uuid value if it is empty so far
         payment_rails_url = PaymentRailsWidget(guide=guide).get_widget_url()
