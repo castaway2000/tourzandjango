@@ -17,22 +17,11 @@ def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
-    user_languages = UserLanguage.objects.filter(user=user)
-    language_levels = LanguageLevel.objects.all().values()
+
     try:
         guide_status = bool(profile.user.guideprofile)
     except:
         guide_status = False
-    # duplication of the peace of code at the end of the function
-    user_language_native = None
-    user_language_second = None
-    for user_language in user_languages:
-        if user_language.level_id == 1 and not user_language_native:
-            user_language_native = user_language
-        elif user_language_native and user_language_second:
-            user_language_third = user_language
-        else:
-            user_language_second = user_language
 
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
@@ -53,9 +42,9 @@ def profile_settings_tourist(request):
         # it is the same peace of code as at guide view - maybe to remake this in the future
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
-        language_second_proficiency = request.POST.get("language_second_proficiency")
+        language_second_proficiency = request.POST.get("language_second_proficiency") if request.POST.get("language_second_proficiency") != "" else 3
         language_third = request.POST.get("language_third")
-        language_third_proficiency = request.POST.get("language_third_proficiency")
+        language_third_proficiency = request.POST.get("language_third_proficiency") if request.POST.get("language_third_proficiency") != "" else 3
 
         if language_native or language_second or language_third:
             user_languages_list = list()
@@ -70,16 +59,7 @@ def profile_settings_tourist(request):
                                                         level_id=language_third_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
-            user_languages = UserLanguage.objects.bulk_create(user_languages_list)
-
-            # duplication of the peace of code at the beginning of the function
-            for user_language in user_languages:
-                if user_language.level_id == 1 and not user_language_native:
-                    user_language_native = user_language
-                elif user_language_native and user_language_second:
-                    user_language_third = user_language
-                else:
-                    user_language_second = user_language
+            UserLanguage.objects.bulk_create(user_languages_list)
 
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
@@ -90,6 +70,9 @@ def profile_settings_tourist(request):
             return HttpResponseRedirect(reverse("making_booking"))
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    language_levels = LanguageLevel.objects.all().values()
+    user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
 
     user_interests = UserInterest.objects.filter(user=user)
     return render(request, 'users/profile_settings_tourist.html', locals())
