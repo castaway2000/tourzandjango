@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.contrib.sitemaps import ping_google
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
@@ -81,11 +82,15 @@ class BlogPost(models.Model):
                 self.is_image_optimized = True
             except:
                 pass
-
         super(BlogPost, self).save(*args, **kwargs)
+        try:
+            ping_google()
+        except Exception:
+            pass
 
     def get_absolute_url(self):
-        return reverse('post', kwargs={'slug': self.slug})
+        return '/blog_post/%s/' % self.slug
+        # return reverse('post', kwargs={'slug': self.slug})
 
 
 class BlogTag(models.Model):

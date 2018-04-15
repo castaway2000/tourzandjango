@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from utils.uploadings import upload_path_handler_user_scanned_docs
 from users.models import GeneralProfile
 from utils.sending_emails import SendingEmail
+from tourzan.storage_backends import PrivateMediaStorageSameLocation
 
 
 class IdentityVerificationApplicant(models.Model):
@@ -87,7 +88,7 @@ class IdentityVerificationReport(models.Model):
             #If there are 2 reports in the ongoing check, is_verified status will be given only if 2 reports will match
             #conditiions, mentioned above.
             if general_profile.is_verified == False and self.status and self.status.name =="complete" \
-                    and self.result and self.result.name == "clear":
+                    and self.result and self.result.name == "clear" or self.result.name == "consider":  # TODO: remove consider after more data is in place to support this works
                 remaining_verification_reports = IdentityVerificationReport.objects.filter(identification_checking=self.identification_checking).exclude(status__name="complete", result__name = "clear")
                 if self.pk:
                     remaining_verification_reports = remaining_verification_reports.exclude(id=self.pk)
@@ -123,7 +124,8 @@ class DocumentScan(models.Model):
     general_profile = models.ForeignKey(GeneralProfile, blank=True, null=True, default=None)
     # user = models.ForeignKey(User, blank=True, null=True, default=None)
     document_type = models.ForeignKey(DocumentType, blank=True, null=True, default=None)
-    file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None)
+    file = models.FileField(upload_to=upload_path_handler_user_scanned_docs, blank=True, null=True, default=None,
+                            storage=PrivateMediaStorageSameLocation())
     status = models.ForeignKey(ScanStatus, blank=True, null=True, default=1)#status 1 - "new", 2 - "approved", 3 - "rejected"
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)

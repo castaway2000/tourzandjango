@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.urlresolvers import reverse
+from django.contrib.sitemaps import ping_google
+
 from utils.general import random_string_creating, uuid_creating
 from django.utils.text import slugify
 from datetime import date
@@ -23,6 +26,7 @@ class GuideProfile(models.Model):
     rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     min_hours = models.IntegerField(default=1)
+    additional_person_cost = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     is_active = models.BooleanField(default=True)
     is_default_guide = models.BooleanField(default=True)
@@ -75,7 +79,10 @@ class GuideProfile(models.Model):
             self.uuid = uuid_creating()
 
         super(GuideProfile, self).save(*args, **kwargs)
-
+        try:
+            ping_google()
+        except Exception:
+            pass
 
     def get_hours_nmb_range(self):
         min_hours_nmb = self.min_hours
@@ -85,6 +92,10 @@ class GuideProfile(models.Model):
 
         return {"min_hours_nmb_range_basic": min_hours_nmb_range_basic,
                 "min_hours_nmb_range_full": min_hours_nmb_range_full}
+
+    def get_absolute_url(self):
+        # return reverse('guides', kwargs={'name': self.name, 'uuid': self.uuid, 'overview': 'overview'})
+        return '/guides/{}/{}/overview/'.format(self.name, self.user.generalprofile.uuid).replace(' ', '%20')
 
 
 class Service(models.Model):

@@ -88,8 +88,16 @@
                                             </b>
                                             {{ order.hours_nmb|safe }} hours *
                                             {{ order.price_hourly|safe }} {{ order.currency.name }}
-                                            {% blocktrans %}per hour{% endblocktrans %}
+                                            {% blocktrans %}per hour{% endblocktrans %} = {{ order.price }} {{ order.currency.name }}
                                         {% endif %}
+
+                                        {% if order.additional_person_total %}
+                                            <div class="mt10">
+                                                <b>Additional persons charge:</b><br>
+                                                {{ order.number_persons }} persons * {{ order.price_per_additional_person }} {{ order.currency.name }} per person = {{ order.additional_person_total }} {{ order.currency.name }}
+                                            </div>
+                                        {% endif %}
+
                                         {% if services_in_order %}
                                             <div class="mt10">
                                                 <b>Additional services:</b><br>
@@ -104,7 +112,7 @@
                                                 </ul>
                                             </div>
                                         {% endif %}
-
+                                        <div class="gap gap-small"></div>
                                     </td>
                                 </tr>
                                 <tr>

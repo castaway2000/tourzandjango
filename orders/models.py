@@ -13,16 +13,23 @@ from utils.sending_emails import SendingEmail
 from locations.models import Currency
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from payments.models import Payment, PaymentMethod
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ON_PRODUCTION
 import braintree
 from partners.models import Partner
 
 
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=BRAINTREE_MERCHANT_ID,
-    public_key=BRAINTREE_PUBLIC_KEY,
-    private_key=BRAINTREE_PRIVATE_KEY
-    )
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 
 class OrderStatus(models.Model):
@@ -69,6 +76,10 @@ class Order(models.Model):
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
+    number_persons = models.IntegerField(default=1)
+    price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
 
     #if a fixed-price tour is ordered, its price goes here
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -97,7 +108,6 @@ class Order(models.Model):
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
 
-
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
         self._original_fields = {}
@@ -107,13 +117,11 @@ class Order(models.Model):
             except:
                 pass
 
-
     def __str__(self):
         if self.guide:
             return "%s %s" % (self.id, self.guide.user.generalprofile.first_name)
         else:
             return "%s" % (self.id)
-
 
     def save(self, *args, **kwargs):
 
@@ -129,7 +137,7 @@ class Order(models.Model):
         price_after_discount = float(self.price) - float(self.discount)
         self.price_after_discount = price_after_discount
 
-        self.total_price_before_fees = price_after_discount + float(self.additional_services_price)
+        self.total_price_before_fees = price_after_discount + float(self.additional_services_price) + float(self.additional_person_total)
 
         if not self.currency and self.guide.currency:
             self.currency = self.guide.currency
@@ -188,6 +196,12 @@ class Order(models.Model):
 
         else:
             return {"result": False}
+
+    def making_mutual_agreement(self):
+        order = self
+        order.status_id = 9 # mutual agreemnt type
+        order.save(force_update=True)
+        return {"result": True}
 
 
 """
