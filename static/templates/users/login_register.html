@@ -5,7 +5,6 @@
 {% get_providers as socialaccount_providers %}
 {% get_current_language as LANGUAGE_CODE %}
 
-
 {% block header_stuff %}
     <!-- Event snippet for register tourist conversion page -->
     <script>
@@ -68,7 +67,7 @@
             </div>
             <div class="col-md-4">
                 <h3>{% trans 'New to Tourzan?' %}</h3>
-                <form method="post" action="{% url 'account_signup' %}">{% csrf_token %}
+                <form method="post" action="{% url 'account_signup' %}" id="register-form">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
                         <label>{% trans 'Username' %}</label>
                         <input class="form-control" placeholder="e.g. johndoe" type="text" name="username"
@@ -96,13 +95,11 @@
                     </div>
                     <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
                     </div>
-
                     <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
                 </form>
             </div>
         </div>
     </div>
-
     <div class="gap"></div>
         
 {% endblock content %}

@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
 
-
     'crequest',
     'django_summernote',
     'rest_framework',
@@ -292,8 +291,10 @@ USE_TZ = True
 
 #Mail settings
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'Django_testing'
-EMAIL_HOST_PASSWORD = 'Testing12#$'
+# EMAIL_HOST_USER = 'Django_testing'
+# EMAIL_HOST_PASSWORD = 'Testing12#$'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DRIP_FROM_EMAIL = 'contactus@tourzan.com'

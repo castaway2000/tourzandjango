@@ -55,13 +55,11 @@ def login_view(request):
                     messages.success(request, "<h4><a href='https://www.tourzan.com%s'>We see you are not a guide yet, you should consider being a guide!</a></h4>" % reverse("guide_registration_welcome"), 'safe')
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
-
                 return HttpResponseRedirect(reverse("home"))
             else:
                 return HttpResponse("Your account is disabled.")
         else:
             messages.error(request, 'Login credentials are incorrect!')
-
     return render(request, 'users/login_register.html', {"form": form})
 
 
@@ -356,35 +354,32 @@ class SignupViewCustom(SignupView):
     # at the initial SignupView this post function is inherited from AjaxCapableProcessFormViewMixin
     # so here a post function from AjaxCapableProcessFormViewMixin is redefined
     def post(self, request, *args, **kwargs):
-
-        if u"login_btn" in request.POST:
-            return HttpResponseRedirect(reverse("login"))
-
-        #google captcha validating
-        recaptcha_response = request.POST.get('g-recaptcha-response')
-        if recaptcha_response and recaptcha_response != "":
-            data = {
-                'secret': GOOGLE_RECAPTCHA_SECRET_KEY,
-                'response': recaptcha_response
-            }
-            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-            result = r.json()
-
-            if result['success']:
-                pass
-            else:
-                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        else:
-            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-            # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         print(form)
         if form.is_valid():
             response = self.form_valid(form)
+            if u"login_btn" in request.POST:
+                return HttpResponseRedirect(reverse("login"))
+            # google captcha validating
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            if recaptcha_response and recaptcha_response != "":
+                data = {
+                    'secret': GOOGLE_RECAPTCHA_SECRET_KEY,
+                    'response': recaptcha_response
+                }
+                r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+                result = r.json()
+
+                if result['success']:
+                    pass
+                else:
+                    messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                    response = self.form_invalid(form)
+            else:
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                response = self.form_invalid(form)
+
             if request.POST.get('tourist_referral') is not None:
                 code = request.POST.get('tourist_referral').upper()
                 try:
@@ -395,7 +390,6 @@ class SignupViewCustom(SignupView):
                     pass
         else:
             response = self.form_invalid(form)
-
         return _ajax_response(self.request, response, form=form)
 
 

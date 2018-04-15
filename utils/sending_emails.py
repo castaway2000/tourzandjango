@@ -22,7 +22,6 @@ class SendingEmail(object):
         self.order = data.get("order")
         self.is_guide_saving = data.get("is_guide_saving")
 
-
     def sending_email(self, to_user, to_email, subject, message, template_location=None):
         vars = {
             'message': message,
