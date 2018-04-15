@@ -8,6 +8,7 @@ from guides.models import GuideProfile
 from users.models import GeneralProfile
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from .forms import *
 from django.contrib import messages
 from django.http import JsonResponse
@@ -275,6 +276,7 @@ def tour(request, slug, tour_id):
 
 
 @login_required()
+@never_cache
 def guide_settings_tours(request):
     page = "settings_tours"
     user = request.user
@@ -283,6 +285,7 @@ def guide_settings_tours(request):
 
 
 @login_required()
+@never_cache
 def guide_settings_tour_edit(request, slug=None, tour_id=None):
     page = "settings_tours"
     user = request.user
@@ -344,6 +347,7 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
 
 
 @login_required()
+@never_cache
 def deactivate_tour_image(request):
     print (request.POST)
     if request.POST:
@@ -356,6 +360,7 @@ def deactivate_tour_image(request):
 
 
 @login_required()
+@never_cache
 def make_main_tour_image(request):
     if request.POST:
         data = request.POST
@@ -369,6 +374,7 @@ def make_main_tour_image(request):
 
 
 @login_required()
+@never_cache
 def tour_deleting(request, tour_id):
     user = request.user
     try:

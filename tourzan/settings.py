@@ -31,13 +31,16 @@ SECRET_KEY = 'd370859b5!ee4ea_9c5e%d11m7qin7lr*c&6#8e@9cf151b3ec'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
+ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
+                     "Côte d'Ivoire", 'North Korea', 'Lebanon', 'Liberia', 'Libya',
+                     'Myanmar (Burma)', 'Somalia', 'Sudan', 'Syria', 'Venezuela',
+                     'Yemen', 'Zaire', 'Zimbabwe']
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -198,11 +201,11 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'uuid-malloc01',
-        'TIMEOUT': 1209600,
+        'TIMEOUT': 61000,
     }
 }
 CACHE_MIDDLEWARE_ALIAS = 'default'
-CACHE_MIDDLEWARE_SECONDS = 1209600
+CACHE_MIDDLEWARE_SECONDS = 61000
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 SITE_ID = 1
@@ -332,6 +335,7 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
+ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 
 try:
     from .allauth_settings import *

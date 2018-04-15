@@ -100,7 +100,8 @@
                                     name="{{ form.is_agreed.html_name }}"
                                     checked
                                     required
-                              >{% blocktrans %}Agree to the Profit Sharing Terms of Service{% endblocktrans %}
+                              >{% blocktrans %}Agree to the{% endblocktrans %} <a href={% url 'integration_terms' %}>
+                                {% blocktrans %}Profit Sharing Terms of Service{% endblocktrans %}</a>
                             </label>
                         </div>
                     </div>

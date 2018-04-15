@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.sitemaps import ping_google
 from django.contrib.auth.models import User
 from locations.models import Location, Currency, City
 from utils.uploadings import *
@@ -22,6 +23,8 @@ class PaymentType(models.Model):
 class Tour(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     overview = models.TextField(blank=True, null=True, default=None)
+    included = models.TextField(blank=True, null=True, default=None)
+    excluded = models.TextField(blank=True, null=True, default=None)
     image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default="/tours/images/default_tour_image.jpg")
     image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default="/tours/images/default_tour_image_medium.jpg")
     image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default="/tours/images/default_tour_image_small.jpg")
@@ -92,6 +95,10 @@ class Tour(models.Model):
             self.image_medium = optimize_size(self.image, "medium")
 
         super(Tour, self).save(*args, **kwargs)
+        try:
+            ping_google()
+        except Exception:
+            pass
 
     def get_hours_nmb_range(self):
         min_hours_nmb = self.min_hours
@@ -101,6 +108,11 @@ class Tour(models.Model):
 
         return {"min_hours_nmb_range_basic": min_hours_nmb_range_basic,
                 "min_hours_nmb_range_full": min_hours_nmb_range_full}
+
+    def get_absolute_url(self):
+        # return reverse('tour', kwargs={'name': self.name, 'tour_id': self.id})
+        return '/tour/%s/%s/' % (self.slug, self.id)
+
 
 class TourImage(models.Model):
     tour = models.ForeignKey(Tour, blank=True, null=True)

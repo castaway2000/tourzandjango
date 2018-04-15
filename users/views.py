@@ -51,6 +51,8 @@ def login_view(request):
                         return HttpResponseRedirect(next_url)
                 if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
                     request.session["current_role"] = "guide"
+                elif not hasattr(user, "guideprofile"):
+                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>We see you are not a guide yet, you should consider being a guide!</a></h4>" % reverse("guide_registration_welcome"), 'safe')
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
 
@@ -395,7 +397,7 @@ def sending_sms_code(request):
 
     return_data = dict()
     if request.POST:
-        print (request.POST)
+        print(request.POST)
         data = request.POST
 
         # phone = data.get("phone")

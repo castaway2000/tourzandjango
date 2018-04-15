@@ -58,9 +58,7 @@
                         </div>
                     {% endif %}
                 {% endwith %}
-
             </div>
-
             <div class="col-md-3">
                 <p>
                     {% if order.tour %}
@@ -82,7 +80,41 @@
                             {{ order.price_hourly }} USD/hour
                         </span>
                     {% endif %}
+                        <br/>
+                            {% if order.number_persons > 0 %}
+                            <b>Number of persons:</b>
+                                {% blocktrans %}Number of people{% endblocktrans %}: {{ order.number_persons }}
+                            {% endif %}
+                            <b>What you are agreeing to:</b>
+                            <span class="booking-item-price tour-booking-price">
+                                {% blocktrans %}Date{% endblocktrans %}: {{ order.date_booked_for.date }}
+                            </span><br/>
+                            <span class="booking-item-price tour-booking-price">
+                                {% blocktrans %}Hours{% endblocktrans %}: {{ order.hours_nmb }}
+                            </span>
+                            <br/>
+                            <span class="booking-item-price tour-booking-price">
+                                {% blocktrans %}Starting:{% endblocktrans %}
+                                {{ order.calendaritemguide_set.all.0.calendar_item.time_from.time }}
+                            </span>
+                            <br/>
+                            <span class="booking-item-price tour-booking-price">
+                                {% blocktrans %}Ending:{% endblocktrans %}
+                                    {{ order.calendaritemguide_set.last.calendar_item.time_to.time }}
+                            </span><br/>
+                        {% if order.status_id == 9 %}
+                            <b>What you agree to:</b><br/>
+                            <span class="booking-item-price tour-booking-price">
+                                ${{ order.total_price_before_fees }}
+                            </span>
+                        {% else %}
+                            <b>What you receive:</b><br/>
+                            <span class="booking-item-price tour-booking-price">
+                                ${{ order.guide_payment }} USD
+                            </span>
+                        {% endif %}
                 </p>
+                <p>Press confirm if you accept this agreement.</p>
             </div>
 
             <div class="col-md-3">
@@ -124,7 +156,7 @@
                     </a>
                 </p>
 
-                {% if order.status.id == 5 %}
+                {% if order.status.id == 5 or order.status.id == 9 %}
                      <p>
                         <a href="{% url 'change_order_status' order.id 2 %}"
                             class="btn btn-success btn-sm">
@@ -150,7 +182,7 @@
                     </p>
                 {% endif %}
 
-                {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5 %}
+                {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
                     <p>
                         <a href="{% url 'cancel_order' order.id %}"
                             class="btn btn-danger btn-sm">
@@ -158,7 +190,6 @@
                         </a>
                     </p>
                 {% endif %}
-
             </div>
         </div>
     </div>

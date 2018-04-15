@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 # from .forms import *
 from .models import *
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse
@@ -11,6 +12,7 @@ import json
 import datetime
 
 
+@never_cache
 def guide_calendar(request, guide_username=None):
     page = "calendar"
     user = request.user
@@ -52,6 +54,7 @@ def guide_calendar(request, guide_username=None):
 
 
 @login_required()
+@never_cache
 def updating_calendar(request):
     print("updating_calendar")
     response_data = dict()
@@ -77,6 +80,7 @@ def updating_calendar(request):
     return JsonResponse(response_data)
 
 
+@never_cache
 def weekly_schedule(request):
     print(calendar.day_name[0])
     page = "calendar"
@@ -134,6 +138,7 @@ def weekly_schedule(request):
     return render(request, 'guides_calendar/weekly_schedule.html', locals())
 
 
+@never_cache
 def updating_schedule_template(request):
     print("updating_schedule_template")
     response_data = dict()
@@ -159,7 +164,7 @@ def updating_schedule_template(request):
             response_data["result"] = _("Time slots were successfully updated!")
     return JsonResponse(response_data)
 
-
+@never_cache
 def available_date_timeslots(request):
     response_data = dict()
     if request.POST:
