@@ -13,7 +13,7 @@ from locations.models import City
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Avg, Max, Min, Sum
+from django.db.models import Avg, Max, Min, Sum, Count, Case, When
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
@@ -306,7 +306,6 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 def profile_settings_guide(request, guide_creation=True):
     print("profile_settings_guide")
     print(request.POST)
-
     page = "profile_settings_guide"
     user = request.user
     ref_code = user.generalprofile.referral_code
@@ -323,7 +322,6 @@ def profile_settings_guide(request, guide_creation=True):
             user_language_third = user_language
         else:
             user_language_second = user_language
-
     try:
         guide = user.guideprofile
         creating_guide = False
@@ -344,10 +342,18 @@ def profile_settings_guide(request, guide_creation=True):
         print(form_data.items())
         if request.POST.get('referral') is not None:
             code = request.POST.get('referral').upper()
+            count_fee_free = GeneralProfile.objects.all().aggregate(count_feeless=Count(Case(When(is_fee_free=True, then=1))))
+            print(count_fee_free['count_feeless'])
             try:
                 referred = GeneralProfile.objects.get(referral_code=code)
-                referred.total_guides_referred += 1
-                referred.save(update_fields=['total_guides_referred'])
+                if referred.user.id != user.generalprofile.id:
+                    referred.total_guides_referred += 1
+                    referred.save(update_fields=['total_guides_referred'])
+                    if referred.total_guides_referred == 5 and count_fee_free['count_feeless'] < 100:
+                        ref_origin = GeneralProfile.objects.get(user=referred.user.id)
+                        ref_origin.is_fee_free = True
+                        ref_origin.save(update_fields=['is_fee_free'])
+                        # TODO: add email congratulations
             except:
                 pass
 

@@ -120,6 +120,7 @@ class GeneralProfile(models.Model):
     referral_code = models.CharField(max_length=8, null=True, blank=True)
     total_tourists_referred = models.IntegerField(default=0)
     total_guides_referred = models.IntegerField(default=0)
+    is_fee_free = models.BooleanField(default=False, blank=False)
 
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
     is_verified = models.BooleanField(default=False)#is verified by docs

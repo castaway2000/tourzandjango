@@ -37,6 +37,7 @@ else:
         private_key=BRAINTREE_PRIVATE_KEY
         )
 
+
 #this view is both for booking guides and tours
 def making_booking(request):
     # print ("tour bookings123")
@@ -347,6 +348,8 @@ def guide_settings_orders(request):
     guide = user.guideprofile
     data = request.GET
     order_id = data.get("id")
+    is_fee_free = user.generalprofile.is_fee_free
+    print('FEEFREE: ', is_fee_free)
     if guide:
         if order_id:
             if Order.objects.filter(id=order_id, guide=guide).exclude(status_id=1).exists():

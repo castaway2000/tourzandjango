@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
+
 from .forms import *
 from .models import *
 from tours.models import Tour
@@ -23,10 +25,11 @@ from allauth.account.views import SignupView, _ajax_response
 from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
-from datetime import datetime
+import datetime
 import pycountry
 from allauth.account.models import EmailAddress
 from django.utils.translation import ugettext as _
+from coupons.models import CouponManager, Coupon, CouponUser, Campaign
 
 
 def login_view(request):
@@ -421,3 +424,56 @@ def sending_sms_code(request):
             general_profile.save(force_update=True)
 
     return JsonResponse(return_data)
+
+
+@login_required()
+def promotions(request):
+    user = request.user
+    referral = user.generalprofile.referral_code
+    tourists_referred = user.generalprofile.total_tourists_referred
+    guides_referred = user.generalprofile.total_guides_referred
+    referral = request.user.generalprofile.referral_code
+
+    if tourists_referred >= 5:
+        try:
+            if CouponUser.objects.get(user_id=user.id):
+                coupon_user = CouponUser.objects.get(user_id=user.id)
+                print(coupon_user)
+                coupon = Coupon.objects.get(id=coupon_user.coupon.id)
+                coupon_type = coupon.type
+                coupon_ammount = coupon.value
+                coupon_type_data = 'in virtual cash'
+                if coupon_type == 'percentage':
+                    coupon_ammount = int(coupon.value)
+                    coupon_type_data = '% off your next booking'
+                elif coupon_type == 'monetary':
+                    coupon_type_data = '$ off your next booking'
+                if not coupon_user.redeemed_at:
+                    coupon_data = '{} - {}{}'.format(coupon, coupon_ammount, coupon_type_data)
+                # for testing.
+                # coupon_user.redeemed_at = datetime.datetime.now()
+                # coupon_user.save()
+        except ObjectDoesNotExist as err:
+            print(err)
+            campaign = Campaign.objects.get(name='refer5')
+            coupon = Coupon()
+
+            coupon.value = 20
+            coupon.code = coupon.generate_code()
+            coupon.type = 'percentage'
+            coupon.user_limit = 1
+            coupon.campaign = campaign
+            coupon.save()
+
+            coupon_user = CouponUser(user=user)
+            coupon_user.user = user
+            coupon_user.coupon_id = coupon.id
+            coupon_user.code = coupon.code
+            coupon_user.save()
+
+    try:
+        if user.guideprofile and user.generalprofile.total_guides_referred >= 5 and user.id < 200:
+            referral_perks = ['No service fee for life. (5 for life promo)']
+    except Exception as err:
+        pass
+    return render(request, 'users/promotions.html', locals())

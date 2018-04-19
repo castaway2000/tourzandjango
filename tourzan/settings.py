@@ -72,6 +72,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
 
+    'coupons',
+
     'crequest',
     'django_summernote',
     'rest_framework',

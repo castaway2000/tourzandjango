@@ -85,6 +85,7 @@
                             <b>Number of persons:</b>
                                 {% blocktrans %}Number of people{% endblocktrans %}: {{ order.number_persons }}
                             {% endif %}
+                            <br/>
                             <b>What you are agreeing to:</b>
                             <span class="booking-item-price tour-booking-price">
                                 {% blocktrans %}Date{% endblocktrans %}: {{ order.date_booked_for.date }}
@@ -105,13 +106,17 @@
                         {% if order.status_id == 9 %}
                             <b>What you agree to:</b><br/>
                             <span class="booking-item-price tour-booking-price">
-                                ${{ order.total_price_before_fees }}
+                                ${{ order.total_price }}
                             </span>
                         {% else %}
+                            {% if is_fee_free %}
                             <b>What you receive:</b><br/>
                             <span class="booking-item-price tour-booking-price">
-                                ${{ order.guide_payment }} USD
+                                ${{ order.total_price_before_fees }} USD
                             </span>
+                                {% else %}
+                                foo
+                                {% endif %}
                         {% endif %}
                 </p>
                 <p>Press confirm if you accept this agreement.</p>
