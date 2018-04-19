@@ -110,13 +110,16 @@
                             </span>
                         {% else %}
                             {% if is_fee_free %}
-                            <b>What you receive:</b><br/>
-                            <span class="booking-item-price tour-booking-price">
-                                ${{ order.total_price_before_fees }} USD
-                            </span>
-                                {% else %}
-                                foo
-                                {% endif %}
+                                <b>What you receive:</b><br/>
+                                <span class="booking-item-price tour-booking-price">
+                                    ${{ order.total_price_before_fees }} USD
+                                </span>
+                            {% else %}
+                                <b>What you receive:</b><br/>
+                                <span class="booking-item-price tour-booking-price">
+                                    ${{ order.guide_payment }} USD
+                                </span>
+                            {% endif %}
                         {% endif %}
                 </p>
                 <p>Press confirm if you accept this agreement.</p>
