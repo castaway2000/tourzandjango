@@ -345,7 +345,7 @@ except:
 
 try:
     #delete '_2' on AWS
-    from .prod_settings_2 import *
+    from .prod_settings import *
 except:
     pass
 
@@ -359,7 +359,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings import *
+    from .local_settings_2 import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
