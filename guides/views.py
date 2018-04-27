@@ -13,7 +13,7 @@ from locations.models import City
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Avg, Max, Min, Sum, Count, Case, When
+from django.db.models import Avg, Max, Min, Sum, Count, Case, When, Q
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
@@ -343,17 +343,22 @@ def profile_settings_guide(request, guide_creation=True):
         if request.POST.get('referral') is not None:
             code = request.POST.get('referral').upper()
             count_fee_free = GeneralProfile.objects.all().aggregate(count_feeless=Count(Case(When(is_fee_free=True, then=1))))
-            print(count_fee_free['count_feeless'])
+
             try:
                 referred = GeneralProfile.objects.get(referral_code=code)
                 if referred.user.id != user.generalprofile.id:
                     referred.total_guides_referred += 1
                     referred.save(update_fields=['total_guides_referred'])
+
                     if referred.total_guides_referred == 5 and count_fee_free['count_feeless'] < 100:
                         ref_origin = GeneralProfile.objects.get(user=referred.user.id)
-                        ref_origin.is_fee_free = True
-                        ref_origin.save(update_fields=['is_fee_free'])
-                        # TODO: add email congratulations
+                        verified_refs = GeneralProfile.objects.all() \
+                            .aggregate(num_verified=Count(Case(When(Q(referral_code=code) & Q(is_verified=True), then=1))))
+                        if verified_refs['num_verified'] >= 5 and ref_origin.is_fee_free == False:
+                            # making sure they are verified before giving the perk.
+                            ref_origin.is_fee_free = True
+                            ref_origin.save(update_fields=['is_fee_free'])
+                            # TODO: add email congratulations
             except:
                 pass
 

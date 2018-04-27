@@ -103,24 +103,24 @@
                                 {% blocktrans %}Ending:{% endblocktrans %}
                                     {{ order.calendaritemguide_set.last.calendar_item.time_to.time }}
                             </span><br/>
-                        {% if order.status_id == 9 %}
-                            <b>What you agree to:</b><br/>
-                            <span class="booking-item-price tour-booking-price">
-                                ${{ order.total_price }}
-                            </span>
-                        {% else %}
-                            {% if is_fee_free %}
-                                <b>What you receive:</b><br/>
-                                <span class="booking-item-price tour-booking-price">
-                                    ${{ order.total_price_before_fees }} USD
-                                </span>
-                            {% else %}
-                                <b>What you receive:</b><br/>
-                                <span class="booking-item-price tour-booking-price">
-                                    ${{ order.guide_payment }} USD
-                                </span>
-                            {% endif %}
-                        {% endif %}
+{#                        {% if order.status_id == 9 %}#}
+{#                            <b>What you agree to:</b><br/>#}
+{#                            <span class="booking-item-price tour-booking-price">#}
+{#                                ${{ order.total_price }}#}
+{#                            </span>#}
+{#                        {% else %}#}
+{#                            {% if is_fee_free %}#}
+{#                                <b>What you receive:</b><br/>#}
+{#                                <span class="booking-item-price tour-booking-price">#}
+{#                                    ${{ order.total_price_before_fees }} USD#}
+{#                                </span>#}
+{#                            {% else %}#}
+{#                                <b>What you receive:</b><br/>#}
+{#                                <span class="booking-item-price tour-booking-price">#}
+{#                                    ${{ order.guide_payment }} USD#}
+{#                                </span>#}
+{#                            {% endif %}#}
+{#                        {% endif %}#}
                 </p>
                 <p>Press confirm if you accept this agreement.</p>
             </div>
@@ -135,28 +135,47 @@
                 <p>
                     <b>Booked for: </b>{{ order.date_booked_for|date:"m.d.Y" }}
                 </p>
-                <p>
-                    <b>Payment: </b>
-                    {% if order.payment_status.id == 1 %}
-                        no payment yet
-                    {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
-                        {% if order.payment %}
-                            {{ order.payment.amount }} {{ order.payment.currency.name }}
-                        {% else %}
-                            0 {{ order.currency.name }}
-                        {% endif %}
-                        (reserved)
-                    {% elif order.payment_status.id == 4 %}
-                        {% if order.payment %}
-                            {{ order.payment.amount }} {{ order.payment.currency.name }}
-                        {% else %}
-                            0 {{ order.currency.name }}
-                        {% endif %}
-                        (paid)
+                {% if order.status_id == 9 %}
+                    <b>What you agree to:</b><br/>
+                    <span class="booking-item-price tour-booking-price">
+                        ${{ order.total_price }}
+                    </span>
+                {% else %}
+                    {% if is_fee_free %}
+                        <b>What you receive:</b><br/>
+                        <span class="booking-item-price tour-booking-price">
+                            ${{ order.total_price_before_fees }} USD
+                        </span>
                     {% else %}
-                        no payment yet
+                        <b>What you receive:</b><br/>
+                        <span class="booking-item-price tour-booking-price">
+                            ${{ order.guide_payment }} USD
+                        </span>
                     {% endif %}
-                </p>
+                {% endif %}
+{#                <p>#}
+{#                    <b>Payment: </b>#}
+{#                    {% if order.payment_status.id == 1 %}#}
+{#                        no payment yet#}
+{#                    {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}#}
+{#                        {% if order.payment %}#}
+{#                            <p>paid</p>#}
+{#                            {{ order.payment.amount }} {{ order.payment.currency.name }}#}
+{#                        {% else %}#}
+{#                            0 {{ order.currency.name }}#}
+{#                        {% endif %}#}
+{#                        (reserved)#}
+{#                    {% elif order.payment_status.id == 4 %}#}
+{#                        {% if order.payment %}#}
+{#                            {{ order.payment.amount }} {{ order.payment.currency.name }}#}
+{#                        {% else %}#}
+{#                            0 {{ order.currency.name }}#}
+{#                        {% endif %}#}
+{#                        (paid)#}
+{#                    {% else %}#}
+{#                        no payment yet#}
+{#                    {% endif %}#}
+{#                </p>#}
                 <p>
                     <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid%}"
                         class="btn btn-default btn-sm">

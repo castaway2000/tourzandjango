@@ -433,6 +433,7 @@ def promotions(request):
     tourists_referred = user.generalprofile.total_tourists_referred
     guides_referred = user.generalprofile.total_guides_referred
     referral = request.user.generalprofile.referral_code
+    session = request.session
 
     if tourists_referred >= 5:
         try:
@@ -472,8 +473,10 @@ def promotions(request):
             coupon_user.save()
 
     try:
-        if user.guideprofile and user.generalprofile.total_guides_referred >= 5 and user.id < 200:
-            referral_perks = ['No service fee for life. (5 for life promo)']
+        session = request.session["current_role"]
+        if session == "guide":
+            if user.guideprofile and user.generalprofile.is_fee_free:
+                referral_perks = ['No service fee for five years. (5 for 5 promo)']
     except Exception as err:
         pass
     return render(request, 'users/promotions.html', locals())

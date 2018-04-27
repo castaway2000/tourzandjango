@@ -38,7 +38,11 @@
                             {% endfor %}
                             </ul>
                         {% else %}
-                            <p>Refer more verified guides to get perks</p>
+                            {% if session == 'guide' %}
+                                <p>Refer more verified guides to get perks</p>
+                            {% else %}
+                                <p>Refer more users to get perks</p>
+                            {% endif %}
                         {% endif %}
                     </div>
 
