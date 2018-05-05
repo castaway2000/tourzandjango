@@ -31,6 +31,7 @@ class TouristProfile(models.Model):
     def save(self, *args, **kwargs):
         if self._original_fields["image"] != self.image:
             self.image = optimize_size(self.image, "medium")
+
         super(TouristProfile, self).save(*args, **kwargs)
 
 

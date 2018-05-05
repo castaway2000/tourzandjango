@@ -114,6 +114,7 @@ MIDDLEWARE = [
     'django_user_agents.middleware.UserAgentMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'users.middleware.TrackingActiveUserMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
 
     'django.middleware.cache.FetchFromCacheMiddleware',
 
@@ -146,6 +147,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.site'
             ],
         },
     },
@@ -348,7 +350,7 @@ except:
 
 try:
     #delete '_2' on AWS
-    from .prod_settings import *
+    from .prod_settings_2 import *
 except:
     pass
 
@@ -362,7 +364,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings_2 import *
+    from .local_settings import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\

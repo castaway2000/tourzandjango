@@ -77,7 +77,10 @@ class GuideProfile(models.Model):
         if not self.uuid:
             self.uuid = uuid_creating()
 
+        if not self.pk and self.user.generalprofile.referred_by:
+            self.add_statistics_for_referrer()
         super(GuideProfile, self).save(*args, **kwargs)
+
         try:
             ping_google()
         except Exception:
@@ -95,6 +98,12 @@ class GuideProfile(models.Model):
     def get_absolute_url(self):
         # return reverse('guides', kwargs={'name': self.name, 'uuid': self.uuid, 'overview': 'overview'})
         return '/guides/{}/{}/overview/'.format(self.name, self.user.generalprofile.uuid).replace(' ', '%20')
+
+    def add_statistics_for_referrer(self):
+        referred_by = self.user.generalprofile.referred_by
+        if referred_by:
+            referred_by.generalprofile.guides_referred_nmb += 1
+            referred_by.generalprofile.save(force_update=True)
 
 
 class Service(models.Model):

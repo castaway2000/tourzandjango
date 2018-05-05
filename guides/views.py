@@ -304,8 +304,6 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
 @login_required()
 def profile_settings_guide(request, guide_creation=True):
-    print("profile_settings_guide")
-    print(request.POST)
     page = "profile_settings_guide"
     user = request.user
     ref_code = user.generalprofile.referral_code
@@ -339,28 +337,6 @@ def profile_settings_guide(request, guide_creation=True):
 
     if request.method == 'POST' and form.is_valid():
         form_data = form.cleaned_data
-        print(form_data.items())
-        if request.POST.get('referral') is not None:
-            code = request.POST.get('referral').upper()
-            count_fee_free = GeneralProfile.objects.all().aggregate(count_feeless=Count(Case(When(is_fee_free=True, then=1))))
-
-            try:
-                referred = GeneralProfile.objects.get(referral_code=code)
-                if referred.user.id != user.generalprofile.id:
-                    referred.total_guides_referred += 1
-                    referred.save(update_fields=['total_guides_referred'])
-
-                    if referred.total_guides_referred == 5 and count_fee_free['count_feeless'] < 100:
-                        ref_origin = GeneralProfile.objects.get(user=referred.user.id)
-                        verified_refs = GeneralProfile.objects.all() \
-                            .aggregate(num_verified=Count(Case(When(Q(referral_code=code) & Q(is_verified=True), then=1))))
-                        if verified_refs['num_verified'] >= 5 and ref_origin.is_fee_free == False:
-                            # making sure they are verified before giving the perk.
-                            ref_origin.is_fee_free = True
-                            ref_origin.save(update_fields=['is_fee_free'])
-                            # TODO: add email congratulations
-            except:
-                pass
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
@@ -378,7 +354,6 @@ def profile_settings_guide(request, guide_creation=True):
         if interests:
             for interest in interests:
                 interest, created = Interest.objects.get_or_create(name=interest)
-
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
         UserInterest.objects.filter(user=user).delete()

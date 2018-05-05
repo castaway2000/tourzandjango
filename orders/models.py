@@ -16,6 +16,7 @@ from payments.models import Payment, PaymentMethod
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ON_PRODUCTION
 import braintree
 from partners.models import Partner
+from coupons.models import CouponUser, Coupon, Campaign, CouponType
 
 
 if ON_PRODUCTION:
@@ -147,25 +148,25 @@ class Order(models.Model):
         fees_guide_rate = float(0.13)
         fees_tourist = float(self.total_price_before_fees)*fees_tourist_rate
         fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+        if self.is_fee_free:
+            fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+        else:
+            fees_guide = 0
 
         self.fees_tourist = fees_tourist
         self.fees_guide = fees_guide
         self.fees_total = fees_tourist + fees_guide
         self.total_price = float(self.total_price_before_fees) + fees_tourist
         self.guide_payment = float(self.total_price_before_fees) - fees_guide
+
+        self.add_statistics_for_referrer()
         super(Order, self).save(*args, **kwargs)
 
 
     def making_order_payment(self):
         order = self
         payment_method = PaymentMethod.objects.filter(is_active=True).order_by('is_default', '-id').first()
-
-        print("payment method: %s" % payment_method.token)
-
-        print(self.total_price)
         amount = "%s" % float(self.total_price)
-        print(amount)
-
         result = braintree.Transaction.sale({
             "amount": amount,
             "payment_method_token": payment_method.token,
@@ -191,9 +192,7 @@ class Order(models.Model):
             order.payment_status_id = 2 #full payment reserverd
 
             order.save(force_update=True)
-
             return {"result": True}
-
         else:
             return {"result": False}
 
@@ -203,6 +202,41 @@ class Order(models.Model):
         order.save(force_update=True)
         return {"result": True}
 
+    # tourists_with_purchases_referred_nmb
+    def add_coupon_for_referrer(self):
+        tourist_user = self.tourist.user
+        if tourist_user.generalprofile.referred_by:
+            referred_by = tourist_user.generalprofile.referred_by
+            tourists_with_purchases_referred_nmb = referred_by.generalprofile.tourists_with_purchases_referred_nmb
+            nmb_of_tourist_for_coupon = 5
+            if tourists_with_purchases_referred_nmb % nmb_of_tourist_for_coupon == 0:
+                #here we compare created coupons for this user with referred tourists with purchases
+                #this approach will prevent creating a new coupon for a tourist, when the nmb of tourists with purchases
+                # was decreased by 1 and then increased by 1
+                coupons_user_nmb = CouponUser.objects.filter(user=referred_by, name="refer5").count()
+                coupons_needed = int(tourists_with_purchases_referred_nmb / nmb_of_tourist_for_coupon)#rounding down to the nearest integer
+                if coupons_needed > coupons_user_nmb:
+                    campaign, created = Campaign.objects.get_or_create(name="refer5")
+                    coupon_type, created = CouponType.objects.get_or_create(name="percentage")
+                    coupon, created = Coupon.objects.get_or_create(campaign=campaign, value=20, type=coupon_type, user_limit=1)
+                    CouponUser.objects.create(user=referred_by, coupon=coupon)
+
+    def add_statistics_for_referrer(self):
+        #Increase or decrease tourist with purchasing
+        referred_by = self.tourist.user.generalprofile.referred_by
+        if referred_by:
+            if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
+                and self.payment_status.id == 4:#full payment processed
+                #increase only if there is no current success payments for this user
+                if Payment.objects.filter(order__tourist=self.tourist, payment_status__id=4).count() == 0:
+                    referred_by.generalprofile.tourists_with_purchases_referred_nmb += 1
+                    referred_by.generalprofile.save(force_update=True)
+            elif (self._original_fields["payment_status"] and self._original_fields["payment_status"].id == 4) and self.payment_status.id != 4 \
+                    and Payment.objects.filter(order__tourist=self.tourist, payment_status__id=4).count() == 1:
+                referred_by.generalprofile.tourists_with_purchases_referred_nmb -= 1
+                referred_by.generalprofile.save(force_update=True)
+
+            self.add_coupon_for_referrer()
 
 """
 saving ratings from review to Order object
@@ -213,13 +247,11 @@ def order_post_save(sender, instance, created, **kwargs):
 
     statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
         .aggregate(rating=Avg("rating_guide"), reviews_nmb=Count("id"))
-    print (statistic_info)
 
     if statistic_info["rating"] and statistic_info["reviews_nmb"]:
         guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
         guide.rating = statistic_info["rating"]
         guide.save(force_update=True)
-
 
     #sening email according to orders changing
     current_request = CrequestMiddleware.get_request()

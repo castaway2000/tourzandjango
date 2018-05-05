@@ -9,52 +9,93 @@
 
 {% block content_profile %}
     <div class="col-md-9">
-        {{ form.errors }}
-        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-            <div class="row">
-                <div class="col-md-5">
-                    <div class="row">
-                        <div class="col-lg-7">
-                            <h4>{% blocktrans %}Promo Data{% endblocktrans %}</h4>
-                            <h5><strong>Your referral code:</strong><br/> {{ referral }}</h5>
-                        </div>
-                    </div><br>
-{#                    <div class="col-md-4 col-md-offset-1">#}
-{#                    </div>#}
-                    <div class="form-group form-group-icon-left">
-                        <label><strong>Tourist referrals claimed:</strong></label>
-                        {{ tourists_referred }}
+        <h4>{% trans 'Promo Data' %}</h4>
+        <div class="row">
+            <div class="col-lg-6">
+                <h5>{% trans 'Your referral information' %}</h5>
+                <div>
+                    <div>
+                        <b>{% trans 'Your referral code' %}:</b> {{ request.user.generalprofile.referral_code }}
                     </div>
-                    <div class="form-group form-group-icon-left">
-                        <label><strong>Verified guide referrals claimed:</strong></label>
-                        {{ guides_referred }}
+                    <div>
+                        <b>{% trans 'Your referral link' %}:</b> <span id="content_to_copy">{{ site_root }}?ref={{ request.user.generalprofile.referral_code }}</span>
+                        <button id="copy_text_btn" class="btn btn-xs btn-primary" data-clipboard-target="#content_to_copy" >copy</button>
                     </div>
-                    <div class="form-group form-group-icon-left">
-                        <label><strong>{% blocktrans %}Referral perks{% endblocktrans %}:</strong></label>
-                        {% if referral_perks %}
+                </div><br>
+
+                <h5>{% blocktrans %}Referrals statistics{% endblocktrans %}</h5>
+                <div class="">
+                    <b>{% trans 'Tourist referrals claimed' %}: </b> {{ request.user.generalprofile.tourists_referred_nmb }}
+                </div>
+                <div class="">
+                    <b>{% trans 'Tourist referrals with purchase' %}: </b> {{ request.user.generalprofile.tourists_with_purchases_referred_nmb }}
+                </div><br>
+
+                <div class="">
+                    <b>{% trans 'Guides referrals claimed' %}: </b> {{ request.user.generalprofile.guides_referred_nmb }}
+                </div>
+                <div class="">
+                    <b>{% trans 'Guides referrals with verification' %}:</b> {{ request.user.generalprofile.guides_verified_referred_nmb }}
+                </div><br>
+
+            </div>
+            <div class="col-lg-6">
+                <h5>{% trans 'Your rewards' %}</h5>
+
+                <div class="">
+                    {% if session == 'guide' %}
+                        <b>{% trans 'Referral perks' %}: </b><br>
+                        {% with request.user.generalprofile.get_referral_perks as referral_perks %}
+                            {% if referral_perks %}
+                                <ul>
+                                    {% for perk in referral_perks %}
+                                        <li>{{ perk }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>{% trans 'Refer more verified guides to get perks' %}</p>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+
+                <div class="">
+                    <b>{% trans 'Coupons' %}</b>
+                    {% with request.user.generalprofile.get_coupons as coupons %}
+                        {% if coupons %}
                             <ul>
-                            {% for perk in referral_perks %}
-                                <li>{{ perk }}</li>
-                            {% endfor %}
+                                {% for coupon in coupons %}
+                                    <li>{{ coupon.coupon_data }}</li>
+                                {% endfor %}
                             </ul>
                         {% else %}
-                            {% if session == 'guide' %}
-                                <p>Refer more verified guides to get perks</p>
-                            {% else %}
-                                <p>Refer more users to get perks</p>
-                            {% endif %}
+                            <p>{% trans 'You do not have any active coupons now' %}<p>
                         {% endif %}
-                    </div>
-
-                    <div class="form-group form-group-icon-left">
-                        <label><strong>{% blocktrans %}Coupons{% endblocktrans %}:</strong></label>
-                        <p>
-                            {{ coupon_data }}
-                        <p>
-                    </div>
+                    {% endwith %}
                 </div>
             </div>
-        </form>
+        </div>
+
     </div>
+
 {% endblock %}
+
+{% block js_stuff %}
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
+    <script>
+        $(function(){
+            new Clipboard('#copy_text_btn');
+            $("#copy_text_btn").popover({
+                content: "Copied!",
+                placement : 'top'
+            });
+        });
+        $("#copy_text_btn").on('shown.bs.popover', function() {
+            this_popover = $(this);
+            setTimeout(function () {
+                this_popover.popover('hide');
+            }, 1000);
+        });
+    </script>
+{% endblock js_stuff %}
 

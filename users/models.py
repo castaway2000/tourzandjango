@@ -9,13 +9,13 @@ from utils.disabling_signals_for_load_data import disable_for_loaddata
 from tourists.models import TouristProfile
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from django.contrib.auth.signals import user_logged_in
-from payments.models import PaymentMethod
+from payments.models import PaymentMethod, Payment
 from phonenumber_field.modelfields import PhoneNumberField
 from guides.models import GuideProfile
 from utils.uploadings import upload_path_handler_guide_webcam_image
 import pycountry
 from datetime import date
-from utils.general import uuid_creating, uuid_size_6
+from utils.general import uuid_creating, uuid_size_6_creating
 
 from django.core.cache import cache
 import datetime
@@ -48,8 +48,6 @@ def user_login_function(sender, user, **kwargs):
         # else:
         #     general_profile.is_trusted = False
         general_profile.save(force_update=True)
-
-
 user_logged_in.connect(user_login_function)
 
 
@@ -57,13 +55,14 @@ user_logged_in.connect(user_login_function)
 creating user profile after user is created (mostly for login with Facebook)
 """
 @disable_for_loaddata
-def create_user_profile(sender, instance, created, **kwargs):
+def user_post_save(sender, instance, created, **kwargs):
+    user = instance
+    GeneralProfile.objects.get_or_create(user=user)
     if created:
         kwargs = dict()
-        kwargs["user"] = instance
+        kwargs["user"] = user
         TouristProfile.objects.create(**kwargs)
-
-post_save.connect(create_user_profile, sender=User)
+post_save.connect(user_post_save, sender=User)
 
 
 class Interest(models.Model):
@@ -117,9 +116,13 @@ class GeneralProfile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
     profession = models.CharField(max_length=256, blank=True, null=True)
+
+    referred_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name="referred_by")
     referral_code = models.CharField(max_length=8, null=True, blank=True)
-    total_tourists_referred = models.IntegerField(default=0)
-    total_guides_referred = models.IntegerField(default=0)
+    tourists_referred_nmb = models.IntegerField(default=0)
+    tourists_with_purchases_referred_nmb = models.IntegerField(default=0)
+    guides_referred_nmb = models.IntegerField(default=0)
+    guides_verified_referred_nmb = models.IntegerField(default=0)
     is_fee_free = models.BooleanField(default=False, blank=False)
 
     is_trusted = models.BooleanField(default=False) #is trusted by connection social networks, phone, validation of address
@@ -186,10 +189,44 @@ class GeneralProfile(models.Model):
 
         if not self.uuid:
             self.uuid = uuid_creating()
+
         if not self.referral_code:
-            self.referral_code = uuid_size_6()
+            self.referral_code = self.create_referral_code()
+
+        #adding statistics for referrer when referred_by appears:
+        if not self._original_fields["referred_by"] and self.referred_by:
+            referred_by = self.referred_by
+            referred_by.generalprofile.tourists_referred_nmb += 1
+            referred_by.generalprofile.save(force_update=True)
+
+        #adding statistics for referrer when guides become verified
+        referred_by = self.referred_by
+        if referred_by:
+            if (not self._original_fields["is_verified"] or self._original_fields["is_verified"] == False) and self.is_verified == True:
+                referred_by.generalprofile.guides_verified_referred_nmb += 1
+                referred_by.generalprofile.save(force_update=True)
+            elif (self._original_fields["is_verified"] and self._original_fields["is_verified"] == True) and self.is_verified == False:
+                referred_by.generalprofile.guides_verified_referred_nmb -= 1
+                referred_by.generalprofile.save(force_update=True)
+
+            #adding is_fee_free perk for generalprofile for guides, who attracted guides
+            # TODO: think about making it a kind of a coupon if it will be needed
+            if hasattr(referred_by, "guideprofile"):
+                count_fee_free_nmb = GeneralProfile.objects.filter(is_fee_free=True).count()
+                if count_fee_free_nmb <= 100:#only 100 people are allowed
+                    if referred_by.generalprofile.guides_verified_referred_nmb >= 5 and self.is_fee_free == False:
+                        self.is_fee_free = True
+                        # TODO: add email congratulations
 
         super(GeneralProfile, self).save(*args, **kwargs)
+
+
+    def create_referral_code(self):
+        referral_code = uuid_size_6_creating()
+        if GeneralProfile.objects.filter(referral_code__iexact=referral_code).exists():
+            return self.create_referral_code()
+        else:
+            return referral_code
 
     def get_languages(self):
         user_languages = UserLanguage.objects.filter(user=self.user)
@@ -222,6 +259,32 @@ class GeneralProfile(models.Model):
         else:
             return False
 
+    def get_tourists_referred_nmb(self):
+        all_tourists_referred = TouristProfile.objects.filter(user__generalprofile__referred_by=self.user)
+        all_tourists_referred_nmb = all_tourists_referred.count()
+        tourists_with_purchases_referred = Payment.objects.filter(order__tourist__in=all_tourists_referred)
+        tourists_with_purchases_referred_nmb = tourists_with_purchases_referred.count()
+        return {"total": all_tourists_referred_nmb, "with_purchases": tourists_with_purchases_referred_nmb}
+
+    def get_guides_referred(self):
+        all_guides_referred = TouristProfile.objects.filter(user__generalprofile__referred_by=self.user).count()
+        guides_verified = GuideProfile.objects.filter(user__generalprofile__is_verified=True).count()
+        return {"total": all_guides_referred, "verified": guides_verified}
+
+    def get_referral_perks(self):
+        if hasattr(self.user, "guideprofile") and self.user.generalprofile.is_fee_free:
+            referral_perks = (('No service fee for five years (5 for 5 promo).'),)
+        else:
+            referral_perks = None
+        return referral_perks
+
+    def get_coupons(self):
+        if self.user.couponuser_set.filter(redeemed_at__isnull=True).exists():
+            coupon_user = self.user.couponuser_set.filter(redeemed_at__isnull=True)
+            coupons = [item.coupon for item in coupon_user.iterator()]
+        else:
+            coupons = None
+        return coupons
 
 def general_profile_post_save(sender, instance, **kwargs):
     if hasattr(instance.user, "guideprofile"):

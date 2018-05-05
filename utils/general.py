@@ -11,5 +11,5 @@ def uuid_creating():
     return uuid.uuid4().hex
 
 
-def uuid_size_6():
-    return uuid.uuid4().hex[:6].upper()
+def uuid_size_6_creating():
+    return uuid.uuid4().hex[:6]

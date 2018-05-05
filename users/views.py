@@ -29,7 +29,11 @@ import datetime
 import pycountry
 from allauth.account.models import EmailAddress
 from django.utils.translation import ugettext as _
-from coupons.models import CouponManager, Coupon, CouponUser, Campaign
+from coupons.models import Coupon, CouponUser, Campaign
+from allauth.account.utils import complete_signup
+from allauth.account import app_settings
+from allauth.exceptions import ImmediateHttpResponse
+import time
 
 
 def login_view(request):
@@ -323,8 +327,6 @@ def search_interest(request):
         "items": results,
         "more": "false"
     }
-
-    print (response_data)
     return JsonResponse(response_data, safe=False)
 
 
@@ -354,43 +356,74 @@ def search_language(request):
 #redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
 class SignupViewCustom(SignupView):
 
+    def form_valid(self, form):
+        # By assigning the User to a property on the view, we allow subclasses
+        # of SignupView to access the newly created User instance
+        self.user = form.save(self.request)
+        try:
+            return complete_signup(
+                self.request, self.user,
+                app_settings.EMAIL_VERIFICATION,
+                self.get_success_url())
+        except ImmediateHttpResponse as e:
+            return e.response
+
     # at the initial SignupView this post function is inherited from AjaxCapableProcessFormViewMixin
     # so here a post function from AjaxCapableProcessFormViewMixin is redefined
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        print(form)
-        if form.is_valid():
-            response = self.form_valid(form)
-            if u"login_btn" in request.POST:
-                return HttpResponseRedirect(reverse("login"))
-            # google captcha validating
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            if recaptcha_response and recaptcha_response != "":
-                data = {
-                    'secret': GOOGLE_RECAPTCHA_SECRET_KEY,
-                    'response': recaptcha_response
-                }
-                r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-                result = r.json()
 
-                if result['success']:
-                    pass
-                else:
-                    messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-                    response = self.form_invalid(form)
+        # google captcha validating
+        google_captcha_is_valid = False
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        if recaptcha_response and recaptcha_response != "":
+            data = {
+                'secret': GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            result = r.json()
+
+            if result['success']:
+                google_captcha_is_valid = True
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
                 response = self.form_invalid(form)
+        else:
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            response = self.form_invalid(form)
 
-            if request.POST.get('tourist_referral') is not None:
-                code = request.POST.get('tourist_referral').upper()
+        if form.is_valid() and google_captcha_is_valid:
+            response = self.form_valid(form)
+            referral_code = None
+            if "referral_code" in self.request.session:
+                referral_code = self.request.session.get("referral_code")
+            elif request.POST.get('referral_code'):
+                referral_code = request.POST.get('referral_code')
+
+            print(referral_code)
+            time.sleep(10)
+            if referral_code and referral_code != "":
+                #in this step not only tourists can be referred, but guides as well, so reffered by is set to generalprofile,
+                #which is related to user by OneToOne field
+                #Dublicate this logic for API singup functionality later
                 try:
-                    referred = GeneralProfile.objects.get(referral_code=code)
-                    referred.total_tourists_referred += 1
-                    referred.save(update_fields=['total_tourists_referred'])
-                except Exception as err:
+                    referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
+                    referred_by_user = referred_by_gp.user
+                    print(referred_by_user)
+                    print(request.user)
+                    request.user.generalprofile.referred_by = referred_by_user
+                    request.user.generalprofile.save(force_update=True)
+                    print("general profile was updated")
+                except Exception as e:
+                    print(e)
                     pass
+
+            #creating Tourist Profile (moved here from
+            if u"login_btn" in request.POST:
+                return HttpResponseRedirect(reverse("login"))
+
         else:
             response = self.form_invalid(form)
         return _ajax_response(self.request, response, form=form)
@@ -399,11 +432,8 @@ class SignupViewCustom(SignupView):
 @login_required()
 def sending_sms_code(request):
     user = request.user
-    print(request.POST)
-
     return_data = dict()
     if request.POST:
-        print(request.POST)
         data = request.POST
 
         # phone = data.get("phone")
@@ -428,55 +458,4 @@ def sending_sms_code(request):
 
 @login_required()
 def promotions(request):
-    user = request.user
-    referral = user.generalprofile.referral_code
-    tourists_referred = user.generalprofile.total_tourists_referred
-    guides_referred = user.generalprofile.total_guides_referred
-    referral = request.user.generalprofile.referral_code
-    session = request.session
-
-    if tourists_referred >= 5:
-        try:
-            if CouponUser.objects.get(user_id=user.id):
-                coupon_user = CouponUser.objects.get(user_id=user.id)
-                print(coupon_user)
-                coupon = Coupon.objects.get(id=coupon_user.coupon.id)
-                coupon_type = coupon.type
-                coupon_ammount = coupon.value
-                coupon_type_data = 'in virtual cash'
-                if coupon_type == 'percentage':
-                    coupon_ammount = int(coupon.value)
-                    coupon_type_data = '% off your next booking'
-                elif coupon_type == 'monetary':
-                    coupon_type_data = '$ off your next booking'
-                if not coupon_user.redeemed_at:
-                    coupon_data = '{} - {}{}'.format(coupon, coupon_ammount, coupon_type_data)
-                # for testing.
-                # coupon_user.redeemed_at = datetime.datetime.now()
-                # coupon_user.save()
-        except ObjectDoesNotExist as err:
-            print(err)
-            campaign = Campaign.objects.get(name='refer5')
-            coupon = Coupon()
-
-            coupon.value = 20
-            coupon.code = coupon.generate_code()
-            coupon.type = 'percentage'
-            coupon.user_limit = 1
-            coupon.campaign = campaign
-            coupon.save()
-
-            coupon_user = CouponUser(user=user)
-            coupon_user.user = user
-            coupon_user.coupon_id = coupon.id
-            coupon_user.code = coupon.code
-            coupon_user.save()
-
-    try:
-        session = request.session["current_role"]
-        if session == "guide":
-            if user.guideprofile and user.generalprofile.is_fee_free:
-                referral_perks = ['No service fee for five years. (5 for 5 promo)']
-    except Exception as err:
-        pass
     return render(request, 'users/promotions.html', locals())

@@ -35,6 +35,13 @@
                         {% if not guide_status %}
                             <strong><h5><a href="{% url 'change_role' %}">{% blocktrans %}Consider becoming a local guide?{% endblocktrans %}</a></h5></strong>
                         {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <b>{% trans 'Your referral code' %}:</b> {{ ref_code }}
+                    </div>
+
+                    <div class="form-group">
                         <label>{% blocktrans %}Interests{% endblocktrans %}:</label>
                         <select multiple class="form-control select2"
                             id="interest_input" name="interests"
@@ -57,7 +64,6 @@
 
                 </div>
                 <div class="col-md-4 col-md-offset-1">
-                    <h5><strong>Your referral code:</strong><br/> {{ ref_code }}</h5>
                     <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
                     {% if user.touristprofile.image %}
                         <div>
