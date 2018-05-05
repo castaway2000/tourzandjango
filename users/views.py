@@ -402,8 +402,6 @@ class SignupViewCustom(SignupView):
             elif request.POST.get('referral_code'):
                 referral_code = request.POST.get('referral_code')
 
-            print(referral_code)
-            time.sleep(10)
             if referral_code and referral_code != "":
                 #in this step not only tourists can be referred, but guides as well, so reffered by is set to generalprofile,
                 #which is related to user by OneToOne field
@@ -411,11 +409,8 @@ class SignupViewCustom(SignupView):
                 try:
                     referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
                     referred_by_user = referred_by_gp.user
-                    print(referred_by_user)
-                    print(request.user)
                     request.user.generalprofile.referred_by = referred_by_user
                     request.user.generalprofile.save(force_update=True)
-                    print("general profile was updated")
                 except Exception as e:
                     print(e)
                     pass
