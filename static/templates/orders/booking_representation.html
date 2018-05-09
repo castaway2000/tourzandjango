@@ -133,7 +133,7 @@
                         {% else %}
                             0 {{ order.currency.name }}
                         {% endif %}
-                        (reserved)
+                        <br>({{ order.total_price }} USD reserved)
                     {% elif order.payment_status.id == 4 %}
                         {% if order.payment %}
                             {{ order.payment.amount }} {{ order.payment.currency.name }}
@@ -165,7 +165,7 @@
                     <p>
                         <a href="{% url 'order_completing' order.id %}"
                             class="btn btn-primary btn-sm">
-                            {% if not order.payment.dt_paid %}
+                            {% if order.payment_status.id != 4 %}
                                 {% blocktrans %}
                                     Write a Review and Pay
                                 {% endblocktrans %}

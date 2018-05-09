@@ -59,7 +59,7 @@ def login_view(request):
                 if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
                     request.session["current_role"] = "guide"
                 elif not hasattr(user, "guideprofile"):
-                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>We see you are not a guide yet, you should consider being a guide!</a></h4>" % reverse("guide_registration_welcome"), 'safe')
+                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (reverse("guide_registration_welcome"), _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
                 return HttpResponseRedirect(reverse("home"))

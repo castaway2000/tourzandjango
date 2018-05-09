@@ -81,7 +81,6 @@ class Order(models.Model):
     price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
-
     #if a fixed-price tour is ordered, its price goes here
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -147,11 +146,10 @@ class Order(models.Model):
         fees_tourist_rate = float(0.13)
         fees_guide_rate = float(0.13)
         fees_tourist = float(self.total_price_before_fees)*fees_tourist_rate
-        fees_guide = float(self.total_price_before_fees)*fees_guide_rate
-        if self.is_fee_free:
-            fees_guide = float(self.total_price_before_fees)*fees_guide_rate
-        else:
+        if self.guide.user.generalprofile.is_fee_free:
             fees_guide = 0
+        else:
+            fees_guide = float(self.total_price_before_fees)*fees_guide_rate
 
         self.fees_tourist = fees_tourist
         self.fees_guide = fees_guide
@@ -185,7 +183,7 @@ class Order(models.Model):
             currency = data.currency_iso_code
             currency, created = Currency.objects.get_or_create(name=currency)
 
-            Payment.objects.create(order=order, payment_method=payment_method,
+            Payment.objects.get_or_create(order=order, payment_method=payment_method,
                                    uuid=payment_uuid, amount=amount, currency=currency)
 
             order.status_id = 5 # payment reserved
@@ -213,7 +211,7 @@ class Order(models.Model):
                 #here we compare created coupons for this user with referred tourists with purchases
                 #this approach will prevent creating a new coupon for a tourist, when the nmb of tourists with purchases
                 # was decreased by 1 and then increased by 1
-                coupons_user_nmb = CouponUser.objects.filter(user=referred_by, name="refer5").count()
+                coupons_user_nmb = CouponUser.objects.filter(user=referred_by, coupon__campaign__name="refer5").count()
                 coupons_needed = int(tourists_with_purchases_referred_nmb / nmb_of_tourist_for_coupon)#rounding down to the nearest integer
                 if coupons_needed > coupons_user_nmb:
                     campaign, created = Campaign.objects.get_or_create(name="refer5")
@@ -223,16 +221,21 @@ class Order(models.Model):
 
     def add_statistics_for_referrer(self):
         #Increase or decrease tourist with purchasing
+        print("add_statistics_for_referrer")
         referred_by = self.tourist.user.generalprofile.referred_by
         if referred_by:
+            print(self._original_fields["payment_status"])
+            print(self._original_fields["payment_status"].id)
+            print(self.payment_status.id)
+            print(Order.objects.filter(tourist=self.tourist, payment_status__id=4).count())
             if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
                 and self.payment_status.id == 4:#full payment processed
                 #increase only if there is no current success payments for this user
-                if Payment.objects.filter(order__tourist=self.tourist, payment_status__id=4).count() == 0:
+                if Order.objects.filter(tourist=self.tourist, payment_status__id=4).count() == 0:
                     referred_by.generalprofile.tourists_with_purchases_referred_nmb += 1
                     referred_by.generalprofile.save(force_update=True)
             elif (self._original_fields["payment_status"] and self._original_fields["payment_status"].id == 4) and self.payment_status.id != 4 \
-                    and Payment.objects.filter(order__tourist=self.tourist, payment_status__id=4).count() == 1:
+                    and Order.objects.filter(tourist=self.tourist, payment_status__id=4).count() == 1:
                 referred_by.generalprofile.tourists_with_purchases_referred_nmb -= 1
                 referred_by.generalprofile.save(force_update=True)
 

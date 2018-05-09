@@ -84,7 +84,7 @@ class PaymentMethod(models.Model):
 
 
 class Payment(models.Model):
-    order = models.OneToOneField('orders.Order', blank=True, null=True, default=None)#maybe it can be a payment without an order
+    order = models.ForeignKey('orders.Order', blank=True, null=True, default=None)#maybe it can be a payment without an order
     payment_method = models.ForeignKey(PaymentMethod)
     uuid = models.CharField(max_length=36, blank=True, null=True, default=None)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)

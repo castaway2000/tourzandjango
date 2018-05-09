@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'guides_calendar',
     'user_verification',
     'utils',
+    'coupons',
 
     #external packages
     'allauth',
@@ -71,8 +72,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
-
-    'coupons',
 
     'crequest',
     'django_summernote',

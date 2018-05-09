@@ -213,9 +213,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-3 col-xs-4">
-                                    <div class="tour-rating">
-                                        <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
-                                    </div>
+
+                                    {% if tour.rating != 0 %}
+                                        <div class="tour-rating">
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
+                                        </div>
+                                    {% endif %}
+
                                     <p class="tour-price">
                                         <b>{% blocktrans %}Price: {% endblocktrans %}</b>
                                         {% if tour.payment_type_id == 1 %}

@@ -191,14 +191,13 @@
                         </a>
                     </p>
                 {% endif %}
-
                 {% if order.status.id == 2 or order.status.id == 4 %}
                     <p>
                         <a href="{% url 'order_completing' order.id %}"
                             class="btn btn-primary btn-sm">
                             {% if not order.review.is_guide_feedback %}
                                 {% blocktrans %}
-                                    Mark as completed
+                                    Write a review
                                 {% endblocktrans %}
                             {% else %}
                                 {% blocktrans %}

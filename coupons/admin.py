@@ -11,6 +11,15 @@ class CampaignAdmin(admin.ModelAdmin):
 admin.site.register(Campaign, CampaignAdmin)
 
 
+class CouponTypeAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in CouponType._meta.fields]
+
+    class Meta:
+        model = CouponType
+
+admin.site.register(CouponType, CouponTypeAdmin)
+
+
 class CouponAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Coupon._meta.fields]
 

@@ -1,0 +1,181 @@
+{% load static %}
+{% load i18n %}
+
+
+<div class="payment-summary">
+        {% if order.payment_status.id == 2 %}
+            <div class="is-paid-container">
+                {% blocktrans %}
+                    PAYMENT <br> RESERVED
+                {% endblocktrans %}
+            </div>
+        {% elif order.payment_status.id == 4 %}
+            <div class="is-paid-container">
+                {% blocktrans %}
+                    PAID
+                {% endblocktrans %}
+            </div>
+        {% endif %}
+
+        <div class="text-center">
+            {% if order.guide.profile_image %}
+                <img class="img-circle avatar-image-x-small"
+                     src="{{ order.guide.profile_image.url }}"
+                     alt="" title="" />
+            {% else %}
+                <img class="img-circle avatar-image-x-small"
+                     src="{% static 'img/300x300.png' %}" alt="" title="">
+            {% endif %}
+        </div>
+
+        <h5 class="text-center">
+            <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
+                {{ order.guide.user.generalprofile.first_name }}
+            </a>
+        </h5>
+
+        <div class="gap gap-small"></div>
+
+        <h3 class="text-center">
+            {% trans 'Payment Summary' %}
+        </h3>
+
+        <div class="payment-summary-details">
+            <table width="100%">
+                <thead>
+                    <tr>
+                        <th width="40%"></th>
+                        <th width="60%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="tr-mb20">
+                        <td>
+                            <b>
+                                {% blocktrans %}
+                                    Description
+                                {% endblocktrans %}
+                            </b>
+                        </td>
+                        <td>
+                            {% if order.tour %}
+                                <b>
+                                    {% trans 'A tour' %} "{{ order.tour.name }}" {% trans 'with' %} {{ order.guide.user.generalprofile.first_name }}
+                                    {% trans 'at' %} {{ order.date_booked_for|date:"m.d.Y" }}
+                                </b>
+                                {% if order.tour.payment_type.id == 1 %}
+                                    <br>
+                                    {{ order.hours_nmb|safe }} {% trans 'hours' %} *
+                                    {{ order.price_hourly|safe }} {{ order.currency.name }}
+                                    {% trans 'per hour' %}
+                                {% endif %}
+                            {% else %}
+                                <b>
+                                    {% trans 'A tour with' %} {{ order.guide.user.generalprofile.first_name }}
+                                    {% trans 'at' %} {{ order.date_booked_for|date:"m.d.Y" }}:
+                                </b>
+                                {{ order.hours_nmb|safe }} {% trans 'hours' %} *
+                                {{ order.price_hourly|safe }} {{ order.currency.name }}
+                                {% trans 'per hour' %} = {{ order.price }} {{ order.currency.name }}
+                            {% endif %}
+
+                            {% if order.additional_person_total %}
+                                <div class="mt10">
+                                    <b>{% trans 'Additional persons charge' %}:</b><br>
+                                    {{ order.number_persons }} {% trans 'persons' %} * {{ order.price_per_additional_person }} {{ order.currency.name }} {% trans 'per person' %} = {{ order.additional_person_total }} {{ order.currency.name }}
+                                </div>
+                            {% endif %}
+
+                            {% if services_in_order %}
+                                <div class="mt10">
+                                    <b>{% trans 'Additional services' %}:</b><br>
+                                    <ul class="list-unstyled">
+                                        {% for service_in_order in services_in_order %}
+                                            <li>
+                                                {{ service_in_order.service.name }} -
+                                                {{ service_in_order.price_after_discount|floatformat:2 }}
+                                                {{ order.currency.name }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            <div class="gap gap-small"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>
+                                {% blocktrans %}
+                                    Base Charge
+                                {% endblocktrans %}
+                            </b>
+                        </td>
+                        <td>
+                            {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>
+                                {% blocktrans %}
+                                    Service Fee
+                                {% endblocktrans %}
+                            </b>
+                        </td>
+                        {% if illegal_country %}
+                             <td>
+                                0 {{ order.currency.name }}
+                             </td>
+                        {% else %}
+                            <td>
+                                {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>
+                                {% blocktrans %}
+                                    Tax
+                                {% endblocktrans %}
+                            </b>
+                        </td>
+                        <td>
+                            0 {{ order.currency.name }}
+                        </td>
+                    </tr>
+
+                    <tr class="tr-last">
+                        <td>
+                            <b>
+                                {% blocktrans %}
+                                    Total
+                                {% endblocktrans %}
+                            </b>
+                        </td>
+                         {% if illegal_country %}
+                             <td>
+                                {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
+                             </td>
+                        {% else %}
+                        <td>
+                            {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
+                        </td>
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    <br/>
+    {% if order.payment_status.id == 1 %}
+        <form class="" method="post">{% csrf_token %}
+            <p id="coupon_status"></p>
+            <div class="form-group">
+            <input type="text" name="coupon" id="coupon_id" placeholder="{% trans 'coupon code' %}">
+            <button type="submit" class="btn btn-primary">{% trans 'Apply' %}</button>
+            </div>
+        </form>
+    {% endif %}
+    </div>

@@ -11,206 +11,28 @@
             </div>
 
             <div class="col-lg-4 col-sm-12 col-xs-12 pull-right">
-
-                <div class="payment-summary">
-
-                    {% if order.payment_status.id == 2 %}
-                        <div class="is-paid-container">
-                            {% blocktrans %}
-                                PAYMENT <br> RESERVED
-                            {% endblocktrans %}
-                        </div>
-                    {% elif order.payment_status.id == 4 %}
-                        <div class="is-paid-container">
-                            {% blocktrans %}
-                                PAID
-                            {% endblocktrans %}
-                        </div>
-                    {% endif %}
-
-                    <div class="text-center">
-                        {% if order.guide.profile_image %}
-                            <img class="img-circle avatar-image-x-small"
-                                 src="{{ order.guide.profile_image.url }}"
-                                 alt="" title="" />
-                        {% else %}
-                            <img class="img-circle avatar-image-x-small"
-                                 src="{% static 'img/300x300.png' %}" alt="" title="">
-                        {% endif %}
-                    </div>
-
-                    <h5 class="text-center">
-                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
-                            {{ order.guide.user.generalprofile.first_name }}
-                        </a>
-                    </h5>
-
-                    <div class="gap gap-small"></div>
-
-                    <h3 class="text-center">
-                        Payment Summary
-                    </h3>
-
-                    <div class="payment-summary-details">
-                        <table width="100%">
-                            <thead>
-                                <tr>
-                                    <th width="40%"></th>
-                                    <th width="60%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="tr-mb20">
-                                    <td>
-                                        <b>
-                                            {% blocktrans %}
-                                                Description
-                                            {% endblocktrans %}
-                                        </b>
-                                    </td>
-                                    <td>
-                                        {% if order.tour %}
-                                            <b>
-                                                A tour "{{ order.tour.name }}" with {{ order.guide.user.generalprofile.first_name }}
-                                                at {{ order.date_booked_for|date:"m.d.Y" }}
-                                            </b>
-                                            {% if order.tour.payment_type.id == 1 %}
-                                                <br>
-                                                {{ order.hours_nmb|safe }} hours *
-                                                {{ order.price_hourly|safe }} {{ order.currency.name }}
-                                                {% blocktrans %}per hour{% endblocktrans %}
-                                            {% endif %}
-                                        {% else %}
-                                            <b>
-                                                A tour with {{ order.guide.user.generalprofile.first_name }}
-                                                at {{ order.date_booked_for|date:"m.d.Y" }}:
-                                            </b>
-                                            {{ order.hours_nmb|safe }} hours *
-                                            {{ order.price_hourly|safe }} {{ order.currency.name }}
-                                            {% blocktrans %}per hour{% endblocktrans %} = {{ order.price }} {{ order.currency.name }}
-                                        {% endif %}
-
-                                        {% if order.additional_person_total %}
-                                            <div class="mt10">
-                                                <b>Additional persons charge:</b><br>
-                                                {{ order.number_persons }} persons * {{ order.price_per_additional_person }} {{ order.currency.name }} per person = {{ order.additional_person_total }} {{ order.currency.name }}
-                                            </div>
-                                        {% endif %}
-
-                                        {% if services_in_order %}
-                                            <div class="mt10">
-                                                <b>Additional services:</b><br>
-                                                <ul class="list-unstyled">
-                                                    {% for service_in_order in services_in_order %}
-                                                        <li>
-                                                            {{ service_in_order.service.name }} -
-                                                            {{ service_in_order.price_after_discount|floatformat:2 }}
-                                                            {{ order.currency.name }}
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                        {% endif %}
-                                        <div class="gap gap-small"></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <b>
-                                            {% blocktrans %}
-                                                Base Charge
-                                            {% endblocktrans %}
-                                        </b>
-                                    </td>
-                                    <td>
-                                        {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <b>
-                                            {% blocktrans %}
-                                                Service Fee
-                                            {% endblocktrans %}
-                                        </b>
-                                    </td>
-                                    {% if illegal_country %}
-                                         <td>
-                                            0 {{ order.currency.name }}
-                                         </td>
-                                    {% else %}
-                                        <td>
-                                            {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <b>
-                                            {% blocktrans %}
-                                                Tax
-                                            {% endblocktrans %}
-                                        </b>
-                                    </td>
-                                    <td>
-                                        0 {{ order.currency.name }}
-                                    </td>
-                                </tr>
-
-                                <tr class="tr-last">
-                                    <td>
-                                        <b>
-                                            {% blocktrans %}
-                                                Total
-                                            {% endblocktrans %}
-                                        </b>
-                                    </td>
-                                     {% if illegal_country %}
-                                         <td>
-                                            {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
-                                         </td>
-                                    {% else %}
-                                    <td>
-                                        {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                <br/>
-                <form class="" method="post">{% csrf_token %}
-                    <p id="coupon_status"></p>
-                    <div class="form-group">
-                    <input type="text" name="coupon" id="coupon_id" placeholder="coupon code">
-                    <button type="submit" class="btn btn-primary">{% blocktrans %}Apply{% endblocktrans %}</button>
-                    </div>
-                </form>
-                </div>
-
+                {% include 'orders/payment_details.html' %}
                 <div class="gap"></div>
-
             </div>
 
             <div class="col-lg-8 col-sm-12 col-xs-12">
 
                 {% if order.payment_status.id == 2 %}
-                    <h3 class="text-center">Thank you!</h3>
-                    <h5 class="text-center">The payment has been successfully reserved</h5>
+                    <h3 class="text-center">{% trans 'Thank you' %}!</h3>
+                    <h5 class="text-center">{% trans 'The payment has been successfully reserved' %}</h5>
 
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="text-center">
                                 <a href="{% url 'chat_creation_guide' order.guide.id %}">
-                                    Go to Chat
+                                    {% trans 'Go to Chat' %}
                                 </a>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="text-center">
                                 <a href="{% url 'payments' %}">
-                                    Go to Payments Page
+                                    {% trans 'Go to Payments Page' %}
                                 </a>
                             </div>
                         </div>
@@ -234,7 +56,7 @@
                             </h4>
                             <p>
                                 {% blocktrans %}
-                                    In order to provide a mutual aggrement the guide must be identity verified.
+                                    In order to provide a mutual agreement the guide must be identity verified.
                                     Mutual agreements are to let Tourzan.com connect travelers to local guides in areas
                                     our payments processor does not serve. Because money exchanges directly between
                                     traveler and the guide or business, mutual agreements are not covered under our
@@ -243,18 +65,18 @@
                             </p>
                             <br><br>
                         {% endif %}
-                        <h3>Send a message to your guide</h3>
+                        <h3>{% trans 'Send a message to your guide' %}</h3>
 
-                        Tell your guide a little about yourself
+                        {% trans 'Tell your guide a little about yourself' %}
                         <ul>
                             <li>
-                                what are your hobbies or interests?
+                                {% trans 'what are your hobbies or interests' %}?
                             </li>
                             <li>
-                                what drove you to book them out?
+                                {% trans 'what drove you to book them out' %}?
                             </li>
                             <li>
-                                what interests you most about the city they live in?
+                                {% trans 'what interests you most about the city they live in' %}?
                             </li>
                         </ul>
                         <form class="" method="post">{% csrf_token %}
@@ -268,7 +90,7 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">{% blocktrans %}Send{% endblocktrans %}</button>
+                                <button type="submit" class="btn btn-primary">{% trans 'Send' %}</button>
                             </div>
                         </form>
                     {% endif %}
