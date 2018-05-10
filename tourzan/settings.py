@@ -345,7 +345,7 @@ except:
 
 try:
     #delete '_2' on AWS
-    from .prod_settings_2 import *
+    from .prod_settings import *
 except:
     pass
 
