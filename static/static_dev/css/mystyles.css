@@ -683,6 +683,15 @@ a{
     color: #555555;
 }
 
+#postcode[type="number"]::-webkit-outer-spin-button,
+#postcode[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#postcode[type="number"] {
+    -moz-appearance: textfield;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
