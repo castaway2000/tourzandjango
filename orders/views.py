@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.template.defaulttags import register
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
-from .models import Order, Review, ServiceInOrder, OrderStatus
+from .models import Order, Review, ServiceInOrder, OrderStatus, PaymentStatus
 from locations.models import City
 from guides.models import GuideProfile
 from datetime import datetime
@@ -550,7 +550,7 @@ def order_completing(request, order_id):
                 order.save(force_update=True)
                 Review.objects.update_or_create(order=order, defaults=kwargs)
                 messages.success(request, 'Review has been successfully created!')
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
             if order.tourist.user == user:
                 tourist_kwargs = {
@@ -583,7 +583,8 @@ def order_completing(request, order_id):
 
                     if all_payment_successful:
                         order.status_id = 4 #completed
-                        order.payment_status_id = 4 #fully paid
+                        payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                        order.payment_status = payment_status
                         order.save(force_update=True)
                         Review.objects.update_or_create(order=order, defaults=kwargs)
                         messages.success(request, 'Review has been successfully created!')

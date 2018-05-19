@@ -116,6 +116,9 @@
             <div class="col-md-3">
                 <p>
                     <b>Status: </b>{{ order.status.name }}
+                    {% if order.status.id == 5 %}
+                        ({% trans "waiting approval from guide" %})
+                    {% endif %}
                 </p>
                 <p>
                     <b>Booked: </b>{{ order.date_ordered|date:"m.d.Y" }}

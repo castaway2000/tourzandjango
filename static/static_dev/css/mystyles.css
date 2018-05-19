@@ -299,6 +299,11 @@ a.link_lead:active{
     width: 150px;
 }
 
+
+.text-success{
+    color: #31dc72;
+}
+
 .text-error, .errorlist{
     color: red;
 }

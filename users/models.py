@@ -204,18 +204,18 @@ class GeneralProfile(models.Model):
         if referred_by:
             if (not self._original_fields["is_verified"] or self._original_fields["is_verified"] == False) and self.is_verified == True:
                 referred_by.generalprofile.guides_verified_referred_nmb += 1
-                referred_by.generalprofile.save(force_update=True)
             elif (self._original_fields["is_verified"] and self._original_fields["is_verified"] == True) and self.is_verified == False:
                 referred_by.generalprofile.guides_verified_referred_nmb -= 1
-                referred_by.generalprofile.save(force_update=True)
+            referred_by.generalprofile.save(force_update=True)
 
             #adding is_fee_free perk for generalprofile for guides, who attracted guides
             # TODO: think about making it a kind of a coupon if it will be needed
             if hasattr(referred_by, "guideprofile"):
                 count_fee_free_nmb = GeneralProfile.objects.filter(is_fee_free=True).count()
                 if count_fee_free_nmb <= 100:#only 100 people are allowed
-                    if referred_by.generalprofile.guides_verified_referred_nmb >= 5 and self.is_fee_free == False:
-                        self.is_fee_free = True
+                    if referred_by.generalprofile.guides_verified_referred_nmb >= 5 and referred_by.generalprofile.is_fee_free == False:
+                        referred_by.generalprofile.is_fee_free = True
+                        referred_by.generalprofile.save(force_update=True)
                         # TODO: add email congratulations
 
         super(GeneralProfile, self).save(*args, **kwargs)

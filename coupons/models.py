@@ -27,9 +27,16 @@ class Coupon(models.Model):
     def __str__(self):
         return "%s" % self.code
 
+    def create_code(self):
+        code = uuid_size_6_creating()
+        if Coupon.objects.filter(code=code).exists():
+            return self.create_code()
+        else:
+            return code
+
     def save(self, *args, **kwargs):
         if not self.pk and not self.code:
-            self.code = self.uuid_size_6_creating()
+            self.code = self.create_code()
         super(Coupon, self).save(*args, **kwargs)
 
     def get_coupon_data(self):
@@ -44,6 +51,15 @@ class Coupon(models.Model):
         coupon_data = '{} - {}{}'.format(coupon, coupon_amount, coupon_type_data)
         return coupon_data
 
+    def get_if_more_users_available(self):
+        user_limit = self.user_limit
+        nmb_redeemed = CouponUser.objects.filter(redeemed_at__isnull=True).count()
+        if user_limit == 0:
+            return True
+        elif user_limit > nmb_redeemed:
+            return True
+        else:
+            return False
 
 class CouponUser(models.Model):
     user = models.ForeignKey(User)

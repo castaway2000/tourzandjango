@@ -79,8 +79,7 @@
                                 {% trans 'what interests you most about the city they live in' %}?
                             </li>
                         </ul>
-                        <form class="" method="post">{% csrf_token %}
-
+                        <form class="" method="post" >{% csrf_token %}
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-lg-6">
@@ -90,7 +89,7 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">{% trans 'Send' %}</button>
+                                <button type="submit" class="btn btn-primary">{% trans 'Send and Confirm' %}</button>
                             </div>
                         </form>
                     {% endif %}
@@ -106,27 +105,31 @@
 
 {% block js_stuff %}
   <script>
-    $("#coupon_id").change(function () {
-      var coupon = $(this).val();
-      $.ajax({
-        url: "{% url 'coupon_validation' %}",
-        data: {
-          'coupon': coupon, 'order': {{ order }}
-        },
-        dataType: 'json',
-        success: function (data) {
-            console.log(data);
-          if (data.is_used === "invalid") {
-              document.getElementById('coupon_status').innerHTML = 'coupon is invalid';
-          }
-          else if (data.is_used === 'True') {
-              document.getElementById('coupon_status').innerHTML = 'coupon has already been used';
-          }
-          else {
-              document.getElementById('coupon_status').innerHTML = 'awesome lets get you a discount!'
-          }
-        }
-      });
+    $("#coupon_apply_form").on("submit", function (e) {
+        e.preventDefault();
+        var coupon = $("#coupon_id").val();
+        var url = $(this).attr("action");
+        console.log(url);
+        $.ajax({
+            url: url,
+            data: {
+              'coupon': coupon
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+              if (data.is_used === "invalid") {
+                  $('#coupon_status').text('Coupon is invalid').addClass("text-error");
+              }
+              else if (data.is_used === 'True') {
+                  $('#coupon_status').text('Coupon has already been used').addClass("text-error");
+              }
+              else {
+                  $('#coupon_status').text('Awesome lets get you a discount!').removeClass("text-error").addClass("text-success");
+                  $('#coupon_id').addClass('hidden');
+              }
+            }
+        });
 
     });
   </script>

@@ -263,33 +263,3 @@ def payment_method_set_default(request, payment_method_id):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-@login_required()
-def validate_coupon(request):
-    coupon = request.GET.get('coupon', None)
-    order = request.GET.get('order', None)
-    print(order)
-    user = request.user
-    try:
-        print(coupon)
-        code = CouponUser.objects.get(user_id=user.id, code=coupon)
-        redeemed = code.redeemed_at
-        discount = code.coupon.value
-        coupon_type = code.coupon.type
-
-        data = {'is_used': False}
-        if coupon_type == 'percent':
-            data['fancy_discount'] = '${} off'.format(discount)
-            # data['deduction'] = round(float(discount)/100, 2) * order.total_price_before_fees
-            # data['price'] = order.total_price_before_fees - data['deduction']
-            # data['fancy_discount'] = '{}%'. format(discount)
-        if redeemed:
-            data = {'is_used': True}
-
-    except Exception as err:
-        print(err)
-        print('')
-        data = {'is_used': 'invalid'}
-        pass
-    print(data)
-    response = data
-    return JsonResponse(response)
