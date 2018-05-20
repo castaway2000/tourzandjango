@@ -77,18 +77,22 @@ class Order(models.Model):
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
+    #if a fixed-price tour is ordered, its price goes here
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
     number_persons = models.IntegerField(default=1)
     price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-
-    #if a fixed-price tour is ordered, its price goes here
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-
     additional_services_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    total_price_before_fees = models.DecimalField(max_digits=8, decimal_places=2, default=0)#for tourist
+    coupon = models.ForeignKey(Coupon, blank=True, null=True, default=None)
 
+    #20052018 added: it includes tour price + additional person price + additional services price
+    total_price_initial = models.DecimalField(max_digits=8, decimal_places=2, default=0)#after discount
+
+    discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)#THIS FIELD WILL BE DELETED
+
+    total_price_before_fees = models.DecimalField(max_digits=8, decimal_places=2, default=0)#for tourist
     fees_tourist = models.DecimalField(max_digits=8, decimal_places=2, default=0)#additional fees for tourist (increasing)
     fees_guide = models.DecimalField(max_digits=8, decimal_places=2, default=0)#additional fees for guide (decreasing)
     fees_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)#total fees of a company
@@ -108,6 +112,11 @@ class Order(models.Model):
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
 
+    guide_compensation = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    tourist_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    guide_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    is_discount_on_tourzan_side = models.BooleanField(default=False)
+
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
         self._original_fields = {}
@@ -124,20 +133,25 @@ class Order(models.Model):
             return "%s" % (self.id)
 
     def save(self, *args, **kwargs):
-
         #preventing creating of the order if guide and tourist is the same user
         # if not self.pk and self.guide.user == self.tourist.user:
         #     return False
         if self.hours_nmb and self.price_hourly:
-            print (self.hours_nmb)
-            print (self.price_hourly)
             self.price = int(self.hours_nmb) * float(self.price_hourly)
 
-        #calculating tour price
-        price_after_discount = float(self.price) - float(self.discount)
-        self.price_after_discount = price_after_discount
+        self.total_price_initial = self.price + float(self.additional_services_price) + float(self.additional_person_total)
 
-        self.total_price_before_fees = price_after_discount + float(self.additional_services_price) + float(self.additional_person_total)
+
+        #getting discount if there is a coupon
+        if (not self._original_fields["coupon"] and self.coupon) or (self._original_fields["coupon"] and self.coupon and self._original_fields["coupon"].id != self.coupon.id):
+            if self.coupon:
+                print("get_discount_amount_for_amount")
+                self.discount = self.coupon.get_discount_amount_for_amount(self.total_price_initial)
+                print(self.discount)
+
+        #calculating tour price
+        #this was remade 20052018: now even additional services can be discounted
+        self.total_price_before_fees = self.total_price_initial - float(self.discount)
 
         if not self.currency and self.guide.currency:
             self.currency = self.guide.currency
@@ -148,14 +162,33 @@ class Order(models.Model):
         fees_tourist = float(self.total_price_before_fees)*fees_tourist_rate
         if self.guide.user.generalprofile.is_fee_free:
             fees_guide = 0
+            self.fees_guide = fees_guide
+            self.guide_fees_diff = fees_guide - float(self.total_price_before_fees)*fees_guide_rate
         else:
-            fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+            if self.coupon and self.discount and not self.coupon.get_if_guide_coupon():
+                #if it is guide's coupon, discount decreases guide's payment
+                total_price_before_fees_without_discount = self.total_price_before_fees + float(self.discount)
+                fees_guide_without_discount = total_price_before_fees_without_discount*fees_guide_rate
+                fees_guide = fees_guide_without_discount
+                self.fees_guide = fees_guide
+                self.guide_payment = total_price_before_fees_without_discount - fees_guide_without_discount
+
+                #additional payment to guide from tourzan
+                self.guide_compensation = self.guide_payment - (float(self.total_price_before_fees) - float(self.total_price_before_fees)*fees_guide_rate)
+                #how much tourzan was not get from tourists fees
+                self.guide_fees_diff = fees_guide_without_discount - float(self.total_price_before_fees)*fees_guide_rate
+                self.tourist_fees_diff = fees_tourist - (float(total_price_before_fees_without_discount)*fees_tourist_rate)
+                self.is_discount_on_tourzan_side = True
+            else:
+                #old variant before coupons
+                #if it is NOT guide's coupon, discount applies only to tourist's payment, but it does not influence amount of initial guide's payment
+                fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+                self.fees_guide = fees_guide
+                self.guide_payment = float(self.total_price_before_fees) - fees_guide
 
         self.fees_tourist = fees_tourist
-        self.fees_guide = fees_guide
         self.fees_total = fees_tourist + fees_guide
         self.total_price = float(self.total_price_before_fees) + fees_tourist
-        self.guide_payment = float(self.total_price_before_fees) - fees_guide
 
         referred_by = self.tourist.user.generalprofile.referred_by
         if referred_by:
@@ -232,6 +265,14 @@ class Order(models.Model):
             referred_by.generalprofile.tourists_with_purchases_referred_nmb -= 1
             referred_by.generalprofile.save(force_update=True)
 
+    def get_toursit_total_before_discount(self):
+        #for showing amount of tourist payment before a discount (initial total amount + tourists fees)
+        if self.coupon:
+            return self.total_price + self.discount
+        else:
+            return self.total_price
+
+
 """
 saving ratings from review to Order object
 """
@@ -277,7 +318,7 @@ class ServiceInOrder(models.Model):
             return "%s" % (self.id)
 
     def save(self, *args, **kwargs):
-        self.price_after_discount = self.discount
+        self.price_after_discount = self.price - self.discount
         super(ServiceInOrder, self).save(*args, **kwargs)
 
 """

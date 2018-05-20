@@ -112,7 +112,7 @@
                             </b>
                         </td>
                         <td>
-                            {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
+                            {{ order.total_price_initial|floatformat:2 }} {{ order.currency.name }}
                         </td>
                     </tr>
                     <tr>
@@ -146,7 +146,25 @@
                         </td>
                     </tr>
 
-                    <tr class="tr-last">
+                    {% if order.coupon %}
+                        <tr class="tr-last">
+                            <td>
+                                <b>{% trans 'Before discount' %}</b>
+                            </td>
+                            <td>
+                                {{ order.get_toursit_total_before_discount }}
+                            </td>
+                        </tr>
+                        <tr class="text-success">
+                            <td>
+                                <b>{% trans 'Discount' %}</b>
+                            </td>
+                            <td>
+                                {{ order.discount }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr {% if not order.coupon %}class="tr-last"{% endif %}>
                         <td>
                             <b>
                                 {% blocktrans %}
@@ -169,7 +187,7 @@
 
         </div>
     <br/>
-    {% if order.payment_status.id == 1 %}
+    {% if order.payment_status.id == 1 and not order.coupon %}
         <form class="" method="post" id="coupon_apply_form" action="{% url 'coupon_validation' %}">{% csrf_token %}
             <p id="coupon_status"></p>
             <div class="input-group">

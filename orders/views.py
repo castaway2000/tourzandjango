@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from django.template.defaulttags import register
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.http import JsonResponse
 from .models import Order, Review, ServiceInOrder, OrderStatus, PaymentStatus
 from locations.models import City
