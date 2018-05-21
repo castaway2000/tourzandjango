@@ -56,7 +56,7 @@
                                 <tr>
                                     <td>
                                         <span class="hidden">{{ payment }}</span>
-                                        {{ payment.created|date:"m.d.Y H:i" }}
+                                        {{ payment.created|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
                                         <a href="{% url 'order_payment_checkout' payment.order.id %}">

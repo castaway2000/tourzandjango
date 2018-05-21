@@ -34,6 +34,7 @@ class TouristProfile(models.Model):
         super(TouristProfile, self).save(*args, **kwargs)
 
 
+
 class TouristTravelPhoto(models.Model):
     user = models.ForeignKey(User)
     image = models.ImageField(upload_to=upload_path_handler_tourist_travel_pictures)

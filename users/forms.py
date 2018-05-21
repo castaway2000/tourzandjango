@@ -15,6 +15,7 @@ class LoginForm(forms.Form):
 
     class Meta:
         widgets = {'password': forms.PasswordInput()}
+        fields = "referral_code"
 
 
 class VerificationCodeForm(forms.Form):

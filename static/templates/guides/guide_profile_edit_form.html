@@ -40,6 +40,16 @@
                </div>
             {% endif %}
 
+            <div class="form-group">
+                <div>
+                    <b>{% trans 'Your referral code' %}:</b> {{ ref_code }}
+                </div>
+                <div>
+                    <b>{% trans 'Your referral link' %}:</b> <span id="content_to_copy">{{ site_root }}?ref={{ request.user.generalprofile.referral_code }}</span>
+                    <button id="copy_text_btn" class="btn btn-xs btn-primary" data-clipboard-target="#content_to_copy" >copy</button>
+                </div>
+            </div>
+
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}First Name{% endblocktrans %}*:</label>
                 <span class="text-error">{{ form.first_name.errors }}</span>

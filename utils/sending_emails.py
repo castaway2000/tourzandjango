@@ -22,7 +22,6 @@ class SendingEmail(object):
         self.order = data.get("order")
         self.is_guide_saving = data.get("is_guide_saving")
 
-
     def sending_email(self, to_user, to_email, subject, message, template_location=None):
         vars = {
             'message': message,
@@ -45,7 +44,7 @@ class SendingEmail(object):
         kwargs = {"type_id":self.email_type_id, "email": ''.join(to_email), "user": to_user}
         if self.order:
             kwargs["order_id"] = self.order.id
-        if self.chat_message:
+        if hasattr(self, "chat_message"):
             kwargs["chat_message"] = self.chat_message
         OwnEmailMessage.objects.create(**kwargs)
         # print ('Email was sent successfully!')
