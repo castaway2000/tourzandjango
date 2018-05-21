@@ -88,7 +88,7 @@ class IdentityVerificationReport(models.Model):
             #If there are 2 reports in the ongoing check, is_verified status will be given only if 2 reports will match
             #conditiions, mentioned above.
             if general_profile.is_verified == False and self.status and self.status.name == "complete" \
-                and self.result and self.result.name in ["clear", "consider"]:  # TODO: remove consider after more data is in place to support this works
+                and self.result and self.result.name in ["clear", "consider"]:
                 general_profile.is_verified = True
                 general_profile.save(force_update=True)
                 data = {'user_id': general_profile.user.id}
