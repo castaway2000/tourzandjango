@@ -13,7 +13,7 @@ from locations.models import City
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Avg, Max, Min, Sum
+from django.db.models import Avg, Max, Min, Sum, Count, Case, When, Q
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
@@ -304,12 +304,22 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
 @login_required()
 def profile_settings_guide(request, guide_creation=True):
-    print("profile_settings_guide")
-    print(request.POST)
-
     page = "profile_settings_guide"
     user = request.user
+    ref_code = user.generalprofile.referral_code
+    user_languages = UserLanguage.objects.filter(user=user)
+    language_levels = LanguageLevel.objects.all().values()
 
+    # duplication of this peace of code below in POST area - remake it later
+    user_language_native = None
+    user_language_second = None
+    for user_language in user_languages:
+        if user_language.level_id == 1 and not user_language_native:
+            user_language_native = user_language
+        elif user_language_native and user_language_second:
+            user_language_third = user_language
+        else:
+            user_language_second = user_language
     try:
         guide = user.guideprofile
         creating_guide = False
@@ -327,7 +337,6 @@ def profile_settings_guide(request, guide_creation=True):
 
     if request.method == 'POST' and form.is_valid():
         form_data = form.cleaned_data
-        print(form_data.items())
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
@@ -345,7 +354,6 @@ def profile_settings_guide(request, guide_creation=True):
         if interests:
             for interest in interests:
                 interest, created = Interest.objects.get_or_create(name=interest)
-
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
         UserInterest.objects.filter(user=user).delete()

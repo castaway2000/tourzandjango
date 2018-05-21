@@ -119,9 +119,6 @@ $(document).ready(function(){
             time_slots_chosen.push($(this).data("guide_time_slot"));
         });
 
-        console.log("aaaa");
-        console.log(time_slots_chosen.length);
-
         minimum_hours = $('#minimum_hours').val();
         if (time_slots_chosen.length>0 && minimum_hours && time_slots_chosen.length<minimum_hours){
             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +

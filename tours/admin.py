@@ -13,7 +13,6 @@ admin.site.register(PaymentType, PaymentTypeAdmin)
 
 class TourAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Tour._meta.fields]
-    readonly_fields = ["payment_type"]
 
     class Meta:
         model = Tour

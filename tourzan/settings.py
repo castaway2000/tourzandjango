@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'guides_calendar',
     'user_verification',
     'utils',
+    'coupons',
 
     #external packages
     'allauth',
@@ -71,7 +72,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
-
 
     'crequest',
     'django_summernote',
@@ -113,6 +113,7 @@ MIDDLEWARE = [
     'django_user_agents.middleware.UserAgentMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'users.middleware.TrackingActiveUserMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
 
     'django.middleware.cache.FetchFromCacheMiddleware',
 
@@ -145,6 +146,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.site'
             ],
         },
     },
@@ -292,8 +294,10 @@ USE_TZ = True
 
 #Mail settings
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'Django_testing'
-EMAIL_HOST_PASSWORD = 'Testing12#$'
+# EMAIL_HOST_USER = 'Django_testing'
+# EMAIL_HOST_PASSWORD = 'Testing12#$'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DRIP_FROM_EMAIL = 'contactus@tourzan.com'
@@ -345,7 +349,7 @@ except:
 
 try:
     #delete '_2' on AWS
-    from .prod_settings import *
+    from .prod_settings_2 import *
 except:
     pass
 
@@ -359,7 +363,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings_2 import *
+    from .local_settings import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
