@@ -2,6 +2,7 @@ from django.utils.translation import activate
 import datetime
 from django.core.cache import cache
 from tourzan.settings import USER_LASTSEEN_TIMEOUT
+import time
 
 
 # class ForceDefaultLanguageMiddleware(object):
@@ -20,6 +21,7 @@ from tourzan.settings import USER_LASTSEEN_TIMEOUT
 
 
 class TrackingActiveUserMiddleware:
+    print("TrackingActiveUserMiddleware")
     """
     Middleware to set last processed request time ("last seen time") for a user.id to a cache table.
     It is used to decide if a user is online now or not
@@ -29,7 +31,6 @@ class TrackingActiveUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-
         current_user = request.user
         if request.user.is_authenticated():
             now = datetime.datetime.now()

@@ -71,8 +71,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+    'live_chat',
 
-
+    'channels',
     'crequest',
     'django_summernote',
     'rest_framework',
@@ -315,7 +316,7 @@ AXES_COOLOFF_TIME = 3
 
 
 # Number of seconds of inactivity before a user is marked offline
-USER_ONLINE_TIMEOUT = 5
+USER_ONLINE_TIMEOUT = 5*60
 
 # Number of seconds that we will keep track of inactive users for before
 # their last seen is removed from the cache
@@ -337,6 +338,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 
+# Channels
+ASGI_APPLICATION = 'tourzan.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 try:
     from .allauth_settings import *
 except:
@@ -345,7 +357,7 @@ except:
 
 try:
     #delete '_2' on AWS
-    from .prod_settings import *
+    from .prod_settings_2 import *
 except:
     pass
 
@@ -359,7 +371,7 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings_2 import *
+    from .local_settings import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
