@@ -7,6 +7,11 @@ from .models import *
 from tours.models import Tour
 from guides.models import GuideProfile
 from django.contrib.auth.decorators import login_required
+from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
+from django.contrib import messages
+
+import requests
+
 
 
 @login_required()
@@ -60,15 +65,24 @@ def sending_chat_message(request):
     data = request.POST
     message = data.get("message")
     chat_uuid = data.get("chat_uuid")
-    if message and chat_uuid:
-        chat = Chat.objects.get(uuid=chat_uuid)
-        if chat.guide == user or chat.tourist == user:
-            chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
-            return_data["message"] = message
-            return_data["author"] = "me"
-            return_data["created"] = datetime.strftime(chat_message.created, "%m.%d.%Y %H:%M:%S")
-
-    return JsonResponse(return_data)
+    # google captcha validatings
+    recaptcha_response = request.POST.get('g-recaptcha-response')
+    if recaptcha_response and recaptcha_response != "":
+        data = {
+            'secret': GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        if result['success']:
+            if message and chat_uuid:
+                chat = Chat.objects.get(uuid=chat_uuid)
+                if chat.guide == user or chat.tourist == user:
+                    chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
+                    return_data["message"] = message
+                    return_data["author"] = "me"
+                    return_data["created"] = datetime.strftime(chat_message.created, "%m.%d.%Y %H:%M:%S")
+            return JsonResponse(return_data)
 
 
 @login_required()

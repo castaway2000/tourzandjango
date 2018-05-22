@@ -16,6 +16,7 @@ from users.models import GeneralProfile
 def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
+    ref_code = user.generalprofile.referral_code
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
 
     try:

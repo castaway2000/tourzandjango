@@ -35,3 +35,19 @@ class TrackingActiveUserMiddleware:
             now = datetime.datetime.now()
             cache.set('seen_%s' % (current_user.id), now, USER_LASTSEEN_TIMEOUT)
         return self.get_response(request)
+
+
+class ReferralCodesGettingMiddleware:
+    """
+    Middleware is used for getting a referral code from the url and assigning it to the request session variable
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        data = request.GET
+        if "ref" in data:
+            referral_code = data.get("ref")
+            request.session["referral_code"] = referral_code
+        return self.get_response(request)

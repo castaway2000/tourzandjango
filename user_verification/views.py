@@ -156,6 +156,11 @@ def identity_verification_photo(request):
             if guide.date_of_birth:
                 applicant_data["dob"] = guide.date_of_birth.strftime('%Y-%m-%d')
 
+            if general_profile.registration_postcode and general_profile.registration_postcode != "" and general_profile.registration_postcode != " ":
+                postcode = general_profile.registration_postcode
+            else:
+                postcode = "00000"
+
             address = {
                   "flat_number": general_profile.registration_flat_nmb,
                   "building_number": general_profile.registration_building_nmb,
@@ -164,7 +169,7 @@ def identity_verification_photo(request):
                   # "sub_street": null,
                   "town": general_profile.registration_city,
                   "state": general_profile.registration_state,
-                  "postcode": general_profile.registration_postcode,
+                  "postcode": postcode,
                   "country": general_profile.registration_country_ISO_3_digits,
             }
             applicant_data["addresses"] = [address]

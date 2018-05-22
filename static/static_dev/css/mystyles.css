@@ -299,6 +299,11 @@ a.link_lead:active{
     width: 150px;
 }
 
+
+.text-success{
+    color: #31dc72;
+}
+
 .text-error, .errorlist{
     color: red;
 }
@@ -681,6 +686,15 @@ a{
 
 .select2-search__field{
     color: #555555;
+}
+
+#postcode[type="number"]::-webkit-outer-spin-button,
+#postcode[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#postcode[type="number"] {
+    -moz-appearance: textfield;
 }
 
 @media (min-width: 768px) {

@@ -82,6 +82,13 @@
                                         <i class="fa fa-cog"></i>
                                         {% blocktrans %}Payments{% endblocktrans %}
                                     </a>
+                                </li>
+                                <li {% if page == "promotions" %}class="active"{% endif %}>
+                                    <a href="{% url 'promotions' %}">
+                                        <i class="fa fa-star"></i>
+                                        {% blocktrans %}Promotions{% endblocktrans %}
+                                    </a>
+                                </li>
                             {% endif %}
 
 
@@ -132,6 +139,12 @@
                                     <a href="{% url 'payment_methods' %}">
                                         <i class="fa fa-credit-card"></i>
                                         {% blocktrans %}Credit/Debit Cards{% endblocktrans %}
+                                    </a>
+                                </li>
+                                <li {% if page == "promotions" %}class="active"{% endif %}>
+                                    <a href="{% url 'promotions' %}">
+                                        <i class="fa fa-star"></i>
+                                        {% blocktrans %}Promotions{% endblocktrans %}
                                     </a>
                                 </li>
                             {% endif %}
