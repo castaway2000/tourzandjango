@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 import json
 from chats.models import Chat, ChatMessage
@@ -12,7 +13,12 @@ def livechat(request):
 
 @login_required()
 def livechat_room(request, chat_uuid):
-    chat_messages = ChatMessage.objects.filter(chat__uuid=chat_uuid)
+    user = request.user
+    chat = Chat.objects.get(uuid=chat_uuid)
+    if chat.guide != user and chat.tourist != user:
+        return HttpResponseRedirect(reverse("home"))
+    chat_messages = chat.chatmessage_set.all().values("chat_id", "message", "created", "user__username",
+                                                      "user__generalprofile__first_name").order_by("created")
     return render(request, 'live_chat/room.html', {
         "chat_messages": chat_messages,
         "chat_uuid": chat_uuid,
