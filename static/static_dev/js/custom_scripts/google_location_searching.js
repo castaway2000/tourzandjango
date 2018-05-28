@@ -1,22 +1,27 @@
 function initialize(){
-    if ($("#location_search_input")){
-        var search_input = $("#location_search_input")
+    if ($("#location_search_input").length > 0){
+        var search_input = $("#location_search_input");
         var input = document.getElementById('location_search_input');
+        var options ={
+            types: ['(regions)'],
+            enablePoweredByContainer: false
+        };
     }else{
         var search_input = $("#city_search_input");
         var input = document.getElementById('city_search_input');
+        var options ={
+            types: ['(cities)'],
+            enablePoweredByContainer: false
+        };
     }
 
-    var options ={
-        types: ['(regions)'],
-        enablePoweredByContainer: false
-    };
+
     var autocomplete = new google.maps.places.Autocomplete(input, options);
     google.maps.event.addListener(autocomplete, 'place_changed', function(){
         place = autocomplete.getPlace();
         document.getElementById('place_id').value = place.place_id;
         console.log("place_id: "+place.place_id);
-        location_input = document.getElementById('location_search_input').value;
+        location_input = input.value;
         console.log("full location: "+location_input);
         name_original = location_input.split(",")[0];
         console.log("name_original: "+name_original);

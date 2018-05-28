@@ -85,8 +85,6 @@ def guides(request):
     print(location_input)
     print(is_country)
     if location_input and is_country:
-        print(location_input)
-        print(place_id)
         # base_kwargs["city__original_name__in"] = city_input
         try:
             cities = City.objects.filter(country__place_id=place_id)
@@ -95,7 +93,6 @@ def guides(request):
             location_from_place_id = location_input
         except:
             pass
-        time.sleep(10)
     elif place_id:
         # print("place_id %s" % place_id)
         try:

@@ -39,17 +39,19 @@
                                value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
                         <ul class="list booking-filters-list">
                             <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                                <input id="city_search_input" class="form-control"
-                                    {% if city_from_place_id %}
-                                        value="{{ city_from_place_id }}"
-                                    {% endif %}
+                                <h5 class="booking-filters-title">{% blocktrans %}Location{% endblocktrans %}</h5>
+                                <input id="location_search_input" name="location_search_input" class="form-control"
+                                        {% if location_from_place_id %}
+                                       value="{{ location_from_place_id }}"
+                                        {% endif %}
                                 >
+                                <input id="is_country" name="is_country" type="checkbox" class="hidden"
+                                        {% if "is_country" in request.GET %}checked{% endif %}>
                                 <input id="place_id" name="place_id" class="hidden"
-                                    {% if place_id %}
+                                       {% if place_id %}
                                         value="{{ place_id }}"
-                                    {% endif %}
-                                >
+                                       {% endif %}
+                                       >
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
