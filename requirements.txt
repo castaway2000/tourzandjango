@@ -1,4 +1,4 @@
-django==1.10.7
+django==1.11
 pillow==4.0.0
 django-allauth==0.31.0
 django-crequest==2016.3.16
@@ -43,3 +43,7 @@ django-user-agents==0.3.2
 
 django-crispy-forms==1.7.0
 django-boto==0.3.12
+
+channels==2.1.1
+pypiwin32==223
+channels_redis==2.2.1
