@@ -16,6 +16,7 @@ from payments.models import Payment, PaymentMethod
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ON_PRODUCTION
 import braintree
 from partners.models import Partner
+from coupons.models import CouponUser, Coupon, Campaign, CouponType
 
 
 if ON_PRODUCTION:
@@ -76,19 +77,22 @@ class Order(models.Model):
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
+    #if a fixed-price tour is ordered, its price goes here
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
     number_persons = models.IntegerField(default=1)
     price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-
-
-    #if a fixed-price tour is ordered, its price goes here
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-
     additional_services_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    total_price_before_fees = models.DecimalField(max_digits=8, decimal_places=2, default=0)#for tourist
+    coupon = models.ForeignKey(Coupon, blank=True, null=True, default=None)
 
+    #20052018 added: it includes tour price + additional person price + additional services price
+    total_price_initial = models.DecimalField(max_digits=8, decimal_places=2, default=0)#after discount
+
+    discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    price_after_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)#THIS FIELD WILL BE DELETED
+
+    total_price_before_fees = models.DecimalField(max_digits=8, decimal_places=2, default=0)#for tourist
     fees_tourist = models.DecimalField(max_digits=8, decimal_places=2, default=0)#additional fees for tourist (increasing)
     fees_guide = models.DecimalField(max_digits=8, decimal_places=2, default=0)#additional fees for guide (decreasing)
     fees_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)#total fees of a company
@@ -108,6 +112,11 @@ class Order(models.Model):
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
     date_toured = models.DateField(blank=True, null=True, default=None)
 
+    guide_compensation = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    tourist_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    guide_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    is_discount_on_tourzan_side = models.BooleanField(default=False)
+
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
         self._original_fields = {}
@@ -124,20 +133,25 @@ class Order(models.Model):
             return "%s" % (self.id)
 
     def save(self, *args, **kwargs):
-
         #preventing creating of the order if guide and tourist is the same user
         # if not self.pk and self.guide.user == self.tourist.user:
         #     return False
         if self.hours_nmb and self.price_hourly:
-            print (self.hours_nmb)
-            print (self.price_hourly)
             self.price = int(self.hours_nmb) * float(self.price_hourly)
 
-        #calculating tour price
-        price_after_discount = float(self.price) - float(self.discount)
-        self.price_after_discount = price_after_discount
+        self.total_price_initial = self.price + float(self.additional_services_price) + float(self.additional_person_total)
 
-        self.total_price_before_fees = price_after_discount + float(self.additional_services_price) + float(self.additional_person_total)
+
+        #getting discount if there is a coupon
+        if (not self._original_fields["coupon"] and self.coupon) or (self._original_fields["coupon"] and self.coupon and self._original_fields["coupon"].id != self.coupon.id):
+            if self.coupon:
+                print("get_discount_amount_for_amount")
+                self.discount = self.coupon.get_discount_amount_for_amount(self.total_price_initial)
+                print(self.discount)
+
+        #calculating tour price
+        #this was remade 20052018: now even additional services can be discounted
+        self.total_price_before_fees = self.total_price_initial - float(self.discount)
 
         if not self.currency and self.guide.currency:
             self.currency = self.guide.currency
@@ -146,26 +160,47 @@ class Order(models.Model):
         fees_tourist_rate = float(0.13)
         fees_guide_rate = float(0.13)
         fees_tourist = float(self.total_price_before_fees)*fees_tourist_rate
-        fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+        if self.guide.user.generalprofile.is_fee_free:
+            fees_guide = 0
+            self.fees_guide = fees_guide
+            self.guide_fees_diff = fees_guide - float(self.total_price_before_fees)*fees_guide_rate
+        else:
+            if self.coupon and self.discount and not self.coupon.get_if_guide_coupon():
+                #if it is guide's coupon, discount decreases guide's payment
+                total_price_before_fees_without_discount = self.total_price_before_fees + float(self.discount)
+                fees_guide_without_discount = total_price_before_fees_without_discount*fees_guide_rate
+                fees_guide = fees_guide_without_discount
+                self.fees_guide = fees_guide
+                self.guide_payment = total_price_before_fees_without_discount - fees_guide_without_discount
+
+                #additional payment to guide from tourzan
+                self.guide_compensation = self.guide_payment - (float(self.total_price_before_fees) - float(self.total_price_before_fees)*fees_guide_rate)
+                #how much tourzan was not get from tourists fees
+                self.guide_fees_diff = fees_guide_without_discount - float(self.total_price_before_fees)*fees_guide_rate
+                self.tourist_fees_diff = fees_tourist - (float(total_price_before_fees_without_discount)*fees_tourist_rate)
+                self.is_discount_on_tourzan_side = True
+            else:
+                #old variant before coupons
+                #if it is NOT guide's coupon, discount applies only to tourist's payment, but it does not influence amount of initial guide's payment
+                fees_guide = float(self.total_price_before_fees)*fees_guide_rate
+                self.fees_guide = fees_guide
+                self.guide_payment = float(self.total_price_before_fees) - fees_guide
 
         self.fees_tourist = fees_tourist
-        self.fees_guide = fees_guide
         self.fees_total = fees_tourist + fees_guide
         self.total_price = float(self.total_price_before_fees) + fees_tourist
-        self.guide_payment = float(self.total_price_before_fees) - fees_guide
+
+        referred_by = self.tourist.user.generalprofile.referred_by
+        if referred_by:
+            self.add_statistics_for_referrer()
+            self.add_coupon_for_referrer()
         super(Order, self).save(*args, **kwargs)
 
 
     def making_order_payment(self):
         order = self
         payment_method = PaymentMethod.objects.filter(is_active=True).order_by('is_default', '-id').first()
-
-        print("payment method: %s" % payment_method.token)
-
-        print(self.total_price)
         amount = "%s" % float(self.total_price)
-        print(amount)
-
         result = braintree.Transaction.sale({
             "amount": amount,
             "payment_method_token": payment_method.token,
@@ -178,22 +213,16 @@ class Order(models.Model):
 
         if result.is_success:
             data = result.transaction
-
             payment_uuid = data.id
             amount = data.amount
             currency = data.currency_iso_code
             currency, created = Currency.objects.get_or_create(name=currency)
-
-            Payment.objects.create(order=order, payment_method=payment_method,
+            Payment.objects.get_or_create(order=order, payment_method=payment_method,
                                    uuid=payment_uuid, amount=amount, currency=currency)
-
             order.status_id = 5 # payment reserved
             order.payment_status_id = 2 #full payment reserverd
-
             order.save(force_update=True)
-
             return {"result": True}
-
         else:
             return {"result": False}
 
@@ -202,6 +231,46 @@ class Order(models.Model):
         order.status_id = 9 # mutual agreemnt type
         order.save(force_update=True)
         return {"result": True}
+
+    # tourists_with_purchases_referred_nmb
+    def add_coupon_for_referrer(self):
+        tourist_user = self.tourist.user
+        if tourist_user.generalprofile.referred_by:
+            referred_by = tourist_user.generalprofile.referred_by
+            tourists_with_purchases_referred_nmb = referred_by.generalprofile.tourists_with_purchases_referred_nmb
+            nmb_of_tourist_for_coupon = 5
+            if tourists_with_purchases_referred_nmb % nmb_of_tourist_for_coupon == 0:
+                #here we compare created coupons for this user with referred tourists with purchases
+                #this approach will prevent creating a new coupon for a tourist, when the nmb of tourists with purchases
+                # was decreased by 1 and then increased by 1
+                coupons_user_nmb = CouponUser.objects.filter(user=referred_by, coupon__campaign__name="refer5").count()
+                coupons_needed = tourists_with_purchases_referred_nmb / nmb_of_tourist_for_coupon
+                if coupons_needed > coupons_user_nmb:
+                    campaign, created = Campaign.objects.get_or_create(name="refer5")
+                    coupon_type, created = CouponType.objects.get_or_create(name="percentage")
+                    coupon = Coupon.objects.create(campaign=campaign, value=20, type=coupon_type, user_limit=1)
+                    CouponUser.objects.create(user=referred_by, coupon=coupon)
+
+    def add_statistics_for_referrer(self):
+        #Increase or decrease tourist with purchasing
+        referred_by = self.tourist.user.generalprofile.referred_by
+        if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
+            and self.payment_status.id == 4:#full payment processed
+            #increase only if there is no current success payments for this user
+            if Order.objects.filter(tourist=self.tourist, payment_status_id=4).count() == 0:
+                referred_by.generalprofile.tourists_with_purchases_referred_nmb += 1
+                referred_by.generalprofile.save(force_update=True)
+        elif self._original_fields["payment_status"] and self._original_fields["payment_status"].id == 4 and self.payment_status.id != 4 \
+                and Order.objects.filter(tourist=self.tourist, payment_status_id=4).count() == 1:
+            referred_by.generalprofile.tourists_with_purchases_referred_nmb -= 1
+            referred_by.generalprofile.save(force_update=True)
+
+    def get_toursit_total_before_discount(self):
+        #for showing amount of tourist payment before a discount (initial total amount + tourists fees)
+        if self.coupon:
+            return self.total_price + self.discount
+        else:
+            return self.total_price
 
 
 """
@@ -213,13 +282,11 @@ def order_post_save(sender, instance, created, **kwargs):
 
     statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
         .aggregate(rating=Avg("rating_guide"), reviews_nmb=Count("id"))
-    print (statistic_info)
 
     if statistic_info["rating"] and statistic_info["reviews_nmb"]:
         guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
         guide.rating = statistic_info["rating"]
         guide.save(force_update=True)
-
 
     #sening email according to orders changing
     current_request = CrequestMiddleware.get_request()
@@ -251,7 +318,7 @@ class ServiceInOrder(models.Model):
             return "%s" % (self.id)
 
     def save(self, *args, **kwargs):
-        self.price_after_discount = self.discount
+        self.price_after_discount = self.price - self.discount
         super(ServiceInOrder, self).save(*args, **kwargs)
 
 """

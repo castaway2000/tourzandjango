@@ -61,11 +61,12 @@ urlpatterns = i18n_patterns(
     url(r'^', include('payments.urls')),
     url(r'^', include('partners.urls')),
 
-
     url(r'^', include('website_management.urls')),
     url(r'^', include('blog.urls')),
     url(r'^', include('user_verification.urls')),
+
     url(r'^', include('live_chat.urls')),
+    url(r'^', include('coupons.urls')),
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),

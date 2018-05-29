@@ -2,7 +2,6 @@
 {% load static %}
 {% load i18n %}
 
-
 {% block content %}
     <div class="container">
         <div class="row">
@@ -69,7 +68,9 @@
                                 <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
                             </div>
                             <div class="form-group text-right">
-                                <button type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Submit{% endblocktrans %}</button>
+                            <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
+                            </div>
+                                <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Submit' %}"/>
                             </div>
                         </form>
                     </div>

@@ -103,7 +103,7 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <label>{%  trans 'Postcode' %}*</label>
-                                        <input required class="form-control" name="registration_postcode"
+                                        <input required class="form-control" name="registration_postcode" type="number" id="postcode"
                                                value="{{ general_profile.registration_postcode|default_if_none:"" }}">
                                     </div>
                                 </div>

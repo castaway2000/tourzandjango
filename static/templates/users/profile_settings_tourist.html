@@ -17,7 +17,7 @@
         {{ form.errors }}
         <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-7">
                     <div class="row">
                         <div class="col-lg-7">
                             <h4>{% blocktrans %}Tourist Profile{% endblocktrans %}</h4>
@@ -35,6 +35,19 @@
                         {% if not guide_status %}
                             <strong><h5><a href="{% url 'change_role' %}">{% blocktrans %}Consider becoming a local guide?{% endblocktrans %}</a></h5></strong>
                         {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <div>
+                            <b>{% trans 'Your referral code' %}:</b> {{ ref_code }}
+                        </div>
+                        <div>
+                            <b>{% trans 'Your referral link' %}:</b> <span id="content_to_copy">{{ site_root }}?ref={{ request.user.generalprofile.referral_code }}</span>
+                            <button id="copy_text_btn" class="btn btn-xs btn-primary" data-clipboard-target="#content_to_copy" >copy</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label>{% blocktrans %}Interests{% endblocktrans %}:</label>
                         <select multiple class="form-control select2"
                             id="interest_input" name="interests"
@@ -67,10 +80,8 @@
                         <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
                         <input type="file" name="{{ form.image.html_name }}">
                     </div>
-
                     <hr>
                     <input type="submit" class="btn btn-primary" value="Save Changes">
-
                 </div>
             </div>
         </form>
@@ -81,6 +92,23 @@
 {% block js_stuff %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
+    <script>
+        $(function(){
+            new Clipboard('#copy_text_btn');
+            $("#copy_text_btn").popover({
+                content: "Copied!",
+                placement : 'top'
+            });
+        });
+        $("#copy_text_btn").on('shown.bs.popover', function() {
+            this_popover = $(this);
+            setTimeout(function () {
+                this_popover.popover('hide');
+            }, 1000);
+        });
+    </script>
 
 {% endblock js_stuff %}
 

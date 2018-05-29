@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from django.template.defaulttags import register
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Order, Review, ServiceInOrder, OrderStatus
+from .models import Order, Review, ServiceInOrder, OrderStatus, PaymentStatus
 from locations.models import City
 from guides.models import GuideProfile
 from datetime import datetime
@@ -22,6 +22,7 @@ import braintree
 from partners.models import Partner
 from guides_calendar.models import CalendarItemGuide, CalendarItem
 from django.utils.translation import ugettext as _
+import time
 
 
 if ON_PRODUCTION:
@@ -37,14 +38,13 @@ else:
         private_key=BRAINTREE_PRIVATE_KEY
         )
 
+
 #this view is both for booking guides and tours
 def making_booking(request):
     # print ("tour bookings123")
     # print (request.POST)
     # print (request.GET)
-
     user = request.user
-
     #this code is used instead of login_required decorator to make it
     if user.is_anonymous():
         data = request.POST
@@ -61,117 +61,119 @@ def making_booking(request):
     else:
         data = request.GET
 
+    kwargs = dict()
+    tour_id = data.get("tour_id")
+    guide_id = data.get("guide_id")
+
+    #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
+    tour = None
+    if tour_id:
+        tour = Tour.objects.get(id=tour_id)
+        guide = tour.guide
+        guide_id = guide.id
+        kwargs["tour_id"] = tour_id
+    else:
+        guide = GuideProfile.objects.get(id=guide_id)
+
     #creating booked time slots in guide's schedule
     #if some of selected time slots is already booked or unavailable - return an error
-    time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
-    is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
-    if is_unavailable_or_booked_timeslot == False:
+    time_slots_chosen = None
+    if not tour or tour.payment_type.id != 2:#if not
+        time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
+        is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
+        if is_unavailable_or_booked_timeslot == True:
+            messages.error(request, _('Some selected time slots are not available anymore!'))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        kwargs = dict()
-        tour_id = data.get("tour_id")
-        guide_id = data.get("guide_id")
+    tourist = TouristProfile.objects.get(user=user)
+    date_booked_for = data["start"]
+    try:
+        date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
+    except:
+        date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
 
-        #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
-        if tour_id:
-            tour = Tour.objects.get(id=tour_id)
-            guide = tour.guide
-            guide_id = guide.id
-            kwargs["tour_id"] = tour_id
-        else:
-            guide = GuideProfile.objects.get(id=guide_id)
-        tourist = TouristProfile.objects.get(user=user)
-        date_booked_for = data["start"]
-        try:
-            date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
-        except:
-            date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
+    hours_nmb = data.get("booking_hours", 0)
+    number_people = int(data.get("number_people", 0))
+    # price_hourly = data.get("price_hourly", 0)
+    price_hourly = data.get("price_hourly", 0)
+    kwargs["hours_nmb"] = hours_nmb
 
+    if number_people >= 2:
+        additional_person_cost = guide.additional_person_cost * number_people
+    else:
+        additional_person_cost = 0
 
-        hours_nmb = data.get("booking_hours", 0)
-        print(data)
-        number_people = int(data.get("number_people", 0))
-        # price_hourly = data.get("price_hourly", 0)
-        price_hourly = data.get("price_hourly", 0)
-        kwargs["hours_nmb"] = hours_nmb
+    if tour_id:
+        if tour.payment_type.id==1:#hourly
+            price_fixed = 0
+            price_hourly = tour.price_hourly
 
-        if number_people >= 2:
-            additional_person_cost = guide.additional_person_cost * number_people
-        else:
+        elif tour.payment_type.id == 2:#fixed
+            price_fixed = tour.price
+            price_hourly=0
+
+        else:#free tours
+            price_fixed = 0
+            price_hourly = 0
             additional_person_cost = 0
 
-        if tour_id:
-            if tour.payment_type.id==1:#hourly
-                price_fixed = 0
-                price_hourly = tour.price_hourly
+    else:#guide
+        price_fixed = 0
+        price_hourly = guide.rate
 
-            elif tour.payment_type.id == 2:#fixed
-                price_fixed = tour.price
-                price_hourly=0
+    kwargs["number_persons"] = number_people
+    kwargs["price_per_additional_person"] = guide.additional_person_cost
+    kwargs["additional_person_total"] = additional_person_cost
+    kwargs["price"] = price_fixed
+    kwargs["price_hourly"] = price_hourly
 
-            else:#free tours
-                price_fixed = 0
-                price_hourly = 0
-                additional_person_cost = 0
+    # kwargs["tour_id"] = tour_id
+    kwargs["tourist"] = tourist
+    kwargs["guide_id"] = guide_id
+    kwargs["date_booked_for"] = date_booked_for
 
-        else:#guide
-            price_fixed = 0
-            price_hourly = guide.rate
-
-        kwargs["number_persons"] = number_people
-        kwargs["price_per_additional_person"] = guide.additional_person_cost
-        kwargs["additional_person_total"] = additional_person_cost
-        kwargs["price"] = price_fixed
-        kwargs["price_hourly"] = price_hourly
-
-
-        # kwargs["tour_id"] = tour_id
-        kwargs["tourist"] = tourist
-        kwargs["guide_id"] = guide_id
-        kwargs["date_booked_for"] = date_booked_for
-
-        # print (kwargs)
-
-        if user.is_anonymous():
-            print('anon my dude')
-            if "bookings" in request.session:
-                request.session["bookings"].append(kwargs)
-                return HttpResponseRedirect(reverse("my_bookings"))
-            else:
-                request.session["bookings"] = []
-                request.session["bookings"].append(kwargs)
+    if user.is_anonymous():
+        print('anon my dude')
+        if "bookings" in request.session:
+            request.session["bookings"].append(kwargs)
             return HttpResponseRedirect(reverse("my_bookings"))
         else:
-            try:
-                if request.session.get("ref_id"):
-                    ref_id = request.session["ref_id"]
-                    partner = Partner.objects.get(uuid=ref_id)
-                    kwargs["partner"] = partner
-                order = Order.objects.create(**kwargs)
-                services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
-                # print ("services ids: %s" % services_ids)
-                guide_services = GuideService.objects.filter(id__in=services_ids)
+            request.session["bookings"] = []
+            request.session["bookings"].append(kwargs)
+        return HttpResponseRedirect(reverse("my_bookings"))
+    else:
+        try:
+            if request.session.get("ref_id"):
+                ref_id = request.session["ref_id"]
+                partner = Partner.objects.get(uuid=ref_id)
+                kwargs["partner"] = partner
+            order = Order.objects.create(**kwargs)
+            services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
+            # print ("services ids: %s" % services_ids)
+            guide_services = GuideService.objects.filter(id__in=services_ids)
 
-                services_in_order=[]
-                additional_services_price = 0
-                for guide_service in guide_services:
-                    additional_services_price += float(guide_service.price)
-                    service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
-                                                      price=guide_service.price, price_after_discount=guide_service.price)
-                    services_in_order.append(service_in_order)
+            services_in_order=[]
+            additional_services_price = 0
+            for guide_service in guide_services:
+                additional_services_price += float(guide_service.price)
+                service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
+                                                  price=guide_service.price, price_after_discount=guide_service.price)
+                services_in_order.append(service_in_order)
 
-                ServiceInOrder.objects.bulk_create(services_in_order)
+            ServiceInOrder.objects.bulk_create(services_in_order)
 
-                order.additional_services_price = additional_services_price
-                order.save(force_update=True)
-                print('SUCCESS!! >> ', order)
+            order.additional_services_price = additional_services_price
+            order.save(force_update=True)
+            print('SUCCESS!! >> ', order)
 
-            except Exception as e:
-                print("exception")
-                print(e)
+        except Exception as e:
+            print("exception")
+            print(e)
 
-            return_dict["status"] = "success"
-            return_dict["message"] = "Request has been submitted! Please wait for confirmation!"
+        return_dict["status"] = "success"
+        return_dict["message"] = "Request has been submitted! Please wait for confirmation!"
 
+    if time_slots_chosen:#no time slots for tours with fixed price
         for time_slot_chosen in time_slots_chosen:
             #get or update functionality, but without applying for booked items
             # print ("try")
@@ -183,9 +185,6 @@ def making_booking(request):
                 calendar_item_guide.status_id = 1 #booked
                 calendar_item_guide.order = order
                 calendar_item_guide.save(force_update=True)
-    else:
-        messages.error(request, _('Some selected time slots are not available anymore!'))
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
@@ -347,6 +346,7 @@ def guide_settings_orders(request):
     guide = user.guideprofile
     data = request.GET
     order_id = data.get("id")
+    is_fee_free = user.generalprofile.is_fee_free
     if guide:
         if order_id:
             if Order.objects.filter(id=order_id, guide=guide).exclude(status_id=1).exists():
@@ -373,7 +373,6 @@ def tourist_settings_orders(request):
 @login_required()
 def cancel_order(request, order_id):
     user = request.user
-
     current_role = request.session.get("current_role")
     if current_role == "tourist" or not current_role:
         #check if a user is a tourist in an order
@@ -382,7 +381,7 @@ def cancel_order(request, order_id):
             order = Order.objects.get(id=order_id, tourist=tourist)
             order.status_id = 3
             order.save(force_update=True)
-            print ("try 2")
+            print("try 2")
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')
@@ -393,8 +392,8 @@ def cancel_order(request, order_id):
             order = Order.objects.get(id=order_id, guide=guide)
             order.status_id = 6
             order.save(force_update=True)
-            print ("try 1")
-            print (order.status)
+            print("try 1")
+            print(order.status)
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')
@@ -551,7 +550,7 @@ def order_completing(request, order_id):
                 order.save(force_update=True)
                 Review.objects.update_or_create(order=order, defaults=kwargs)
                 messages.success(request, 'Review has been successfully created!')
-
+                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
             if order.tourist.user == user:
                 tourist_kwargs = {
@@ -567,22 +566,30 @@ def order_completing(request, order_id):
                 #completing payment
                 if order.status.id in [2, 4] and order.payment_status.id in [2, 3]:
                     # print("in")
-                    transaction_id = order.payment.uuid
-                    result = braintree.Transaction.submit_for_settlement(transaction_id)
-                    # print("result: %s" % result)
-                    if result.is_success:
-                        order.status_id = 4 #completed
-                        order.payment_status_id = 4 #fully paid
-                        order.save(force_update=True)
+                    payments = order.payment_set.all()
+                    all_payment_successful = True
+                    payments_errors = str()
+                    for payment in payments.iterator():
+                        transaction_id = payment.uuid
+                        result = braintree.Transaction.submit_for_settlement(transaction_id)
+                        if not result.is_success:
+                            all_payment_successful = False
+                            payments_errors += '%s ' % result.errors
+                            # print(result.errors)
+                        else:
+                            order.status_id = 3 #partial payment reserved
+                            payment.dt_paid = dt_now
+                            payment.save(force_update=True)
 
-                        order.payment.dt_paid = dt_now
-                        order.payment.save(force_update=True)
+                    if all_payment_successful:
+                        order.status_id = 4 #completed
+                        payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                        order.payment_status = payment_status
+                        order.save(force_update=True)
                         Review.objects.update_or_create(order=order, defaults=kwargs)
                         messages.success(request, 'Review has been successfully created!')
-
                     else:
-                        messages.error(request, 'Error while processing a payment!')
-                        print(result.errors)
+                        messages.error(request, payments_errors)
 
         else:
             messages.error(request, 'You do not have permissions to access to this page!')

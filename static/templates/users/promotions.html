@@ -1,0 +1,101 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <h4>{% trans 'Promo Data' %}</h4>
+        <div class="row">
+            <div class="col-lg-6">
+                <h5>{% trans 'Your referral information' %}</h5>
+                <div>
+                    <div>
+                        <b>{% trans 'Your referral code' %}:</b> {{ request.user.generalprofile.referral_code }}
+                    </div>
+                    <div>
+                        <b>{% trans 'Your referral link' %}:</b> <span id="content_to_copy">{{ site_root }}?ref={{ request.user.generalprofile.referral_code }}</span>
+                        <button id="copy_text_btn" class="btn btn-xs btn-primary" data-clipboard-target="#content_to_copy" >copy</button>
+                    </div>
+                </div><br>
+
+                <h5>{% blocktrans %}Referrals statistics{% endblocktrans %}</h5>
+                <div class="">
+                    <b>{% trans 'Tourist referrals claimed' %}: </b> {{ request.user.generalprofile.tourists_referred_nmb }}
+                </div>
+                <div class="">
+                    <b>{% trans 'Tourist referrals with purchase' %}: </b> {{ request.user.generalprofile.tourists_with_purchases_referred_nmb }}
+                </div><br>
+
+                <div class="">
+                    <b>{% trans 'Guides referrals claimed' %}: </b> {{ request.user.generalprofile.guides_referred_nmb }}
+                </div>
+                <div class="">
+                    <b>{% trans 'Guides referrals with verification' %}:</b> {{ request.user.generalprofile.guides_verified_referred_nmb }}
+                </div><br>
+
+            </div>
+            <div class="col-lg-6">
+                <h5>{% trans 'Your rewards' %}</h5>
+
+                <div class="">
+                    {% if session == 'guide' %}
+                        <b>{% trans 'Referral perks' %}: </b><br>
+                        {% with request.user.generalprofile.get_referral_perks as referral_perks %}
+                            {% if referral_perks %}
+                                <ul>
+                                    {% for perk in referral_perks %}
+                                        <li>{{ perk }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>{% trans 'Refer more verified guides to get perks' %}</p>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+
+                <div class="">
+                    <b>{% trans 'Coupons' %}</b>
+                    {% with request.user.generalprofile.get_coupons as coupons %}
+                        {% if coupons %}
+                            <ul>
+                                {% for coupon in coupons %}
+                                    <li>{{ coupon.coupon_data }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>{% trans 'You do not have any active coupons now' %}<p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block js_stuff %}
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
+    <script>
+        $(function(){
+            new Clipboard('#copy_text_btn');
+            $("#copy_text_btn").popover({
+                content: "Copied!",
+                placement : 'top'
+            });
+        });
+        $("#copy_text_btn").on('shown.bs.popover', function() {
+            this_popover = $(this);
+            setTimeout(function () {
+                this_popover.popover('hide');
+            }, 1000);
+        });
+    </script>
+{% endblock js_stuff %}
+

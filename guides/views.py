@@ -13,10 +13,11 @@ from locations.models import City
 from django.contrib import messages
 from utils.internalization_wrapper import languages_english
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Avg, Max, Min, Sum
+from django.db.models import Avg, Max, Min, Sum, Count, Case, When, Q
 from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
+import time
 
 
 @xframe_options_exempt
@@ -44,8 +45,16 @@ def guides(request):
     filtered_guides = request.GET.getlist('guide')
     filtered_is_hourly_price_included = request.GET.get('is_hourly_price_included')
 
-    city_input = request.GET.get(u'city_input')
+    print(request.GET)
+    location_input = request.GET.get("location_search_input")
+    is_country = request.GET.get("is_country")
+    print(11111)
+    print(location_input)
+    print(filtered_cities)
+
     place_id = request.GET.get("place_id")
+    print(place_id)
+
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
     service_input = request.GET.getlist(u'service_input')
@@ -72,29 +81,28 @@ def guides(request):
             hourly_price_kwargs["rate__gte"] = hourly_price_min
             hourly_price_kwargs["rate__lte"] = hourly_price_max
 
-    #filtering by cities
-    if place_id:
+    #filtering by location
+    print(location_input)
+    print(is_country)
+    if location_input and is_country:
+        # base_kwargs["city__original_name__in"] = city_input
+        try:
+            cities = City.objects.filter(country__place_id=place_id)
+            cities_ids = [item.id for item in cities]
+            base_kwargs["city_id__in"] = cities_ids
+            location_from_place_id = location_input
+        except:
+            pass
+    elif place_id:
         # print("place_id %s" % place_id)
         try:
             city = City.objects.get(place_id=place_id)
             # print(city)
-            city_from_place_id = city.full_location
-        except:
-            pass
-        base_kwargs["city__place_id"] = place_id
-    elif city_input:
-        print(city_input)
-        # base_kwargs["city__original_name__in"] = city_input
-        try:
-            city = City.objects.get(original_name=city_input)
-            # print(city)
-            city_from_place_id = city.full_location
-            place_id = city.place_id
+            location_from_place_id = city.full_location
         except:
             pass
         base_kwargs["city__place_id"] = place_id
 
-    # print(base_kwargs)
 
     #filtering by guides
     if guide_input:
@@ -145,10 +153,10 @@ def guides(request):
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
-    elif place_id or city_input or guide_input:
+    elif place_id or location_input or guide_input:
+        print(base_kwargs)
+        time.sleep(10)
         guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
-        print(guides)
-        # guides = guides_initial.filter(**base_kwargs)
     elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
     else:
@@ -304,12 +312,22 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
 @login_required()
 def profile_settings_guide(request, guide_creation=True):
-    print("profile_settings_guide")
-    print(request.POST)
-
     page = "profile_settings_guide"
     user = request.user
+    ref_code = user.generalprofile.referral_code
+    user_languages = UserLanguage.objects.filter(user=user)
+    language_levels = LanguageLevel.objects.all().values()
 
+    # duplication of this peace of code below in POST area - remake it later
+    user_language_native = None
+    user_language_second = None
+    for user_language in user_languages:
+        if user_language.level_id == 1 and not user_language_native:
+            user_language_native = user_language
+        elif user_language_native and user_language_second:
+            user_language_third = user_language
+        else:
+            user_language_second = user_language
     try:
         guide = user.guideprofile
         creating_guide = False
@@ -327,7 +345,6 @@ def profile_settings_guide(request, guide_creation=True):
 
     if request.method == 'POST' and form.is_valid():
         form_data = form.cleaned_data
-        print(form_data.items())
 
         #creating or getting general profile to assign to it first_name and last_name
         general_profile, created = GeneralProfile.objects.get_or_create(user=user)
@@ -345,7 +362,6 @@ def profile_settings_guide(request, guide_creation=True):
         if interests:
             for interest in interests:
                 interest, created = Interest.objects.get_or_create(name=interest)
-
                 #adding to bulk create list for faster creation all at once
                 user_interest_list.append(UserInterest(interest=interest, user=user))
         UserInterest.objects.filter(user=user).delete()

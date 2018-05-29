@@ -10,6 +10,7 @@ urlpatterns = [
 
 
     url(r'^general_settings/$', views.general_settings, name='general_settings'),
+    url(r'promotions/$', views.promotions, name='promotions'),
 
 
     url(r'^set_language/(?P<language>\w+)/$', views.set_language, name='set_language'),
@@ -21,7 +22,6 @@ urlpatterns = [
 
     url(r'^search_interest/$', views.search_interest, name='search_interest'),
     url(r'^search_language/$', views.search_language, name='search_language'),
-
     url(r'^accounts/signup/$', views.SignupViewCustom.as_view(), name='account_signup'),
     url(r'^password_changing/$', views.password_changing, name='password_changing'),
 

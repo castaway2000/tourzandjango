@@ -95,6 +95,11 @@
                         <input class="form-control" type="password" placeholder="my secret password again" name="password2" />
                         <span class="form-error-text">{{ form.password2.errors }}</span>
                     </div>
+                    <div class="form-group form-group-icon-left"><i class="fa fa-thumbs-up input-icon input-icon-show"></i>
+                        <label>{% trans 'Referal Code (optional)' %}</label>
+                        <input class="form-control" type="text" placeholder="code" name="referral_code"
+                        value="">
+                    </div>
                     <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
                     </div>
                     <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
