@@ -382,6 +382,7 @@ try:
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
         .remove("django.middleware.cache.FetchFromCacheMiddleware")
-except:
+except Exception as e:
+    print(e)
     pass
 

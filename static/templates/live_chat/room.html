@@ -21,6 +21,7 @@
                                     {% else %}
                                         {{ chat.guide.username }}
                                     {% endif %}
+                                a {{ chat }}
                                 </a>
                                 {% blocktrans %}(guide){% endblocktrans %}
                             {% else %}
@@ -84,5 +85,3 @@
 {% block js_stuff %}
     <script src="{% static 'js/custom_scripts/chat_on_sockets.js' %}"></script>
 {% endblock js_stuff %}
-
-</html>
