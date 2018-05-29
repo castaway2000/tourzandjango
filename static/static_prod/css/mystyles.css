@@ -146,6 +146,8 @@
     margin-right: 5px;
     margin-top: 5px;
     padding: 5px;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .header-white{
@@ -297,7 +299,12 @@ a.link_lead:active{
     width: 150px;
 }
 
-.text-error{
+
+.text-success{
+    color: #31dc72;
+}
+
+.text-error, .errorlist{
     color: red;
 }
 
@@ -667,6 +674,27 @@ a{
 .guide-action-container .scroll-top-container{
     position: absolute;
     right: 20px;
+}
+
+.homepage-form .select2-container--default .select2-selection--multiple .select2-selection__rendered{
+    padding: 5px 18px!important;
+}
+
+.select2-container--open{
+    width: auto;
+}
+
+.select2-search__field{
+    color: #555555;
+}
+
+#postcode[type="number"]::-webkit-outer-spin-button,
+#postcode[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#postcode[type="number"] {
+    -moz-appearance: textfield;
 }
 
 @media (min-width: 768px) {
