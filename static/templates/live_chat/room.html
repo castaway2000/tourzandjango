@@ -21,8 +21,10 @@
                                     {% else %}
                                         {{ chat.guide.username }}
                                     {% endif %}
+                                a {{ chat }}
                                 </a>
                                 {% blocktrans %}(guide){% endblocktrans %}
+                                1
                             {% else %}
                                  <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
                                     {% if chat.tourist.generalprofile.first_name %}
@@ -82,6 +84,7 @@
 
 
 {% block js_stuff %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
     <script src="{% static 'js/custom_scripts/chat_on_sockets.js' %}"></script>
 {% endblock js_stuff %}
 

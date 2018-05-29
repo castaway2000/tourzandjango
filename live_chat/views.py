@@ -20,6 +20,7 @@ def livechat_room(request, chat_uuid):
     chat_messages = chat.chatmessage_set.all().values("chat_id", "message", "created", "user__username",
                                                       "user__generalprofile__first_name").order_by("created")
     return render(request, 'live_chat/room.html', {
+        "chat": chat,
         "chat_messages": chat_messages,
         "chat_uuid": chat_uuid,
         "room_name_json": mark_safe(json.dumps(chat_uuid))
