@@ -1,34 +1,56 @@
 $(document).ready(function() {
 
     function scrolling(scrolling_speed) {
-        console.log("scrolling");
         if (scrolling_speed == undefined){
             scrolling_speed = 300;
         }
         //scroll down messaging area
         var scroll_container = $('#messages_area');
         scroll_container.animate({ scrollTop: scroll_container.prop('scrollHeight') }, scrolling_speed);
-        console.log("scrolled")
     }
 
     var roomName = $("#chat_uuid").val();
 
-    var chatSocket = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/chat/' + roomName + '/');
+   function connect() {
+       console.log("connecting");
+     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+     var url = ws_scheme+ '://' + window.location.host +
+        '/ws/chat/' + roomName + '/';
 
-    chatSocket.onmessage = function(e) {
+      var ws = new WebSocket(url);
+       console.log(ws);
+      ws.onopen = function() {
+        // subscribe to some channels
+        //ws.send(JSON.stringify({
+        //    //.... some message the I must send when I connect ....
+        //}));
+      };
+
+      ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
         $('#messages_area').append('<div class="chat-message small">' +
                         '<div class="message-meta-info">' + data.user+ ', ' + data.dt + '</div>' +
                         '<div class="chat-message-text">' + data.message + '</div>' +
                         '</div>');
         scrolling();
-    };
+      };
 
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+      ws.onclose = function(e) {
+        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+        setTimeout(function() {
+          connect();
+        }, 5000);
+      };
+
+      ws.onerror = function(err) {
+        console.error('Socket encountered error: ', err.message, 'Closing socket');
+        ws.close();
+      };
+
+      return ws;
+    }
+
+    ws = connect();
 
     var message_textarea = $('#message_textarea');
     message_textarea.focus();
@@ -42,7 +64,7 @@ $(document).ready(function() {
         e.preventDefault();
         var message = $('#message_textarea').val();
         var chat_uuid = $('#chat_uuid').val();
-        chatSocket.send(JSON.stringify({
+        ws.send(JSON.stringify({
             'chat_uuid': chat_uuid,
             'message': message
         }));
@@ -51,4 +73,6 @@ $(document).ready(function() {
 
     scrolling(scrolling_speed=0);
     //End of chats area
+
+
 });
