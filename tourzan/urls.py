@@ -64,6 +64,8 @@ urlpatterns = i18n_patterns(
     url(r'^', include('website_management.urls')),
     url(r'^', include('blog.urls')),
     url(r'^', include('user_verification.urls')),
+
+    url(r'^', include('live_chat.urls')),
     url(r'^', include('coupons.urls')),
 
     url(r'^accounts/', include('allauth.urls')),

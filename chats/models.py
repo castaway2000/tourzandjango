@@ -50,8 +50,6 @@ class ChatMessage(models.Model):
 @disable_for_loaddata
 def chat_message_post_save(sender, instance, created, **kwargs):
     receiver_user = instance.get_receiver_user()
-    print("chat message saving")
-    print(receiver_user.generalprofile.get_is_user_online())
 
     if receiver_user and not receiver_user.generalprofile.get_is_user_online():
         data = {"chat_message": instance, "user_from": instance.user, "user_to": receiver_user}
