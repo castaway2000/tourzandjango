@@ -38,11 +38,12 @@ def tours(request):
     filtered_is_free_offers_included = request.GET.get('is_free_offers_included')
     filtered_is_company = request.GET.get('is_company')
     filtered_is_verified = request.GET.get('is_verified')
-    city_input = request.GET.get(u'city_input')
     place_id = request.GET.get("place_id")
     guide_input = request.GET.getlist(u'guide_input')
     order_results = request.GET.get('order_results')
     filter_form_data = request.GET.get('filter_form_data')
+    location_input = request.GET.get("location_search_input")
+    is_country = request.GET.get("is_country")
 
     #for filtering by price type we need to implement 2-levels logic.
     #all other filters except pricing will be based filter and each of 3 types of pricing
@@ -72,22 +73,20 @@ def tours(request):
         free_price_kwargs["is_free"] = True
 
     #filtering by cities
-    if place_id:
+    if location_input and is_country:
+        try:
+            cities = City.objects.filter(country__place_id=place_id)
+            cities_ids = [item.id for item in cities]
+            base_kwargs["city_id__in"] = cities_ids
+            location_from_place_id = location_input
+        except:
+            pass
+    elif place_id:
         # print("place_id %s" % place_id)
         try:
             city = City.objects.get(place_id=place_id)
             print(city)
-            city_from_place_id = city.full_location
-        except:
-            pass
-        base_kwargs["city__place_id"] = place_id
-    elif city_input:
-        # base_kwargs["city__original_name__in"] = city_input
-        try:
-            city = City.objects.get(original_name=city_input)
-            # print(city)
-            city_from_place_id = city.full_location
-            place_id = city.place_id
+            location_from_place_id = city.full_location
         except:
             pass
         base_kwargs["city__place_id"] = place_id
@@ -169,7 +168,7 @@ def tours(request):
         tours = tours_initial.filter(q_objects).order_by(*order_results)
         # print(tours)
 
-    elif place_id or city_input or guide_input:
+    elif place_id or location_input or guide_input:
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
 
     elif request.GET and not "page" in request.GET and request.GET.get("ref_id")==False:
@@ -179,22 +178,25 @@ def tours(request):
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
 
     tours_nmb = tours.count()
-
     cities_ids = list(set([item.city.id for item in tours_initial]))
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
     guides_ids = list(set([item.guide.id for item in tours_initial]))
-    # print ("guides ids: %s" % guides_ids)
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
     #getting min and max price for prices range slider
     tours_rate_info = tours.aggregate(Min("price"), Max("price"), Min("price_hourly"), Max("price_hourly"))
     if not request.session.get("tours_rates_cached"):
         if tours.count()>0:
-            print(tours_rate_info)
-            request.session["tours_rate_fixed_min"] = int(tours_rate_info["price__min"]) if float(tours_rate_info["price__min"]).is_integer() else float(tours_rate_info["price__min"])
-            request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
-            request.session["tours_rate_hourly_min"] = int(tours_rate_info["price_hourly__min"]) if float(tours_rate_info["price_hourly__min"]).is_integer() else float(tours_rate_info["price_hourly__min"])
-            request.session["tours_rate_hourly_max"] = int(tours_rate_info["price_hourly__max"]) if float(tours_rate_info["price_hourly__max"]).is_integer() else float(tours_rate_info["price_hourly__max"])
+            if tours.count() == 1:
+                request.session["tours_rate_fixed_min"] = 0
+                request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
+                request.session["tours_rate_hourly_min"] = 0
+                request.session["tours_rate_hourly_max"] = int(tours_rate_info["price_hourly__max"]) if float(tours_rate_info["price_hourly__max"]).is_integer() else float(tours_rate_info["price_hourly__max"])
+            else:
+                request.session["tours_rate_fixed_min"] = int(tours_rate_info["price__min"]) if float(tours_rate_info["price__min"]).is_integer() else float(tours_rate_info["price__min"])
+                request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
+                request.session["tours_rate_hourly_min"] = int(tours_rate_info["price_hourly__min"]) if float(tours_rate_info["price_hourly__min"]).is_integer() else float(tours_rate_info["price_hourly__min"])
+                request.session["tours_rate_hourly_max"] = int(tours_rate_info["price_hourly__max"]) if float(tours_rate_info["price_hourly__max"]).is_integer() else float(tours_rate_info["price_hourly__max"])
         else:
             request.session["tours_rate_fixed_min"] = 0
             request.session["tours_rate_fixed_max"] = 100
