@@ -1,5 +1,7 @@
 import uuid
 from random import randint
+import os
+from PIL import Image
 
 
 def random_string_creating():

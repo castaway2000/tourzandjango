@@ -73,6 +73,11 @@ class Interest(models.Model):
     def __str__(self):
         return "%s" % self.name
 
+    def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name.lower()
+        super(Interest, self).save(*args, **kwargs)
+
 
 class UserInterest(models.Model):
     user = models.ForeignKey(User)

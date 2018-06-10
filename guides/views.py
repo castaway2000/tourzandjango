@@ -408,13 +408,16 @@ def profile_settings_guide(request, guide_creation=True):
         #saving services
         guide = new_form
         guide_services_ids_list = list()
+        print(request.POST)
         for name, value in request.POST.items():
             string_key = "service_"
             if name.startswith(string_key):
                 cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
+                print(cleared_name)
                 service = Service.objects.get(html_field_name=cleared_name)
                 price_field_name = "serviceprice_%s" % cleared_name
                 price = request.POST.get(price_field_name, 0)
+                price = 0 if price == "" else price
                 guide_service, created = GuideService.objects.update_or_create(service=service, guide=guide,
                                                                                is_active=True, defaults={"price": price})
                 guide_services_ids_list.append(guide_service.id)
@@ -438,9 +441,15 @@ def profile_settings_guide(request, guide_creation=True):
     user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
 
     user_interests = UserInterest.objects.filter(user=user)
-    services = Service.objects.all()
+    services = list(Service.objects.all().values())
     guide_services = GuideService.objects.filter(guide=guide)
-    guide_services_ids = [item.service.id for item in guide_services]
+    guide_services_dict = dict()
+    for item in guide_services:
+        guide_services_dict[item.service.id] = item
+
+    for service in services:
+        if service["id"] in guide_services_dict:
+            service["guide_service"] = guide_services_dict[service["id"]]
 
     #PAY attention: if a guide is new - the template with form should be guides/guide_registration.html
     #for tourist it is always one template for new tourists and for editing of tourist profile,
