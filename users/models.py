@@ -217,7 +217,7 @@ class GeneralProfile(models.Model):
             # TODO: think about making it a kind of a coupon if it will be needed
             if hasattr(referred_by, "guideprofile"):
                 count_fee_free_nmb = GeneralProfile.objects.filter(is_fee_free=True).count()
-                if count_fee_free_nmb <= 100:#only 100 people are allowed
+                if count_fee_free_nmb <= 100: #only 100 people are allowed
                     if referred_by.generalprofile.guides_verified_referred_nmb >= 5 and referred_by.generalprofile.is_fee_free == False:
                         referred_by.generalprofile.is_fee_free = True
                         referred_by.generalprofile.save(force_update=True)
