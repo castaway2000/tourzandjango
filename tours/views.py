@@ -328,16 +328,14 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
         elif payment_type == 3:
             pass
 
-
         guide = user.guideprofile
         new_form.guide = guide
         new_form.city = guide.city
         new_form = form.save()
 
-        if request.FILES.get("new_images"):
-            for file in request.FILES.getlist("new_images"):
+        if request.FILES.get("images"):
+            for file in request.FILES.getlist("images"):
                 TourImage.objects.create(image=file, tour=new_form)
-
         if slug:
             messages.success(request, _('Tour details have been successfully updated!'))
         else:

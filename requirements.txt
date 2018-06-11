@@ -45,6 +45,6 @@ django-crispy-forms==1.7.0
 django-boto==0.3.12
 
 channels==2.1.1
-pypiwin32==223
+# pypiwin32==223
 channels_redis==2.2.1
 daphne==2.1.2

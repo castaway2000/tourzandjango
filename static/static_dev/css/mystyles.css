@@ -308,7 +308,7 @@ a.link_lead:active{
     color: red;
 }
 
-.text-error ul {
+.text-error ul, .errorlist {
     list-style: none;
     margin-left: -40px;
 }
@@ -695,6 +695,10 @@ a{
 }
 #postcode[type="number"] {
     -moz-appearance: textfield;
+}
+
+.btn-delete-photo{
+    color: red!important;
 }
 
 @media (min-width: 768px) {
