@@ -287,7 +287,6 @@ class GeneralProfile(models.Model):
         if self.user.couponuser_set.filter(redeemed_at__isnull=True).exists():
             coupon_user = self.user.couponuser_set.filter(redeemed_at__isnull=True)
             coupons = [item.coupon for item in coupon_user.iterator()]
-            print(coupons)
         else:
             coupons = None
         return coupons
