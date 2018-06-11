@@ -136,7 +136,7 @@
                         >
                     </div>
                 </div>
-                <label>{% blocktrans %}Cost per additional person, USD{% endblocktrans %}*:
+                <label>{% blocktrans %}Cost per additional person, USD{% endblocktrans %}:
                     <span class="text-error">{{ form.additional_person_cost.errors }}</span>
                 </label>
                 <div class="div-input-icon">
@@ -163,13 +163,13 @@
                 <span class="text-error">{{ form.date_of_birth.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
+                    <input required class="form-control datepicker-date_test" data-date-format="mm/dd/yyyy"
                            id="date_of_birth"
                            name="date_of_birth"
                            {% if request.POST.date_of_birth %}
                                 value="{{ request.POST.date_of_birth }}"
                            {% else %}
-                                value="{{ user.generalprofile.date_of_birth|date:'m.d.Y' }}"
+                                value="{{ user.generalprofile.date_of_birth|date:'m/d/Y' }}"
                            {% endif %}
                     >
                 </div>
@@ -202,53 +202,6 @@
             {% include "users/languages_form_section.html" %}
 
             <p class="lead">{% blocktrans %}Additional services{% endblocktrans %}:</p>
-            <p>
-                {% blocktrans %}Selected services{% endblocktrans %}:
-            </p>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for guide_service in guide_services %}
-                        <tr class="service_item_container">
-
-                            <td>
-                                <div class="checkbox">
-                                    <label>
-                                      <input type="checkbox" class="service-name-checkbox"
-                                            name="service_{{ guide_service.service.html_field_name }}"
-                                          checked
-                                      > {{ guide_service.service.name }}
-                                    </label>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="form-group form-group-icon-left service-price
-                                ">
-                                    <i class="fa fa-money input-icon"></i>
-                                    <input type="number" step="1" name="serviceprice_{{ guide_service.service.html_field_name }}"
-                                           class="form-control w100"
-                                           {% if guide_service.price %}
-                                               value="{{ guide_service.price|safe }}"
-                                           {% else %}
-                                                value="0"
-                                           {% endif %}
-                                    >
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <p>
-                {% blocktrans %}Other services{% endblocktrans %}:
-            </p>
 
             <table>
                 <thead>
@@ -259,21 +212,34 @@
                 </thead>
                 <tbody>
                     {% for service in services %}
+                        <tr class="service_item_container">
 
-                        {% if not service.id in guide_services_ids %}
-                            <tr class="service_item_container">
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                      <input type="checkbox" class="service-name-checkbox"
+                                             {% if service.guide_service.is_active %}checked{% endif %}
+                                            name="service_{{ service.html_field_name }}"
+                                      > {{ service.name }}
+                                    </label>
+                                </div>
+                            </td>
 
-                                <td>
-                                    <div class="checkbox">
-                                        <label>
-                                          <input type="checkbox" class="service-name-checkbox"
-                                                name="service_{{ service.html_field_name }}"
-                                          > {{ service.name }}
-                                        </label>
+                            <td>
+                                {% if service.guide_service.is_active %}
+                                    <div class="form-group form-group-icon-left service-price
+                                    ">
+                                        <i class="fa fa-money input-icon"></i>
+                                        <input type="number" step="1" name="serviceprice_{{ service.html_field_name }}"
+                                               class="form-control w100"
+                                               {% if service.guide_service.price %}
+                                                   value="{{ service.guide_service.price|safe }}"
+                                               {% else %}
+                                                    value="0"
+                                               {% endif %}
+                                        >
                                     </div>
-                                </td>
-
-                                <td>
+                                {% else %}
                                     <div class="form-group form-group-icon-left service-price
                                         hidden
                                     ">
@@ -283,10 +249,9 @@
                                                value="0"
                                         >
                                     </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
