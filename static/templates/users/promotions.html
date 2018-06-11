@@ -43,7 +43,8 @@
                 <h5>{% trans 'Your rewards' %}</h5>
 
                 <div class="">
-                    {% if session == 'guide' %}
+
+                    {% if request.session.current_role == "guide"  %}
                         <b>{% trans 'Referral perks' %}: </b><br>
                         {% with request.user.generalprofile.get_referral_perks as referral_perks %}
                             {% if referral_perks %}
@@ -65,7 +66,7 @@
                         {% if coupons %}
                             <ul>
                                 {% for coupon in coupons %}
-                                    <li>{{ coupon.coupon_data }}</li>
+                                    <li>{{ coupon }}</li>
                                 {% endfor %}
                             </ul>
                         {% else %}
