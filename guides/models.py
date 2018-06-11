@@ -15,6 +15,7 @@ from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_image,
                               upload_path_handler_guide_license
                               )
+from django.core.validators import FileExtensionValidator
 
 
 class GuideProfile(models.Model):
@@ -35,7 +36,8 @@ class GuideProfile(models.Model):
     age = models.IntegerField(default=0)
 
     header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default="guides/header_images/300x300.png")
-    profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default="guides/profile_images/300x300.png")
+    profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True,
+                                      default="guides/profile_images/300x300.png", validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default="guides/optional_images/300x300.png")
     license_image = models.ImageField(upload_to=upload_path_handler_guide_license, blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
