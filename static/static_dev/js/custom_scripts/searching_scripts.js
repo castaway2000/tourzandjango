@@ -136,7 +136,7 @@ if (jQuery) {
                 cache: true
             },
 
-            minimumInputLength: 1
+            minimumInputLength: 3
         });
     };
 

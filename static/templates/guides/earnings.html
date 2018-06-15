@@ -70,53 +70,54 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for order in orders %}
-                                <tr>
-                                    <td>
-                                        <span class="hidden">{{ order.payment.dt_paid|date:"YmdHi" }}</span>
-                                        {{ order.payment.dt_paid|date:"m.d.Y H:i" }}
-                                    </td>
-                                    <td>
-                                        {% if order.tour %}
-                                            <a href="{% url 'tour' order.tour.slug payment.order.tour.id %}">
-                                                {{ order.tour.name }}
-                                            </a>
-                                                 {% blocktrans %}by{% endblocktrans %}
+                            {% for payment in payments %}
+                                {% with payment.order as order %}
+                                    <tr>
+                                        <td>
+                                            <span class="hidden">{{ payment.dt_paid|date:"YmdHi" }}</span>
+                                            {{ payment.dt_paid|date:"m/d/Y H:i" }}
+                                        </td>
+                                        <td>
+                                            {% if order.tour %}
+                                                <a href="{% url 'tour' order.tour.slug payment.order.tour.id %}">
+                                                    {{ order.tour.name }}
+                                                </a>
+                                                     {% blocktrans %}by{% endblocktrans %}
 
-                                            <a href="{% url 'guide' order.tour.guide.user.general_profile.first_name order.tour.guide.user.general_profile.uuid %}">
-                                                {{ order.tour.guide.user.generalprofile.first_name }}
-                                            </a>
+                                                <a href="{% url 'guide' order.tour.guide.user.general_profile.first_name order.tour.guide.user.general_profile.uuid %}">
+                                                    {{ order.tour.guide.user.generalprofile.first_name }}
+                                                </a>
 
-                                        {% else %}
-                                            Tour with
-                                            <a href="{% url 'guide' order.guide.user.general_profile.first_name order.guide.user.general_profile.uuid %}">
-                                                {{ order.guide.user.generalprofile.first_name }}
-                                            </a>
-
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
-                                            {% if order.tourist.name %}
-                                                {{ order.tourist.name }}
                                             {% else %}
-                                                {{ order.tourist.user.username }}
+                                                {% trans 'Tour with' %}
+                                                <a href="{% url 'guide' order.guide.user.general_profile.first_name order.guide.user.general_profile.uuid %}">
+                                                    {{ order.guide.user.generalprofile.first_name }}
+                                                </a>
                                             {% endif %}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {{ order.total_price|safe }}
-                                    </td>
-                                    <td>
-                                        {{ order.fees_guide|safe }}
-                                    </td>
-                                    <td>
-                                        {{ order.guide_payment|safe }}
-                                    </td>
-                                    <td>
-                                        {{ order.currency.name }}
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
+                                                {% if order.tourist.name %}
+                                                    {{ order.tourist.name }}
+                                                {% else %}
+                                                    {{ order.tourist.user.username }}
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ order.total_price|safe }}
+                                        </td>
+                                        <td>
+                                            {{ order.fees_guide|safe }}
+                                        </td>
+                                        <td>
+                                            {{ order.guide_payment|safe }}
+                                        </td>
+                                        <td>
+                                            {{ order.currency.name }}
+                                        </td>
+                                    </tr>
+                                {% endwith %}
                             {% endfor %}
                         </tbody>
                     </table>

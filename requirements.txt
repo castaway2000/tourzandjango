@@ -1,4 +1,4 @@
-django==1.10.7
+django==1.11
 pillow==4.0.0
 django-allauth==0.31.0
 django-crequest==2016.3.16
@@ -35,9 +35,14 @@ django-phonenumber-field==1.3.0
 phonenumberslite==8.7.1
 # django-axes==2.3.3
 pycountry==17.9.23
--e git://github.com/castaway2000/django-drip.git@#egg=django_drip
+
 django-social-share==1.1.2
 django-user-agents==0.3.2
 
 django-crispy-forms==1.7.0
 django-boto==0.3.12
+
+channels==2.1.1
+# pypiwin32==223
+channels_redis==2.2.1
+daphne==2.1.2

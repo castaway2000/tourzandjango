@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_object_or_404
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -7,6 +8,7 @@ from .models import *
 from orders.models import Order
 from chats.models import Chat, ChatMessage
 from locations.models import City
+from coupons.models import Coupon, CouponUser
 from django.utils.translation import ugettext as _
 
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
@@ -260,3 +262,4 @@ def payment_method_set_default(request, payment_method_id):
             messages.error(request, 'No such payment method was found!')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+

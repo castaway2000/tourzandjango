@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'guides_calendar',
     'user_verification',
     'utils',
+    'coupons',
 
     #external packages
     'allauth',
@@ -71,8 +72,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+    'live_chat',
 
-
+    'channels',
     'crequest',
     'django_summernote',
     'rest_framework',
@@ -113,6 +115,7 @@ MIDDLEWARE = [
     'django_user_agents.middleware.UserAgentMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'users.middleware.TrackingActiveUserMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
 
     'django.middleware.cache.FetchFromCacheMiddleware',
 
@@ -145,6 +148,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.site'
             ],
         },
     },
@@ -292,8 +296,10 @@ USE_TZ = True
 
 #Mail settings
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'Django_testing'
-EMAIL_HOST_PASSWORD = 'Testing12#$'
+# EMAIL_HOST_USER = 'Django_testing'
+# EMAIL_HOST_PASSWORD = 'Testing12#$'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DRIP_FROM_EMAIL = 'contactus@tourzan.com'
@@ -315,7 +321,7 @@ AXES_COOLOFF_TIME = 3
 
 
 # Number of seconds of inactivity before a user is marked offline
-USER_ONLINE_TIMEOUT = 5
+USER_ONLINE_TIMEOUT = 5*60
 
 # Number of seconds that we will keep track of inactive users for before
 # their last seen is removed from the cache
@@ -336,6 +342,18 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
+GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
+
+# Channels
+ASGI_APPLICATION = 'tourzan.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 try:
     from .allauth_settings import *
@@ -345,7 +363,7 @@ except:
 
 try:
     #delete '_2' on AWS
-    from .prod_settings import *
+    from .prod_settings_2 import *
 except:
     pass
 
@@ -359,11 +377,12 @@ except:
 
 try:
     #local settings, specific for your machine
-    from .local_settings_2 import *
+    from .local_settings import *
 
     #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
         .remove("django.middleware.cache.FetchFromCacheMiddleware")
-except:
+except Exception as e:
+    print(e)
     pass
 

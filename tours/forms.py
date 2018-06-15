@@ -4,6 +4,7 @@ from .models import *
 
 class TourForm(forms.ModelForm):
     name = forms.CharField(required=True)
+    images = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
     class Meta:
         model = Tour

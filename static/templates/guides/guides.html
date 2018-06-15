@@ -55,12 +55,14 @@
                             <div class="form-group">
                                 <ul class="list booking-filters-list">
                                     <li>
-                                        <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                                        <input id="city_search_input" class="form-control"
-                                                {% if city_from_place_id %}
-                                               value="{{ city_from_place_id }}"
+                                        <h5 class="booking-filters-title">{% blocktrans %}Location{% endblocktrans %}</h5>
+                                        <input id="location_search_input" name="location_search_input" class="form-control"
+                                                {% if location_from_place_id %}
+                                               value="{{ location_from_place_id }}"
                                                 {% endif %}
                                         >
+                                        <input id="is_country" name="is_country" type="checkbox" class="hidden"
+                                                {% if "is_country" in request.GET %}checked{% endif %}>
                                         <input id="place_id" name="place_id" class="hidden"
                                                {% if place_id %}
                                                 value="{{ place_id }}"
@@ -174,7 +176,7 @@
                                             class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-price" %}
                                     <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i
-                                            class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                            class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
                                 {% elif order_results == "rating" %}
                                     <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i
                                             class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
@@ -326,7 +328,7 @@
                 </ul>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         {% if guides.has_other_pages %}
                             <ul class="pagination">
                                 {% if guides.has_previous %}
@@ -334,7 +336,7 @@
                                             href="?{% url_replace page=guides.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
-                                {% for i in guides.paginator.page_range %}
+                                {% for i in page_range %}
                                     {% if guides.number == i %}
                                         <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                     {% else %}
@@ -345,6 +347,7 @@
                                     <li class="next"><a
                                             href="?{% url_replace page=guides.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
+                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>

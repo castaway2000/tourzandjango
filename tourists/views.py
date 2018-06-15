@@ -16,6 +16,7 @@ from users.models import GeneralProfile
 def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
+    ref_code = user.generalprofile.referral_code
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
 
     try:
@@ -157,10 +158,16 @@ def travel_photos(request):
     travel_photos = user.touristtravelphoto_set.all().order_by("-id")
     form = TouristTravelPhotoForm(request.POST or None, request.FILES or None)
 
-    if request.POST:
-        images = request.FILES.getlist('image')
-        for image in images:
-            TouristTravelPhoto.objects.create(user=user, image=image)
+    print(1)
+    print(request.FILES.getlist('image'))
+
+    if request.POST and form.is_valid():
+        # images = request.FILES.getlist('image')
+        # for image in images:
+        #     TouristTravelPhoto.objects.create(user=user, image=image)
+        new_form = form.save(commit=False)
+        new_form.user=user
+        new_form = form.save()
         travel_photos = user.touristtravelphoto_set.all().order_by("-id")
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

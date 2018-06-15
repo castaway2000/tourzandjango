@@ -299,11 +299,16 @@ a.link_lead:active{
     width: 150px;
 }
 
+
+.text-success{
+    color: #31dc72;
+}
+
 .text-error, .errorlist{
     color: red;
 }
 
-.text-error ul {
+.text-error ul, .errorlist {
     list-style: none;
     margin-left: -40px;
 }
@@ -690,6 +695,10 @@ a{
 }
 #postcode[type="number"] {
     -moz-appearance: textfield;
+}
+
+.btn-delete-photo{
+    color: red!important;
 }
 
 @media (min-width: 768px) {

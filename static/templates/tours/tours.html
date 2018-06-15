@@ -39,17 +39,19 @@
                                value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
                         <ul class="list booking-filters-list">
                             <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                                <input id="city_search_input" class="form-control"
-                                    {% if city_from_place_id %}
-                                        value="{{ city_from_place_id }}"
-                                    {% endif %}
+                                <h5 class="booking-filters-title">{% blocktrans %}Location{% endblocktrans %}</h5>
+                                <input id="location_search_input" name="location_search_input" class="form-control"
+                                        {% if location_from_place_id %}
+                                       value="{{ location_from_place_id }}"
+                                        {% endif %}
                                 >
+                                <input id="is_country" name="is_country" type="checkbox" class="hidden"
+                                        {% if "is_country" in request.GET %}checked{% endif %}>
                                 <input id="place_id" name="place_id" class="hidden"
-                                    {% if place_id %}
+                                       {% if place_id %}
                                         value="{{ place_id }}"
-                                    {% endif %}
-                                >
+                                       {% endif %}
+                                       >
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
@@ -213,9 +215,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-3 col-xs-4">
-                                    <div class="tour-rating">
-                                        <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
-                                    </div>
+
+                                    {% if tour.rating != 0 %}
+                                        <div class="tour-rating">
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
+                                        </div>
+                                    {% endif %}
+
                                     <p class="tour-price">
                                         <b>{% blocktrans %}Price: {% endblocktrans %}</b>
                                         {% if tour.payment_type_id == 1 %}
@@ -253,14 +259,14 @@
                 </ul>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         {% if tours.has_other_pages %}
                             <ul class="pagination">
                                 {% if tours.has_previous %}
                                     <li class="next"><a href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
-                                {% for i in tours.paginator.page_range %}
+                                {% for i in page_range %}
                                     {% if tours.number == i %}
                                         <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                       {% else %}
@@ -270,6 +276,7 @@
                                 {% if tours.has_next %}
                                     <li class="next"><a href="?{% url_replace page=tours.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
+                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>
