@@ -6,7 +6,7 @@
         {% if order.payment_status.id == 2 %}
             <div class="is-paid-container">
                 {% blocktrans %}
-                    PAYMENT <br> RESERVED
+                    PAYMENT RESERVED
                 {% endblocktrans %}
             </div>
         {% elif order.payment_status.id == 4 %}
@@ -27,14 +27,6 @@
                      src="{% static 'img/300x300.png' %}" alt="" title="">
             {% endif %}
         </div>
-
-        <h5 class="text-center">
-            <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
-                {{ order.guide.user.generalprofile.first_name }}
-            </a>
-        </h5>
-
-        <div class="gap gap-small"></div>
 
         <h3 class="text-center">
             {% trans 'Payment Summary' %}
@@ -60,8 +52,11 @@
                         <td>
                             {% if order.tour %}
                                 <b>
-                                    {% trans 'A tour' %} "{{ order.tour.name }}" {% trans 'with' %} {{ order.guide.user.generalprofile.first_name }}
-                                    {% trans 'at' %} {{ order.date_booked_for|date:"m.d.Y" }}
+                                    {% trans 'A tour' %} "{{ order.tour.name }}" {% trans 'with' %}
+                                    <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
+                                        {{ order.guide.user.generalprofile.first_name }}
+                                    </a>
+                                    {% trans 'at' %} {{ order.date_booked_for|date:"m/d/Y" }}
                                 </b>
                                 {% if order.tour.payment_type.id == 1 %}
                                     <br>
@@ -71,8 +66,11 @@
                                 {% endif %}
                             {% else %}
                                 <b>
-                                    {% trans 'A tour with' %} {{ order.guide.user.generalprofile.first_name }}
-                                    {% trans 'at' %} {{ order.date_booked_for|date:"m.d.Y" }}:
+                                    {% trans 'A tour with' %}
+                                    <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
+                                        {{ order.guide.user.generalprofile.first_name }}
+                                    </a>
+                                    {% trans 'at' %} {{ order.date_booked_for|date:"m/d/Y" }}:
                                 </b>
                                 {{ order.hours_nmb|safe }} {% trans 'hours' %} *
                                 {{ order.price_hourly|safe }} {{ order.currency.name }}
@@ -115,6 +113,26 @@
                             {{ order.total_price_initial|floatformat:2 }} {{ order.currency.name }}
                         </td>
                     </tr>
+                    <tr class="text-success">
+                        <td>
+                            <b>
+                               {% trans 'Discount' %}
+                            </b>
+                        </td>
+                        <td>
+                            {{ order.discount|floatformat:2 }} {{ order.currency.name }}
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <td>
+                            <b>
+                                {% trans 'After discount' %}
+                            </b>
+                        </td>
+                        <td>
+                            {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
+                        </td>
+                    </tr>
                     <tr>
                         <td>
                             <b>
@@ -146,25 +164,8 @@
                         </td>
                     </tr>
 
-                    {% if order.coupon %}
-                        <tr class="tr-last">
-                            <td>
-                                <b>{% trans 'Before discount' %}</b>
-                            </td>
-                            <td>
-                                {{ order.get_toursit_total_before_discount }}
-                            </td>
-                        </tr>
-                        <tr class="text-success">
-                            <td>
-                                <b>{% trans 'Discount' %}</b>
-                            </td>
-                            <td>
-                                {{ order.discount }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                    <tr {% if not order.coupon %}class="tr-last"{% endif %}>
+
+                    <tr class="tr-last">
                         <td>
                             <b>
                                 {% blocktrans %}
@@ -187,7 +188,7 @@
 
         </div>
     <br/>
-    {% if order.payment_status.id == 1 and not order.coupon %}
+    {% if order.payment_status.id == 1 and not order.coupon and not order.discount %}
         <form class="" method="post" id="coupon_apply_form" action="{% url 'coupon_validation' %}">{% csrf_token %}
             <p id="coupon_status"></p>
             <div class="input-group">

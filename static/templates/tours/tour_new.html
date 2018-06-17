@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load stars_rating %}
+{% load crispy_forms_tags %}
+
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+{% endblock  %}
+{% block content %}
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="{% url 'home' %}">{% trans 'Home' %}</a>
+            </li>
+{#            <li><a href="/">Some country</a>#}
+            <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
+            </li>
+            <li>
+                <a href="{% url 'guide' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid %}">{{ tour.guide.user.generalprofile.first_name }}</a>
+            </li>
+            <li class="active">{{ tour.name }}</li>
+        </ul>
+    </div>
+
+    <div class="tour-section hero-section" style="
+        {% if tour.image %}
+            background: url('{{ tour.image.url }}')
+        {% else %}
+            background: url('{% static "img/1280x848.png" %}')
+        {% endif %}
+    ">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center title">{{ tour.name }}</div>
+                </div>
+            </div>
+            {% if tour.overview_short %}
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <div class="text-justify tour-description">
+                            {{ tour.overview_short|safe }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+     <div class="tour-section tour-program-description">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-lg-offset-3">
+                    <div>
+                        {{ tour.overview|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with tour.get_included_items as included_items %}
+    {% with tour.get_excluded_items as  excluded_items %}
+    {% if included_items or excluded_items %}
+        <div class="tour-section tour-included">
+            <div class="container">
+                {% if included_items %}
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <div class="tour-included-items-container">
+                            <div class="title">
+                                {% trans 'What is included' %}
+                            </div>
+                            {% for item in included_items %}
+                                <div class="tour-included-item">
+                                    {{ item.name }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if excluded_items %}
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <div class="tour-excluded-items-container">
+                            <div class="title">
+                                {% trans 'What is NOT included' %}
+                            </div>
+                            {% for item in excluded_items %}
+                                <div class="tour-excluded-item">
+                                    {{ item.name }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    {% endwith %}
+
+    {% include "tours/nearest_available_dates.html" %}
+
+    <div class="tour-section tour-program-items">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title">
+                        {% trans 'Tour Program' %}
+                    </div>
+                </div>
+                {% for item in tour.get_tourprogram_items %}
+                    <div class="col-lg-5">
+                        <div class="tour-program-item">
+                            <div class="img-container" style="
+                                {% if item.image_medium %}
+                                    background: url('{{ item.image_medium.url }}')
+                                {% else %}
+                                    background: url('{% static "img/400x300.png" %}')
+                                {% endif %}
+                            ">
+                                <div class="circle circle-time text-center">
+                                    {{ item.time|date:"h:i" }}
+                                </div>
+                            </div>
+                            <div class="content">
+                                <div class="title">
+                                    {{ forloop.counter }}. {{ item.name }}
+                                </div>
+                                <div class="description">
+                                    {{ item.description|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% include "tours/nearest_available_dates.html" %}
+
+
+    <div class="tour-section tour-pictures">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title">
+                        {% trans 'Other pictures' %}
+                    </div>
+                </div>
+                <div class="col-lg-8 col-lg-offset-2">
+                     <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                        {% for tour_image in tour.get_tours_images %}
+                            <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                 class="img-responsive"
+                                 title="Image for {{ tour.name }}" />
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% with tour.get_reviews as reviews %}
+        {% if reviews %}
+            <div class="tour-section tour-reviews">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="title">
+                                {% trans 'Tourists Reviews' %}
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-lg-offset-2">
+                             <div class="owl-carousel owl-theme">
+                                 {% for review in reviews %}
+                                      <div class="review-item">
+                                          <div class="row">
+                                              <div class="col-lg-4">
+                                                  <div class="text-center">
+                                                      {% if review.order.tourist.image %}
+                                                        <img src="{{ review.order.tourist.image.url }}" class="img-responsive">
+                                                      {% else %}
+                                                          <img src="{% static 'img/300x300.png' %}" class="img-responsive">
+                                                      {% endif %}
+                                                      {{ review.order.tourist.user.generalprofile.first_name }}
+                                                  </div>
+                                              </div>
+                                              <div class="col-lg-8">
+                                                    <div class="review-title">
+                                                          {{ review.tourist_feedback_name }}
+                                                    </div>
+                                                    <div>
+                                                          {{ review.tourist_rating }}
+                                                          <ul class="icon-list icon-group booking-item-rating-stars">
+                                                              {{ review.tourist_rating|rendering_stars|safe }}
+                                                          </ul>
+                                                    </div>
+                                                    <div class="review-text">
+                                                          {{ review.tourist_feedback_text|safe }}
+                                                    </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                 {% endfor %}
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+
+    <div id="tour_booking_form" class="tour-section tour-booking-form">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-lg-offset-4">
+                    <div class="title">
+                        {% trans 'Booking form' %}
+                    </div>
+                   {% crispy form %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{#    <div class="gap gap-small"></div>#}
+
+
+{% endblock %}
+
+{% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script>
+        $(document).ready(function(){
+
+            $(document).ready(function(){
+                  $('.owl-carousel').owlCarousel();
+            });
+
+            function gettingTimeSlotsForDate(){
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["booking_date"] = $('#booking_date').val();
+                data["guide_id"] = $('#guide_id').val();
+                var url = $('#time_slots').data('link');
+                $.ajax({
+                     url: url,
+                     type: 'POST',
+                     data: data,
+                     cache: true,
+                     success: function(data){
+                         time_slots_container = $('#time_slots');
+
+                         $('#booking_form_error_container').html("");
+                         time_slots_container.html("");
+
+                         available_time_slots = data.available_time_slots;
+
+                         if (available_time_slots.length > 0){
+                             $.each(available_time_slots, function(index, el){
+                                slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
+                                slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
+                                time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
+                             })
+                         }else{
+                             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
+                                     "There are no available time slots for this date. <br>" +
+                                     "Please select another date.</div>")
+                         }
+                     }
+                })
+            }
+
+            $('.d_picker').datepicker({
+                todayHighlight: true,
+                format: "mm.dd.yyyy",
+                weekStart: 1
+            }).datepicker("setDate", new Date()).on("changeDate", function(e) {
+                // `e` here contains the extra attributes
+                gettingTimeSlotsForDate();
+            });
+
+            gettingTimeSlotsForDate();
+
+            $(document).on("click", '.time-slots-container .time-slot', function(){
+                $(this).toggleClass("chosen");
+            })
+
+        })
+    </script>
+{% endblock js_stuff %}
+
+

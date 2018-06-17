@@ -239,7 +239,7 @@ def guide_tours(request, username):
     return render(request, 'tours/guide_tours.html', context)
 
 
-def tour(request, slug, tour_id):
+def tour(request, slug, tour_id, tour_new=None):
     user = request.user
 
     #referal id for partner to track clicks in iframe
@@ -274,7 +274,14 @@ def tour(request, slug, tour_id):
     except EmptyPage:
         reviews = paginator.page(paginator.num_pages)
 
-    return render(request, 'tours/tour.html', locals())
+    if tour_new == "new":
+        form = BookingForm(request.POST or None, tour=tour)
+        if request.method == "POST" and form.is_valid():
+            tour_scheduled = form.cleaned_data["tour_scheduled"]
+            seats = form.cleaned_data["seats"]
+        return render(request, 'tours/tour_new.html', locals())
+    else:
+        return render(request, 'tours/tour.html', locals())
 
 
 @login_required()

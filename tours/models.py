@@ -22,6 +22,7 @@ class PaymentType(models.Model):
 
 class Tour(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    overview_short = models.TextField(blank=True, null=True, default=None)
     overview = models.TextField(blank=True, null=True, default=None)
     included = models.TextField(blank=True, null=True, default=None)
     excluded = models.TextField(blank=True, null=True, default=None)
@@ -112,6 +113,138 @@ class Tour(models.Model):
     def get_absolute_url(self):
         # return reverse('tour', kwargs={'name': self.name, 'tour_id': self.id})
         return '/tour/%s/%s/' % (self.slug, self.id)
+
+    def get_included_items(self):
+        included_items = self.tourincludeditem_set.filter(is_active=True).order_by("order_priority", "id")
+        return included_items
+
+    def get_excluded_items(self):
+        excluded_items = self.tourexcludeditem_set.filter(is_active=True).order_by("order_priority", "id")
+        return excluded_items
+
+    def get_tourprogram_items(self):
+        program_items = self.tourprogramitem_set.filter(is_active=True).order_by("day", "time")
+        return program_items
+
+    def get_nearest_available_dates(self):
+        scheduled_tours = self.scheduledtour_set.filter(is_active=True)[:3]
+        return scheduled_tours
+
+    def get_tours_images(self):
+        return self.tourimage_set.filter(is_active=True).values()
+
+    def get_reviews(self):
+        tour_orders = self.order_set.all()
+        reviews = list()
+        for order in tour_orders.iterator():
+            if hasattr(order, "review") and order.review.is_tourist_feedback == True:
+                reviews.append(order.review)
+        return reviews
+
+
+class TourIncludedItem(models.Model):
+    tour = models.ForeignKey(Tour)
+    order_priority = models.IntegerField(default=0)
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "%s" % (self.name)
+
+
+class TourExcludedItem(models.Model):
+    tour = models.ForeignKey(Tour)
+    order_priority = models.IntegerField(default=0)
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "%s" % (self.name)
+
+
+class TourProgramItem(models.Model):
+    tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True, null=True)
+    day = models.IntegerField(default=1)
+    time = models.TimeField()
+    duration = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to=upload_path_handler_tour_images, blank=True, null=True, default=None)
+    image_large = models.ImageField(upload_to=upload_path_handler_tour_images, blank=True, null=True, default=None)
+    image_medium = models.ImageField(upload_to=upload_path_handler_tour_images, blank=True, null=True, default=None)
+    image_small = models.ImageField(upload_to=upload_path_handler_tour_images, blank=True, null=True, default=None)
+
+    def __str__(self):
+        return "%s" % (self.name)
+
+    def __init__(self, *args, **kwargs):
+        super(TourProgramItem, self).__init__(*args, **kwargs)
+
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
+    def save(self, *args, **kwargs):
+        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
+            self.image_large = optimize_size(self.image, "large")
+            self.image_medium = optimize_size(self.image, "medium")
+            self.image_small = optimize_size(self.image, "small")
+        super(TourProgramItem, self).save(*args, **kwargs)
+
+
+class ScheduledTour(models.Model):
+    tour = models.ForeignKey(Tour)
+    dt = models.DateTimeField()
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    price_final = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    seats_total = models.IntegerField(default=0)
+    seats_booked = models.IntegerField(default=0)
+    seats_available = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        if self.dt and self.tour:
+            dt = self.dt.strftime('%m/%d/%Y %I:%M')
+            return "%s -- %s USD -- %s" % (dt, self.price_final, self.tour.name)
+        elif self.tour:
+            return "%s" % (self.tour.name)
+        else:
+            return "%s" % (self.id)
+
+    def __init__(self, *args, **kwargs):
+        super(ScheduledTour, self).__init__(*args, **kwargs)
+
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
+    def save(self, *args, **kwargs):
+        if self.discount:
+            self.price_final = self.price - self.discount
+        else:
+            self.price_final = self.price
+
+        if self.seats_available != self._original_fields["seats_available"]:
+            #if user changes available places nmb, then we take it as a basis for calculation booked places,
+            #if user does not changes this field, we use booked places nmb as a basis for calculation available places
+            self.seats_booked = self.seats_total - self.seats_available
+        else:
+            self.seats_available = self.seats_total - self.seats_booked
+        super(ScheduledTour, self).save(*args, **kwargs)
+
+    def get_name(self):
+        dt = self.dt.strftime('%m/%d/%Y %I:%M')
+        return "%s -- %s USD -- %s" % (dt, self.price_final, self.tour.name)
 
 
 class TourImage(models.Model):
