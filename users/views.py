@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
+
 from .forms import *
 from .models import *
 from tours.models import Tour
@@ -23,18 +25,29 @@ from allauth.account.views import SignupView, _ajax_response
 from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
-from datetime import datetime
+import datetime
+import pycountry
+from allauth.account.models import EmailAddress
+from django.utils.translation import ugettext as _
+from coupons.models import Coupon, CouponUser, Campaign
+from allauth.account.utils import complete_signup
+from allauth.account import app_settings
+from allauth.exceptions import ImmediateHttpResponse
+import time
 
 
 def login_view(request):
+    """
+    this funtion re-applies /login funtion from django-allauth/
+    Login redirects are handled here
+    """
     form = LoginForm(request.POST or None)
-
     if not "next" in request.GET:
         request.GET.next = reverse("home")
-
     if request.method == 'POST' and form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
+
         user = authenticate(username=username, password=password)
         if user:
             if user.is_active:
@@ -43,13 +56,18 @@ def login_view(request):
                     next_url = request.GET.get("next")
                     if next_url:
                         return HttpResponseRedirect(next_url)
+                if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
+                    request.session["current_role"] = "guide"
+                elif not hasattr(user, "guideprofile"):
+                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (reverse("guide_registration_welcome"), _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
+                if request.session.get("pending_order_creation"):
+                    return HttpResponseRedirect(reverse("making_booking"))
                 return HttpResponseRedirect(reverse("home"))
             else:
                 return HttpResponse("Your account is disabled.")
         else:
             messages.error(request, 'Login credentials are incorrect!')
-
-    return render(request, 'users/login_register.html', {})
+    return render(request, 'users/login_register.html', {"form": form})
 
 
 def logout_view(request):
@@ -59,45 +77,68 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("home"))
 
 
+@login_required()
+def after_login_router(request):
+    user = request.user
+    print("after_login_router")
+    print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
+    pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
+    if pending_guide_registration:
+        return HttpResponseRedirect(reverse("guide_registration"))
+    else:
+        if user.generalprofile.is_previously_logged_in:
+            return HttpResponseRedirect(reverse("home"))
+        else:
+            user.generalprofile.is_previously_logged_in = True
+            user.generalprofile.save(force_update=True)
+            return HttpResponseRedirect(reverse("profile_settings_tourist"))
+
+
 def home(request):
     current_page = "home"
     guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__first_name", "user__last_name", "user__username", "profile_image", "overview")[:4]
+        .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
 
     tours = Tour.objects.filter(is_active=True).order_by("-rating")
     all_tours = tours.order_by("-rating")[:4]
     hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
     fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
     free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
-    cities = City.objects.filter(is_active=True, is_featured=True).values("name", "image",)[:5]
+    cities = City.objects.filter(is_active=True, is_featured=True).values("original_name", "image", "image_medium", "name")[:5]
     return render(request, 'users/home.html', locals())
 
 
 @login_required()
 def password_changing(request):
     user = request.user
+    form = PasswordChangeForm(data=request.POST or None, user=user)
     if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST or None, user=user)
         if "change_password_btn" in request.POST:
-            print ("CHANGE PASSWORD IN REQUEST")
             if form.is_valid():
                 new_form = form.save(commit=False)
                 new_form = form.save()
                 messages.success(request, 'Password was successfully updated!')
                 update_session_auth_hash(request, user)
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
     return render(request, 'users/password_changing.html', locals())
+
 
 @login_required()
 def general_settings(request):
     page = "general_settings"
     user = request.user
-    general_profile, created = GeneralProfile.objects.get_or_create(user=user)
-    document_uploaded = general_profile.documentscan_set.filter(is_active=True).last()#approved
 
-    docs_form = DocsUploadingForm(request.POST or None, request.FILES or None)
-    form = GeneralProfileForm(data=request.POST or None, instance=general_profile)
+    countries = [country.name for country in pycountry.countries]
+
+    general_profile, created = GeneralProfile.objects.get_or_create(user=user)
+
+    current_role = request.session.get("current_role")
+    if current_role == "guide":
+        guide = user.guideprofile
+        form = GeneralProfileAsGuideForm(data=request.POST or None, instance=general_profile, request=request)
+    else:
+        form = GeneralProfileAsTouristForm(data=request.POST or None, instance=general_profile, request=request)
+
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':
@@ -107,6 +148,32 @@ def general_settings(request):
         if form.is_valid():
             new_form = form.save(commit=False)
             new_form = form.save()
+
+            user_email = user.email
+            email = form.cleaned_data.get("email")
+            if user_email.lower() != email.lower():
+                #this validation is here and not in forms for not showing error message on form and for preventing signup users emails leak
+                email_address_exists = EmailAddress.objects.filter(email=email).exclude(user=user).exists()
+
+                #additional check to cope with lowercase emails, etc
+                email_in_user_exists = User.objects.filter(is_active=True, email=email).exclude(id=user.id).exists()
+                if email_address_exists or email_in_user_exists:
+                    # print("ERROR")
+                    pass
+                else:
+                    user.email = email
+                    user.save()
+
+                    #there is no email field on GeneralProfile model, so the logic for changing email is in this view only.
+                    #this code is for triggering sending confirmation email function from django allauth
+                    email_address = EmailAddress.objects.create(
+                        user=request.user,
+                        email=email,
+                    )
+                    email_address.send_confirmation(request)
+
+                #this message is here to prevent signup users emails leaking
+                messages.success(request, _('Your email address has been changed, please check you mailbox to confirm a new email address!'))
 
         #phone validation section
         data = request.POST
@@ -154,7 +221,8 @@ def general_settings(request):
                     messages.success(request, 'SMS with validation code was sent!')
                     request.session["pending_validating_phone"] = phone
                 else:#error
-                    message_text = sms_sending_info["message"]
+                    # message_text = sms_sending_info["message"]
+                    message_text = _("Phone format is incorrect")
                     messages.error(request, message_text)
 
             #this approach is needed to prevent
@@ -176,29 +244,6 @@ def general_settings(request):
                     messages.error(request, 'Please enter validation code!')
 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        #documents uploading section
-        if not document_uploaded or document_uploaded.status_id == 3:#not presented or rejected
-            if docs_form.is_valid():
-
-                #ADD some validation here for file size and extension
-                if request.FILES.get("file"):
-                    count = 0
-                    for file in request.FILES.getlist("file"):
-                        if count < 5:#uploading not more than 5 files
-                            DocumentScan.objects.create(file=file, general_profile=general_profile)
-                            count += 1
-                        else:
-                            break
-
-
-                    if count == 1:
-                        messages.success(request, 'File was successfully uploaded!')
-                    else:
-                        messages.success(request, 'Files were successfully uploaded!')
-
-                    #retrieve docs afrer uploading
-                    is_just_uploaded = True
 
     return render(request, 'users/general_settings.html', locals())
 
@@ -282,8 +327,6 @@ def search_interest(request):
         "items": results,
         "more": "false"
     }
-
-    print (response_data)
     return JsonResponse(response_data, safe=False)
 
 
@@ -313,14 +356,26 @@ def search_language(request):
 #redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
 class SignupViewCustom(SignupView):
 
+    def form_valid(self, form):
+        # By assigning the User to a property on the view, we allow subclasses
+        # of SignupView to access the newly created User instance
+        self.user = form.save(self.request)
+        try:
+            return complete_signup(
+                self.request, self.user,
+                app_settings.EMAIL_VERIFICATION,
+                self.get_success_url())
+        except ImmediateHttpResponse as e:
+            return e.response
+
     # at the initial SignupView this post function is inherited from AjaxCapableProcessFormViewMixin
     # so here a post function from AjaxCapableProcessFormViewMixin is redefined
     def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
 
-        if u"login_btn" in request.POST:
-            return HttpResponseRedirect(reverse("login"))
-
-        #google captcha validating
+        # google captcha validating
+        google_captcha_is_valid = False
         recaptcha_response = request.POST.get('g-recaptcha-response')
         if recaptcha_response and recaptcha_response != "":
             data = {
@@ -331,40 +386,55 @@ class SignupViewCustom(SignupView):
             result = r.json()
 
             if result['success']:
-                pass
+                google_captcha_is_valid = True
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                response = self.form_invalid(form)
         else:
             messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            response = self.form_valid(form)
-        else:
             response = self.form_invalid(form)
 
+        if form.is_valid() and google_captcha_is_valid:
+            response = self.form_valid(form)
+            referral_code = None
+            if "referral_code" in self.request.session:
+                referral_code = self.request.session.get("referral_code")
+            elif request.POST.get('referral_code'):
+                referral_code = request.POST.get('referral_code')
+
+            if referral_code and referral_code != "":
+                #in this step not only tourists can be referred, but guides as well, so reffered by is set to generalprofile,
+                #which is related to user by OneToOne field
+                #Dublicate this logic for API singup functionality later
+                try:
+                    referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
+                    referred_by_user = referred_by_gp.user
+                    request.user.generalprofile.referred_by = referred_by_user
+                    request.user.generalprofile.save(force_update=True)
+                except Exception as e:
+                    print(e)
+                    pass
+
+            #creating Tourist Profile (moved here from
+            if u"login_btn" in request.POST:
+                return HttpResponseRedirect(reverse("login"))
+
+        else:
+            response = self.form_invalid(form)
         return _ajax_response(self.request, response, form=form)
 
 
 @login_required()
 def sending_sms_code(request):
     user = request.user
-    print(request.POST)
-
     return_data = dict()
     if request.POST:
-        print (request.POST)
         data = request.POST
 
         # phone = data.get("phone")
 
         #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
         phone = data.get("phone_formatted")
-
 
         sms = SendingSMS({"phone_to": phone, "user_id": user.id})
         sms_sending_status = sms.send_validation_sms()
@@ -379,3 +449,8 @@ def sending_sms_code(request):
             general_profile.save(force_update=True)
 
     return JsonResponse(return_data)
+
+
+@login_required()
+def promotions(request):
+    return render(request, 'users/promotions.html', locals())

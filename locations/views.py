@@ -17,8 +17,8 @@ def search_city(request):
 
         for city in cities:
             results.append({
-                "id": city.name,
-                "text": city.name
+                "id": city.original_name,
+                "text": city.original_name
             })
 
     response_data = {

@@ -1,17 +1,29 @@
 {% load static %}
+{% load i18n %}
 
 <aside class="sidebar-right">
     <div class="sidebar-widget">
-        <div class="Form">
-            <input class="form-control" placeholder="Search..." type="text" />
-        </div>
+        {% if current_page == "blog_post" %}
+            <div class="mb10">
+                <a class="btn btn-primary" href="{% url 'blog' %}">{% trans 'Back to posts list' %}</a>
+            </div>
+        {% endif %}
+{#        <div class="Form">#}
+{#            <input class="form-control" placeholder="Search..." type="text" />#}
+{#        </div>#}
     </div>
     <div class="sidebar-widget">
         <h4>Categories</h4>
         <ul class="icon-list list-category">
+            <li {% if not category_slug  %}class="active"{% endif %}>
+                <a href="{% url 'blog' %}">
+                    <i class="fa fa-angle-right"></i>{% trans 'All categories' %}
+                </a>
+            </li>
             {% for category in categories %}
-                <li>
-                    <a href="#"><i class="fa fa-angle-right"></i>{{ category.name }}
+                <li {% if category.slug == category_slug %}class="active"{% endif %}>
+                    <a href="{% url 'blog_category_slug' category.slug %}">
+                        <i class="fa fa-angle-right"></i>{{ category.name }}
                         <small >({{ category.posts_nmb }})</small>
                     </a>
                 </li>
@@ -42,116 +54,119 @@
     </div>
     <div class="sidebar-widget">
         <h4>Twitter Feed</h4>
-        <div class="twitter" id="twitter"></div>
-    </div>
-    <div class="sidebar-widget">
-        <h4>Recent Comments</h4>
-        <ul class="thumb-list thumb-list-right">
-            <li>
-                <a href="#">
-                    <img class="rounded" src="img/70x70.png" alt="Image Alternative text" title="Afro" />
-                </a>
-                <div class="thumb-list-item-caption">
-                    <p class="thumb-list-item-meta">7 minutes ago</p>
-                    <h4 class="thumb-list-item-title"><a href="#">Alison Mackenzie</a></h4>
-                    <p class="thumb-list-item-desciption">Himenaeos cras platea aliquet consequat justo congue...</p>
-                </div>
-            </li>
-            <li>
-                <a href="#">
-                    <img class="rounded" src="img/70x70.png" alt="Image Alternative text" title="AMaze" />
-                </a>
-                <div class="thumb-list-item-caption">
-                    <p class="thumb-list-item-meta">6 minutes ago</p>
-                    <h4 class="thumb-list-item-title"><a href="#">Blake Hardacre</a></h4>
-                    <p class="thumb-list-item-desciption">Sit gravida augue neque consequat elementum ultrices...</p>
-                </div>
-            </li>
-            <li>
-                <a href="#">
-                    <img class="rounded" src="img/70x70.png" alt="Image Alternative text" title="Gamer Chick" />
-                </a>
-                <div class="thumb-list-item-caption">
-                    <p class="thumb-list-item-meta">9 minutes ago</p>
-                    <h4 class="thumb-list-item-title"><a href="#">Bernadette Cornish</a></h4>
-                    <p class="thumb-list-item-desciption">Pellentesque lacus sociosqu ac malesuada urna condimentum...</p>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <div class="sidebar-widget">
-        <h4>Archive</h4>
-        <ul class="icon-list list-category">
-            <li><a href="#"><i class="fa fa-angle-right"></i>July 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>June 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>May 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>April 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>March 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>February 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>January 2014</a>
-            </li>
-            <li><a href="#"><i class="fa fa-angle-right"></i>December 2014</a>
-            </li>
-        </ul>
-    </div>
-    <div class="sidebar-widget">
-        <h4>Gallery</h4>
-        <div class="row row-no-gutter">
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="The Big Showoff-Take 2" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="Good job" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="4 Strokes of Fun" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="b and w camera" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="Happy Bokeh Day" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="sunny wood" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="a dreamy jump" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="Spidy" />
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="hover-img" href="#">
-                    <img src="img/100x100.png" alt="Image Alternative text" title="Me with the Uke" />
-                </a>
-            </div>
+        <div class="twitter" id="twitter">
+        <a class="twitter-timeline" data-height="700" data-link-color="#19CF86" href="https://twitter.com/tourzanHQ?ref_src=twsrc%5Etfw">Tweets by tourzanHQ</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
-    </div>
-    <div class="sidebar-widget">
+        <div class="sidebar-widget">
         <h4>Facebook</h4>
-        <div class="fb-like-box" data-href="https://www.facebook.com/FacebookDevelopers" data-colorscheme="light" data-show-faces="1" data-header="1" data-show-border="1" data-width="233"></div>
+        <div class="fb-like-box" data-href="https://www.facebook.com/tourzanHQ/" data-colorscheme="light" data-show-faces="1" data-header="1" data-show-border="1" data-width="233">
+            <iframe src="https://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2FtourzanHQ&&colorscheme=light&show_faces=true&border_color&stream=true&header=true&height=435"
+                    scrolling="yes" frameborder="0" style="border:none; overflow:hidden; height:600px; background: white; float:left; " allowTransparency="true">
+            </iframe>
+        </div>
+        </div>
+{#            <ul class="thumb-list thumb-list-right">#}
+{#            <li>#}
+{#                <a href="#">#}
+{#                    <img class="rounded" src="img/70x70.png" alt="Image Alternative text" title="Afro" />#}
+{#                </a>#}
+{#                <div class="thumb-list-item-caption">#}
+{#                    <p class="thumb-list-item-meta">7 minutes ago</p>#}
+{#                    <h4 class="thumb-list-item-title"><a href="#">Alison Mackenzie</a></h4>#}
+{#                    <p class="thumb-list-item-desciption">Himenaeos cras platea aliquet consequat justo congue...</p>#}
+{#                </div>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="#">#}
+{#                    <img class="rounded" src="img/70x70.png" alt="Image Alternative text" title="AMaze" />#}
+{#                </a>#}
+{#                <div class="thumb-list-item-caption">#}
+{#                    <p class="thumb-list-item-meta">6 minutes ago</p>#}
+{#                    <h4 class="thumb-list-item-title"><a href="#">Blake Hardacre</a></h4>#}
+{#                    <p class="thumb-list-item-desciption">Sit gravida augue neque consequat elementum ultrices...</p>#}
+{#                </div>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="#">#}
+{#                    <img class="rounded" src="img/70x70.png" alt="Image Alternative text" title="Gamer Chick" />#}
+{#                </a>#}
+{#                <div class="thumb-list-item-caption">#}
+{#                    <p class="thumb-list-item-meta">9 minutes ago</p>#}
+{#                    <h4 class="thumb-list-item-title"><a href="#">Bernadette Cornish</a></h4>#}
+{#                    <p class="thumb-list-item-desciption">Pellentesque lacus sociosqu ac malesuada urna condimentum...</p>#}
+{#                </div>#}
+{#            </li>#}
+{#        </ul>#}
     </div>
+{#    <div class="sidebar-widget">#}
+{#        <h4>Archive</h4>#}
+{#        <ul class="icon-list list-category">#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>July 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>June 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>May 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>April 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>March 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>February 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>January 2014</a>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="fa fa-angle-right"></i>December 2014</a>#}
+{#            </li>#}
+{#        </ul>#}
+{#    </div>#}
+{#    <div class="sidebar-widget">#}
+{#        <h4>Gallery</h4>#}
+{#        <div class="row row-no-gutter">#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="The Big Showoff-Take 2" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="Good job" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="4 Strokes of Fun" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="b and w camera" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="Happy Bokeh Day" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="sunny wood" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="a dreamy jump" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="Spidy" />#}
+{#                </a>#}
+{#            </div>#}
+{#            <div class="col-md-4">#}
+{#                <a class="hover-img" href="#">#}
+{#                    <img src="img/100x100.png" alt="Image Alternative text" title="Me with the Uke" />#}
+{#                </a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
 </aside>

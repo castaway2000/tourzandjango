@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from allauth.account.models import EmailAddress
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.exceptions import ImmediateHttpResponse
 try:
     from django.utils.encoding import force_text
 except ImportError:
@@ -26,12 +25,43 @@ from django.template import TemplateDoesNotExist
 from django.core.mail import EmailMultiAlternatives, EmailMessage
 from allauth.exceptions import ImmediateHttpResponse
 from django.core.urlresolvers import reverse
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, get_object_or_404
 from users.models import GeneralProfile
+from django.core.urlresolvers import reverse
+from django.shortcuts import resolve_url
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
     pass
+    """
+    It works only for sign up.
+    Sign in view is re-applied in users/views.py
+    """
+    def get_login_redirect_url(self, request):
+        """
+        Returns the default URL to redirect to after logging in.  Note
+        that URLs passed explicitly (e.g. by passing along a `next`
+        GET parameter) take precedence over the value returned here.
+        """
+        assert request.user.is_authenticated
+        url = settings.LOGIN_REDIRECT_URL
+        return resolve_url(url)
+
+    # def get_login_redirect_url(self, request):
+    #     print("get login redirect")
+    #     user = get_object_or_404(User, pk=request.user.id)
+    #
+    #     is_first_time_login = False if user.last_login else True
+    #     print(is_first_time_login)
+    #     print(user.last_login)
+    #
+    #     if is_first_time_login:
+    #         url = reverse("profile_settings_tourist")
+    #     else:
+    #         url = settings.LOGIN_REDIRECT_URL
+    #
+    #     print(url)
+    #     return resolve_url(url)
 
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -76,7 +106,9 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
 
         if not request.user.is_anonymous():
             user = request.user
-            general_profile, created = GeneralProfile.objects.get_or_create(user=user, user__is_active=True)
+
+            #populating user's GeneralProfile instance from the very beginning
+            general_profile, created = GeneralProfile.objects.get_or_create(user=user)
 
             #here is the logic for validating twitter and google account without creating a new associated user account
             #logic for facebook account which can be used for loging in as well - is placed in users.model
@@ -149,4 +181,3 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # user = email_address.user #it is commented because above EmailAddress is replaced with User model
 
         sociallogin.connect(request, user)
-

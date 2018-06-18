@@ -3,6 +3,15 @@
 {% load staticfiles %}
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block header_stuff %}
+    <!-- Event snippet for register tourist conversion page -->
+    <script>
+    gtag('event', 'conversion', {'send_to': 'AW-855709588/X2RNCIrv4HkQlK-EmAM'});
+    </script>
+{% endblock header_stuff %}
+
 
 {% block content %}
     <div class="container">
@@ -14,14 +23,18 @@
     <div class="container">
         <div class="row" data-gutter="60">
             <div class="col-md-4">
-                <h3>Welcome to Tourzan</h3>
-                <p>You may be authenticated, using social networks or sign in/sign up using username and password</p>
+                <h3>{% trans 'Welcome to Tourzan' %}</h3>
+                <p>
+                    {% blocktrans %}
+                    You may be authenticated, using social networks or sign in/sign up using username and password
+                    {% endblocktrans %}
+                </p>
                 <div class="text-center">
                     <a title="Facebook" class="btn btn-default btn-facebook"
-                       {% if request.GET.next  %}
+                       {% if request.GET.next and request.GET.next|length > 4 %}
                            href="{% provider_login_url "facebook" method="oauth2"  next=request.GET.next %}"
                        {% else %}
-                            href="{% provider_login_url "facebook" method="oauth2" %}"
+                            href="{% provider_login_url "facebook" method="oauth2" next="/after_login_router/" %}"
                        {% endif %}
                     >
                         <i class="fa fa-2x fa-facebook" aria-hidden="true"></i>
@@ -29,60 +42,64 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <h3>Login</h3>
-                <form method="post" action="{% url 'login' %}">{% csrf_token %}
+                <h3>{% trans 'Login' %}</h3>
+                <form method="post" action="{% url 'account_login' %}">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>Username or email</label>
-                        <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text" name="username" />
+                        <label>{% trans 'Username or email' %}</label>
+                        <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text"
+                               name="username" value="{% if form.username.value %}{{ form.username.value }}{% endif %}"/>
+                        <span class="text-error">{{ form.username.errors }}</span>
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>Password</label>
+                        <label>{% trans 'Password' %}</label>
                         <input class="form-control" type="password" placeholder="my secret password" name="password" />
+                        <span class="text-error">{{ form.password.errors }}</span>
                     </div>
                     <div class="form-group">
 
-                        <input class="btn btn-primary" type="submit" name="login_btn" value="Log In" />
+                        <input class="btn btn-primary" type="submit" name="login_btn" value="{% trans 'Log In' %}" />
 
                     </div>
                     <div class="form-group">
-                        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-
+                        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans 'Forgot Password?' %}</a>
                     </div>
                 </form>
             </div>
             <div class="col-md-4">
-                <h3>New To Tourzan?</h3>
-                <form method="post" action="{% url 'account_signup' %}">{% csrf_token %}
+                <h3>{% trans 'New to Tourzan?' %}</h3>
+                <form method="post" action="{% url 'account_signup' %}" id="register-form">{% csrf_token %}
                     <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>Username</label>
+                        <label>{% trans 'Username' %}</label>
                         <input class="form-control" placeholder="e.g. johndoe" type="text" name="username"
                         value="">
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon input-icon-show"></i>
-                        <label>Email</label>
+                        <label>{% trans 'Email' %}</label>
                         <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="email" name="email"
                         value="">
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>Password</label>
+                        <label>{% trans 'Password' %}</label>
                         <input class="form-control" type="password" placeholder="my secret password" name="password1"
                         value="">
                     </div>
                     <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>Password (re-enter)</label>
+                        <label>{% trans 'Password (re-enter)' %}</label>
                         <input class="form-control" type="password" placeholder="my secret password again" name="password2"
                         value="">
                     </div>
-
+                    <div class="form-group form-group-icon-left"><i class="fa fa-thumbs-up input-icon input-icon-show"></i>
+                        <label>{% trans 'Referal Code (optional)' %}</label>
+                        <input class="form-control" type="text" placeholder="code" name="referral_code"
+                        {% if request.session.referral_code %}value="{{ request.session.referral_code }}"{% else %}value=""{% endif %}>
+                    </div>
                     <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
                     </div>
-
-                    <input class="btn btn-primary" type="submit" value="Sign Up for Tourzan" />
+                    <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
                 </form>
             </div>
         </div>
     </div>
-
     <div class="gap"></div>
         
 {% endblock content %}

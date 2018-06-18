@@ -82,6 +82,13 @@
                                         <i class="fa fa-cog"></i>
                                         {% blocktrans %}Payments{% endblocktrans %}
                                     </a>
+                                </li>
+                                <li {% if page == "promotions" %}class="active"{% endif %}>
+                                    <a href="{% url 'promotions' %}">
+                                        <i class="fa fa-star"></i>
+                                        {% blocktrans %}Promotions{% endblocktrans %}
+                                    </a>
+                                </li>
                             {% endif %}
 
 
@@ -89,13 +96,26 @@
                                 <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings_guide' %}">
                                     <i class="fa fa-user"></i>{% blocktrans %}Guide Profile Settings{% endblocktrans %}</a>
                                 </li>
+                                <li {% if page == "identity_verification" %}class="active"{% endif %}>
+                                    <a href="{% url 'identity_verification_router' %}">
+                                        <i class="fa fa-cog"></i>{% blocktrans %}Identity verification{% endblocktrans %}
+                                    </a>
+                                </li>
+                                <li {% if page == "guide_payouts" %}class="active"{% endif %}>
+                                    <a href="{% url 'guide_payouts' %}">
+                                        <i class="fa fa-university"></i>
+                                        {% blocktrans %}Payout preferences{% endblocktrans %}
+                                    </a>
+                                </li>
 
-                                <li {% if page == "general_settings" %}class="active"{% endif %}><a href="{% url 'general_settings' %}">
-                                    <i class="fa fa-cog"></i>{% blocktrans %}General Settings{% endblocktrans %}</a>
+                                <li {% if page == "general_settings" %}class="active"{% endif %}>
+                                    <a href="{% url 'general_settings' %}">
+                                        <i class="fa fa-cog"></i>{% blocktrans %}General Settings{% endblocktrans %}
+                                    </a>
                                 </li>
 
                                 <li {% if page == "calendar" %}class="active"{% endif %}><a href="{% url 'guide_calendar' %}">
-                                    <i class="fa fa-calendar"></i>{% blocktrans %}Calendar{% endblocktrans %}</a>
+                                    <i class="fa fa-calendar"></i>{% blocktrans %}Schedule / Availability{% endblocktrans %}</a>
                                 </li>
 
                                 <li {% if page == "settings_tours" %}class="active"{% endif %}>
@@ -110,22 +130,21 @@
                                         {% blocktrans %}Orders{% endblocktrans %}</a>
                                 </li>
 
-                                <li>
+                                <li {% if '/earnings' in request.path  %}class="active"{% endif %}>
                                     <a href="{% url 'earnings' %}"><i class="fa fa-usd"></i>
                                         {% blocktrans %}Earnings{% endblocktrans %}
                                     </a>
                                 </li>
-                                
                                 <li {% if page == "payment_methods" %}class="active"{% endif %}>
                                     <a href="{% url 'payment_methods' %}">
                                         <i class="fa fa-credit-card"></i>
                                         {% blocktrans %}Credit/Debit Cards{% endblocktrans %}
                                     </a>
                                 </li>
-                                <li {% if page == "guide_payouts" %}class="active"{% endif %}>
-                                    <a href="{% url 'guide_payouts' %}">
-                                        <i class="fa fa-university"></i>
-                                        {% blocktrans %}Payout preferences{% endblocktrans %}
+                                <li {% if page == "promotions" %}class="active"{% endif %}>
+                                    <a href="{% url 'promotions' %}">
+                                        <i class="fa fa-star"></i>
+                                        {% blocktrans %}Promotions{% endblocktrans %}
                                     </a>
                                 </li>
                             {% endif %}

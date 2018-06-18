@@ -4,10 +4,11 @@ from .models import *
 
 class TourForm(forms.ModelForm):
     name = forms.CharField(required=True)
+    images = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
     class Meta:
         model = Tour
-        fields = ("name", "overview", "payment_type", "is_active",)
+        fields = ("name", "overview", "included", "excluded", "payment_type", "is_active",)
 
     def clean_name(self):
         if not self.cleaned_data.get("name"):

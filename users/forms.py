@@ -1,18 +1,21 @@
 from django import forms
 from .models import *
 from phonenumber_field.widgets import PhonePrefixSelect, PhoneNumberPrefixWidget
-
-
-class DocsUploadingForm(forms.Form):
-    file = forms.FileField(required=False)
+from allauth.account.models import EmailAddress
+from django.utils.translation import ugettext as _
+from django.core.exceptions import ValidationError
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, Submit, HTML, Div
+from crispy_forms.bootstrap import FormActions
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
+    username = forms.CharField(required=True)
+    password = forms.CharField(widget=forms.PasswordInput(), required=True)
 
     class Meta:
         widgets = {'password': forms.PasswordInput()}
+        fields = "referral_code"
 
 
 class VerificationCodeForm(forms.Form):
@@ -68,10 +71,56 @@ class VerificationCodeForm(forms.Form):
         return sms_code
 
 
-class GeneralProfileForm(forms.ModelForm):
+class GeneralProfileAsGuideForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    date_of_birth = forms.DateTimeField(input_formats=['%m.%d.%Y'], widget=forms.DateTimeInput(format='%d/%m/%Y %H:%M:%S'))
 
     class Meta:
         model = GeneralProfile
+        fields = ("first_name", "last_name", "date_of_birth", "registration_country", "registration_state", "registration_city",
+                  "registration_street",
+                  "registration_building_nmb", "registration_flat_nmb", "registration_postcode", "is_company",
+                  "business_id",
+                  )
 
-        #city is added on form save in view
-        fields = ("address", "is_company", "business_id",)
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.user = self.request.user
+        super(GeneralProfileAsGuideForm, self).__init__(*args, **kwargs)
+
+    def clean_email(self):
+        user = self.user
+        email = self.cleaned_data['email']
+        if email != user.email:
+            if User.objects.filter(email=email, is_active=True).exists():
+                raise ValidationError(_('Email already in use by another user'))
+        else:
+            raise ValidationError(_('Email is the same as a current one'))
+        return email
+
+
+class GeneralProfileAsTouristForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = GeneralProfile
+        fields = ("first_name", "last_name")
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.user = self.request.user
+        super(GeneralProfileAsTouristForm, self).__init__(*args, **kwargs)
+        self.fields['email'].initial = self.user.email
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+
+    def clean_email(self):
+        user = self.user
+        new_email = self.cleaned_data['email']
+        if new_email != user.email:
+            if User.objects.filter(email=new_email, is_active=True).exists():
+                raise ValidationError(_('Email already in use by another user'))
+        else:
+            raise ValidationError(_('Email is the same as a current one'))
+        return new_email
+

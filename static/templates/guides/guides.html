@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -30,15 +31,20 @@
             {% else %}
                 {% blocktrans %}No guides were found{% endblocktrans %}
             {% endif %}
+            {% if not is_guide %}
+              - <a href="{% url 'change_role' %}">{% blocktrans %}Consider becoming a local guide!{% endblocktrans %}</a>
+            {% elif is_guide == 'Anon' %}
+              - <a href="{% url 'guide_registration_welcome' %}">{% blocktrans %}Consider becoming a local guide!{% endblocktrans %}</a>
+            {% endif %}
         </h3>
         <div class="row">
             <div class="col-md-3">
                 <aside class="booking-filters text-white">
-                    <div class="left-menu-toggle-button">
-                        <button class="btn btnprimary" id="toggle_left_menu">
-                            <i class="fa fa-filter" aria-hidden="true"></i>
-                        </button>
-                    </div>
+{#                    <div class="left-menu-toggle-button">#}
+{#                        <button class="btn btnprimary" id="toggle_left_menu">#}
+{#                            <i class="fa fa-filter" aria-hidden="true"></i>#}
+{#                        </button>#}
+{#                    </div>#}
 
                         <h3>{% blocktrans %}Filter By: {% endblocktrans %}</h3>
                         <form id="filtering_form" name="filtering_form" method="get" action="">
@@ -49,13 +55,20 @@
                             <div class="form-group">
                                 <ul class="list booking-filters-list">
                                     <li>
-                                        <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                                        <input id="city_search_input" class="form-control"
-                                                {% if city_from_place_id %}
-                                               value="{{ city_from_place_id }}"
+                                        <h5 class="booking-filters-title">{% blocktrans %}Location{% endblocktrans %}</h5>
+                                        <input id="location_search_input" name="location_search_input" class="form-control"
+                                                {% if location_from_place_id %}
+                                               value="{{ location_from_place_id }}"
                                                 {% endif %}
                                         >
-                                        <input id="place_id" name="place_id" class="hidden">
+                                        <input id="is_country" name="is_country" type="checkbox" class="hidden"
+                                                {% if "is_country" in request.GET %}checked{% endif %}>
+                                        <input id="place_id" name="place_id" class="hidden"
+                                               {% if place_id %}
+                                                value="{{ place_id }}"
+                                               {% endif %}
+                                               >
+
                                     </li>
                                     <li>
                                         <h5 class="booking-filters-title">{% blocktrans %}Interests{% endblocktrans %}</h5>
@@ -86,9 +99,9 @@
                                         <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
                                         <select class="form-control select2" id="guide_input" name="guide_input"
                                                 data-search_url="{% url 'search_guide' %}">
-                                            {% if guide_input %}
-                                                <option value="{{ request.GET.guide_input }}"
-                                                        selected>{{ request.GET.guide_input }}</option>
+                                            {% if guide %}
+                                                <option value="{{ guide.uuid }}"
+                                                        selected>{{ guide.user.generalprofile.first_name }}</option>
                                             {% endif %}
                                         </select>
                                     </li>
@@ -123,15 +136,29 @@
                                         <div class="checkbox">
                                             <label>
                                                 <input class="i-check" type="checkbox" name="is_company"
-                                                        {% if request.GET.is_company or not request.GET %}
-                                                       checked {% endif %}
+                                                        {% if not request.GET.is_company and request.GET.filter_form_data %}
+                                                        {% else %}
+                                                        checked {% endif %}
                                                 >
                                                 {% blocktrans %}Include corporate tour guides{% endblocktrans %}
                                             </label>
                                         </div>
                                     </li>
                                     <li>
-                                        <button type="submit" class="btn btn-primary btn-block">{% blocktrans %}
+                                        <div class="checkbox">
+                                            <label>
+                                                <input class="i-check" type="checkbox" name="is_verified"
+                                                        {% if request.GET.is_verified and request.GET.filter_form_data %}
+                                                       checked
+                                                       {% else %}
+                                                        {% endif %}
+                                                >
+                                                {% blocktrans %}Show only verified guides{% endblocktrans %}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <button type="submit" class="btn btn-primary btn-block" name="filter_form_data" value="True">{% blocktrans %}
                                             Apply{% endblocktrans %}</button>
                                     </li>
                                 </ul>
@@ -149,7 +176,7 @@
                                             class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-price" %}
                                     <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i
-                                            class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                            class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
                                 {% elif order_results == "rating" %}
                                     <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i
                                             class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
@@ -189,9 +216,9 @@
                         <li>
                             <div class="tour-item">
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <div class="col-md-3 col-sm-6 col-xs-6">
                                         <div class="booking-item-img">
-                                            <a href="{% url 'guide' guide.user.username %}">
+                                            <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
                                                 {% if guide.profile_image %}
                                                     <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                 {% else %}
@@ -201,13 +228,13 @@
                                         </div>
                                         <br>
                                     </div>
-                                    <div class="col-md-6 col-sm-6 col-xs-5">
+                                    <div class="col-md-6 col-sm-6 col-xs-6 pull-right">
                                         <div class="item-name">
-                                            {{ guide.user.username }}
+                                            {{ guide.user.generalprofile.first_name }}
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                {{ guide.overview|linebreaks|truncatewords_html:30 }}
+                                                {{ guide.overview|safe|linebreaks|truncatewords_html:30 }}
                                             </div>
                                         </div>
                                         <div class="row">
@@ -267,7 +294,10 @@
                                             {% endif %}
                                         {% endwith %}
                                     </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-4">
+                                    <div class="col-md-3 col-sm-6 col-xs-6 pull-left">
+                                        {% if 'optional_images/300x300.png' not in guide.license_image.url %}
+                                            <h5>Licensed</h5>
+                                        {% endif %}
                                         <div class="guide-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
                                         </div>
@@ -276,10 +306,20 @@
                                             {{ guide.rate }} {{ guide.currency.name }}
                                         </span>
                                         <p>
-                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.username %}">
-                                                {% blocktrans %}Go to Guide{% endblocktrans %}
+                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
+                                                {% blocktrans %}View profile{% endblocktrans %}
                                             </a>
                                         </p>
+                                        {% if guide.user.generalprofile.is_verified %}
+                                            <p>
+                                                <b>{% trans 'Verified' %}</b>
+                                            </p>
+                                        {% endif %}
+                                        {% if guide.user.generalprofile.is_trusted %}
+                                            <p>
+                                                <b>{% trans 'Trusted' %}</b>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -288,25 +328,26 @@
                 </ul>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         {% if guides.has_other_pages %}
                             <ul class="pagination">
                                 {% if guides.has_previous %}
                                     <li class="next"><a
-                                            href="?page={{ guides.previous_page_number }}">{% trans 'Previous Page' %}</a>
+                                            href="?{% url_replace page=guides.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
-                                {% for i in guides.paginator.page_range %}
+                                {% for i in page_range %}
                                     {% if guides.number == i %}
-                                        <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                                        <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                     {% else %}
-                                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                        <li><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                     {% endif %}
                                 {% endfor %}
                                 {% if guides.has_next %}
                                     <li class="next"><a
-                                            href="?page={{ guides.next_page_number }}">{% trans 'Next Page' %}</a></li>
+                                            href="?{% url_replace page=guides.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
+                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>

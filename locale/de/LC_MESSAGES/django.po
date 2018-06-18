@@ -676,7 +676,7 @@ msgid "Booking a tour date:"
 msgstr "Buche eine Tour:"
 
 #: static/templates/guides/guide.html:206
-msgid "Persons nmb:"
+msgid "Number of people:"
 msgstr "Personen-Anzahl:"
 
 #: static/templates/guides/guide.html:241 static/templates/tours/tour.html:132

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-
-from django.shortcuts import render, HttpResponseRedirect
+from collections import defaultdict
+from django.template.defaulttags import register
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Order, Review, ServiceInOrder, OrderStatus
+from .models import Order, Review, ServiceInOrder, OrderStatus, PaymentStatus
 from locations.models import City
 from guides.models import GuideProfile
 from datetime import datetime
@@ -16,171 +17,200 @@ import datetime
 from guides.models import GuideService
 from payments.models import PaymentMethod
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
 import braintree
 from partners.models import Partner
 from guides_calendar.models import CalendarItemGuide, CalendarItem
 from django.utils.translation import ugettext as _
+import time
 
 
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=BRAINTREE_MERCHANT_ID,
-    public_key=BRAINTREE_PUBLIC_KEY,
-    private_key=BRAINTREE_PRIVATE_KEY
-    )
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 
-#both guide and tour
-@login_required()
+#this view is both for booking guides and tours
 def making_booking(request):
-    print ("tour bookings123")
-    print (request.POST)
-    print (request.GET)
-
+    # print ("tour bookings123")
+    # print (request.POST)
+    # print (request.GET)
     user = request.user
+    #this code is used instead of login_required decorator to make it
+    if user.is_anonymous():
+        data = request.POST
+        request.session["pending_order_creation"] = data
+        # request.session["pending_order_creation"] = dict(request.POST.lists())
+        return HttpResponseRedirect(reverse("login"))
+
     return_dict = dict()
-    if request.POST:
+    if request.session.get("pending_order_creation"):
+        data = request.session.get("pending_order_creation")
+        del request.session["pending_order_creation"]
+    elif request.POST:
         data = request.POST
     else:
         data = request.GET
 
+    kwargs = dict()
+    tour_id = data.get("tour_id")
+    guide_id = data.get("guide_id")
+
+    #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
+    tour = None
+    if tour_id:
+        tour = Tour.objects.get(id=tour_id)
+        guide = tour.guide
+        guide_id = guide.id
+        kwargs["tour_id"] = tour_id
+    else:
+        guide = GuideProfile.objects.get(id=guide_id)
 
     #creating booked time slots in guide's schedule
     #if some of selected time slots is already booked or unavailable - return an error
-    time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
-    is_unuavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
-    if is_unuavailable_or_booked_timeslot == False:
+    time_slots_chosen = None
+    if not tour or tour.payment_type.id != 2:#if not
+        time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
+        is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
+        if is_unavailable_or_booked_timeslot == True:
+            messages.error(request, _('Some selected time slots are not available anymore!'))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        kwargs = dict()
-        tour_id = data.get("tour_id")
-        guide_id = data.get("guide_id")
+    tourist = TouristProfile.objects.get(user=user)
+    date_booked_for = data["start"]
+    try:
+        date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
+    except:
+        date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
 
-        if tour_id:
-            tour = Tour.objects.get(id=tour_id)
-            guide = tour.guide
-            guide_id = guide.id
-            kwargs["tour_id"] = tour_id
-        else:
-            guide = GuideProfile.objects.get(id=guide_id)
+    hours_nmb = data.get("booking_hours", 0)
+    number_people = int(data.get("number_people", 0))
+    # price_hourly = data.get("price_hourly", 0)
+    price_hourly = data.get("price_hourly", 0)
+    kwargs["hours_nmb"] = hours_nmb
 
+    if number_people >= 2:
+        additional_person_cost = guide.additional_person_cost * number_people
+    else:
+        additional_person_cost = 0
 
-        tourist = TouristProfile.objects.get(user=user)
-
-        date_booked_for = data["start"]
-        try:
-            date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
-        except:
-            date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
-
-
-        hours_nmb = data.get("booking_hours", 0)
-        # price_hourly = data.get("price_hourly", 0)
-        price_hourly = data.get("price_hourly", 0)
-        kwargs["hours_nmb"] = hours_nmb
-
-
-        if tour_id:
-            if tour.payment_type.id==1:#hourly
-                price_fixed = 0
-                price_hourly = tour.price_hourly
-            elif tour.payment_type.id == 2:#fixed
-                price_fixed = tour.price
-                price_hourly=0
-            else:#free tours
-                price_fixed = 0
-                price_hourly = 0
-        else:#guide
+    if tour_id:
+        if tour.payment_type.id==1:#hourly
             price_fixed = 0
-            price_hourly = guide.rate
+            price_hourly = tour.price_hourly
 
-        kwargs["price"] = price_fixed
-        kwargs["price_hourly"] = price_hourly
+        elif tour.payment_type.id == 2:#fixed
+            price_fixed = tour.price
+            price_hourly=0
 
+        else:#free tours
+            price_fixed = 0
+            price_hourly = 0
+            additional_person_cost = 0
 
-        # kwargs["tour_id"] = tour_id
-        kwargs["tourist"] = tourist
-        kwargs["guide_id"] = guide_id
-        kwargs["date_booked_for"] = date_booked_for
+    else:#guide
+        price_fixed = 0
+        price_hourly = guide.rate
 
-        # print (kwargs)
+    kwargs["number_persons"] = number_people
+    kwargs["price_per_additional_person"] = guide.additional_person_cost
+    kwargs["additional_person_total"] = additional_person_cost
+    kwargs["price"] = price_fixed
+    kwargs["price_hourly"] = price_hourly
 
-        if user.is_anonymous():
-            if "bookings" in request.session:
-                request.session["bookings"].append(kwargs)
-                return HttpResponseRedirect(reverse("my_bookings"))
-            else:
-                request.session["bookings"] = []
-                request.session["bookings"].append(kwargs)
+    # kwargs["tour_id"] = tour_id
+    kwargs["tourist"] = tourist
+    kwargs["guide_id"] = guide_id
+    kwargs["date_booked_for"] = date_booked_for
+
+    if user.is_anonymous():
+        print('anon my dude')
+        if "bookings" in request.session:
+            request.session["bookings"].append(kwargs)
             return HttpResponseRedirect(reverse("my_bookings"))
         else:
-            try:
-                if request.session.get("ref_id"):
-                    ref_id = request.session["ref_id"]
-                    partner = Partner.objects.get(uuid=ref_id)
-                    kwargs["partner"] = partner
-                order = Order.objects.create(**kwargs)
-                services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
-                # print ("services ids: %s" % services_ids)
-                guide_services = GuideService.objects.filter(id__in=services_ids)
+            request.session["bookings"] = []
+            request.session["bookings"].append(kwargs)
+        return HttpResponseRedirect(reverse("my_bookings"))
+    else:
+        try:
+            if request.session.get("ref_id"):
+                ref_id = request.session["ref_id"]
+                partner = Partner.objects.get(uuid=ref_id)
+                kwargs["partner"] = partner
+            order = Order.objects.create(**kwargs)
+            services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
+            # print ("services ids: %s" % services_ids)
+            guide_services = GuideService.objects.filter(id__in=services_ids)
 
-                services_in_order=[]
-                additional_services_price = 0
-                for guide_service in guide_services:
-                    additional_services_price += float(guide_service.price)
-                    service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
-                                                      price=guide_service.price, price_after_discount=guide_service.price)
-                    services_in_order.append(service_in_order)
+            services_in_order=[]
+            additional_services_price = 0
+            for guide_service in guide_services:
+                additional_services_price += float(guide_service.price)
+                service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
+                                                  price=guide_service.price, price_after_discount=guide_service.price)
+                services_in_order.append(service_in_order)
 
-                ServiceInOrder.objects.bulk_create(services_in_order)
+            ServiceInOrder.objects.bulk_create(services_in_order)
 
-                order.additional_services_price = additional_services_price
-                order.save(force_update=True)
+            order.additional_services_price = additional_services_price
+            order.save(force_update=True)
+            print('SUCCESS!! >> ', order)
 
-            except Exception as e:
-                print("exception")
-                print (e)
+        except Exception as e:
+            print("exception")
+            print(e)
 
-            return_dict["status"] = "success"
-            return_dict["message"] = "Request has been submitted! Please waite for confirmation!"
+        return_dict["status"] = "success"
+        return_dict["message"] = "Request has been submitted! Please wait for confirmation!"
 
+    if time_slots_chosen:#no time slots for tours with fixed price
         for time_slot_chosen in time_slots_chosen:
             #get or update functionality, but without applying for booked items
-            print ("try")
-            print(time_slot_chosen)
+            # print ("try")
+            # print(time_slot_chosen)
             calendar_item_guide = CalendarItemGuide.objects.get(id=time_slot_chosen, guide=guide)
-            print(calendar_item_guide.id)
-            print(calendar_item_guide.calendar_item)
+            # print(calendar_item_guide.id)
+            # print(calendar_item_guide.calendar_item)
             if calendar_item_guide.status_id == 2: #available
                 calendar_item_guide.status_id = 1 #booked
                 calendar_item_guide.order = order
                 calendar_item_guide.save(force_update=True)
 
-    else:
-        messages.error(request, _('Some selected time slots are not available anymore!'))
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
-    if request.POST:#it means that it is ajax request
-        return JsonResponse(return_dict)
-    else:#it means that it is creation of the new order with redirect to checkout page
-        # return HttpResponseRedirect(reverse("my_bookings"))
-        return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
+    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+    illegal_country = False
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
+    #got rid of returning data for ajax calls
+    #always return a redirect
+    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
 
 
 @login_required
 def bookings(request, status=None):
+    print("bookings")
     current_page = "bookings"
-    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
     user = request.user
     kwargs = dict()
 
-    # print (request.GET)
-
     filtered_prices = request.GET.get('price')
-    filtered_cities = request.GET.getlist('city')
+    filtered_city = request.GET.get('city')
     filtered_guides = request.GET.getlist('guide')
     filtered_statuses = request.GET.getlist('status_input')
+
+    place_id = request.GET.get("place_id")
 
     if filtered_prices:
         price = filtered_prices.split(";")
@@ -188,29 +218,49 @@ def bookings(request, status=None):
 
             kwargs["price_after_discount__gte"] = price[0]
             kwargs["price_after_discount__lte"] = price[1]
-            print (kwargs)
+            # print (kwargs)
 
-    if filtered_cities:
-        print (filtered_cities)
-        kwargs["guide__city__name__in"] = filtered_cities
+    # #filtering by cities
+    if place_id:
+        # print("place_id %s" % place_id)
+        try:
+            city = City.objects.get(place_id=place_id)
+            print(city)
+            city_from_place_id = city.full_location #this is inserted to the location search input
+        except:
+            pass
+        kwargs["guide__city__place_id"] = place_id
+    elif filtered_city:
+        # kwargs["guide__city__original_name"] = filtered_city
+        try:
+            city = City.objects.get(original_name=filtered_city)
+            # print(city)
+            city_from_place_id = city.full_location
+            place_id = city.place_id
+        except:
+            pass
+        kwargs["guide__city__place_id"] = place_id
+
 
     if filtered_guides:
-        print (filtered_guides)
+        print(filtered_guides)
         kwargs["guide__user__username__in"] = filtered_guides
 
-    if filtered_statuses:
+    if filtered_statuses and len(filtered_statuses[0])>1:#to handle empty imputs
         kwargs["status__name__in"] = filtered_statuses
-
 
     if not status:
         # print (kwargs)
         initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
-        orders = initial_orders.filter(**kwargs).order_by('-id')
+        orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
+        # print(kwargs)
+        # print (orders)
+
     elif not user.is_anonymous():
         kwargs["status__name"] = status
         initial_orders = Order.objects.filter(tourist__user=user, status__name=status)#it is needed for citieas and guides list
-        orders = initial_orders.filter(**kwargs).order_by('-id')
+        orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
     else:
         current_url = request.path
@@ -223,7 +273,6 @@ def bookings(request, status=None):
 
     guides_ids = [item.guide.id for item in initial_orders]
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
-
 
     page = request.GET.get('page', 1)
     paginator = Paginator(orders, 10)
@@ -240,7 +289,7 @@ def bookings(request, status=None):
 @login_required()
 def orders(request, status=None):
     current_page = "orders"
-    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
 
     user = request.user
 
@@ -251,6 +300,9 @@ def orders(request, status=None):
 
         kwargs = dict()
 
+        if data.get("id"):
+            kwargs["id"] = data.get("id")
+
         if filtered_statuses:
             kwargs["status__name__in"] = filtered_statuses
 
@@ -260,14 +312,13 @@ def orders(request, status=None):
 
         if not status:
             kwargs["guide"] = guide
-            print("kwargs %s" % kwargs)
-            orders = Order.objects.filter(**kwargs).order_by("-id")
+            # print("kwargs %s" % kwargs)
+            orders = Order.objects.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
             # print("not status")
-
         else:
             kwargs["guide"] = guide
             kwargs["status__slug"] = status
-            orders = Order.objects.filter(**kwargs).order_by("-id")
+            orders = Order.objects.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
 
         orders_nmb = orders.count()
 
@@ -281,10 +332,9 @@ def orders(request, status=None):
         except EmptyPage:
             orders = paginator.page(paginator.num_pages)
 
-
         return render(request, 'orders/orders.html', locals())
     except Exception as e:
-        print (e)
+        print(e)
         messages.error(request, 'You have no permissions for this action!')
         return HttpResponseRedirect(reverse("home"))
 
@@ -294,7 +344,20 @@ def guide_settings_orders(request):
     page = "settings_orders"
     user = request.user
     guide = user.guideprofile
-    orders = Order.objects.filter(guide=guide).order_by("-id")
+    data = request.GET
+    order_id = data.get("id")
+    is_fee_free = user.generalprofile.is_fee_free
+    if guide:
+        if order_id:
+            if Order.objects.filter(id=order_id, guide=guide).exclude(status_id=1).exists():
+                orders = Order.objects.filter(id=order_id, guide=guide).exclude(status_id=1)
+            else:
+                orders = Order.objects.filter(guide=guide).exclude(status_id=1).order_by("-id")
+        else:
+            orders = Order.objects.filter(guide=guide).exclude(status_id=1).order_by("-id")
+    else:
+        return HttpResponseRedirect(reverse("home"))
+
     return render(request, 'orders/profile_settings_guide_orders.html', locals())
 
 
@@ -310,7 +373,6 @@ def tourist_settings_orders(request):
 @login_required()
 def cancel_order(request, order_id):
     user = request.user
-
     current_role = request.session.get("current_role")
     if current_role == "tourist" or not current_role:
         #check if a user is a tourist in an order
@@ -319,7 +381,7 @@ def cancel_order(request, order_id):
             order = Order.objects.get(id=order_id, tourist=tourist)
             order.status_id = 3
             order.save(force_update=True)
-            print ("try 2")
+            print("try 2")
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')
@@ -330,8 +392,8 @@ def cancel_order(request, order_id):
             order = Order.objects.get(id=order_id, guide=guide)
             order.status_id = 6
             order.save(force_update=True)
-            print ("try 1")
-            print (order.status)
+            print("try 1")
+            print(order.status)
             messages.success(request, 'Order has been successfully cancelled!')
         except:
             messages.error(request, 'You have no permissions for this action!')
@@ -341,10 +403,11 @@ def cancel_order(request, order_id):
 
 @login_required()
 def change_order_status(request, order_id, status_id):
-    print ("change order status")
+    print("change order status")
     user = request.user
 
     current_role = request.session.get("current_role")
+    print(current_role)
     if current_role == "tourist" or not current_role:
         #check if a user is a tourist in an order
         try:
@@ -353,7 +416,7 @@ def change_order_status(request, order_id, status_id):
 
             # checking status transition consistancy for preventing hacking
             checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
-            print ("checking: %s" % checking)
+            print("checking: %s" % checking)
             if checking == False:
                 print("False")
                 messages.error(request, 'You have no permissions for this action!')
@@ -368,31 +431,34 @@ def change_order_status(request, order_id, status_id):
                 print("else")
                 order.status_id = status_id
                 order.save(force_update=True)
-                messages.success(request, 'Order has been successfully cancelled!')
+                # messages.success(request, 'Order has been successfully cancelled!')
         except Exception as e:
             print(e)
             messages.error(request, 'You have no permissions for this action!')
     else:
         #check if a user is a guide
         try:
+            print('TRY GUIDE')
             guide = user.guideprofile
             order = Order.objects.get(id=order_id, guide=guide)
+            print('ORDER STATUS: ', order.status.id)
+            print('NEW STATUS: ', status_id)
 
             # checking status transition consistancy for preventing hacking
             checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
-            print (checking)
+            print('CHECKIG: ', checking)
             if checking == False:
                 messages.error(request, 'You have no permissions for this action!')
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-            print ("3")
-            print (status_id)
+            print("3")
+            print(status_id)
             order.status_id = status_id
-            print ("4")
+            print("4")
             order.save(force_update=True)
-            messages.success(request, 'Order has been successfully cancelled!')
+            # messages.success(request, 'Order has been successfully cancelled!')
         except Exception as e:
-            print (e)
+            print(e)
             messages.error(request, 'You have no permissions for this action!')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -458,7 +524,6 @@ def order_completing(request, order_id):
     if order.tourist.user == user:
         is_tourist = True
 
-
     if request.POST:
         data = request.POST
 
@@ -483,7 +548,9 @@ def order_completing(request, order_id):
 
                 order.status_id = 4 #completed
                 order.save(force_update=True)
-                print("ORDER with id %s WAS UPDATED %s" % (order.id, order.status.id))
+                Review.objects.update_or_create(order=order, defaults=kwargs)
+                messages.success(request, 'Review has been successfully created!')
+                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
             if order.tourist.user == user:
                 tourist_kwargs = {
@@ -498,27 +565,35 @@ def order_completing(request, order_id):
 
                 #completing payment
                 if order.status.id in [2, 4] and order.payment_status.id in [2, 3]:
-                    print("in")
-                    transaction_id = order.payment.uuid
-                    result = braintree.Transaction.submit_for_settlement(transaction_id)
-                    print("result: %s" % result)
-                    if result.is_success:
+                    # print("in")
+                    payments = order.payment_set.all()
+                    all_payment_successful = True
+                    payments_errors = str()
+                    for payment in payments.iterator():
+                        transaction_id = payment.uuid
+                        result = braintree.Transaction.submit_for_settlement(transaction_id)
+                        if not result.is_success:
+                            all_payment_successful = False
+                            payments_errors += '%s ' % result.errors
+                            # print(result.errors)
+                        else:
+                            order.status_id = 3 #partial payment reserved
+                            payment.dt_paid = dt_now
+                            payment.save(force_update=True)
+
+                    if all_payment_successful:
                         order.status_id = 4 #completed
-                        order.payment_status_id = 4 #fully paid
+                        payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                        order.payment_status = payment_status
                         order.save(force_update=True)
-
-                        order.payment.dt_paid = dt_now
-                        order.payment.save(force_update=True)
-
+                        Review.objects.update_or_create(order=order, defaults=kwargs)
+                        messages.success(request, 'Review has been successfully created!')
                     else:
-                      print(result.errors)
+                        messages.error(request, payments_errors)
 
         else:
+            messages.error(request, 'You do not have permissions to access to this page!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        Review.objects.update_or_create(order=order, defaults=kwargs)
-        messages.success(request, 'Review has been successfully created!')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
     return render(request, 'orders/order_completing.html', locals())

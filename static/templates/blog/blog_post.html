@@ -4,12 +4,10 @@
 
 
 {% block content %}
-    <div class="container">
-        <h1 class="page-title">Tourzan Blog</h1>
-    </div>
+    <div class="gap"></div>
     <div class="container">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-6 col-md-offset-1">
                 <article class="post">
                     <header class="post-header">
                         <a class="hover-img" href="{% url 'blog_post' blog_post.slug %}">
@@ -31,62 +29,24 @@
                         <ul class="post-meta">
                             <li><i class="fa fa-calendar"></i><a href="#">{{ blog_post.created|date:"m.d.Y" }}</a>
                             </li>
-                            <li><i class="fa fa-user"></i><a href="#">{{ blog_post.user.username}}</a>
+                            <li><i class="fa fa-user"></i><a href="#">{{ blog_post.author}}</a>
                             </li>
                             <li><i class="fa fa-tags"></i><a href="#">{{ blog_post.tags }}</a>
                             </li>
-                            <li><i class="fa fa-comments"></i><a href="#">0 Comments</a>
-                            </li>
                         </ul>
-                        <p class="post-desciption">
+                        <p class="blog-text">
                             {{ blog_post.text|safe }}
                         </p>
+
+                        <div>
+                            <a class="btn btn-primary" href="{% url 'blog' %}">{% trans 'Back to posts list' %}</a>
+                        </div>
 
                     </div>
                 </article>
 
-                {% if users.has_other_pages %}
-                    <ul class="pagination">
-
-                        {% if users.has_previous %}
-                          <li><a href="?page={{ users.previous_page_number }}">&laquo;</a></li>
-                        {% else %}
-                          <li class="disabled"><span>&laquo;</span></li>
-                        {% endif %}
-                        {% for i in users.paginator.page_range %}
-                          {% if users.number == i %}
-                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                          {% else %}
-                            <li><a href="?page={{ i }}">{{ i }}</a></li>
-                          {% endif %}
-                        {% endfor %}
-                        {% if users.has_next %}
-                          <li><a href="?page={{ users.next_page_number }}">&raquo;</a></li>
-                        {% else %}
-                          <li class="disabled"><span>&raquo;</span></li>
-                        {% endif %}
-
-
-                        {% if blog_posts.has_previous %}
-                            <li class="next"><a href="?page={{ blog_posts.previous_page_number }}">Previous Page</a>
-                            </li>
-                        {% endif %}
-                        {% for i in blog_posts.paginator.page_range %}
-                            {% if blog_posts.number == i %}
-                                <li class="active"><a href="#">{{ i }}</a></li>
-                              {% else %}
-                                <li><a href="#">{{ i }}</a></li>
-                              {% endif %}
-                        {% endfor %}
-                        {% if users.has_next %}
-                            <li class="next"><a href="?page={{ blog_posts.next_page_number }}">Next Page</a></li>
-                        {% endif %}
-
-                    </ul>
-                {% endif %}
-
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 {% include 'blog/blog_post_rightbar.html' %}
             </div>
         </div>

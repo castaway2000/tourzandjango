@@ -16,7 +16,7 @@
                 <h5 class="booking-item-title">{{ order.tour.name }}</h5>
 
                 <span>
-                    by {{ order.guide.user.username }}
+                    by {{ order.guide.user.generalprofile.first_name}}
                 </span>
 
                 <ul class="icon-group booking-item-rating-stars">
@@ -48,7 +48,7 @@
                             Go to Tour
                         </a>
                     {% elif order.guide %}
-                        <a href="{% url 'guide' order.guide.user.username %}" class="btn btn-primary btn-xs">
+                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}" class="btn btn-primary btn-xs">
                             Go to Guide
                         </a>
                     {% endif %}

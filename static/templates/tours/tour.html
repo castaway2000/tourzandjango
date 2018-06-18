@@ -9,11 +9,11 @@
         <ul class="breadcrumb">
             <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
-            <li><a href="/">Some country</a>
-            <li><a href="/">{{ tour.city.name }}</a>
+{#            <li><a href="/">Some country</a>#}
+            <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
             </li>
             <li>
-                <a href="{% url 'guide' tour.guide.user.username %}">{{ tour.guide.user.username }}</a>
+                <a href="{% url 'guide' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid %}">{{ tour.guide.user.generalprofile.first_name }}</a>
             </li>
             <li class="active">{{ tour.name }}</li>
         </ul>
@@ -61,26 +61,39 @@
 {#                        {% endfor %}#}
 {#                    </div>#}
                     <!-- END LIGHTBOX GALLERY -->
-                </div>
-                <div class="col-md-4">
-                    <div class="booking-item-meta">
-                        <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
-{#                        <h3>97% <small >of guests recommend</small></h3>#}
-                        <div class="booking-item-rating">
-                            <ul class="icon-list icon-group booking-item-rating-stars">
-                                {{ tour.rating|rendering_stars|safe }}
-                            </ul>
-                            <span class="booking-item-rating-number"><b >{{ tour.rating}}</b> {% blocktrans %}of{% endblocktrans %} 5
-                                <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small></span>
-{#                            <p><a class="text-default" href="#">based on 1535 reviews</a>#}
-{#                            </p>#}
-                        </div>
-                    </div>
                     <div class="booking-item-meta">
                         {% if tour.overview  %}
+                            <h3>{% blocktrans %}About this tour:{% endblocktrans %}</h3>
                             {{ tour.overview|linebreaks }}
                         {% else %}
                             <p class="lead">{% blocktrans %}No tour overview so far...{% endblocktrans %}</p>
+                        {% endif %}
+                        {% if tour.included %}
+                            <h3>{% blocktrans %}Whats Included:{% endblocktrans %}</h3>
+                            {{ tour.included|linebreaks }}
+                        {% endif %}
+                        {% if tour.excluded %}
+                            <h3>{% blocktrans %}Whats Not Included:{% endblocktrans %}</h3>
+                            {{ tour.excluded|linebreaks }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="booking-item-meta">
+                        {% if not tour.rating %}
+                            <h2 class="lh1em">{% blocktrans %}New!{% endblocktrans %}</h2>
+                        {% else %}
+                            <h2 class="lh1em">{% blocktrans %}Exeptional!{% endblocktrans %}</h2>
+    {#                        <h3>97% <small >of guests recommend</small></h3>#}
+                            <div class="booking-item-rating">
+                                <ul class="icon-list icon-group booking-item-rating-stars">
+                                    {{ tour.rating|rendering_stars|safe }}
+                                </ul>
+                                <span class="booking-item-rating-number"><b >{{ tour.rating}}</b> {% blocktrans %}of{% endblocktrans %} 5
+                                    <small class="text-smaller">{% blocktrans %}rating{% endblocktrans %}</small></span>
+    {#                            <p><a class="text-default" href="#">based on 1535 reviews</a>#}
+    {#                            </p>#}
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -98,9 +111,14 @@
                             </button>
                             <div class="message-text"></div>
                         </div>
-                        <form method="get" id="form_tour_scheduling" action="{% url 'making_booking' %}"
+                        <form method="post" id="form_tour_scheduling" action="{% url 'making_booking' %}"
                             class="form-horizontal schedule-form
-                        {% if request.user.is_anonymous %}user-not-authorized{% endif %}">
+                        {% if request.user.is_anonymous %}user-not-authorized{% endif %}">{% csrf_token %}
+
+                            <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
+                            <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
+                            <input class="hidden" id="booking_hours" name="booking_hours">
+                            <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ tour.min_hours }}">
 
                             <h3 class="text-center">
                                 {% blocktrans %}Book{% endblocktrans %} {{ tour.name }}
@@ -122,37 +140,18 @@
                                         <div class="col-md-4">
                                             <div class="form-group form-group-icon-left"><i class="fa fa-calendar input-icon"></i>
                                                 <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                <input class="form-control" name="start" type="text" required/>
+                                                <input class="form-control d_picker" id="booking_date" name="start"
+                                                       type="text" required value="{% now "mm.dd.yyyy" %}" />
                                             </div>
                                         </div>
-                                        <div class="col-md-5 text-center">
-                                            {% if tour.payment_type.id == 1 %}
-                                                {% with tour.get_hours_nmb_range as hours_nmb_range %}
-                                                    <div id="hours_nmb_container" class="form-group form-group- form-group-select-plus">
-                                                        <label>{% blocktrans %}Hours nmb:{% endblocktrans %}</label>
-                                                        <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                            {% for hour in hours_nmb_range.min_hours_nmb_range_basic %}
-                                                                <label class="btn btn-primary hours-nmb
-                                                                    {% if forloop.counter == 1 %} active{% endif %}">
-                                                                <input type="radio" name="booking_hours" value="{{ hour }}"/>
-                                                                    {{ hour }}{% if forloop.last %}+{% endif %}
-                                                                </label>
-                                                            {% endfor %}
-                                                        </div>
-                                                        <select class="form-control hidden" id="booking_hours" name="booking_hours">
-                                                            {% for hour in hours_nmb_range.min_hours_nmb_range_full %}
-                                                                <option value="{{ hour }}">{{ hour }}
-                                                                </option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </div>
-                                                {% endwith %}
-                                            {% elif tour.payment_type == 2 %}
-                                                {{ tour.price }} {{ tour.currency.name }}
-                                            {% endif %}
+                                        <div class="col-md-8 text-center">
+                                            <p>Time slots:</p>
+                                            <div id="booking_form_error_container"></div>
+                                            <div id="time_slots" class="time-slots-container"
+                                                 data-link="{% url 'available_date_timeslots' %}"></div>
                                         </div>
-                                        <div class="col-md-3 text-center">
-                                            <label> </label>
+
+                                        <div class="col-lg-12 text-center">
                                             <button class="btn btn-primary btn-lg btn-booking submit-button">{% blocktrans %}Book Now{% endblocktrans %}</button>
                                         </div>
                                     </div>
@@ -334,7 +333,7 @@
 
                 <div class="col-md-4">
                     <h3 class="mb20">
-                        {% blocktrans %}Other Tours of{% endblocktrans %} {{ guide.get_full_name }}
+                        {% blocktrans %}Other Tours of{% endblocktrans %} {{ guide.user.generalprofile.first_name }}
                     </h3>
 
                     {% if other_tours %}
@@ -365,5 +364,63 @@
     </div>
 
 {% endblock %}
+
+{% block js_stuff %}
+    <script>
+        $(document).ready(function(){
+
+            function gettingTimeSlotsForDate(){
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["booking_date"] = $('#booking_date').val();
+                data["guide_id"] = $('#guide_id').val();
+                var url = $('#time_slots').data('link');
+                $.ajax({
+                     url: url,
+                     type: 'POST',
+                     data: data,
+                     cache: true,
+                     success: function(data){
+                         time_slots_container = $('#time_slots');
+
+                         $('#booking_form_error_container').html("");
+                         time_slots_container.html("");
+
+                         available_time_slots = data.available_time_slots;
+
+                         if (available_time_slots.length > 0){
+                             $.each(available_time_slots, function(index, el){
+                                slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
+                                slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
+                                time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
+                             })
+                         }else{
+                             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
+                                     "There are no available time slots for this date. <br>" +
+                                     "Please select another date.</div>")
+                         }
+                     }
+                })
+            }
+
+            $('.d_picker').datepicker({
+                todayHighlight: true,
+                format: "mm.dd.yyyy",
+                weekStart: 1
+            }).datepicker("setDate", new Date()).on("changeDate", function(e) {
+                // `e` here contains the extra attributes
+                gettingTimeSlotsForDate();
+            });
+
+            gettingTimeSlotsForDate();
+
+            $(document).on("click", '.time-slots-container .time-slot', function(){
+                $(this).toggleClass("chosen");
+            })
+
+        })
+    </script>
+{% endblock js_stuff %}
 
 

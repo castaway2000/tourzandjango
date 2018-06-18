@@ -3,7 +3,9 @@
 {% load i18n %}
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
-
+{% if request.session.current_role != "guide" %}
+    {% load crispy_forms_tags %}
+{% endif %}
 
 
 {% block content_profile %}
@@ -12,8 +14,170 @@
 
             <div class="col-md-7">
                 <div>
-                    <h4>{% blocktrans %}Contact information{% endblocktrans %}</h4>
+                    <form class="" name="general_profile_form" method="post" autocomplete="off">{% csrf_token %}
 
+                        <div>
+                            <h4>{% trans 'Your Personal Info' %}</h4>
+                        </div>
+
+                        {% if request.session.current_role != "guide" %}
+                            {{ form|crispy }}
+                        {% endif %}
+
+                        {% if request.session.current_role == "guide" %}
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <label>{% trans 'First Name' %}*</label>
+                                        <input required class="form-control" name="first_name"
+                                                   value="{{ general_profile.first_name|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <label>{% trans 'Last Name' %}*</label>
+                                        <input required class="form-control" name="last_name"
+                                                   value="{{ general_profile.last_name|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <label>{% trans 'Email' %}*</label>
+                                        <input required class="form-control" name="email"
+                                                   value="{{ general_profile.user.email|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group form-group-icon-left">
+                                        <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
+                                        <span class="text-error">{{ form.date_of_birth.errors }}</span>
+                                        <div class="div-input-icon">
+                                            <i class="fa fa-lock input-icon"></i>
+                                            <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
+                                                   id="date_of_birth"
+                                                   name="date_of_birth"
+                                                   {% if request.POST.date_of_birth %}
+                                                        value="{{ request.POST.date_of_birth }}"
+                                                   {% else %}
+                                                        value="{{ user.generalprofile.date_of_birth|date:'m.d.Y' }}"
+                                                   {% endif %}
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4>{% trans 'Company Info' %}</h4>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                      <input type="checkbox" class=""
+                                            name="{{ form.is_company.html_name }}"
+                                            {% if form.is_company.value %}checked {% endif %}
+                                             id="is_company"
+                                      >{% blocktrans %}Do you represent a company?{% endblocktrans %}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="business_id_container" class="form-group form-group-icon-left
+                                {% if not form.is_company.value %}hidden{% endif %}"
+                            >
+                                <i class="fa fa-lock input-icon"></i>
+                                <label>{% blocktrans %}Business id{% endblocktrans %}:</label>
+                                <input class="form-control" name="{{ form.business_id.html_name }}" value="{% if form.business_id.value %}{{ form.business_id.value }}{% endif %}">
+                            </div>
+
+                            <div>
+                                <h4>{% trans 'Your Registration Address' %}</h4>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'Country' %}*</label>
+                                        <select required class="form-control" name="registration_country">
+                                            {% for country in countries %}
+                                                <option>{% trans 'Select a country' %}</option>
+                                                <option value="{{ country }}"
+                                                        {% if country == general_profile.registration_country %}selected{% endif %}>
+                                                    {{ country }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'State' %}</label>
+                                        <input class="form-control" name="registration_state"
+                                               value="{{ general_profile.registration_state|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'City' %}*</label>
+                                        <input required class="form-control" name="registration_city"
+                                               value="{{ general_profile.registration_city|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>{% trans 'Street' %}*</label>
+                                        <input required class="form-control" name="registration_street"
+                                               value="{{ general_profile.registration_street|default_if_none:"" }}">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label>{% trans 'Building' %}*</label>
+                                        <input required class="form-control" name="registration_building_nmb"
+                                               value="{{ general_profile.registration_building_nmb|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>{% trans 'Flat' %}</label>
+                                        <input class="form-control" name="registration_flat_nmb"
+                                               value="{{ general_profile.registration_flat_nmb|default_if_none:"" }}">
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>{% trans 'Postcode' %}*</label>
+                                        <input required class="form-control" name="registration_postcode"
+                                               value="{{ general_profile.registration_postcode|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
+                        </div>
+                    </form>
+                </div>
+                 <div>
+                    <hr>
+                    <h4>{% blocktrans %}Password management section{% endblocktrans %}</h4>
+                    <a href="{% url 'password_changing' %}" class="btn btn-danger">
+                        {% blocktrans %}Change Password{% endblocktrans %}
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="col-lg-5">
+            <div>
+                    <h4>{% blocktrans %}Trusted Status.{% endblocktrans %}</h4>
+                    <p>{% blocktrans %}You can gain trusted status by connecting the following 3 things:{% endblocktrans %}</p>
+                    <ul>
+                        <li>{% blocktrans %}Your phone{% endblocktrans %}</li>
+                        <li>{% blocktrans %}Registration Address{% endblocktrans %}</li>
+                        <li>{% blocktrans %}A Social Media account{% endblocktrans %}</li>
+                    </ul>
+                </div>
+                <br/>
+                <div>
                     <div>
                         <p>{% blocktrans %}Social networks {% endblocktrans %}</p>
                         <ul>
@@ -32,7 +196,7 @@
                                     </a>
 
                                 {% else %}
-                                    {% blocktrans %}connect your facebook account {% endblocktrans %}
+                                    {% blocktrans %}connect your facebook {% endblocktrans %}
                                     <a title="Facebook" class=""
                                        href="{% provider_login_url "facebook" method="oauth2"  next=request.get_full_path %}"
                                     >
@@ -44,7 +208,7 @@
                             <li>Twitter:
                                 {% if general_profile.twitter %}
                                     your profile is
-                                    <a href="https://twitter.com/intent/user?user_id={{ general_profile.twitter }}" target="_blank"">
+                                    <a href="https://twitter.com/intent/user?user_id={{ general_profile.twitter }}" target="_blank">
                                         {% blocktrans %}connected{% endblocktrans %}
                                     </a>
                                     <a title="Twitter" class="link_lead"
@@ -56,7 +220,7 @@
                                     </a>
 
                                 {% else %}
-                                    {% blocktrans %}connect your twitter account {% endblocktrans %}
+                                    {% blocktrans %}connect your twitter {% endblocktrans %}
                                     <a title="Twitter" class=""
                                        href="{% provider_login_url "twitter" method="oauth2"  next=request.get_full_path %}"
                                     >
@@ -68,7 +232,7 @@
                             <li>Google:
                                 {% if general_profile.google %}
                                     your profile is
-                                    <a href="https://plus.google.com/{{ general_profile.google }}" target="_blank"">
+                                    <a href="https://plus.google.com/{{ general_profile.google }}" target="_blank">
                                         {% blocktrans %}connected{% endblocktrans %}
                                     </a>
                                     <a title="Google" class="link_lead"
@@ -78,7 +242,6 @@
                                             <i class="fa fa-plus" aria-hidden="true"></i> connect new?
                                         {% endblocktrans %}
                                     </a>
-
                                 {% else %}
                                     {% blocktrans %}connect your google account {% endblocktrans %}
                                     <a title="Google" class=""
@@ -86,15 +249,12 @@
                                     >
                                         {% blocktrans %}here{% endblocktrans %}
                                     </a>
-
                                 {% endif %}
                             </li>
                         </ul>
-                    </div>
-                    <div>
                         <form id="phone_form" class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
-                            <div class="row">
-                                <div class="col-lg-7">
+
+                                <div class="col-lg-9">
                                     {% if not request.session.pending_validating_phone and general_profile.phone_is_validated and general_profile.phone %}
                                         <label>{% blocktrans %}Phone{% endblocktrans %}</label>
                                         <span>{{ general_profile.phone }}</span>
@@ -103,12 +263,10 @@
                                         >
                                             {% blocktrans %}Edit{% endblocktrans %}
                                         </button>
-
                                     {% else %}
-
                                         <div class="form-group">
                                             <label>{% blocktrans %}Phone {% endblocktrans %}</label>
-                                            <span id="phone_error_message" class="text-error">{{ verification_form.phone.errors }}</span>
+                                            <span id="phone_error_message" class="text-error"></span>
                                             <input type="text" class="form-control intl-phone-input" name="{{ verification_form.phone.html_name }}"
                                                    id="{{ verification_form.phone.html_name }}"
 
@@ -142,12 +300,10 @@
                                                     {% blocktrans %}Cancel{% endblocktrans %}
                                                 </button>
                                             {% endif %}
-
                                         </div>
                                     {% endif %}
 
                                     {% if request.session.pending_sms_code and request.session.pending_validating_phone %}
-
                                         <div class="form-group" id="sms_code_container">
                                             <label>{% blocktrans %}Enter validation code here{% endblocktrans %}</label>
                                             <span class="text-error">{{ verification_form.sms_code.errors }}</span>
@@ -163,104 +319,8 @@
                                     {% endif %}
 
                                 </div>
-                            </div>
+
                         </form>
-                    </div>
-
-                    <div>
-                        <hr>
-                        <form class="form-horizontal" name="general_profile_form" method="post">{% csrf_token %}
-
-                            <div class="form-group form-group-icon-left">
-                                <i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Address{% endblocktrans %}:</label>
-                                <textarea class="form-control" name="{{ form.address.html_name }}">{% if form.address.value %}{{ form.address.value }}{% endif %}</textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <label>
-                                      <input type="checkbox" class=""
-                                            name="{{ form.is_company.html_name }}"
-                                            {% if form.is_company.value %}checked {% endif %}
-                                             id="is_company"
-                                      >{% blocktrans %}Do you represent a company?{% endblocktrans %}
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div id="business_id_container" class="form-group form-group-icon-left
-                                {% if not form.is_company.value %}hidden{% endif %}"
-                            >
-                                <i class="fa fa-lock input-icon"></i>
-                                <label>{% blocktrans %}Business id{% endblocktrans %}:</label>
-                                <input class="form-control" name="{{ form.business_id.html_name }}" value="{% if form.business_id.value %}{{ form.business_id.value }}{% endif %}">
-                            </div>
-
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
-
-            </div>
-            <div class="col-lg-5">
-                <div>
-                    <h4>{% blocktrans %}Password management section{% endblocktrans %}</h4>
-                    <a href="{% url 'password_changing' %}" class="btn btn-danger">
-                        {% blocktrans %}Change password{% endblocktrans %}
-                    </a>
-                </div>
-                <div>
-                    <hr>
-                    <h4>{% blocktrans %}Identity verification{% endblocktrans %}</h4>
-
-                    <div>
-                        {% if not document_uploaded and not is_just_uploaded%}
-                            <p>
-                                {% blocktrans %}Please add a scan photo of your passport or driving license{% endblocktrans %}
-                            </p>
-                            <form class="form-inline" name="docs_form" method="post" enctype="multipart/form-data">{% csrf_token %}
-                                <div class="form-group">
-                                    <input type="file" multiple name="file" >
-                                </div>
-                                <div class="form-group">
-                                    <input type="submit" name="uploading_docs_button" class="btn btn-primary"
-                                           value="{% blocktrans %}submit{% endblocktrans %}">
-                                </div>
-                            </form>
-                        {% elif document_uploaded.status.id == 1 or is_just_uploaded %}
-                            <p>{% blocktrans %}You scan was successfully uploaded. We will verify it during 24 hours.{% endblocktrans %}</p>
-                        {% elif document_uploaded.status.id == 2 %}
-                            <p>{% blocktrans %}You identity was successfully verified!{% endblocktrans %}</p>
-                        {% elif document_uploaded.status.id == 3 %}
-                            <p>
-                                {% blocktrans %}You uploaded scan was rejected. Please upload it once again{% endblocktrans %}
-                                <br>
-                                {% if document_uploaded.comments %}
-                                    <b>{% blocktrans %}Comments: {% endblocktrans %}</b>
-                                    {{ document_uploaded.comments|safe }}
-                                {% endif %}
-                            </p>
-                        {% endif %}
-                        <br>
-                        <h5>{% blocktrans %}Trusted Status:{% endblocktrans %}</h5>
-                        <p>{% blocktrans %}You can get trusted status by connecting 3 of the 4 things here:{% endblocktrans %}</p>
-                        <ul>
-                            <li>{% blocktrans %}Your phone{% endblocktrans %}</li>
-                            <li>{% blocktrans %}Home Address{% endblocktrans %}</li>
-                            <li>{% blocktrans %}Government issued ID{% endblocktrans %}</li>
-                            <li>{% blocktrans %}Social Media{% endblocktrans %}</li>
-                        </ul>
-                        <h5>{% blocktrans %}Why it matters:{% endblocktrans %}</h5>
-                        <p>{% blocktrans %}Think about this for a moment. A stranger is hiring a stranger to show them around. As such
-                            it’s nice to have peace of mind. Trusted profiles gain more views from tourists looking to
-                            hire guides and give guides peace of mind they are meeting up with safe and respectful
-                            tourists and vice versa.
-                            {% endblocktrans %}
-                        </p>
                     </div>
                 </div>
             </div>

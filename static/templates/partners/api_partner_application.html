@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+    <div class="container">
+        <h1 class="page-title">{% blocktrans %}Tourzan API Application{% endblocktrans %}</h1 class="page-title">
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="gap"></div>
+            <div class="col-md-5">
+                <aside>
+                    <p>
+                        {% blocktrans %}Please feel in the application form to request our API access{% endblocktrans %}
+                    </p>
+                    <p>
+                        {% blocktrans %}We will review your application and will be in touch with you soon.{% endblocktrans %}
+                    </p>
+                </aside>
+            </div>
+            <div class="col-md-7">
+                <form class="" method="post">{% csrf_token %}
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Company Name{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.company_name.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-lock input-icon"></i>
+                            <input required class="form-control" name="{{ form.company_name.html_name }}"
+                            value="{{ request.POST.company_name }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Billing Address{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.billing_address.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-envelope input-icon"></i>
+                            <textarea required rows="2" maxlength="5000"
+                                      name="{{ form.billing_address.html_name }}"
+                                      class="form-control" >{{ request.POST.billing_address }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Tax ID{% endblocktrans %}:</label>
+                        <span class="text-error">{{ form.tax_id.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-lock input-icon"></i>
+                            <input class="form-control" name="{{ form.tax_id.html_name }}"
+                                   value="{{ request.POST.tax_id }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Website{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.website.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-lock input-icon"></i>
+                            <input required class="form-control" name="{{ form.website.html_name }}"
+                                value="{{ request.POST.website }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Email{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.email.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-lock input-icon"></i>
+                            <input type="email" required class="form-control" name="{{ form.email.html_name }}"
+                                   value="{{ request.POST.email }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Requesting person name{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.requesting_person.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-lock input-icon"></i>
+                            <input required class="form-control" name="{{ form.requesting_person.html_name }}"
+                                   value="{{ request.POST.requesting_person }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}Reason Requesting{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.reason_requesting.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-envelope input-icon"></i>
+                            <textarea required rows="5" maxlength="5000"
+                                      name="{{ form.reason_requesting.html_name }}"
+                                      class="form-control" >{{ request.POST.reason_requesting }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                              <input type="checkbox" class=""
+                                    name="{{ form.is_agreed.html_name }}"
+                                    checked
+                                    required
+                              >{% blocktrans %}Agree to the{% endblocktrans %} <a href={% url 'integration_terms' %}>
+                                {% blocktrans %}Profit Sharing Terms of Service{% endblocktrans %}</a>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-success">{% trans 'Submit' %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="gap"></div>
+    </div>
+{% endblock %}
+
+
+
+

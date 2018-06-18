@@ -7,16 +7,17 @@
             <div class="col-lg-6 col-lg-offset-3">
                 <div class="jumbotron mt10">
                     <h3 class="text-center">
-                        {% blocktrans %}To create Guide Profile click a button bellow.{% endblocktrans %}
+                        {% blocktrans %}To create a Guide Profile, click a button bellow.{% endblocktrans %}
                     </h3>
-                    <p>{% blocktrans %}If you click this button you agree with terms and conditions{% endblocktrans %}</p>
-
+                    <p class="text-center">{% blocktrans %}By clicking this button you agree to the {% endblocktrans %}
+                    <a href={% url 'tos' %}>{% blocktrans %}terms and conditions{% endblocktrans %}</a>
+                    </p>
                     <div class="text-center mb10">
                         <img src="{% static 'img/tourzan_logo_white.jpg' %}" class="logo-md">
                     </div>
 
                     <div class="text-center">
-                        <a href="{% url 'guide_registration' %}" class="btn btn-primary">
+                        <a href="{% url 'guide_registration_welcome_confirmation' %}" class="btn btn-primary">
                             {% blocktrans %}Create Guide Profile{% endblocktrans %}
                         </a>
                     </div>

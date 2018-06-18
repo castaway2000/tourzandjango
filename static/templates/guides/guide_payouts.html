@@ -11,16 +11,40 @@
         <div class="row">
             <div class="col-lg-10 col-lg-offset-1 text-center">
                 <div class="gap gap-small"></div>
-                    <H1>Payout method settings</H1>
-                    <iframe src="{{ payment_rails_url }}" id="paymentrails_widget"
-                            style="border: none; width: 700px; height: 785px;"></iframe>
+                    <h3>Payout method settings</h3>
+                    {% if general_profile.is_verified %}
+                        {% if not illegal_country %}'
+                            <p>{% blocktrans %}please keep in mind that we charge a 13% service fee and our payment processor
+                                might also charge a processing fee. Please charge for services accordingly.
+                            {% endblocktrans %}</p>
+                        <iframe src="{{ payment_rails_url }}" id="paymentrails_widget"
+                                style="border: none; width: 700px; height: 785px;"></iframe>
+                        {% else %}
+                            <p>{% blocktrans %}
+                                We regret to inform you that at this time we do not support payouts to your country.
+                                This is a limitation of our payout processor and we are looking into other ways to
+                                best serve payment processing in your region. Please feel free to list your services
+                                with us and use a payment method of your choice. Your account will remain verified and
+                                this will give your customers greater trust in you.
+                            {% endblocktrans %}</p>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center">
+                            <p>
+                                {% blocktrans %}
+                                    To connect you payout method preferences, please complete verification first.
+                                {% endblocktrans %}
+                            </p>
+                            <a href="{% url 'identity_verification_router' %}" class="btn btn-success btn-lg">
+                                {% trans 'Get Verified' %}
+                            </a>
+                        </div>
+                    {% endif %}
                 <div class="gap gap-small"></div>
             </div>
         </div>
     </div>
 {% endblock %}
-
-
 {% block js_stuff %}
     <script>
         $(document).ready(function(){

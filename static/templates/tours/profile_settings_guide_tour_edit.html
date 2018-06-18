@@ -12,9 +12,9 @@
 
                     <span id="tour_id" class="hidden">{{ tour.id }}</span>
 
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                    <div class="form-group">
                         <label>{% blocktrans %}Name:{% endblocktrans %}</label>
-                        <span>{{ form.name.errors }}</span>
+                        <div>{{ form.name.errors }}</div>
                         <input class="form-control" name="{{ form.name.html_name }}"
                             {% if form.name.value %}
                                value="{{ form.name.value }}"
@@ -22,13 +22,24 @@
                         >
                     </div>
 
-                    <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon"></i>
+                    <div class="form-group">
                         <label>{% blocktrans %}Overview{% endblocktrans %}</label>
                         <textarea rows="7" maxlength="50000"
                                   placeholder="Add here tour overview"
                                   name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
                     </div>
-
+                    <div class="form-group">
+                        <label>{% blocktrans %}Whats Included?{% endblocktrans %}</label>
+                        <textarea rows="7" maxlength="50000"
+                                  placeholder="Let your customers know what is included"
+                                  name="{{ form.included.html_name }}" class="form-control" >{% if form.included.value %}{{ form.included.value }}{% endif %}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>{% blocktrans %}Whats Not Included?{% endblocktrans %}</label>
+                        <textarea rows="7" maxlength="50000"
+                                  placeholder="Set expectations by letting your customers know what is not included"
+                                  name="{{ form.excluded.html_name }}" class="form-control" >{% if form.excluded.value %}{{ form.excluded.value }}{% endif %}</textarea>
+                    </div>
                     <div class="checkbox">
                         <label>
                           <input type="checkbox" name="{{ form.is_active.html_name }}"
@@ -36,7 +47,6 @@
                           >{% blocktrans %} Is active{% endblocktrans %}
                         </label>
                     </div>
-
                 </div>
 
                 <div class="col-md-4">
@@ -94,6 +104,9 @@
                             <input type="number" step="0.01" class="form-control"
                                    name="price" value="{{ tour.price|safe }}">
                         </div>
+                        <p>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
+                            might also charge a processing fee. Please charge for services accordingly.
+                        {% endblocktrans %}</p>
 
                         <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
                             <label>{% blocktrans %}Hours duration:{% endblocktrans %}</label>
@@ -107,8 +120,8 @@
 
                 <div class="col-lg-12">
                     <div class="form-group">
-                        <label>{% blocktrans %}Add Image{% endblocktrans %}</label>
-                        <input type="file" name="new_images" multiple>
+                        <label>{% blocktrans %}Add Image (multiple upload is available){% endblocktrans %}</label>
+                        <input type="file" name="images" multiple>
                     </div>
 
                     <div class="form-group">
@@ -121,7 +134,7 @@
 
                 <div class="col-lg-7">
                     {% if tour %}
-                        <div class="form-group">
+                        <div class="form-group" id="tour_images_container">
                             {% if tours_images %}
                                 <button class="btn btn-danger" id="button_delete_image" data-action="{% url 'deactivate_tour_image' %}">{% blocktrans %}Delete Image{% endblocktrans %}</button>
                                 <button class="btn btn-success" id="button_make_main_image" data-action="{% url 'make_main_tour_image' %}">{% blocktrans %}Make main{% endblocktrans %}</button>
@@ -152,13 +165,20 @@
                 e.preventDefault();
                 var fotoramaDiv = $('.fotorama').fotorama();
                 var data = fotoramaDiv.data('fotorama').activeFrame;
-                var img_id= data.imgid;
-                fotoramaDiv.data('fotorama').splice(0, 1);
-{#                console.log(fotoramaDiv.data('fotorama'));#}
-{#                console.log(fotoramaDiv.data('fotorama').size);#}
+                active_image = $(".fotorama__nav__shaft .fotorama__active");
+
+                if($(".fotorama__nav.fotorama__nav--thumbs").length>0){
+                    img_index = active_image.parent('.fotorama__nav__shaft').find('.fotorama__nav__frame').index(active_image);
+                    fotoramaDiv.data('fotorama').splice(img_index, 1);
+                }else{
+                    $("#tour_images_container").addClass("hidden");
+                };
+
+                var img_id = data.imgid;
 
                 if(fotoramaDiv.data('fotorama').size==0) {
-                    $('.fotorama').addClass('hidden');
+{#                    $('.fotorama').addClass('hidden');#}
+                    $('#button_make_main_image').addClass('hidden');
                     $('#button_delete_image').addClass('hidden');
                 };
 

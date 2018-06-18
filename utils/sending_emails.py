@@ -5,86 +5,177 @@ from django.core.mail import EmailMessage
 
 from tourzan.settings import FROM_EMAIL
 from emails.models import EmailMessage as OwnEmailMessage
+from emails.models import EmailMessageType
+from django.contrib.auth.models import User
 
 
 class SendingEmail(object):
     from_email = FROM_EMAIL
     reply_to_emails = [from_email]
     bcc_emails = [from_email]
+    order = None
+    chat = None
 
     def __init__(self, data):
         data = data
         self.data = data
         self.order = data.get("order")
+        self.is_guide_saving = data.get("is_guide_saving")
 
-        if self.order:
-            self.email_for_order()
-
-
-    def sending_email(self, to_user, to_email, subject, message):
+    def sending_email(self, to_user, to_email, subject, message, template_location=None):
         vars = {
             'message': message,
             'user': to_user
         }
+        if template_location:
+            message = get_template(template_location).render(vars)
+        else:
+            message = get_template('emails/notification_email.html').render(vars)
 
-        print ("before sending emails")
-        message = get_template('emails/notification_email.html').render(vars)
-
-        print(self.from_email)
-        print(to_email)
-        print(self.bcc_emails)
-        print(self.reply_to_emails)
         msg = EmailMessage(
                         subject, message, from_email=self.from_email,
                         to=to_email, bcc=self.bcc_emails, reply_to=self.reply_to_emails
                         )
-        print("after message")
         msg.content_subtype = 'html'
         msg.mixed_subtype = 'related'
         msg.send()
-        print("send")
 
-        OwnEmailMessage.objects.create(type_id=self.email_type, email=to_email,
-                                                       order_id=self.order.id, user=to_user)
-        print ('Email was sent successfully!')
+        kwargs = dict()
+        kwargs = {"type_id":self.email_type_id, "email": ''.join(to_email), "user": to_user}
+        if self.order:
+            kwargs["order_id"] = self.order.id
+        if hasattr(self, "chat_message"):
+            kwargs["chat_message"] = self.chat_message
+        OwnEmailMessage.objects.create(**kwargs)
+        # print ('Email was sent successfully!')
 
 
     def email_for_order(self):
-        self.email_type = 1 #order info
-
+        self.email_type_id = 1 #order info
         order = self.order
-
         tour = order.tour if order.tour_id else None
-        # print (tour)
 
-        if tour:
-            order_naming = '"%s"' % order.tour.name
+        if order.status_id in [2, 3, 4, 5, 6]:
+            if tour:
+                order_naming = '"%s"' % order.tour.name
+            else:
+                order_naming = 'with %s' % order.guide.user.generalprofile.first_name
+
+            # cancelled by - for guide it is order.guide.user.generalprofile.first_name, but for tourists it us order.tourist.user.username
+            if order.status_id == 2:# agreed
+                subject_tourist = 'Tour %s was confirmed by guide!' % order_naming
+                message_tourist = 'Tour %s was confirmed by guide!' % order_naming
+                subject_guide = 'Order #%s was confirmed by tourist!' % order.id
+                message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was confirmed by tourist' % (order.id, order.id)
+
+            elif order.status_id == 3: # cancelled by tourist
+                subject_tourist = 'You cancelled a tour %s!' % order_naming
+                message_tourist = 'You cancelled a tour %s!' % order_naming
+                subject_guide = 'Order #%s was cancelled by %s! If you feel this is an error please reach out to your customer.' % (order.id, order.tourist.user.username)
+                message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was cancelled by %s. If you feel this an error please reach out to your customer' % (order.id, order.id, order.tourist.user.username)
+
+            elif order.status_id == 6: # cancelled by guide
+                subject_tourist = 'A tour %s was cancelled by %s!' % (order_naming, order.guide.user.generalprofile.first_name)
+                message_tourist = 'Order %s was cancelled by %s. If you feel this is an error please reach out to your guide.' % (order.id, order.guide.user.generalprofile.first_name)
+                subject_guide = 'You cancelled the order #%s!' % order.id
+                message_guide = 'You cancelled the order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a>!' % (order.id, order.id)
+
+            elif order.status_id == 4: # completed
+                subject_tourist = 'Tour %s was completed!' % order_naming
+
+                #those one (guide or tourist), who saves an order setting "completed" status write a feedback at the same time
+                #so the idea is avoid sending him a message with asking to "review his experience"
+                if not self.is_guide_saving:
+                    message_tourist = 'Tour %s was completed!' % (order_naming)
+                else:
+                    message_tourist = 'Tour %s was completed! Please review your experience ' \
+                        '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order_naming, order.id)
+
+                subject_guide = 'Order #%s was completed!' % order.id
+                if self.is_guide_saving:
+                    message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was completed!' % (order.id, order.id)
+                else:
+                    message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was completed! Please review your experience ' \
+                       '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order.id, order.id, order.id)
+
+            elif order.status_id == 5: # payment reserved
+                subject_tourist = 'A payment for your tour %s was reserved!' % (order_naming)
+                message_tourist = 'A payment for your tour %s was reserved!' % (order_naming)
+
+                subject_guide = 'You have received a new order #%s!' % (order.id)
+                message_guide = 'You have received a new order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a>!' % (order.id, order.id)
+
+
+            #sending email to guide
+            to_user = order.guide.user
+            to_email = [order.guide.user.email]
+            self.sending_email(to_user, to_email, subject=subject_guide, message=message_guide, template_location="emails/order_related_email_guides.html")
+
+            #sending email to tourist
+            to_user = order.tourist.user
+            to_email = [order.tourist.user.email] if order.tourist.user.email else [FROM_EMAIL]
+            self.sending_email(to_user, to_email, subject=subject_tourist, message=message_tourist, template_location="emails/order_related_email_tourists.html")
+
+
+    def email_for_partners(self):
+        api_token = self.data.get("api_token")
+        user_id = self.data.get("user_id")
+
+        email_type, created = EmailMessageType.objects.get_or_create(name="API Partner Welcome Email")
+        self.email_type_id = email_type.id
+        subject = "Receiving API token from Tourzan"
+        message = "<p> We have received your application for getting our API access.</p>" \
+                  "<p>It has been successfully approved.</p>" \
+                  "<p> Here is your API token for tourzan.com: %s</p>" % api_token
+        to_user = User.objects.get(id=user_id)
+        to_email = [to_user.email]
+        print("to email is tuple")
+        self.sending_email(to_user, to_email, subject, message)
+
+    def email_for_verficiation(self):
+        user_id = self.data.get("user_id")
+        email_type, created = EmailMessageType.objects.get_or_create(name='Verification Notification Email')
+        self.email_type_id = email_type.id
+        subject = "Tourzan Verification Completed"
+        message = "<p>Tourzan.com has completed your identity verification check. " \
+                  "You can now enter your <a href='https://www.tourzan.com/guide/payouts/'>payout preferences</a> " \
+                  "and set your <a href='https://www.tourzan.com/en/calendar/'>calendar</a> " \
+                  "so that tourists can hire you.\n\n" \
+                  "Have a great day.\n" \
+                  "<br><br>The Tourzan Team</p>"
+        to_user = User.objects.get(id=user_id)
+        to_email = [to_user.email]
+        self.sending_email(to_user, to_email, subject, message)
+
+
+    def send_new_message_email(self):
+        email_type, created = EmailMessageType.objects.get_or_create(name='Chat')
+        self.email_type_id = email_type.id
+
+        chat_message = self.data.get("chat_message")
+        chat = chat_message.chat
+
+        self.chat_message = chat_message
+        message = chat_message.message
+        user_from = self.data.get("user_from")
+        user_to = self.data.get("user_to")
+
+        #user_from.first_name - just for prevention of missed data for some early users
+        if user_from.generalprofile.first_name:
+            user_from_name = user_from.generalprofile.first_name
+        elif user_from.first_name:
+            user_from_name = user_from.first_name
         else:
-            order_naming = 'with %s' % order.guide.name
+            user_from_name = user_from.username
 
-        if order.status.id == 1:# pending
-            self.subject = 'Tour %s was created' % order_naming
-        elif order.status.id == 2:# agreed
-            self.subject = 'Tour %s was aggreed!' % order_naming
-        elif order.status.id == 3: # cancelled by tourist
-            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.tourist.user.username)
+        subject = "Notification about new message on tourzan.com from %s" % user_from_name
+        message = "<p>You have received a new message from %s.</p>" \
+                  "<p><b>Message: </b>%s</p>\n" \
+                  "<p>Go by this <a href='https://www.tourzan.com/chats/chat_uuid/%s/' target='_blank'>link</a> for response. \n\n</p>" \
+                  "<p>Have a great day.\n" \
+                  "<br><br>The Tourzan Team</p>" % (user_from_name, message, chat.uuid)
 
-        elif order.status.id == 4: # completed
-            self.subject = 'Tour %s was completed!' % order_naming
-        elif order.status.id == 5: # waiting for payment
-            self.subject = 'Tour %s is waiting for payment!' % order_naming
-        elif order.status.id == 6: # cancelled by guide
-            self.subject = 'Tour %s was cancelled by %s!' % (order_naming, order.guide.user.username)
+        if user_to:
+            to_email = [user_to.email]
+            self.sending_email(user_to, to_email, subject, message)
 
-        subject = self.subject
-        message = self.subject
-
-        #sending to guide
-        to_user = order.guide.user
-        to_email = [order.guide.user.email]
-        self.sending_email(to_user, to_email, subject, message)
-
-        #sending to user
-        to_user = order.tourist.user
-        to_email = [order.tourist.user.email] if order.tourist.user.email else [FROM_EMAIL]
-        self.sending_email(to_user, to_email, subject, message)

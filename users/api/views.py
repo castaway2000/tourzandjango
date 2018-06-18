@@ -54,10 +54,17 @@ def login_api_view(request):
     if not user:
         return Response({"error": "Login failed"}, status=HTTP_401_UNAUTHORIZED)
 
+    if not hasattr(user, 'partner'):
+        return Response({"error": "This user not signed up as a partner with API access"}, status=HTTP_401_UNAUTHORIZED)
+
+    if not user.partner.is_active:
+        return Response({"error": "API access partner status is not active"}, status=HTTP_401_UNAUTHORIZED)
+
     token, _ = Token.objects.get_or_create(user=user)
     return Response({"token": token.key})
 
 
+#Sign up for API tokens is done in other workflow
 @api_view(["POST"])
 def signup_api_view(request):
     username = request.data.get("username")

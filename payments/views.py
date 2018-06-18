@@ -1,31 +1,41 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_object_or_404
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import *
 from orders.models import Order
 from chats.models import Chat, ChatMessage
+from locations.models import City
+from coupons.models import Coupon, CouponUser
+from django.utils.translation import ugettext as _
 
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
 
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINTREE_PRIVATE_KEY
 import braintree
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=BRAINTREE_MERCHANT_ID,
-    public_key=BRAINTREE_PUBLIC_KEY,
-    private_key=BRAINTREE_PRIVATE_KEY
-)
 
+
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 @login_required()
 def payment_methods(request):
     page = "payment_methods"
     user = request.user
     payment_methods = user.paymentmethod_set.filter(is_active=True)
-
     payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
     if created:
-
         result = braintree.Customer.create({
             "first_name": user.first_name,
             "last_name": user.last_name,
@@ -43,7 +53,6 @@ def payment_methods_adding(request):
 
     #for using at template js for initializing of braintree form
     request.session['braintree_client_token'] = braintree.ClientToken.generate()
-
     payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
     if created:
         result = braintree.Customer.create({
@@ -70,52 +79,50 @@ def payment_methods_adding(request):
                 }
             })
 
-            print(result)
+            # print(result)
             # print(result.payment_method.token)
             # print(result.payment_method.__class__.__name__)
 
-            response_data = result.payment_method
-            token = response_data.token
-            kwargs = {
-                "user": user,
-                "token": token
-            }
+            try:
+                response_data = result.payment_method
+                token = response_data.token
+                kwargs = {
+                    "user": user,
+                    "token": token
+                }
 
-            #depending on payment method different set of fields should be added
-            if result.payment_method.__class__.__name__ == 'CreditCard':
-                kwargs["is_default"] = response_data.default
+                #depending on payment method different set of fields should be added
+                if result.payment_method.__class__.__name__ == 'CreditCard':
+                    kwargs["is_default"] = response_data.default
+                    last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
+                    card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
+                    kwargs["card_number"] = card_number
+                    card_type = response_data.verifications[0]["credit_card"]["card_type"]
+                    card_type, created = PaymentMethodType.objects.get_or_create(name=card_type)
+                    kwargs["type"] = card_type
+                    PaymentMethod.objects.create(**kwargs)
 
-                last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
-                card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
-                kwargs["card_number"] = card_number
-                card_type = response_data.verifications[0]["credit_card"]["card_type"]
-                card_type, created = PaymentMethodType.objects.get_or_create(name=card_type)
+                elif result.payment_method.__class__.__name__ == 'PayPalAccount':#paypal
+                    print ("PayPal")
+                    kwargs["is_default"] = response_data.default
+                    kwargs["is_paypal"] = True
+                    kwargs["paypal_email"] = response_data.email
+                    type, created = PaymentMethodType.objects.get_or_create(name="paypal")
+                    kwargs["type"] = type
+                    PaymentMethod.objects.create(**kwargs)
 
-                kwargs["type"] = card_type
-
-                PaymentMethod.objects.create(**kwargs)
-
-            elif result.payment_method.__class__.__name__ == 'PayPalAccount':#paypal
-                print ("PayPal")
-                kwargs["is_default"] = response_data.default
-                kwargs["is_paypal"] = True
-                kwargs["paypal_email"] = response_data.email
-
-                type, created = PaymentMethodType.objects.get_or_create(name="paypal")
-                kwargs["type"] = type
-
-                PaymentMethod.objects.create(**kwargs)
-
-
-            #redirecting after payment method adding if there is a pending order id
-            pending_order_id = request.session.get("pending_order")
-            if pending_order_id:
-                del request.session["pending_order"]
-                messages.success(request, 'A new payment method was successfully added and now you can proceed with your order')
-                return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": pending_order_id}))
-            else:
-                messages.success(request, 'A new payment method was successfully added!')
-                return HttpResponseRedirect(reverse("payment_methods"))
+                #redirecting after payment method adding if there is a pending order id
+                pending_order_id = request.session.get("pending_order")
+                if pending_order_id:
+                    del request.session["pending_order"]
+                    messages.success(request, _('A new payment method was successfully added and now you can proceed with your order'))
+                    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": pending_order_id}))
+                else:
+                    messages.success(request, _('A new payment method was successfully added!'))
+                    return HttpResponseRedirect(reverse("payment_methods"))
+            except:
+                messages.success(request, _('A new payment method was successfully added!'))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'payments/payment_methods_adding.html', locals())
 
 
@@ -148,18 +155,13 @@ def making_order_payment(request, order_id):
 
             order.status_id = 5 #payment reserved
             order.payment_status_id = 2 #payment reserved
-
             order.save(force_update=True)
-
             messages.success(request, 'A Payment was successfully completed!')
-
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
         else:
             #order status is "pending" by default after an order was created
             messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
     else:
         return HttpResponseRedirect(reverse("bookings"))
 
@@ -175,43 +177,45 @@ def payments(request):
 @login_required()
 def order_payment_checkout(request, order_id):
     user = request.user
-    order = Order.objects.get(id=order_id)
+    order = get_object_or_404(Order, id=order_id, tourist__user=user) #fix for preventing accessing to other tourist orders
     services_in_order = order.serviceinorder_set.all()
-
+    city = order.guide.city_id
+    country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
+    illegal_country = False
+    for i in ILLEGAL_COUNTRIES:
+        if i == country:
+            illegal_country = True
+            break
     #adding variable to session for redirecting after adding a payment method
     user_payment_method = PaymentMethod.objects.filter(user=user, is_active=True).exists()
     if not user_payment_method:
         request.session["pending_order"] = order.id
-
 
     #check for preventing unauthorized access
     if order.tourist.user != user and order.guide.user != user:
         return HttpResponseRedirect(reverse("home"))
 
     if request.POST:
-        print(request.POST)
         data = request.POST
-
         guide = order.guide
-        topic = "Chat with %s" % guide.user.username
-
-        print(user)
-        print(guide.user)
-
+        topic = "Chat with %s" % guide.user.generalprofile.first_name
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
 
         message = data.get("message")
         if message:
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
-
-
-        payment_processed = order.making_order_payment()
-        if payment_processed == False:
-            messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        if not illegal_country:
+            payment_processed = order.making_order_payment()
+            if not payment_processed:
+                messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
+            else:
+                messages.success(request, 'The payment has been successfully reserved!')
         else:
-            messages.success(request, 'The payment has been successfully reserved!')
+            order.making_mutual_agreement()
+            messages.success(request, 'The guide has been successfully reserved!')
 
+        #refresh a page to show "reserved payment" stamp
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'payments/order_payment_checkout.html', locals())
 
 
@@ -230,7 +234,6 @@ def deleting_payment_method(request, payment_method_id):
                 messages.error(request, 'Failure during deleting a payment method!')
         except Exception as e:
             messages.error(request, 'No such payment method was found!')
-
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
@@ -259,3 +262,4 @@ def payment_method_set_default(request, payment_method_id):
             messages.error(request, 'No such payment method was found!')
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+

@@ -1,0 +1,74 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block header_stuff %}
+    <!-- Event snippet for verification webcam conversion page -->
+    <script>
+    gtag('event', 'conversion', {'send_to': 'AW-855709588/NoQ8CM_UyXkQlK-EmAM'});
+    </script>
+{% endblock %}
+
+{% block content_profile %}
+<div class="col-md-9">
+    <h3>{% trans 'Identification step 2: live photo' %}</h3>
+    <div class="row">
+        <div class="col-lg-6">
+            <a class="btn btn-success" href="javascript:void(take_snapshot())">Take Snapshot</a>
+            <div id="my_camera" style="width:320px; height:240px;"></div>
+        </div>
+        <div class="col-lg-6">
+            <form method="post">{% csrf_token %}
+                {% if not request.user.generalprofile.first_name or not request.user.generalprofile.last_name %}
+                    <fieldset class="verification-form">
+                        <legend>{%  trans 'Please add your first name and last name' %}:</legend>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>{%  trans 'First name' %}</label>
+                                    <input required class="form-control" name="first_name">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>{%  trans 'Last name' %}*</label>
+                                    <input required class="form-control" name="last_name">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                {% endif %}
+
+                <div id="webcam_image_preview_container"></div>
+                <div class="form-group">
+                    <input id="webcam_image" name="webcam_image" class="hidden">
+                </div>
+                <div class="form-group">
+                    <button id="submit_button" type="submit" class="btn btn-primary hidden">{% trans 'Save' %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div>
+                <a href="{% url 'identity_verification_ID_uploading' %}" class="btn btn-default">
+                    {% trans 'Go back to step' %} 1</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content_profile %}
+
+
+{% block js_stuff %}
+    <script src="{% static 'plugins/webcam/webcam.min.js' %}"></script>
+    <script>
+        Webcam.attach('#my_camera');
+        function take_snapshot() {
+            Webcam.snap( function(data_uri) {
+                document.getElementById('webcam_image_preview_container').innerHTML = '<img src="'+data_uri+'"/>';
+                $('#webcam_image').val(data_uri);
+                $('#submit_button').removeClass("hidden");
+            } );
+        }
+    </script>
+{% endblock js_stuff %}

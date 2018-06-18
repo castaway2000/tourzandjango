@@ -2,7 +2,6 @@
 {% load static %}
 {% load i18n %}
 
-
 {% block content %}
     <div class="container">
         <div class="row">
@@ -15,13 +14,21 @@
                             {% blocktrans %}Chat {% endblocktrans %}
                             {% blocktrans %}with {% endblocktrans %}
                             {% if request.user != chat.guide %}
-                                <a href="{% url 'guide' chat.guide.username %}">
-                                    {{ chat.guide.username }}
+                                <a href="{% url 'guide' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid %}">
+                                    {% if chat.guide.generalprofile.first_name %}
+                                        {{ chat.guide.generalprofile.first_name }}
+                                    {% else %}
+                                        {{ chat.guide.username }}
+                                    {% endif %}
                                 </a>
                                 {% blocktrans %}(guide){% endblocktrans %}
                             {% else %}
-                                 <a href="{% url 'tourist' chat.tourist.username %}">
-                                    {{ chat.tourist.username }}
+                                 <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
+                                    {% if chat.tourist.generalprofile.first_name %}
+                                        {{ chat.tourist.generalprofile.first_name }}
+                                    {% else %}
+                                        {{ chat.tourist.username }}
+                                    {% endif %}
                                 </a>
                                 {% blocktrans %}(tourist){% endblocktrans %}
                             {% endif %}
@@ -40,7 +47,11 @@
                                         {% if request.user.username == message.user__username %}
                                             me
                                         {% else %}
-                                            {{ message.user__username }}
+                                            {% if message.user__generalprofile__first_name %}
+                                                {{ message.user__generalprofile__first_name }}
+                                            {% else %}
+                                                {{ message.user__username }}
+                                            {% endif %}
                                         {% endif %}, {{ message.created|date:"m.d.Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
@@ -57,7 +68,9 @@
                                 <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
                             </div>
                             <div class="form-group text-right">
-                                <button type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Submit{% endblocktrans %}</button>
+                            <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
+                            </div>
+                                <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Submit' %}"/>
                             </div>
                         </form>
                     </div>

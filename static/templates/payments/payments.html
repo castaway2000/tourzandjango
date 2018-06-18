@@ -56,7 +56,7 @@
                                 <tr>
                                     <td>
                                         <span class="hidden">{{ payment }}</span>
-                                        {{ payment.created|date:"m.d.Y H:i" }}
+                                        {{ payment.created|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
                                         <a href="{% url 'order_payment_checkout' payment.order.id %}">
@@ -70,16 +70,15 @@
                                             </a>
                                                  {% blocktrans %}by{% endblocktrans %}
 
-                                            <a href="{% url 'guide' payment.order.guide.user.username %}">
-                                                {{ payment.order.guide.user.username }}
+                                            <a href="{% url 'guide' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid %}">
+                                                {{ payment.order.guide.user.generalprofile.first_name }}
                                             </a>
 
                                         {% else %}
                                             Tour with
-                                            <a href="{% url 'guide' payment.order.guide.user.username %}">
-                                                {{ payment.order.guide.user.username }}
+                                            <a href="{% url 'guide' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid %}">
+                                                {{ payment.order.guide.user.generalprofile.first_name }}
                                             </a>
-
                                         {% endif %}
                                     </td>
                                     <td>

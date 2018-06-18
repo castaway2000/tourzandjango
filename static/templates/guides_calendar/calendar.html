@@ -51,7 +51,7 @@
                             {% if calendar_item.is_day_start %}
                                 <td>
                                     <div class="day-title">
-                                         {{ calendar_item.date|date:"d.m.Y, D" }}
+                                         {{ calendar_item.date|date:"m/d/Y, D" }}
                                     </div>
                                 </td>
                             {% endif %}
@@ -63,14 +63,6 @@
 
                             {% if forloop.counter|divisibleby:24 %}
                                 </tr>
-
-                                 {% if calendar_item.time_from|date:"D" == "Fri" %}
-                                    <tr>
-                                        <td>
-                                            Weekend
-                                        </td>
-                                    </tr>
-                                 {% endif %}
 
                                 <tr>
                             {% endif %}

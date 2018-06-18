@@ -4,22 +4,46 @@
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+
+    <!-- Event snippet for post tourist register conversion page -->
+    <script>
+    gtag('event', 'conversion', {'send_to': 'AW-855709588/TjmsCIjw4HkQlK-EmAM'});
+    </script>
 {% endblock %}
 
 
 {% block content_profile %}
     <div class="col-md-9">
+        {{ form.errors }}
         <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-7">
                     <div class="row">
                         <div class="col-lg-7">
                             <h4>{% blocktrans %}Tourist Profile{% endblocktrans %}</h4>
                         </div>
+
                         <div class="col-lg-5">
-                             <a href="{% url 'tourist' profile.user.username %}">
+
+                             <a href="{% url 'tourist' profile.user.generalprofile.uuid %}">
                                  See Public Page
                              </a>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {% if not guide_status %}
+                            <strong><h5><a href="{% url 'change_role' %}">{% blocktrans %}Consider becoming a local guide?{% endblocktrans %}</a></h5></strong>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <div>
+                            <b>{% trans 'Your referral code' %}:</b> {{ ref_code }}
+                        </div>
+                        <div>
+                            <b>{% trans 'Your referral link' %}:</b> <span id="content_to_copy">{{ site_root }}?ref={{ request.user.generalprofile.referral_code }}</span>
+                            <button id="copy_text_btn" class="btn btn-xs btn-primary" data-clipboard-target="#content_to_copy" >copy</button>
                         </div>
                     </div>
 
@@ -42,48 +66,7 @@
                                   name="{{ form.about.html_name }}" class="form-control" >{% if form.about.value %}{{ form.about.value }}{% endif %}</textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>{% blocktrans %}Native Language{% endblocktrans %}:</label>
-                        <select class="form-control select2"
-                            id="language_native" name="language_native"
-                            data-search_url="{% url 'search_language' %}"
-                        >
-                            {% if user_language_native %}
-                                <option value="{{ user_language_native.language}}" selected>{{ user_language_native.get_language_display}}</option>
-                            {% endif %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <label>{% blocktrans %}Second Language{% endblocktrans %}:</label>
-                                <select class="form-control select2" id="language_second" name="language_second">
-                                    {% if user_language_second %}
-                                        <option value="{{ user_language_second.language}}" selected>
-                                            {{ user_language_second.get_language_display}}
-                                        </option>
-                                    {% endif %}
-                                </select>
-                            </div>
-                            <div class="col-lg-6">
-                                <label>{% blocktrans %}Proficiency{% endblocktrans %}:</label>
-                                <select class="form-control select2"
-                                    id="language_second_proficiency" name="language_second_proficiency"
-                                >
-                                    <option selected>{% blocktrans %}Select level{% endblocktrans %}</option>
-                                    {% for language_level in language_levels %}
-                                        <option value="{{ language_level.id }}"
-                                                {% if language_level.id == user_language_second.level.id %}selected="selected"{% endif %}
-                                        >
-                                            {{ language_level.name }}
-                                        </option>
-                                    {% endfor %}
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                    {% include "users/languages_form_section.html" %}
 
                 </div>
                 <div class="col-md-4 col-md-offset-1">
@@ -97,10 +80,8 @@
                         <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
                         <input type="file" name="{{ form.image.html_name }}">
                     </div>
-
                     <hr>
                     <input type="submit" class="btn btn-primary" value="Save Changes">
-
                 </div>
             </div>
         </form>
@@ -111,6 +92,23 @@
 {% block js_stuff %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
+    <script>
+        $(function(){
+            new Clipboard('#copy_text_btn');
+            $("#copy_text_btn").popover({
+                content: "Copied!",
+                placement : 'top'
+            });
+        });
+        $("#copy_text_btn").on('shown.bs.popover', function() {
+            this_popover = $(this);
+            setTimeout(function () {
+                this_popover.popover('hide');
+            }, 1000);
+        });
+    </script>
 
 {% endblock js_stuff %}
 

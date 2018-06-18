@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="gap"></div>
+                <div class="jumbotron mt10">
+                    <h3 class="text-center">
+                        {% blocktrans %}Application has been submitted successfully!{% endblocktrans %}
+                    </h3>
+                    <div class="text-center">
+                        <p>{% blocktrans %}Thank you!{% endblocktrans %}</p>
+                        <p>{% blocktrans %}We will be in touch with you soon by email.{% endblocktrans %}</p>
+                    </div>
+                    <div class="text-center mb10">
+                        <img src="{% static 'img/Tourzan-transparant.png' %}" class="logo-md">
+                    </div>
+                </div>
+                <div class="gap"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+

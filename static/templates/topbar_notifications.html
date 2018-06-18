@@ -1,0 +1,30 @@
+{% load i18n %}
+<div class="messages-container">
+    {% if request.session.pending_order_creation %}
+        <div class="well">
+            {% trans 'You have a pending order' %}.
+            <a href="{% url 'making_booking' %}" class="btn btn-sm btn-primary">{% trans 'Click here' %}</a> {% trans 'to go to it' %}.
+        </div>
+    {% endif %}
+
+    {% for message in messages %}
+        {% if forloop.last %}
+           {% if 'success' in message.tags %}
+               <div class="alert alert-success alert-general" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+               {% if 'safe' in message.tags %}
+                   {{ message | safe }}
+               {% else %}
+                   {{ message }}
+               {% endif %}
+               </div>
+           {% elif 'error' in message.tags %}
+                <div class="alert alert-danger alert-general" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                      {{ message }}
+                </div>
+           {% endif %}
+        {% endif %}
+    {% endfor %}
+
+</div>

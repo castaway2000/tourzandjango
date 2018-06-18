@@ -31,13 +31,16 @@ SECRET_KEY = 'd370859b5!ee4ea_9c5e%d11m7qin7lr*c&6#8e@9cf151b3ec'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
+ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
+                     "Côte d'Ivoire", 'North Korea', 'Lebanon', 'Liberia', 'Libya',
+                     'Myanmar (Burma)', 'Somalia', 'Sudan', 'Syria', 'Venezuela',
+                     'Yemen', 'Zaire', 'Zimbabwe']
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -58,6 +61,9 @@ INSTALLED_APPS = [
     'blog',
     'partners',
     'guides_calendar',
+    'user_verification',
+    'utils',
+    'coupons',
 
     #external packages
     'allauth',
@@ -66,36 +72,53 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+    'live_chat',
 
-
+    'channels',
     'crequest',
     'django_summernote',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework.schemas',
+    'rest_framework.documentation',
     'storages',
     'axes',
     'phonenumber_field',
+    'drip',
+    'django_social_share',
 
-    'corsheaders',
+    # 'corsheaders',
+    'django_extensions',
+    'django_user_agents',
+    'crispy_forms',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     #middleware for localization
-    # 'users.default_language_middleware.ForceDefaultLanguageMiddleware',
+    # 'users.middleware.ForceDefaultLanguageMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
 
     'django.middleware.common.CommonMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'django_user_agents.middleware.UserAgentMiddleware',
     'crequest.middleware.CrequestMiddleware',
+    'users.middleware.TrackingActiveUserMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
+
+    'django.middleware.cache.FetchFromCacheMiddleware',
+
 ]
 
 # CORS_ORIGIN_WHITELIST = (
@@ -105,8 +128,10 @@ MIDDLEWARE_CLASSES = [
 #     'paymentrails.com'
 # )
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tourzan.urls'
 
@@ -123,10 +148,39 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.site'
             ],
         },
     },
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'NOTSET',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'NOTSET',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'ERROR'
+        }
+    }
+}
 
 WSGI_APPLICATION = 'tourzan.wsgi.application'
 
@@ -147,12 +201,23 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'uuid-malloc01',
+        'TIMEOUT': 61000,
+    }
+}
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 61000
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
+
 SITE_ID = 1
 
 """
 for allauth
 """
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/after_login_router/"
 # LOGIN_URL = '/'
 
 
@@ -190,7 +255,6 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': (
     #     'rest_framework.permissions.IsAuthenticated',
     # ),
-
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -232,11 +296,13 @@ USE_TZ = True
 
 #Mail settings
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'Django_testing'
-EMAIL_HOST_PASSWORD = 'Testing12#$'
+# EMAIL_HOST_USER = 'Django_testing'
+# EMAIL_HOST_PASSWORD = 'Testing12#$'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
+DRIP_FROM_EMAIL = 'contactus@tourzan.com'
 FROM_EMAIL = "noreply@tourzan.com"
 
 
@@ -250,8 +316,16 @@ USER_SMS_NMB_LIMIT = 3
 PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
+
 AXES_COOLOFF_TIME = 3
-# AXES_BEHIND_REVERSE_PROXY = True
+
+
+# Number of seconds of inactivity before a user is marked offline
+USER_ONLINE_TIMEOUT = 5*60
+
+# Number of seconds that we will keep track of inactive users for before
+# their last seen is removed from the cache
+USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
 
 
 # Static files (CSS, JavaScript, Images)
@@ -267,6 +341,19 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
+ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
+GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
+
+# Channels
+ASGI_APPLICATION = 'tourzan.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 try:
     from .allauth_settings import *
@@ -275,7 +362,7 @@ except:
 
 
 try:
-    #delete '_2' on Production server of AWS
+    #delete '_2' on AWS
     from .prod_settings_2 import *
 except:
     pass
@@ -291,7 +378,11 @@ except:
 try:
     #local settings, specific for your machine
     from .local_settings import *
-except:
-    pass
 
+    #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
+        .remove("django.middleware.cache.FetchFromCacheMiddleware")
+except Exception as e:
+    print(e)
+    pass
 

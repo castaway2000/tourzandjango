@@ -25,6 +25,8 @@
                 <p class="booking-item-price">
                     {% if tour.price %}
                         {{ tour.price }} {{ tour.currency.name }}
+                    {% elif tour.price_hourly %}
+                        {{ tour.price_hourly }} {{ tour.currency.name }} per hour
                     {% else %}
                         free!
                     {% endif %}
