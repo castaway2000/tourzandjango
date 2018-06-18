@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
-from tours.models import Tour
+from tours.models import Tour, ScheduledTour
 from django.utils.text import slugify
 from guides.models import GuideProfile, Service
 from tourists.models import TouristProfile
@@ -73,6 +73,7 @@ class Order(models.Model):
     partner = models.ForeignKey(Partner, blank=True, null=True, default=None)
 
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
+    tour_scheduled = models.ForeignKey(ScheduledTour, blank=True, null=True, default=None)
 
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -110,7 +111,7 @@ class Order(models.Model):
     date_ordered = models.DateTimeField(auto_now_add=True, auto_now=False)
 
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
-    date_toured = models.DateField(blank=True, null=True, default=None)
+    date_toured = models.DateTimeField(blank=True, null=True, default=None)
 
     guide_compensation = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     tourist_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -136,10 +137,59 @@ class Order(models.Model):
         #preventing creating of the order if guide and tourist is the same user
         # if not self.pk and self.guide.user == self.tourist.user:
         #     return False
+
+
+        """
+        the following code is transfered here from making_booking view
+        """
+        if not self.pk:
+            if not self.guide:
+                guide = self.tour.guide
+                self.guide = guide
+            else:
+                guide = self.guide
+
+            tour = self.tour
+
+            number_people = self.number_persons
+            if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
+                guide_additional_person_cost = guide.additional_person_cost
+                additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
+                self.price_per_additional_person = guide.additional_person_cost
+                self.additional_person_total = additional_person_total
+            if tour:
+                if tour.payment_type.id==1:#hourly
+                    self.price_hourly = tour.price_hourly
+                    #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
+
+                elif tour.payment_type.id == 2:#fixed
+                    if self.tour_scheduled:
+                        self.discount = self.tour_scheduled.discount
+                        self.price = self.tour_scheduled.price_final*number_people#price final (after discount)
+                    else:
+                        self.price = tour.price*number_people
+                else:#free tours
+                    pass
+
+            else:#guide
+                self.price_hourly = guide.rate
+                #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
+
+            #getting ref_id from the session
+            current_request = CrequestMiddleware.get_request()
+            if current_request.session.get("ref_id"):
+                ref_id = current_request.session["ref_id"]
+                try:
+                    partner = Partner.objects.get(uuid=ref_id)
+                    kwargs["partner"] = partner
+                except:
+                    pass
+
+
         if self.hours_nmb and self.price_hourly:
             self.price = int(self.hours_nmb) * float(self.price_hourly)
 
-        self.total_price_initial = self.price + float(self.additional_services_price) + float(self.additional_person_total)
+        self.total_price_initial = float(self.price) + float(self.additional_services_price) + float(self.additional_person_total)
 
 
         #getting discount if there is a coupon
@@ -193,7 +243,11 @@ class Order(models.Model):
         referred_by = self.tourist.user.generalprofile.referred_by
         if referred_by:
             self.add_statistics_for_referrer()
-            self.add_coupon_for_referrer()
+            self.add_coupon_for_referrer()#checking conditions for possible adding any coupons to referrer
+
+        if self.get_is_full_payment_processed() and self.tour_scheduled:
+            self.tour_scheduled.seats_booked += 1
+            self.tour_scheduled.save(force_update=True)
         super(Order, self).save(*args, **kwargs)
 
 
@@ -251,11 +305,18 @@ class Order(models.Model):
                     coupon = Coupon.objects.create(campaign=campaign, value=20, type=coupon_type, user_limit=1)
                     CouponUser.objects.create(user=referred_by, coupon=coupon)
 
+    def get_is_full_payment_processed(self):
+        if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
+            and self.payment_status.id == 4:
+            #full payment processed
+            return True
+        else:
+            return False
+
     def add_statistics_for_referrer(self):
         #Increase or decrease tourist with purchasing
         referred_by = self.tourist.user.generalprofile.referred_by
-        if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
-            and self.payment_status.id == 4:#full payment processed
+        if self.get_is_full_payment_processed():
             #increase only if there is no current success payments for this user
             if Order.objects.filter(tourist=self.tourist, payment_status_id=4).count() == 0:
                 referred_by.generalprofile.tourists_with_purchases_referred_nmb += 1

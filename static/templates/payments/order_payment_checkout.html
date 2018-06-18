@@ -65,33 +65,42 @@
                             </p>
                             <br><br>
                         {% endif %}
-                        <h3>{% trans 'Send a message to your guide' %}</h3>
-
-                        {% trans 'Tell your guide a little about yourself' %}
-                        <ul>
-                            <li>
-                                {% trans 'what are your hobbies or interests' %}?
-                            </li>
-                            <li>
-                                {% trans 'what drove you to book them out' %}?
-                            </li>
-                            <li>
-                                {% trans 'what interests you most about the city they live in' %}?
-                            </li>
-                        </ul>
-                        <form class="" method="post" >{% csrf_token %}
-                            <input class="hidden" id="order_id" value="{{ order.id }}">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <textarea class="form-control" name="message"></textarea>
+                        {% if not order.tour %}
+                            <h3>{% trans 'Send a message to your guide' %}</h3>
+                            {% trans 'Tell your guide a little about yourself' %}
+                            <ul>
+                                <li>
+                                    {% trans 'what are your hobbies or interests' %}?
+                                </li>
+                                <li>
+                                    {% trans 'what drove you to book them out' %}?
+                                </li>
+                                <li>
+                                    {% trans 'what interests you most about the city they live in' %}?
+                                </li>
+                            </ul>
+                            <form class="" method="post" >{% csrf_token %}
+                                <input class="hidden" id="order_id" value="{{ order.id }}">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <textarea class="form-control" name="message"></textarea>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">{% trans 'Send and Confirm' %}</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="text-center">
+                                <form class="" method="post" >{% csrf_token %}
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-lg">{% trans 'Confirm' %}</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">{% trans 'Send and Confirm' %}</button>
-                            </div>
-                        </form>
+                        {% endif %}
                     {% endif %}
 
                 {% endif %}

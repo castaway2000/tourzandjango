@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="messages-container">
-    {% if request.session.pending_order_creation %}
+    {% if request.session.pending_order_creation and not request.user.is_anonymous %}
         <div class="well">
             {% trans 'You have a pending order' %}.
             <a href="{% url 'making_booking' %}" class="btn btn-sm btn-primary">{% trans 'Click here' %}</a> {% trans 'to go to it' %}.

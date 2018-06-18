@@ -6,12 +6,11 @@ from django.http import JsonResponse
 from .models import Order, Review, ServiceInOrder, OrderStatus, PaymentStatus
 from locations.models import City
 from guides.models import GuideProfile
-from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from tourists.models import TouristProfile
 from django.contrib import messages
-from tours.models import Tour
+from tours.models import Tour, ScheduledTour
 from utils.statuses_changing_rules import checking_statuses
 import datetime
 from guides.models import GuideService
@@ -64,73 +63,54 @@ def making_booking(request):
     kwargs = dict()
     tour_id = data.get("tour_id")
     guide_id = data.get("guide_id")
+    tour_scheduled = data.get("tour_scheduled")
 
     #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
     tour = None
     if tour_id:
         tour = Tour.objects.get(id=tour_id)
         guide = tour.guide
-        guide_id = guide.id
-        kwargs["tour_id"] = tour_id
+        kwargs["tour"] = tour
+        kwargs["guide"] = guide
+        date_booked_for = data["start"]
+    elif tour_scheduled:
+        tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled)
+        tour = tour_scheduled.tour
+        guide = tour.guide
+        kwargs["tour_scheduled"] = tour_scheduled
+        kwargs["tour"] = tour
+        kwargs["guide"] = guide
+        date_booked_for = tour_scheduled.dt
     else:
         guide = GuideProfile.objects.get(id=guide_id)
+        date_booked_for = data["start"]
+        kwargs["guide"] = guide
 
     #creating booked time slots in guide's schedule
     #if some of selected time slots is already booked or unavailable - return an error
     time_slots_chosen = None
-    if not tour or tour.payment_type.id != 2:#if not
+    if ((not tour and guide.is_use_calendar) or tour.payment_type.id != 2) and data.get("time_slots_chosen"):
         time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
         is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
         if is_unavailable_or_booked_timeslot == True:
             messages.error(request, _('Some selected time slots are not available anymore!'))
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    tourist = TouristProfile.objects.get(user=user)
-    date_booked_for = data["start"]
-    try:
-        date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A').date()
-    except:
-        date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y').date()
+    if not isinstance(date_booked_for, datetime.datetime):
+        try:
+            date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A')
+        except:
+            date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y')
+    kwargs["date_booked_for"] = date_booked_for
 
     hours_nmb = data.get("booking_hours", 0)
-    number_people = int(data.get("number_people", 0))
-    # price_hourly = data.get("price_hourly", 0)
-    price_hourly = data.get("price_hourly", 0)
     kwargs["hours_nmb"] = hours_nmb
 
-    if number_people >= 2:
-        additional_person_cost = guide.additional_person_cost * number_people
-    else:
-        additional_person_cost = 0
-
-    if tour_id:
-        if tour.payment_type.id==1:#hourly
-            price_fixed = 0
-            price_hourly = tour.price_hourly
-
-        elif tour.payment_type.id == 2:#fixed
-            price_fixed = tour.price
-            price_hourly=0
-
-        else:#free tours
-            price_fixed = 0
-            price_hourly = 0
-            additional_person_cost = 0
-
-    else:#guide
-        price_fixed = 0
-        price_hourly = guide.rate
-
+    number_people = int(data.get("number_people", 0))
     kwargs["number_persons"] = number_people
-    kwargs["price_per_additional_person"] = guide.additional_person_cost
-    kwargs["additional_person_total"] = additional_person_cost
-    kwargs["price"] = price_fixed
-    kwargs["price_hourly"] = price_hourly
 
-    # kwargs["tour_id"] = tour_id
+    tourist = TouristProfile.objects.get(user=user)
     kwargs["tourist"] = tourist
-    kwargs["guide_id"] = guide_id
-    kwargs["date_booked_for"] = date_booked_for
 
     if user.is_anonymous():
         print('anon my dude')
@@ -142,33 +122,24 @@ def making_booking(request):
             request.session["bookings"].append(kwargs)
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
-        try:
-            if request.session.get("ref_id"):
-                ref_id = request.session["ref_id"]
-                partner = Partner.objects.get(uuid=ref_id)
-                kwargs["partner"] = partner
-            order = Order.objects.create(**kwargs)
-            services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
-            # print ("services ids: %s" % services_ids)
-            guide_services = GuideService.objects.filter(id__in=services_ids)
+        order = Order.objects.create(**kwargs)
+        services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
+        # print ("services ids: %s" % services_ids)
+        guide_services = GuideService.objects.filter(id__in=services_ids)
 
-            services_in_order=[]
-            additional_services_price = 0
-            for guide_service in guide_services:
-                additional_services_price += float(guide_service.price)
-                service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
-                                                  price=guide_service.price, price_after_discount=guide_service.price)
-                services_in_order.append(service_in_order)
+        services_in_order=[]
+        additional_services_price = float(0)
+        for guide_service in guide_services:
+            additional_services_price += float(guide_service.price)
+            service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
+                                              price=guide_service.price, price_after_discount=guide_service.price)
+            services_in_order.append(service_in_order)
 
-            ServiceInOrder.objects.bulk_create(services_in_order)
+        ServiceInOrder.objects.bulk_create(services_in_order)
 
-            order.additional_services_price = additional_services_price
-            order.save(force_update=True)
-            print('SUCCESS!! >> ', order)
-
-        except Exception as e:
-            print("exception")
-            print(e)
+        order.additional_services_price = additional_services_price
+        order.save(force_update=True)
+        print('SUCCESS!! >> ', order)
 
         return_dict["status"] = "success"
         return_dict["message"] = "Request has been submitted! Please wait for confirmation!"

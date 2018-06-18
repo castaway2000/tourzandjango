@@ -18,11 +18,7 @@ def upload_path_handler_tour_small(instance, filename):
 
 
 def upload_path_handler_tour_images(instance, filename):
-    if type(instance).__name__ == "TourImage":
-        return "tours/%s/%s" % (instance.tour.id, filename)
-    else:
-        #not clear for what cases
-        return "tours_else/some_cases/%s" % (filename)
+    return "tours/%s/%s" % (instance.tour.id, filename)
 
 
 def upload_path_handler_blog(instance, filename):

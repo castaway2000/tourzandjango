@@ -1,5 +1,42 @@
 $(document).ready(function(){
 
+    if($('.owl-carousel').length>0){
+        $('.owl-carousel').owlCarousel({
+            dots: false,
+            autoplay: true,
+            autoplayTimeout: 7000,
+            nav: true,
+            smartSpeed :900,
+            navText : ["<i class='fa fa-2x fa-chevron-left'></i>","<i class='fa fa-2x fa-chevron-right'></i>"],
+            center: true,
+            items:1,
+            loop:true,
+            margin:10,
+            responsive:{
+                    1200:{items:1},
+                    0: {
+                        items: 1,
+                        autoHeight: true,
+                        mouseDrag: false,
+                        touchDrag: true
+                      },
+                      768: {
+                        items: 1,
+                        autoHeight: true,
+                        mouseDrag: false,
+                        touchDrag: true
+                      }
+            }
+        });
+    }
+
+    $(".book-scheduled-tour").on("click", function(e){
+        e.preventDefault();
+        scheduled_tour = $(this).data("scheduled_tour");
+        $("#id_tour_scheduled").val(scheduled_tour);
+        $("html, body").animate({ scrollTop: $("#tour_booking_form").offset().top }, 300);
+    });
+
     //function showBookingButton(){
     //    var scroll = $(window).scrollTop();
     //    var width = $(window).width();
