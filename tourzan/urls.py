@@ -79,7 +79,7 @@ urlpatterns = i18n_patterns(
                 #to access protected api urls you must include the Authorization: JWT <your_token> header.
                 #https://getblimp.github.io/django-rest-framework-jwt/
                 #http://polyglot.ninja/django-rest-framework-json-web-tokens-jwt/
-                url(r'^api/v1/api-token-auth/', get_jwt_user),# obtain_jwt_token),
+                url(r'^api/v1/api-token-auth/', obtain_jwt_token),
                 url(r'^api/v1/api-token-verify/', verify_jwt_token, name='verify_token'),
                 url(r'^api/v1/login_client/$', login_api_view, name='login_client'),
                 url(r'^api/v1/signup_user/$', signup_api_view, name='signup_client'),
