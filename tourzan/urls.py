@@ -22,7 +22,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 
-from users.api.views import login_api_view, signup_api_view, get_jwt_user
+from users.api.views import login_api_view, signup_api_view, get_jwt_user, user_profile
 
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
