@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import *
+from rest_auth.serializers import UserDetailsSerializer, UserModel
 
 """
 Good references:
@@ -34,3 +35,67 @@ class UserLanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserLanguage
         fields = '__all__'
+
+
+class GeneralProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GeneralProfile
+        fields = '__all__'
+
+
+class GeneralProfileForUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GeneralProfile
+        fields = ('phone', 'phone_is_validated', 'registration_country', 'registration_state', 'registration_city', 'registration_street',
+                  'registration_building_nmb', 'registration_flat_nmb', 'registration_postcode',)
+
+
+
+#
+# user_obj = {'user_id': user.id,
+#                 'username': user.username,
+#                 'email': user.email,
+#                 'phone': user.generalprofile.phone,
+#                 'building_num': user.generalprofile.registration_building_nmb,
+#                 'flat_num': user.generalprofile.registration_flat_nmb,
+#                 'street': user.generalprofile.registration_street,
+#                 'city': user.generalprofile.registration_city,
+#                 'state': user.generalprofile.registration_state,
+#                 'country': user.generalprofile.registration_country,
+#                 'postcode': user.generalprofile.registration_postcode,
+#                 # 'interests': user.userinterest_set.all(),
+#                 'guide_id': guide_id,
+#                 # 'profile_pic': tourist_image,
+#                 }
+
+
+
+class UserDetailsSerializerCustomer(UserDetailsSerializer):
+    """
+    User model w/o password
+    """
+    interests = UserInterestSerializer(source="userinterest_set", many=True, required=False)
+    general_profile = GeneralProfileForUserSerializer(source="generalprofile", required=False)
+    guide_id = serializers.SerializerMethodField()
+    guide_profile_image = serializers.SerializerMethodField()
+    tourist_profile_image = serializers.SerializerMethodField()
+
+    def get_guide_id(self, model_obj):
+        guide_id = model_obj.guideprofile.id if hasattr(model_obj, "guideprofile") else None
+        return guide_id
+
+    def get_guide_profile_image(self, model_obj):
+        image_url = model_obj.guideprofile.profile_image.url if hasattr(model_obj, "guideprofile") else None
+        return image_url
+
+    def get_tourist_profile_image(self, model_obj):
+        image_url = model_obj.touristprofile.image.url if hasattr(model_obj, "touristprofile") else None
+        return image_url
+
+    class Meta:
+        model = UserModel
+        fields = ('pk', 'username', 'email', 'guide_id', 'guide_profile_image', 'tourist_profile_image', 'general_profile', 'interests',)
+        read_only_fields = ('email', )
+

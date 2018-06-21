@@ -46,3 +46,5 @@ channels==2.1.1
 # pypiwin32==223
 channels_redis==2.2.1
 daphne==2.1.2
+django-rest-auth-0.9.3
+
