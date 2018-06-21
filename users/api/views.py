@@ -24,6 +24,7 @@ from .permissions import IsUserOwnerOrReadOnly
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
+
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
@@ -110,10 +111,14 @@ def try_or_none(orm):
 
 @api_view(['POST'])
 def get_jwt_user(request):
-    user_auth = authenticate(username=request.POST['username'], password=request.POST['password'])
+    print("get jwt")
+    username = request.data.get("username")
+    password = request.data.get("password")
+    user_auth = authenticate(username=username, password=password)
+    print(user_auth)
     if not user_auth:
         return Response({"error": "Login failed"}, status=HTTP_401_UNAUTHORIZED)
-    user = User.objects.get(username=request.POST['username'])
+    user = User.objects.get(username=username)
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
     payload = jwt_payload_handler(user)
@@ -132,7 +137,9 @@ def get_jwt_user(request):
         pass
 
 
-    user_obj = {'user_id': user.id, 'username': user.username, 'email': user.email,
+    user_obj = {'user_id': user.id,
+                'username': user.username,
+                'email': user.email,
                 'phone': user.generalprofile.phone,
                 'building_num': user.generalprofile.registration_building_nmb,
                 'flat_num': user.generalprofile.registration_flat_nmb,
@@ -141,7 +148,7 @@ def get_jwt_user(request):
                 'state': user.generalprofile.registration_state,
                 'country': user.generalprofile.registration_country,
                 'postcode': user.generalprofile.registration_postcode,
-                'interests': user.userinterest_set.all(),
+                # 'interests': user.userinterest_set.all(),
                 'guide_id': guide_id,
                 # 'profile_pic': tourist_image,
                 }

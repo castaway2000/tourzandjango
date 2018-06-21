@@ -94,5 +94,10 @@ urlpatterns = i18n_patterns(
                 url(r'^api/v1/', include('website_management.api.urls')),
                 url(r'^api/v1/', include(api_urls())),#for the main representation page of Django Rest Framework
                 url(r'^api/v1/schema/$', schema_view),
-                url(r'^api/v1/docs/', include_docs_urls(title='Tourzan API Documentation'))
+                url(r'^api/v1/docs/', include_docs_urls(title='Tourzan API Documentation')),
+
+                #django-rest-auth
+                url(r'^api/v1/rest-auth/', include('rest_auth.urls')),
+                url(r'^api/v1/rest-auth/registration/', include('rest_auth.registration.urls')),
+
               ]

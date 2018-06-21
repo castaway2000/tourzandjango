@@ -25,8 +25,10 @@ class TourViewSet(viewsets.ModelViewSet):
     queryset = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True)
     serializer_class = TourSerializer
     permission_classes = (IsGuideOwnerOrReadOnly,)
+    filter_fields = ["id", "name", "price"]
 
     def get_queryset(self):
+        print(self.kwargs)
         user = self.request.user
         qs = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True)
         return qs
