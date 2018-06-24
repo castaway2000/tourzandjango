@@ -67,11 +67,17 @@ class UserDetailsSerializerCustomer(UserDetailsSerializer):
         return guide_id
 
     def get_guide_profile_image(self, model_obj):
-        image_url = model_obj.guideprofile.profile_image.url if hasattr(model_obj, "guideprofile") else None
+        try:
+            image_url = model_obj.guideprofile.profile_image.url if hasattr(model_obj, "guideprofile") else None
+        except:
+            image_url = None
         return image_url
 
     def get_tourist_profile_image(self, model_obj):
-        image_url = model_obj.touristprofile.image.url if hasattr(model_obj, "touristprofile") else None
+        try:
+            image_url = model_obj.touristprofile.image.url if hasattr(model_obj, "touristprofile") else None
+        except:
+            image_url = None
         return image_url
 
     class Meta:
