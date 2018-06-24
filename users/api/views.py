@@ -18,6 +18,7 @@ import json
 
 from rest_framework import viewsets
 from ..models import *
+from orders.models import Review, Order
 from .serializers import *
 from .permissions import IsUserOwnerOrReadOnly
 
@@ -123,20 +124,6 @@ def get_jwt_user(request):
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
-
-    try:
-        guide_id = user.guideprofile.id
-    except:
-        guide_id = None
-        pass
-
-    try:
-        tourist_image = user.touristprofile.image
-    except ValueError:
-        tourist_image = None
-        pass
-
-
     user_obj = {'user_id': user.id,
                 'username': user.username,
                 'email': user.email,
@@ -148,10 +135,16 @@ def get_jwt_user(request):
                 'state': user.generalprofile.registration_state,
                 'country': user.generalprofile.registration_country,
                 'postcode': user.generalprofile.registration_postcode,
-                # 'interests': user.userinterest_set.all(),
-                'guide_id': guide_id,
-                # 'profile_pic': tourist_image,
+                'interests': [],
+                'guide_id': None,
+                'profile_picture': None,
                 }
+    for i in user.userinterest_set.all():
+        user_obj['interests'].append(i.interest.name)
+    if hasattr(user, 'guideprofile'):
+        user_obj['guide_id'] = user.guideprofile.id
+    if hasattr(user.touristprofile, 'image'):
+        user_obj['profile_picture'] = str(user.touristprofile.image)
     token_user = {"token": token, 'user': user_obj}
     return Response(token_user)
 
@@ -172,7 +165,7 @@ def api_change_pass(request):
             form.save(commit=False)
             form.save()
             update_session_auth_hash(request, user)
-            return HTTP_200_OK
+            return HttpResponse(status=HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -184,7 +177,7 @@ def forgot_password(request):
         req = http.request('POST',  '{}/reset_password'.format(request.get_host()),
                            headers={'Content-Type': 'application/json'},
                            body=email)
-        return HttpResponse(req.status)
+        return HttpResponse(status=req.status)
 
 
 @api_view(['POST'])
@@ -196,22 +189,37 @@ def user_profile(request):
                 user_id = request.POST['user_id']
                 user = User.objects.get(id=user_id)
 
+                def if_guide():
+                    data = {'is_guide': False, 'is_default': False, 'profile_image': None, 'guide_overview': None,
+                            'guide_rating': 0}
+                    if hasattr(user, 'guideprofile'):
+                        data['is_guide'] = True
+                        data['is_default'] = user.guideprofile.is_default_guide
+                        data['guide_overview'] = user.guideprofile.overview
+                        data['guide_rating'] = user.guideprofile.rating
+                        try:
+                            data['profile_image'] = str(user.guideprofile.profile_image)
+                        except:
+                            data['profile_image'] = None
+                    return data
+
                 res = { 'id': user_id,
-                        'is_default_guide': user.guideprofile.is_default_guide,
-                        # 'profile_picture': try_or_none(user.touristprofile.image),
+                        'profile_picture': None,
                         'first_name': user.generalprofile.first_name,
                         'last_name': user.generalprofile.last_name,
                         'about_tourist': user.touristprofile.about,
                         'tourist_rating': user.touristprofile.rating,
-                        # 'guide_header': try_or_none(user.guideprofile.header_image),
-                        # 'guide_profile': try_or_none(user.guideprofile.profile_image),
-                        'guide_overview': user.guideprofile.overview,
-                        'guide_rating': user.guideprofile.rating,
-                        'guide_interests': user.userinterest_set.name,
+                        'interests': [],
+                        'guide_data': if_guide()
                         }
+                for i in user.userinterest_set.all():
+                    res['interests'].append(i.interest.name)
+                if hasattr(user.touristprofile, 'image'):
+                    res['profile_picture'] = str(user.touristprofile.image)
+
                 return Response(res)
         except Exception as err:
-            print(err)
-            return HTTP_400_BAD_REQUEST
+            print('ERROR: ', err)
+            return HttpResponse(status=HTTP_400_BAD_REQUEST)
 
 

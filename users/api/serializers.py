@@ -48,28 +48,8 @@ class GeneralProfileForUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeneralProfile
-        fields = ('phone', 'phone_is_validated', 'registration_country', 'registration_state', 'registration_city', 'registration_street',
-                  'registration_building_nmb', 'registration_flat_nmb', 'registration_postcode',)
-
-
-
-#
-# user_obj = {'user_id': user.id,
-#                 'username': user.username,
-#                 'email': user.email,
-#                 'phone': user.generalprofile.phone,
-#                 'building_num': user.generalprofile.registration_building_nmb,
-#                 'flat_num': user.generalprofile.registration_flat_nmb,
-#                 'street': user.generalprofile.registration_street,
-#                 'city': user.generalprofile.registration_city,
-#                 'state': user.generalprofile.registration_state,
-#                 'country': user.generalprofile.registration_country,
-#                 'postcode': user.generalprofile.registration_postcode,
-#                 # 'interests': user.userinterest_set.all(),
-#                 'guide_id': guide_id,
-#                 # 'profile_pic': tourist_image,
-#                 }
-
+        fields = ('phone', 'phone_is_validated', 'registration_country', 'registration_state', 'registration_city',
+                  'registration_street', 'registration_building_nmb', 'registration_flat_nmb', 'registration_postcode',)
 
 
 class UserDetailsSerializerCustomer(UserDetailsSerializer):
@@ -96,6 +76,8 @@ class UserDetailsSerializerCustomer(UserDetailsSerializer):
 
     class Meta:
         model = UserModel
-        fields = ('pk', 'username', 'email', 'guide_id', 'guide_profile_image', 'tourist_profile_image', 'general_profile', 'interests',)
+        fields = ('pk', 'username', 'email', 'guide_id',
+                  'guide_profile_image', 'tourist_profile_image',
+                  'general_profile', 'interests',)
         read_only_fields = ('email', )
 
