@@ -143,8 +143,12 @@ def get_jwt_user(request):
         user_obj['interests'].append(i.interest.name)
     if hasattr(user, 'guideprofile'):
         user_obj['guide_id'] = user.guideprofile.id
-    if hasattr(user.touristprofile, 'image'):
+    try:
         user_obj['profile_picture'] = str(user.touristprofile.image)
+    except Exception as err:
+        print(err)
+        pass
+
     token_user = {"token": token, 'user': user_obj}
     return Response(token_user)
 
@@ -199,8 +203,8 @@ def user_profile(request):
                         data['guide_rating'] = user.guideprofile.rating
                         try:
                             data['profile_image'] = str(user.guideprofile.profile_image)
-                        except:
-                            data['profile_image'] = None
+                        except Exception as e:
+                            print(e)
                     return data
 
                 res = { 'id': user_id,
@@ -214,9 +218,11 @@ def user_profile(request):
                         }
                 for i in user.userinterest_set.all():
                     res['interests'].append(i.interest.name)
-                if hasattr(user.touristprofile, 'image'):
+                try:
                     res['profile_picture'] = str(user.touristprofile.image)
-
+                except Exception as error:
+                    print(error)
+                    pass
                 return Response(res)
         except Exception as err:
             print('ERROR: ', err)
