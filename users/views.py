@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .forms import *
 from .models import *
 from tours.models import Tour
-from orders.models import Review
+
 from locations.models import City
 from django.contrib.auth.models import User
 from django.utils.translation import activate, get_language
