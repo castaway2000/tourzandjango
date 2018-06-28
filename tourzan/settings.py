@@ -271,7 +271,9 @@ LOGOUT_ON_PASSWORD_CHANGE = False
 REST_SESSION_LOGIN = False
 REST_USE_JWT = True
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'users.api.serializers.UserDetailsSerializerCustomer',
+    'USER_DETAILS_SERIALIZER': 'users.api.serializers.UserDetailsSerializerCustom',
+    'PASSWORD_RESET_SERIALIZER': 'users.api.serializers.PasswordResetSerializerCustom',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'users.api.serializers.PasswordResetConfirmSerializerCustom',
 }
 
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from ..models import *
-from rest_auth.serializers import UserDetailsSerializer, UserModel
+from rest_auth.serializers import UserDetailsSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, UserModel
+from allauth.account.forms import ResetPasswordForm, SetPasswordForm
 
 """
 Good references:
@@ -52,7 +53,7 @@ class GeneralProfileForUserSerializer(serializers.ModelSerializer):
                   'registration_street', 'registration_building_nmb', 'registration_flat_nmb', 'registration_postcode',)
 
 
-class UserDetailsSerializerCustomer(UserDetailsSerializer):
+class UserDetailsSerializerCustom(UserDetailsSerializer):
     """
     User model w/o password
     """
@@ -86,4 +87,15 @@ class UserDetailsSerializerCustomer(UserDetailsSerializer):
                   'guide_profile_image', 'tourist_profile_image',
                   'general_profile', 'interests',)
         read_only_fields = ('email', )
+
+
+class PasswordResetSerializerCustom(PasswordResetSerializer):
+    password_reset_form_class = ResetPasswordForm
+
+
+class PasswordResetConfirmSerializerCustom(PasswordResetConfirmSerializer):
+    set_password_form_class = SetPasswordForm
+
+
+
 
