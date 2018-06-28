@@ -95,7 +95,6 @@ def signup_api_view(request):
     if not user:
         return Response({"error": "Signup failed during creation a new user"}, status=HTTP_401_UNAUTHORIZED)
 
-
     token, _ = Token.objects.get_or_create(user=user)
     return Response({"token": token.key})
 
@@ -124,6 +123,8 @@ def get_jwt_user(request):
     token = jwt_encode_handler(payload)
     user_obj = {'user_id': user.id,
                 'username': user.username,
+                'first_name': user.first_name,
+                'last_name':  user.last_name,
                 'email': user.email,
                 'phone': user.generalprofile.phone,
                 'building_num': user.generalprofile.registration_building_nmb,
@@ -226,6 +227,7 @@ def user_profile(request):
 
                 res = { 'id': user_id,
                         'profile_picture': None,
+                        'username': user.username,
                         'first_name': user.generalprofile.first_name,
                         'last_name': user.generalprofile.last_name,
                         'about_tourist': user.touristprofile.about,
@@ -244,6 +246,6 @@ def user_profile(request):
                 return Response(res)
         except Exception as err:
             print('ERROR: ', err)
-            return HttpResponse(status=HTTP_400_BAD_REQUEST)
+            return Response(HTTP_400_BAD_REQUEST)
 
 
