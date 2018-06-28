@@ -94,8 +94,6 @@ class GeneralProfileAsGuideForm(forms.ModelForm):
         if email != user.email:
             if User.objects.filter(email=email, is_active=True).exists():
                 raise ValidationError(_('Email already in use by another user'))
-        else:
-            raise ValidationError(_('Email is the same as a current one'))
         return email
 
 
@@ -120,7 +118,5 @@ class GeneralProfileAsTouristForm(forms.ModelForm):
         if new_email != user.email:
             if User.objects.filter(email=new_email, is_active=True).exists():
                 raise ValidationError(_('Email already in use by another user'))
-        else:
-            raise ValidationError(_('Email is the same as a current one'))
         return new_email
 
