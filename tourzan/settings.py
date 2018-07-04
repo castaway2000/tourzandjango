@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'user_verification',
     'utils',
     'coupons',
+    'mobile',
 
     #external packages
     'allauth',
