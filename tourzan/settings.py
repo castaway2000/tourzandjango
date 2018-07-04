@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'user_verification',
     'utils',
     'coupons',
+    'mobile',
 
     #external packages
     'allauth',
@@ -192,7 +193,7 @@ WSGI_APPLICATION = 'tourzan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'test_db.sqlite3_X'),
     }
 }
 
