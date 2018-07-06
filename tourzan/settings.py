@@ -193,7 +193,7 @@ WSGI_APPLICATION = 'tourzan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'test_db.sqlite3_X'),
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
