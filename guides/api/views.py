@@ -33,9 +33,10 @@ from .serializers import *
 from rest_framework import viewsets
 
 from guides.models import *
+from utils.api_helpers import FilterViewSet
 
 
-class GuideProfileViewSet(viewsets.ModelViewSet):
+class GuideProfileViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = GuideProfile.objects.filter(is_active=True)
     serializer_class = GuideProfileSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
@@ -44,14 +45,14 @@ class GuideProfileViewSet(viewsets.ModelViewSet):
     #     serializer.save(owner=self.request.user)
 
 
-class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
+class ServiceViewSet(viewsets.ReadOnlyModelViewSet, FilterViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('get',)
 
 
-class GuideServiceViewSet(viewsets.ModelViewSet):
+class GuideServiceViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = GuideService.objects.all()
     serializer_class = GuideServiceSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsGuideOwnerOrReadOnly,)

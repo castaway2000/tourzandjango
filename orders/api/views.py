@@ -14,16 +14,17 @@ from .permissions import IsTouristOwnerOrReadOnly, IsTouristOrGuideOwnerOrReadOn
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from utils.api_helpers import FilterViewSet
 
 
-class OrderStatusViewSet(viewsets.ModelViewSet):
+class OrderStatusViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = OrderStatus.objects.all()
     serializer_class = OrderStatusSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('get',)
 
 
-class ServiceInOrderViewSet(viewsets.ModelViewSet):
+class ServiceInOrderViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = ServiceInOrder.objects.all()
     serializer_class = ServiceInOrderSerializer
     permission_classes = (IsAuthenticated, IsTouristOwnerOrReadOnly,)
@@ -46,7 +47,7 @@ class ServiceInOrderViewSet(viewsets.ModelViewSet):
 #         return qs
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(viewsets.ModelViewSet, FilterViewSet):
     #Improve for later: to limit fields which can be modified by guide and tourist because both
     #of their feedbacks are stored on the same line
 
@@ -70,7 +71,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(viewsets.ModelViewSet, FilterViewSet):
     #add later a logic to permissions for not allowing modify completed orders
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

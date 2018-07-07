@@ -35,9 +35,10 @@ from .permissions import IsUserOwnerOrReadOnly
 
 from ..models import *
 from chats.models import Chat
+from utils.api_helpers import FilterViewSet
 
 
-class TouristProfileViewSet(viewsets.ModelViewSet):
+class TouristProfileViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = TouristProfile.objects.all()
     serializer_class = TouristProfileSerializer
     permission_classes = (IsUserOwnerOrReadOnly,)
@@ -63,7 +64,7 @@ class TouristProfileViewSet(viewsets.ModelViewSet):
             return qs
 
 
-class TouristTravelPhotoViewSet(viewsets.ReadOnlyModelViewSet):
+class TouristTravelPhotoViewSet(viewsets.ReadOnlyModelViewSet, FilterViewSet):
     queryset = TouristTravelPhoto.objects.all()
     serializer_class = TouristTravelPhotoSerializer
     permission_classes = (IsUserOwnerOrReadOnly, )
