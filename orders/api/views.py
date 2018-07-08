@@ -52,12 +52,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
     #Improve for later: to limit fields which can be modified by guide and tourist because both
     #of their feedbacks are stored on the same line
 
-    #Example for filtering by tourist user id: http://localhost:8000/api/v1/reviews?tourist_user_id=29
-    #Example for filtering by guide user id: http://localhost:8000/api/v1/reviews?guide_user_id=30
-    #Example for filtering by guide user id and guide score http://localhost:8000/api/v1/reviews?guide_user_id=30&guide_rating__lte=4
+    #Example for filtering by tourist user id: http://localhost:8000/api/v1/reviews/?tourist_user_id=29
+    #Example for filtering by guide user id: http://localhost:8000/api/v1/reviews/?guide_user_id=30
+    #Example for filtering by guide user id and guide score http://localhost:8000/api/v1/reviews/?guide_user_id=30&guide_rating__lte=4
     #By guide score we mean a score, put by a guide to a tourist
     #lte - less than or equal
     #gte - greater than or equal
+
+    #Example of filtering by tourist user id for guide representation (TO DO IT ONLY WITH AUTH TOKEN for having logged in user)
+    #Example for filtering by tourist user id: http://localhost:8000/api/v1/reviews/get_guide_representation?tourist_user_id=29
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
