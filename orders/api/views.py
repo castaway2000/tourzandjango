@@ -15,6 +15,7 @@ from .permissions import IsTouristOwnerOrReadOnly, IsTouristOrGuideOwnerOrReadOn
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from utils.api_helpers import FilterViewSet
+import django_filters
 
 
 class OrderStatusViewSet(viewsets.ModelViewSet, FilterViewSet):
@@ -47,14 +48,29 @@ class ServiceInOrderViewSet(viewsets.ModelViewSet, FilterViewSet):
 #         return qs
 
 
-class ReviewViewSet(viewsets.ModelViewSet, FilterViewSet):
+class ReviewFilter(django_filters.FilterSet):
+    tourist_user_id = django_filters.NumberFilter(name='order__tourist__user_id')
+    guide_user_id = django_filters.NumberFilter(name='order__guide__user_id')
+    class Meta:
+        model = Review
+        fields = {
+            'tourist_user_id': ['exact'],
+            'guide_user_id': ['exact'],
+        }
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
     #Improve for later: to limit fields which can be modified by guide and tourist because both
     #of their feedbacks are stored on the same line
+
+    #Example for filtering by tourist user id: http://localhost:8000/api/v1/reviews?tourist_user_id=29
+    #Example for filtering by guide user id: http://localhost:8000/api/v1/reviews?guide_user_id=30
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (AllowAny, IsTouristOrGuideOwnerOrReadOnly,)
-
+    filter_class = ReviewFilter
+    filter_fields = ("tourist_user_id",)
 
     @list_route()
     def get_tourist_representation(self, request):
@@ -65,6 +81,7 @@ class ReviewViewSet(viewsets.ModelViewSet, FilterViewSet):
 
     @list_route()
     def get_guide_representation(self, request):
+        #requires logged in user
         user = request.user
         qs = Review.objects.filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
         serializer = self.get_serializer(qs, many=True)
