@@ -15,7 +15,7 @@ from .permissions import IsTouristOwnerOrReadOnly, IsTouristOrGuideOwnerOrReadOn
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from utils.api_helpers import FilterViewSet
-import django_filters
+from .filters import ReviewFilter
 
 
 class OrderStatusViewSet(viewsets.ModelViewSet, FilterViewSet):
@@ -48,21 +48,6 @@ class ServiceInOrderViewSet(viewsets.ModelViewSet, FilterViewSet):
 #         return qs
 
 
-class ReviewFilter(django_filters.FilterSet):
-    tourist_user_id = django_filters.NumberFilter(name='order__tourist__user_id')
-    guide_user_id = django_filters.NumberFilter(name='order__guide__user_id')
-    class Meta:
-        model = Review
-        fields = {
-            'tourist_user_id': ['exact'],
-            'guide_user_id': ['exact'],
-            'guide_rating': ['exact', 'gte', 'lte'],
-            'tourist_rating': ['exact', 'gte', 'lte'],
-            'is_guide_feedback': ['exact'],
-            'is_tourist_feedback': ['exact'],
-        }
-
-
 class ReviewViewSet(viewsets.ModelViewSet):
     #Improve for later: to limit fields which can be modified by guide and tourist because both
     #of their feedbacks are stored on the same line
@@ -78,12 +63,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (AllowAny, IsTouristOrGuideOwnerOrReadOnly,)
     filter_class = ReviewFilter
-    filter_fields = ("tourist_user_id",)
 
     @list_route()
     def get_tourist_representation(self, request):
         user = request.user
-        qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+        qs = self.get_queryset().filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+        qs = self.filter_queryset(qs)#it allows to use combination of filters in this view and in filter_class
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
@@ -91,7 +76,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_guide_representation(self, request):
         #requires logged in user
         user = request.user
-        qs = Review.objects.filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
+        qs = self.get_queryset().filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
+        qs = self.filter_queryset(qs)#it allows to use combination of filters in this view and in filter_class
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
