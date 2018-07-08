@@ -56,6 +56,10 @@ class ReviewFilter(django_filters.FilterSet):
         fields = {
             'tourist_user_id': ['exact'],
             'guide_user_id': ['exact'],
+            'guide_rating': ['exact', 'gte', 'lte'],
+            'tourist_rating': ['exact', 'gte', 'lte'],
+            'is_guide_feedback': ['exact'],
+            'is_tourist_feedback': ['exact'],
         }
 
 
@@ -65,6 +69,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     #Example for filtering by tourist user id: http://localhost:8000/api/v1/reviews?tourist_user_id=29
     #Example for filtering by guide user id: http://localhost:8000/api/v1/reviews?guide_user_id=30
+    #Example for filtering by guide user id and guide score http://localhost:8000/api/v1/reviews?guide_user_id=30&guide_rating__lte=4
+    #By guide score we mean a score, put by a guide to a tourist
+    #lte - less than or equal
+    #gte - greater than or equal
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
