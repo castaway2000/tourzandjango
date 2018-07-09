@@ -19,49 +19,49 @@ class GeoTracker(models.Model):
     longitude = models.FloatField()
 
 
-class GeoChat(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    guide = models.ForeignKey(User, related_name="guide")
-    tourist = models.ForeignKey(User, related_name="tourist")
-    topic = models.CharField(max_length=256, blank=True, null=True, default=None)#some topic can be specified as well
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        return "%s-%s" % (self.guide.generalprofile.first_name, self.tourist.generalprofile.first_name)
-
-
-class GeoChatMessage(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    chat = models.ForeignKey(GeoChat)
-    message = models.TextField()
-    user = models.ForeignKey(User)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        return "%s: %s" % (self.chat.created, self.user.username)
-
-
-    def save(self, *args, **kwargs):
-        super(GeoChatMessage, self).save(*args, **kwargs)
-
-    def get_receiver_user(self):
-        current_user = self.user
-        chat = self.chat
-        if current_user:
-            receiver_user = chat.tourist if chat.tourist != current_user else chat.guide
-        else:
-            receiver_user = None
-        return receiver_user
-
-
-@disable_for_loaddata
-def chat_message_post_save(sender, instance, created, **kwargs):
-    receiver_user = instance.get_receiver_user()
-
-    if receiver_user and not receiver_user.generalprofile.get_is_user_online():
-        data = {"chat_message": instance, "user_from": instance.user, "user_to": receiver_user}
-post_save.connect(chat_message_post_save, sender=GeoChatMessage)
-
-
+# class GeoChat(models.Model):
+#     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+#     guide = models.ForeignKey(User, related_name="guide")
+#     tourist = models.ForeignKey(User, related_name="tourist")
+#     topic = models.CharField(max_length=256, blank=True, null=True, default=None)#some topic can be specified as well
+#     created = models.DateTimeField(auto_now_add=True, auto_now=False)
+#     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+#
+#     def __str__(self):
+#         return "%s-%s" % (self.guide.generalprofile.first_name, self.tourist.generalprofile.first_name)
+#
+#
+# class GeoChatMessage(models.Model):
+#     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+#     chat = models.ForeignKey(GeoChat)
+#     message = models.TextField()
+#     user = models.ForeignKey(User)
+#     created = models.DateTimeField(auto_now_add=True, auto_now=False)
+#     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+#
+#     def __str__(self):
+#         return "%s: %s" % (self.chat.created, self.user.username)
+#
+#
+#     def save(self, *args, **kwargs):
+#         super(GeoChatMessage, self).save(*args, **kwargs)
+#
+#     def get_receiver_user(self):
+#         current_user = self.user
+#         chat = self.chat
+#         if current_user:
+#             receiver_user = chat.tourist if chat.tourist != current_user else chat.guide
+#         else:
+#             receiver_user = None
+#         return receiver_user
+#
+#
+# @disable_for_loaddata
+# def chat_message_post_save(sender, instance, created, **kwargs):
+#     receiver_user = instance.get_receiver_user()
+#
+#     if receiver_user and not receiver_user.generalprofile.get_is_user_online():
+#         data = {"chat_message": instance, "user_from": instance.user, "user_to": receiver_user}
+# post_save.connect(chat_message_post_save, sender=GeoChatMessage)
+#
+#
