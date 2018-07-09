@@ -1,7 +1,7 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
-from .models import GeoChat, GeoChatMessage
+from mobile.models import GeoChat, GeoChatMessagegit
 import datetime
 from django.core.cache import cache
 from tourzan.settings import USER_LASTSEEN_TIMEOUT
