@@ -1,25 +1,14 @@
-# from rest_framework import serializers
-# from ..models import *
-#
-# """
-# Good references:
-# http://www.django-rest-framework.org/api-guide/serializers/#specifying-nested-serialization
-# http://www.django-rest-framework.org/api-guide/relations/
-# https://stackoverflow.com/questions/14573102/how-do-i-include-related-model-fields-using-django-rest-framework
-# """
-#
-#
+from rest_framework import serializers
+
+"""
+Good references:
+http://www.django-rest-framework.org/api-guide/serializers/#specifying-nested-serialization
+http://www.django-rest-framework.org/api-guide/relations/
+https://stackoverflow.com/questions/14573102/how-do-i-include-related-model-fields-using-django-rest-framework
+"""
+
+
 # class MobileSerializer(serializers.ModelSerializer):
-#
 #     class Meta:
-#         model = Orders
+#         model = None
 #         fields = '__all__'
-#
-#
-# class ChatSerializer(serializers.ModelSerializer):
-#     messages = ChatMessageSerializer(source='chatmessage_set', many=True, required=False)
-#
-#     class Meta:
-#         model = Chat
-#         fields = '__all__'
-#         read_only_fields = ('messages',)
