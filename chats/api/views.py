@@ -13,9 +13,10 @@ from ..models import *
 from .serializers import *
 from .permissions import IsParticipant
 from django.db.models import Q
+from utils.api_helpers import FilterViewSet
 
 
-class ChatViewSet(viewsets.ModelViewSet):
+class ChatViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
     permission_classes = (IsAuthenticated,)
@@ -53,7 +54,7 @@ class ChatViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class ChatMessageViewSet(viewsets.ModelViewSet):
+class ChatMessageViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = ChatMessage.objects.all()
     serializer_class = ChatMessageSerializer
     permission_classes = (IsAuthenticated, )

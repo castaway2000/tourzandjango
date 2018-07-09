@@ -25,29 +25,30 @@ from .permissions import IsUserOwnerOrReadOnly
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from utils.api_helpers import FilterViewSet
 
 
-class InterestViewSet(viewsets.ModelViewSet):
+class InterestViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('get',)
 
 
-class UserInterestViewSet(viewsets.ModelViewSet):
+class UserInterestViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = UserInterest.objects.all()
     serializer_class = UserInterestSerializer
     permission_classes = (IsUserOwnerOrReadOnly,)
 
 
-class LanguageLevelViewSet(viewsets.ModelViewSet):
+class LanguageLevelViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = LanguageLevel.objects.all()
     serializer_class = LanguageLevelSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('get',)
 
 
-class UserLanguageViewSet(viewsets.ModelViewSet):
+class UserLanguageViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = UserLanguage.objects.all()
     serializer_class = UserLanguageSerializer
     permission_classes = (IsUserOwnerOrReadOnly,)
