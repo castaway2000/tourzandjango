@@ -175,7 +175,7 @@ def guides(request):
     items_nmb = guides.count()
     guides_rate_info = guides.aggregate(Min("rate"), Max("rate"))
     if not request.session.get("guides_rates_cached"):
-        if items_nmb>0:#guides found more than 0
+        if items_nmb > 0:#guides found more than 0
             rate_min = guides_rate_info.get("rate__min", 0)
             rate_max = guides_rate_info.get("rate__max")
         else:
@@ -189,6 +189,11 @@ def guides(request):
     paginator = Paginator(guides, 10)
     try:
         guides = paginator.page(page)
+        index = guides.number - 1
+        max_index = len(paginator.page_range)
+        start_index = index - 5 if index >= 5 else 0
+        end_index = index + 5 if index <= max_index - 5 else max_index
+        page_range = paginator.page_range[start_index:end_index]
     except PageNotAnInteger:
         guides = paginator.page(1)
     except EmptyPage:

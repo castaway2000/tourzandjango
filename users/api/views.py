@@ -5,16 +5,26 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     )
 
+from allauth.account.views import password_reset
+from django.core import serializers as serial
 from django.contrib.auth import authenticate
+from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.status import HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.authtoken.models import Token
+from rest_framework_jwt.settings import api_settings
+import urllib3
+import json
 
 from rest_framework import viewsets
 from ..models import *
+from orders.models import Review, Order
 from .serializers import *
 from .permissions import IsUserOwnerOrReadOnly
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 class InterestViewSet(viewsets.ModelViewSet):
@@ -85,6 +95,157 @@ def signup_api_view(request):
     if not user:
         return Response({"error": "Signup failed during creation a new user"}, status=HTTP_401_UNAUTHORIZED)
 
-
     token, _ = Token.objects.get_or_create(user=user)
     return Response({"token": token.key})
+
+
+def try_or_none(orm):
+    try:
+        data = orm
+    except Exception:
+        data = None
+    return data
+
+
+@api_view(['POST'])
+def get_jwt_user(request):
+    print("get jwt")
+    username = request.data.get("username")
+    password = request.data.get("password")
+    user_auth = authenticate(username=username, password=password)
+    print(user_auth)
+    if not user_auth:
+        return Response({"error": "Login failed"}, status=HTTP_401_UNAUTHORIZED)
+    user = User.objects.get(username=username)
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    payload = jwt_payload_handler(user)
+    token = jwt_encode_handler(payload)
+    user_obj = {'user_id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name':  user.last_name,
+                'email': user.email,
+                'phone': user.generalprofile.phone,
+                'building_num': user.generalprofile.registration_building_nmb,
+                'flat_num': user.generalprofile.registration_flat_nmb,
+                'street': user.generalprofile.registration_street,
+                'city': user.generalprofile.registration_city,
+                'state': user.generalprofile.registration_state,
+                'country': user.generalprofile.registration_country,
+                'postcode': user.generalprofile.registration_postcode,
+                'interests': [],
+                'guide_id': None,
+                'profile_picture': None,
+                }
+    for i in user.userinterest_set.all():
+        user_obj['interests'].append(i.interest.name)
+    if hasattr(user, 'guideprofile'):
+        user_obj['guide_id'] = user.guideprofile.id
+    try:
+        user_obj['profile_picture'] = str(user.touristprofile.image.url)
+    except Exception as err:
+        print(err)
+        pass
+
+    token_user = {"token": token, 'user': user_obj}
+    return Response(token_user)
+
+
+@api_view(['post'])
+def api_change_pass(request):
+    if request.method == 'POST':
+        tokenize = json.dumps({'token': request.POST['token']})
+        http = urllib3.PoolManager()
+        req = http.request('POST',  '{}/validate_token'.format(request.get_host()),
+                           headers={'Content-Type': 'application/json'},
+                           body=tokenize)
+        if req.status != 200:
+            return HTTP_401_UNAUTHORIZED('please login')
+        user = request.user
+        form = PasswordChangeForm(data=request.POST or None, user=user)
+        if form.is_valid():
+            form.save(commit=False)
+            form.save()
+            update_session_auth_hash(request, user)
+            return HttpResponse(status=HTTP_200_OK)
+
+
+@api_view(['POST'])
+def forgot_password(request):
+    if request.method == 'POST':
+        email = json.dumps({'email': request.POST['email']})
+        http = urllib3.PoolManager()
+        #TODO: update the url
+        req = http.request('POST',  '{}/reset_password'.format(request.get_host()),
+                           headers={'Content-Type': 'application/json'},
+                           body=email)
+        return HttpResponse(status=req.status)
+
+
+@api_view(['POST'])
+def user_profile(request):
+    if request.method == 'POST':
+        try:
+            if request.POST['user_id']:
+                print(request.POST)
+                user_id = request.POST['user_id']
+                user = User.objects.get(id=user_id)
+
+                def get_tourist_representation_by_id(user):
+                    qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+                    data = json.loads(serial.serialize('json', qs))
+                    for d in data:
+                        order = Order.objects.get(id=d['fields']['order'])
+                        d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+                        d['fields']['reviewers_name'] = order.guide.name
+                    return data
+
+                def get_guide_representation_by_id(user):
+                    qs = Review.objects.filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
+                    data = json.loads(serial.serialize('json', qs))
+                    for d in data:
+                        order = Order.objects.get(id=d['fields']['order'])
+                        d['fields']['reviewers_picture'] = str(order.tourist.image.url)
+                        d['fields']['reviewers_name'] = order.tourist.user.generalprofile.first_name
+                    return data
+
+                def if_guide():
+                    data = {'is_guide': False, 'is_default': False, 'profile_image': None, 'guide_overview': None,
+                            'guide_rating': 0, 'reviews': None}
+                    if hasattr(user, 'guideprofile'):
+                        data['reviews'] = get_guide_representation_by_id(user)
+                        data['is_guide'] = True
+                        data['is_default'] = user.guideprofile.is_default_guide
+                        data['guide_overview'] = user.guideprofile.overview
+                        data['guide_rating'] = user.guideprofile.rating
+                        try:
+                            data['profile_image'] = str(user.guideprofile.profile_image.url)
+                        except Exception as e:
+                            print(e)
+                    return data
+
+                res = { 'id': user_id,
+                        'profile_picture': None,
+                        'username': user.username,
+                        'first_name': user.generalprofile.first_name,
+                        'last_name': user.generalprofile.last_name,
+                        'about_tourist': user.touristprofile.about,
+                        'tourist_rating': user.touristprofile.rating,
+                        'interests': [],
+                        'tourist_reviews': get_tourist_representation_by_id(user),
+                        'guide_data': if_guide()
+                        }
+                for i in user.userinterest_set.all():
+                    res['interests'].append(i.interest.name)
+                try:
+                    res['profile_picture'] = str(user.touristprofile.image.url)
+                except Exception as error:
+                    print(error)
+                    pass
+                return Response(res)
+        except Exception as err:
+            print('ERROR: ', err)
+            return Response(HTTP_400_BAD_REQUEST)
+
+

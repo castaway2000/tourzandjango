@@ -328,7 +328,7 @@
                 </ul>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         {% if guides.has_other_pages %}
                             <ul class="pagination">
                                 {% if guides.has_previous %}
@@ -336,7 +336,7 @@
                                             href="?{% url_replace page=guides.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
-                                {% for i in guides.paginator.page_range %}
+                                {% for i in page_range %}
                                     {% if guides.number == i %}
                                         <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                     {% else %}
@@ -347,6 +347,7 @@
                                     <li class="next"><a
                                             href="?{% url_replace page=guides.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
+                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>

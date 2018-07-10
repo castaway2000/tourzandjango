@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'user_verification',
     'utils',
     'coupons',
+    'mobile',
 
     #external packages
     'allauth',
@@ -81,6 +82,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework.schemas',
     'rest_framework.documentation',
+    'rest_auth',
     'storages',
     'axes',
     'phonenumber_field',
@@ -258,11 +260,21 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+}
+
+LOGOUT_ON_PASSWORD_CHANGE = False
+REST_SESSION_LOGIN = False
+REST_USE_JWT = True
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.api.serializers.UserDetailsSerializerCustom',
+    'PASSWORD_RESET_SERIALIZER': 'users.api.serializers.PasswordResetSerializerCustom',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'users.api.serializers.PasswordResetConfirmSerializerCustom',
 }
 
 
