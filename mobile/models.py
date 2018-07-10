@@ -2,21 +2,36 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
-from django.contrib.auth.models import User
+from guides.models import GuideProfile
 from django.db.models.signals import post_save
 
 from guides.models import GuideProfile
 from utils.disabling_signals_for_load_data import disable_for_loaddata
-
+from django.contrib.gis.geos import Point
+point = Point(1, 1)
+print(point)
 import uuid
 
 
 class GeoTracker(models.Model):
     user = models.OneToOneField(User)
     is_online = models.IntegerField(default=0, null=False, blank=False)
-    geo_point = models.PointField()
+    geo_point = models.PointField(geography=True, default=point, blank=False)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    trip_in_progress = models.BooleanField(default=False, null=False, blank=False)
+
+
+class GeoTrip(models.Model):
+    user = models.OneToOneField(User)
+    guide = models.ForeignKey(GuideProfile)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    duration = models.IntegerField()
+    in_progress = models.BooleanField(default=False, null=False, blank=False)
+    cost = models.FloatField()
+    time_remaining = models.IntegerField()
+    time_flag = models.CharField(max_length=64)
 
 
 class GeoChat(models.Model):
