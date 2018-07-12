@@ -460,6 +460,25 @@ def guide_settings_tour_edit_images(request, slug=None):
 
 @login_required()
 @never_cache
+def guide_settings_tour_edit_price_and_schedule(request, slug):
+    page = "tour_edit_price_and_schedule"
+    title = "Tour Edit: Price and Schedule"
+    user = request.user
+
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        tour_items = tour.get_tourprogram_items()
+    else:
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    if request.method == 'POST':
+        pass
+    return render(request, 'tours/profile_settings_guide_tour_edit_price_and_schedule.html', locals())
+
+
+@login_required()
+@never_cache
 def deactivate_tour_image(request):
     print (request.POST)
     if request.POST:
