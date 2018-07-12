@@ -11,6 +11,7 @@ import redis as rs
 from datetime import datetime
 import json
 r = rs.StrictRedis()
+status_data = json.dumps({'status_cdde': 400})
 
 """
 HEADS UP, this section of the code requires spatialite or postgis for it to work.
@@ -45,12 +46,12 @@ def show_nearby_guides(request):
                                                user__guideprofile__isnull=False,
                                                is_online=True, trip_in_progress=False).values()
         else:
-            return HttpResponse(400)
+            return HttpResponse(status_data)
         data = json.dumps({'nearby_guides': guides})
         return HttpResponse(data)
     except Exception as err:
         print(err)
-        return HttpResponse(400)
+        return HttpResponse(status_data)
 
 
 @api_view(['POST'])
@@ -88,7 +89,7 @@ def get_trip_status(request):
         return HttpResponse(data)
     except Exception as err:
         print(err)
-        return HttpResponse(400)
+        return HttpResponse(status_data)
 
 @api_view(['POST'])
 def extend_time(request):
@@ -109,7 +110,7 @@ def extend_time(request):
             price = guide_profile.guideprofile.rate
             cost_update = tdelta.total_seconds() / 3600 * price
         else:
-            return HttpResponse(400)
+            return HttpResponse(status_data)
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(),
                                                                     cost=cost_update, time_remaining=tremaining)
 
@@ -117,36 +118,35 @@ def extend_time(request):
         return HttpResponse(data)
     except Exception as err:
         print(err)
-        return HttpResponse(400)
+        return HttpResponse(status_data)
 
 @api_view(['POST'])
 def book_guide(request):
     """
-    Logged in Userid
-    Verify the Token
-    Logged in users current location (latitude and longitude in float)
-    Logged in users current address text
-    Guide user id
-    Time limit in minutes(Signed integer number example 90 minutes)
-    Time limit automatic or manual flag
-    Booking time.(MM-dd-yyyy HH:mm or specify yours)
-
     :param request: 
     :return: 
     """
     try:
         token = request.POST['token']
         user_id = int(request.POST['user_id'])
-        guide_id = int(request.POST['guide_id'])
+        list_of_guides = request.POST['guides']
         lat = float(request.POST['latitude'])
         long = float(request.POST['longitude'])
         time_limit = int(request.POST['time_limit'])
         booking_type = request.POST['booking_type']
         booking_time = datetime.now()
-        return HttpResponse(200)
+
+        user = GeneralProfile.objects.get(user_id=user_id)
+        point = Point(long, lat)
+        user_interests = user.user.userinterest_set
+        user_language = user.get_languages()
+        guides = GeoTracker.objects.filter(user__in=list_of_guides).values(user).distance(point).order_by('distance')
+        # gp = GeneralProfile.objects.filter(user_id__in=guides.user)
+        data = json.dumps(guides)
+        return HttpResponse(data)
     except Exception as err:
         print(err)
-        return HttpResponse(400)
+        return HttpResponse(status_data)
 
 
 @api_view(['POST'])
@@ -176,7 +176,7 @@ def update_trip(request):
                 # r.pubsub().subscribe(channel, 'global')
             except Exception as err:
                 print(err)
-                return HttpResponse(400)
+                return HttpResponse(status_data)
 
         elif status == 'clockin' or status == 'update_trip':
             """
@@ -201,14 +201,15 @@ def update_trip(request):
                     price = guide_profile.guideprofile.rate
                     cost_update = tdelta.total_seconds()/3600 * price
                 else:
-                    return HttpResponse(400)
+                    return HttpResponse(status_data)
                 GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(),
                                                                             cost=cost_update, latitude=lat,
                                                                             longitude=long, geo_point=point)
                 trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
                 data = json.dumps({'location': point, 'trip_status': trip_status})
                 return HttpResponse(data)
-            return HttpResponse(200)
+            status_data['status_code'] = 200
+            return HttpResponse(status_data)
 
         elif status == 'isAccepted':
             """
@@ -252,11 +253,13 @@ def update_trip(request):
             guide_id = request.POST['guide_id']
             end_trip(trip_id, guide_id)
         else:
-            return HttpResponse(400)
-        return HttpResponse(200)
+            return HttpResponse(status_data)
+        status_data['status_code'] = 200
+        return HttpResponse(status_data)
     except Exception as err:
         print(err)
-        return HttpResponse(400)
+        status_data['status_code'] = 400
+        return HttpResponse(status_data)
 
 
 def end_trip(trip_id, guide_id):
@@ -269,7 +272,7 @@ def end_trip(trip_id, guide_id):
             price = guide_profile.guideprofile.rate
             cost_update = tdelta.total_seconds() / 3600 * price
         else:
-            return HttpResponse(400)
+            return HttpResponse(status_data)
         GeoTrip.objects.filter(id=trip_id, in_progress=True)\
             .update(duration=tdelta.total_seconds(), cost=cost_update)
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
@@ -282,7 +285,7 @@ def end_trip(trip_id, guide_id):
         # r.pubsub().listen()
     except Exception as err:
         print(err)
-        return HttpResponse(400)
+        return HttpResponse(status_data)
 
 def set_user_location(channel, user_type, user_id, lat, long):
     msg = str({'type': user_type, 'user_id':user_id, 'lat':lat, 'long':long})

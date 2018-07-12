@@ -8,5 +8,5 @@ urlpatterns = [url(r'^', include(router.urls)),
                url(r'^get_trip_status/', views.get_trip_status),
                url(r'^update_trip/', views.update_trip),
                url(r'^extend_time/', views.extend_time),
-               url(r'^book_guide/', views.book_guide)
+               url(r'^book_guide/', views.book_guide),
                ]
