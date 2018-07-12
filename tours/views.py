@@ -17,6 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 from django.db.models import Avg, Max, Min, Sum
 from django.views.decorators.clickjacking import xframe_options_exempt
+import datetime
 
 
 @xframe_options_exempt
@@ -268,8 +269,6 @@ def tour(request, slug, tour_id, tour_new=None):
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)
     other_tours_nmb = other_tours.count()
 
-
-
     page = request.GET.get('page', 1)
     paginator = Paginator(reviews, 10)
     try:
@@ -400,17 +399,13 @@ def guide_settings_tour_edit_program(request, slug=None):
     if slug:
         guide = user.guideprofile
         tour = get_object_or_404(Tour, slug=slug, guide=guide)
-        tour_items = tour.get_tourprogram_items()
     else:
         return HttpResponseRedirect(reverse("tour_edit_general"))
 
     if request.method == 'POST' and form.is_valid():
-        data = request.POST.copy()
-        print(data)
+        data = request.POST.copy().dict()
         program_item_id = data.get("program_item_id")
         image = request.FILES.get("image")
-
-        defaults_data = data
         fields_to_delete = ["program_item_id", "csrfmiddlewaretoken"]
         for field in fields_to_delete:
             if field in data:
@@ -419,15 +414,19 @@ def guide_settings_tour_edit_program(request, slug=None):
             data["image"] = image
         else:
             del data["image"]
+
+        data["tour_id"] = tour.id
+        data["time"] = datetime.datetime.strptime(data["time"], "%H:%M")
+        data["day"] = 1
+
         if program_item_id:
-            TourProgramItem.objects.update_or_create(id=program_item_id, defaults=defaults_data)
+            TourProgramItem.objects.update_or_create(id=program_item_id, defaults=data)
             messages.success(request, _('Tour program has been successfully updated!'))
         else:
-            TourProgramItem.objects.create(**defaults_data)
+            TourProgramItem.objects.create(**data)
             messages.success(request, _('Tour program has been successfully updated!'))
 
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
+    tour_items = tour.get_tourprogram_items()
     return render(request, 'tours/profile_settings_guide_tour_edit_program.html', locals())
 
 
