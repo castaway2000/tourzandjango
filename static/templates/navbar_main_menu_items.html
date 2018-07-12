@@ -17,6 +17,13 @@
 {% endif %}
 
 {% if not user.is_anonymous %}
+
+    {% if request.session.current_role == "guide" %}
+        <li><a href="{% url 'guide_settings_tours' %}">{% blocktrans %}MY TOURS{% endblocktrans %}</a>
+    {% endif %}
+
+    <li><a href="{% url 'chats' %}">{% blocktrans %}CHATS{% endblocktrans %}</a>
+
     {% if request.session.current_role == "tourist" or not request.session.current_role %}
         <li class="{% if current_page == "bookings" %}active{% endif %}">
             <a href="{% url 'my_bookings' %}">{% blocktrans %}MY BOOKINGS{% endblocktrans %}</a>
@@ -28,7 +35,6 @@
     {% endif %}
 
 
-    <li><a href="{% url 'chats' %}">{% blocktrans %}CHATS{% endblocktrans %}</a>
 
 
     <li class="dropdown">
@@ -52,7 +58,7 @@
                 <li>
                     <a href="{% url 'payments' %}">{% blocktrans %}MY PAYMENTS{% endblocktrans %}</a>
                 </li>
-            {% elif  request.session.current_role == "guide" %}
+            {% elif request.session.current_role == "guide" %}
                 <li>
                     <a href="{% url 'earnings' %}">{% blocktrans %}MY EARNINGS{% endblocktrans %}</a>
                 </li>

@@ -1,0 +1,128 @@
+{% extends 'tours/profile_settings_guide_tour_edit.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block tour_edit_content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>{% trans 'Edit your tour program here' %}</h4>
+            <div>
+                 <button class="btn btn-primary mb10"
+                    data-toggle="modal"
+                    data-program_item_day="1"
+                    href="#modal_program_item_edit">
+                {% trans 'Add new program item' %}</button>
+            </div>
+        </div>
+    </div>
+    <div class="tour-section tour-program-items guide-editing">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
+                    {% if tour_items %}
+                        {% for item in tour_items %}
+                            <div class="col-lg-6">
+                                <div class="tour-program-item">
+                                    <div class="img-container" style="
+                                        {% if item.image_medium %}
+                                            background: url('{{ item.image_medium.url }}')
+                                        {% else %}
+                                            background: url('{% static "img/400x300.png" %}')
+                                        {% endif %}
+                                    ">
+                                        {% if item.time %}
+                                            <div class="circle circle-time text-center">
+                                                {{ item.time|date:"H:i" }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="content">
+                                        <div class="title">
+                                            {{ forloop.counter }}. {{ item.name }}
+                                        </div>
+                                        <div class="description">
+                                            {{ item.description|safe }}
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button class="btn btn-primary mb10"
+                                            data-toggle="modal"
+                                            href="#modal_program_item_edit"
+                                            data-program_item_id="{{ item.id }}"
+                                            data-program_item_name="{{ item.name }}"
+                                            data-program_item_description="{{ item.description }}"
+                                            data-program_item_day="{{ item.day }}"
+                                            data-program_item_time="{{ item.time|date:'H:i' }}"
+                                            data-program_item_image_url="{% if item.image_medium %}{{ item.image_medium.url}}
+                                            {% else %}
+                                                {% static "img/400x300.png" %}
+                                            {% endif%}"
+                                        >{% trans 'Edit' %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <h4>{% trans 'Add you first program item' %}</h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-wide" id="modal_program_item_edit" tabindex="-1" role="dialog"
+         aria-labelledby="gridSystemModalLabel"
+         aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="text-center">{% trans 'Editing of a program item' %}</h3>
+                    {% crispy form %}
+                </div>
+            </div>
+          </div>
+    </div>
+
+{% endblock tour_edit_content %}
+
+
+{% block js_stuff %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function() {
+
+            $(".timeinput").timepicker({
+                minuteStep: 10,
+                showMeridian: false,
+                disableFocus: true
+            });
+
+
+            $('#modal_program_item_edit').on('show.bs.modal', function (event) {
+
+                var button = $(event.relatedTarget); // Button that triggered the modal
+
+                var program_item_id = button.data('program_item_id');
+                var name = button.data('program_item_name');
+                var description = button.data('program_item_description');
+                var day = button.data('program_item_day');
+                var time = button.data('program_item_time');
+                var image_url = button.data('program_item_image_url');
+
+                console.log(time);
+                console.log(description);
+
+                var target = $(this);
+                target.find('#program_item_id').val(program_item_id);
+                target.find('#id_name').val(name);
+                target.find('#id_description').val(description);
+                target.find('#id_day').val(day);
+                target.find('#id_time').val(time);
+                target.find('#image').attr("src", image_url);
+            });
+        });
+    </script>
+{% endblock js_stuff %}

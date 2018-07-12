@@ -157,6 +157,7 @@ class TourExcludedItem(models.Model):
     tour = models.ForeignKey(Tour)
     order_priority = models.IntegerField(default=0)
     name = models.CharField(max_length=128)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
@@ -166,8 +167,8 @@ class TourExcludedItem(models.Model):
 
 class TourProgramItem(models.Model):
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
-    name = models.CharField(max_length=128)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True, default=None)
+    description = models.TextField(blank=True, null=True, default=None)
     day = models.IntegerField(default=1)
     time = models.TimeField()
     duration = models.IntegerField(default=0)

@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Tour
@@ -332,7 +332,6 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
 
 
         elif payment_type == 2:
-
             new_form.currency_id = data.get(u"currency")
             new_form.price = data.get(u"price") if data.get(u"price") else 50
             new_form.hours = data.get(u"hours") if data.get(u"hours") else 2
@@ -355,7 +354,108 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
             return HttpResponseRedirect(reverse("guide_settings_tour_edit", kwargs={"slug": new_form.slug, "tour_id": new_form.id}))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    return render(request, 'tours/profile_settings_guide_tour_edit.html', locals())
+    return render(request, 'tours/profile_settings_guide_tour_edit_old.html', locals())
+
+
+@login_required()
+@never_cache
+def guide_settings_tour_edit_general(request, slug=None):
+    page = "tour_edit_general"
+    title = "Tour Edit: General"
+    user = request.user
+
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        form = TourGeneralForm(request.POST or None, request.FILES or None, instance=tour)
+    else:
+        form = TourGeneralForm(request.POST or None, request.FILES or None)
+
+    if request.method == 'POST' and form.is_valid():
+        data = request.POST
+        new_form = form.save(commit=False)
+        guide = user.guideprofile
+        new_form.guide = guide
+        new_form.city = guide.city
+        new_form = form.save()
+
+        if slug:
+            messages.success(request, _('Tour details have been successfully updated!'))
+        else:
+            messages.success(request, _('Tour details have been successfully created!'))
+            return HttpResponseRedirect(reverse("tour_edit_general", kwargs={"slug": new_form.slug }))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'tours/profile_settings_guide_tour_edit_general.html', locals())
+
+
+@login_required()
+@never_cache
+def guide_settings_tour_edit_program(request, slug=None):
+    page = "tour_edit_program"
+    title = "Tour Edit: Program"
+    user = request.user
+    form = TourProgramItemForm(request.POST or None, request.FILES or None)
+
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        tour_items = tour.get_tourprogram_items()
+    else:
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    if request.method == 'POST' and form.is_valid():
+        data = request.POST.copy()
+        print(data)
+        program_item_id = data.get("program_item_id")
+        image = request.FILES.get("image")
+
+        defaults_data = data
+        fields_to_delete = ["program_item_id", "csrfmiddlewaretoken"]
+        for field in fields_to_delete:
+            if field in data:
+                del data[field]
+        if image:
+            data["image"] = image
+        else:
+            del data["image"]
+        if program_item_id:
+            TourProgramItem.objects.update_or_create(id=program_item_id, defaults=defaults_data)
+            messages.success(request, _('Tour program has been successfully updated!'))
+        else:
+            TourProgramItem.objects.create(**defaults_data)
+            messages.success(request, _('Tour program has been successfully updated!'))
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'tours/profile_settings_guide_tour_edit_program.html', locals())
+
+
+@login_required()
+@never_cache
+def guide_settings_tour_edit_images(request, slug=None):
+    page = "tour_edit_images"
+    title = "Tour Edit: Images"
+    user = request.user
+
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        tour_items = tour.get_tourprogram_items()
+    else:
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    if request.method == 'POST':
+        print("method post")
+        if request.FILES.get("images"):
+            print(request.FILES.getlist("images"))
+            for file in request.FILES.getlist("images"):
+                TourImage.objects.get_or_create(image=file, tour=tour)
+
+        messages.success(request, _('Images have been successfully updated!'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
+    return render(request, 'tours/profile_settings_guide_tour_edit_images.html', locals())
 
 
 @login_required()
