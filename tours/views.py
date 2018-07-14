@@ -387,6 +387,17 @@ def guide_settings_tour_edit_general(request, slug=None):
 
     return render(request, 'tours/profile_settings_guide_tour_edit_general.html', locals())
 
+@login_required()
+def delete_program_tour_item(request, id):
+    user = request.user
+    guide = user.guideprofile
+    if TourProgramItem.objects.filter(id=id, tour__guide=guide).exists():
+        TourProgramItem.objects.filter(id=id, tour__guide=guide).update(is_active=False)
+        messages.success(request, _('Tour program has been successfully removed!'))
+    else:
+        messages.success(request, _('You do not have permissions to edit this item!'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 @login_required()
 @never_cache
@@ -427,7 +438,7 @@ def guide_settings_tour_edit_program(request, slug=None):
             messages.success(request, _('Tour program has been successfully updated!'))
 
     tour_items = tour.get_tourprogram_items()
-    return render(request, 'tours/profile_settings_guide_tour_edit_program.html', locals())
+    return render(request, 'tours/tour_edit_program.html', locals())
 
 
 @login_required()
@@ -464,6 +475,9 @@ def guide_settings_tour_edit_price_and_schedule(request, slug):
     title = "Tour Edit: Price and Schedule"
     user = request.user
 
+    now = datetime.datetime.now()
+    form = TourWeeklyScheduleForm(request.POST or None)
+
     if slug:
         guide = user.guideprofile
         tour = get_object_or_404(Tour, slug=slug, guide=guide)
@@ -473,7 +487,45 @@ def guide_settings_tour_edit_price_and_schedule(request, slug):
 
     if request.method == 'POST':
         pass
-    return render(request, 'tours/profile_settings_guide_tour_edit_price_and_schedule.html', locals())
+
+    return render(request, 'tours/tour_edit_price_and_schedule.html', locals())
+
+
+@login_required()
+@never_cache
+def available_tour_dates_template(request, slug):
+    page = "tour_edit_price_and_schedule"
+    title = "Tour Edit: Price and Schedule"
+    user = request.user
+    days_tuple = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        tour_items = tour.get_tourprogram_items()
+    else:
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    scheduled_template_item = ScheduleTemplateItem.objects.filter(tour=tour, is_general_template=True).last()
+    print(scheduled_template_item)
+    if scheduled_template_item:
+        form = TourWeeklyScheduleForm(request.POST or None, instance=scheduled_template_item)
+    else:
+        form = TourWeeklyScheduleForm(request.POST or None)
+    if request.method=="POST" and form.is_valid():
+        data = request.POST
+        print(data)
+        new_form = form.save(commit=False)
+        new_form.is_general_template = True
+        new_form.tour = tour
+        new_form.save()
+        print(new_form.id)
+        if "quick-template" in data:
+            scheduled_template_item = ScheduleTemplateItem.objects.get(id=new_form.id)
+            scheduled_template_item.populate_weekdays()
+
+    weekly_template_items = ScheduleTemplateItem.objects.filter(tour=tour, is_general_template=False, is_active=True)
+    return render(request, 'tours/tour_schedule_weekly_template.html', locals())
 
 
 @login_required()

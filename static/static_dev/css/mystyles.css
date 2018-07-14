@@ -1041,6 +1041,14 @@ a{
     color: white;
 }
 
+.modal-tour-program-edit .modal-content{
+    height: 500px;
+    overflow-y: auto;
+}
+
+.btn-inlineform{
+    margin-top: 29px;
+}
 
 @media (min-width: 768px) {
     .navbar .navbar-nav {
@@ -1088,6 +1096,14 @@ a{
 }
 
 @media (max-width:768px) {
+    .btn-inlineform{
+        margin-top: 0;
+    }
+
+
+    .tour-program-item .img-container{
+        min-height: 180px;
+    }
 
   .booking-filters-container{
       top: 0;

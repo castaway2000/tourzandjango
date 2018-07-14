@@ -29,7 +29,7 @@
                                         {% if item.image_medium %}
                                             background: url('{{ item.image_medium.url }}')
                                         {% else %}
-                                            background: url('{% static "img/400x300.png" %}')
+                                            background: url('{% static "img/800x600.png" %}')
                                         {% endif %}
                                     ">
                                         {% if item.time %}
@@ -43,10 +43,11 @@
                                             {{ forloop.counter }}. {{ item.name }}
                                         </div>
                                         <div class="description">
-                                            {{ item.description|safe }}
+                                            {{ item.description|safe|linebreaks }}
                                         </div>
                                     </div>
                                     <div class="text-center">
+                                        <a href="{% url 'delete_program_tour_item' item.id %}" class="btn btn-danger mb10">{% trans 'delete?' %}</a>
                                         <button class="btn btn-primary mb10"
                                             data-toggle="modal"
                                             href="#modal_program_item_edit"
@@ -57,12 +58,19 @@
                                             data-program_item_time="{{ item.time|date:'H:i' }}"
                                             data-program_item_image_url="{% if item.image_medium %}{{ item.image_medium.url}}
                                             {% else %}
-                                                {% static "img/400x300.png" %}
+                                                {% static "img/800x600.png" %}
                                             {% endif%}"
                                         >{% trans 'Edit' %}</button>
                                     </div>
+                                    <div class="mb10 mr10 text-right">
+
+                                    </div>
                                 </div>
                             </div>
+                            {% if forloop.counter|divisibleby:2 %}
+                                </div><!--end row -->
+                                <div class="row">
+                            {% endif %}
                         {% endfor %}
                     {% else %}
                         <h4>{% trans 'Add you first program item' %}</h4>
@@ -72,7 +80,7 @@
         </div>
     </div>
 
-    <div class="modal fade modal-wide" id="modal_program_item_edit" tabindex="-1" role="dialog"
+    <div class="modal fade modal-wide modal-tour-program-edit" id="modal_program_item_edit" tabindex="-1" role="dialog"
          aria-labelledby="gridSystemModalLabel"
          aria-hidden="true">
           <div class="modal-dialog">

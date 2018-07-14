@@ -43,7 +43,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-lg-offset-3">
                         <div class="text-center tour-description">
-                            {{ tour.overview_short|safe }}
+                            {{ tour.overview_short|safe|linebreaks }}
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
             <div class="row">
                 <div class="col-lg-6 col-lg-offset-3">
                     <div>
-                        {{ tour.overview|safe }}
+                        {{ tour.overview|safe|linebreaks }}
                     </div>
                 </div>
             </div>
@@ -106,7 +106,6 @@
                                         </div>
                                      </div>
                                 {% endfor %}
-
                         </div>
                     </div>
                 </div>
@@ -134,7 +133,7 @@
                                 {% if item.image_medium %}
                                     background: url('{{ item.image_medium.url }}')
                                 {% else %}
-                                    background: url('{% static "img/400x300.png" %}')
+                                    background: url('{% static "img/800x600.png" %}')
                                 {% endif %}
                             ">
                                 {% if item.time %}
@@ -148,11 +147,15 @@
                                     {{ forloop.counter }}. {{ item.name }}
                                 </div>
                                 <div class="description">
-                                    {{ item.description|safe }}
+                                    {{ item.description|safe|linebreaks }}
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% if forloop.counter|divisibleby:2 %}
+                        </div><!--end row -->
+                        <div class="row">
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -219,7 +222,7 @@
                                                           </ul>
                                                     </div>
                                                     <div class="review-text">
-                                                          {{ review.tourist_feedback_text|safe }}
+                                                          {{ review.tourist_feedback_text|safe|linebreaks }}
                                                     </div>
                                               </div>
                                           </div>

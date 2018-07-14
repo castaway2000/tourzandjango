@@ -89,7 +89,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                {{ tour.overview|linebreaks|truncatewords_html:30 }}
+                                                {{ tour.overview|safe|linebreaks|truncatewords_html:30 }}
                                             </div>
                                         </div>
                                     </div>

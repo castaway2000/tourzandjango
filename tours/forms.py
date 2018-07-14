@@ -103,7 +103,7 @@ class TourProgramItemForm(forms.Form):
 
         self.helper.layout = Layout(
             HTML('<input class="hidden" id="program_item_id" name="program_item_id">'),
-            HTML('<img id="image" class="w300">'),
+            HTML('<img id="image" class="w300 img-responsive">'),
             Field('image'),
             Field('name'),
             Field('description'),
@@ -117,6 +117,16 @@ class TourProgramItemForm(forms.Form):
                 '</div>' % (reverse("guide_settings_tours"), _("Cancel"),  _('Save'))
             ),
         )
+
+
+class TourWeeklyScheduleForm(forms.ModelForm):
+    time_start = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), label=_("Typical start time"))
+    price = forms.DecimalField(required=True, min_value=0)
+    seats_total = forms.IntegerField(required=True, min_value=0)
+
+    class Meta:
+        model = ScheduleTemplateItem
+        fields = ("time_start", "price", "seats_total")
 
 
 class BookingForm(forms.Form):

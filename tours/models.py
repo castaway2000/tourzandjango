@@ -202,6 +202,7 @@ class TourProgramItem(models.Model):
 class ScheduledTour(models.Model):
     tour = models.ForeignKey(Tour)
     dt = models.DateTimeField()
+    time_start = models.TimeField(blank=True, null=True, default=None)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     price_final = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -246,6 +247,32 @@ class ScheduledTour(models.Model):
     def get_name(self):
         dt = self.dt.strftime('%m/%d/%Y %I:%M')
         return "%s -- %s USD -- %s" % (dt, self.price_final, self.tour.name)
+
+
+class ScheduleTemplateItem(models.Model):
+    tour = models.ForeignKey(Tour)
+    day = models.IntegerField(default=0)
+    time_start = models.TimeField(blank=True, null=True, default=None)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    seats_total = models.IntegerField(default=0)
+    is_general_template = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    class Meta:
+        verbose_name = 'Schedule Template Item'
+        verbose_name_plural = 'Schedule Template Items'
+
+    def populate_weekdays(self):
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        for index, day in enumerate(days):
+            ScheduleTemplateItem.objects.update_or_create(tour=self.tour, day=index, time_start=self.time_start,
+                                                            is_general_template=False, is_active=True,
+                                                            defaults={"time_start": self.time_start, "price": self.price,
+                                                                      "seats_total": self.seats_total
+                                                                      }
+                                                          )
 
 
 class TourImage(models.Model):

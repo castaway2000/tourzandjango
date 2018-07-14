@@ -18,7 +18,15 @@ urlpatterns = [
     url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/program/$',
         views.guide_settings_tour_edit_program, name='tour_edit_program'),
     url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/images/$', views.guide_settings_tour_edit_images, name='tour_edit_images'),
-    url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/price-and-schedule/$', views.guide_settings_tour_edit_price_and_schedule, name='tour_edit_price_and_schedule'),
+    url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/price-and-schedule/$', views.guide_settings_tour_edit_price_and_schedule,
+        name='tour_edit_price_and_schedule'),
+
+    url(r'^settings/guide/tour-new/delete_program_tour_item/(?P<id>\w+)/$',
+        views.delete_program_tour_item, name='delete_program_tour_item'),
+
+    url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/available-tour-dates-template/$',
+        views.available_tour_dates_template, name='available_tour_dates_template'),
+
 
     url(r'^deactivate_tour_image/$', views.deactivate_tour_image, name='deactivate_tour_image'),
     url(r'^make_main_tour_image/$', views.make_main_tour_image, name='make_main_tour_image'),
