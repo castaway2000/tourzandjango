@@ -29,7 +29,6 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-lg-2">
-                        {{ form.errors }}
                         <label>{% trans 'time start' %}</label>
                         <input class="form-control timeinput" name="time_start" value="{{ form.time_start.value }}">
                     </div>
@@ -47,46 +46,48 @@
                     </div>
                 </div>
             </form>
-            <form method="post">{% csrf_token %}
-                <div class="row">
-                    <div class="form-group col-lg-12 mt20">
-                        <h4>{% trans 'Weekly schedule by weekdays.' %}</h4>
-                    </div>
-                </div>
-                {% regroup weekly_template_items by day as template_items_list %}
-                {% for item in template_items_list %}
-                    <div class="">
-                        <b>{{ item.grouper }}</b>
-                    </div>
-                    {% for schedule_item in item.list %}
-                        <div class="row">
-                            <div class="form-group col-lg-2">
-                                <label>{% trans 'time start' %}</label>
-                                <input class="form-control timeinput" name="time_start-{{ forloop.counter }}"
-                                    value="{{ schedule_item.time_start|date:"H:i" }}">
-                            </div>
-                            <div class="form-group col-lg-2">
-                                <label>{% trans 'price' %}</label>
-                                <input class="form-control" name="price-{{ forloop.counter }}" type="number"
-                                       min="0" value="{{ schedule_item.price }}">
-                            </div>
-                            <div class="form-group col-lg-2">
-                                <label>{% trans 'seats limit' %}</label>
-                                <input class="form-control" name="seats_total-{{ forloop.counter }}" type="number"
-                                       min="0" value="{{ schedule_item.seats_total }}">
-                            </div>
-                            <div class="form-group col-lg-2">
-                                <button class="btn btn-success btn-inlineform">+</button>
-                            </div>
+            {% if weekly_template_items %}
+                <form method="post">{% csrf_token %}
+                    <div class="row">
+                        <div class="form-group col-lg-12 mt20">
+                            <h4>{% trans 'Weekly schedule by weekdays.' %}</h4>
                         </div>
-                    {% endfor %}
-                {% endfor %}
-                <div class="row">
-                    <div class="form-group col-lg-6 text-center">
-                        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
                     </div>
-                </div>
-            </form>
+                    {% regroup weekly_template_items by day as template_items_list %}
+                    {% for item in template_items_list %}
+                        <div class="">
+                            <b>{{ item.grouper }}</b>
+                        </div>
+                        {% for schedule_item in item.list %}
+                            <div class="row">
+                                <div class="form-group col-lg-2">
+                                    <label>{% trans 'time start' %}</label>
+                                    <input class="form-control timeinput" name="time_start-{{ forloop.counter }}"
+                                        value="{{ schedule_item.time_start|date:"H:i" }}">
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label>{% trans 'price' %}</label>
+                                    <input class="form-control" name="price-{{ forloop.counter }}" type="number"
+                                           min="0" value="{{ schedule_item.price }}">
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label>{% trans 'seats limit' %}</label>
+                                    <input class="form-control" name="seats_total-{{ forloop.counter }}" type="number"
+                                           min="0" value="{{ schedule_item.seats_total }}">
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <button class="btn btn-success btn-inlineform">+</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    <div class="row">
+                        <div class="form-group col-lg-6 text-center">
+                            <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
         </div>
     </div>
 {% endblock tour_edit_content %}
