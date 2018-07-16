@@ -11,8 +11,11 @@
 {% block tour_edit_content %}
     <div class="row">
         <div class="col-lg-12">
-            <a href="{% url 'available_tour_dates_template' slug %}" class="btn btn-primary">
-                {% trans 'Edit weekly schedule' %}
+            <a href="{% url 'available_tour_dates_template' slug %}" class="btn btn-default">
+                {% trans 'Edit weekly schedule template' %}
+            </a>
+            <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-default">
+                {% trans 'Create tours from weekly schedule template' %}
             </a>
         </div>
     </div>
@@ -20,7 +23,7 @@
         <div class="col-lg-12">
             <div class="mt20">
                 <h4>{% trans 'Neares available dates' %}</h4>
-                {% include 'tours/available_tour_dates_template.html' %}
+                {% include 'tours/available_tour_dates_template_for_guides.html' %}
             </div>
         </div>
     </div>

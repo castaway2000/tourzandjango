@@ -9,6 +9,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 from string import Template
 from django.utils.safestring import mark_safe
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 class PictureWidget(forms.widgets.Widget):
@@ -44,10 +46,11 @@ class TourGeneralForm(forms.ModelForm):
     image = forms.ImageField(label=_('Tour image'),required=False, \
                                     error_messages ={'invalid':_("Image files only")},\
                                     widget=forms.FileInput)
+    hours = forms.DecimalField(required=True, min_value=1)
 
     class Meta:
         model = Tour
-        fields = ("name", "overview_short", "overview", "image", "is_active",)
+        fields = ("name", "overview_short", "overview", "hours", "image", "is_active",)
 
     def __init__(self, *args, **kwargs):
         super(TourGeneralForm, self).__init__(*args, **kwargs)
@@ -63,6 +66,7 @@ class TourGeneralForm(forms.ModelForm):
             Field('name'),
             Field('overview_short'),
             Field('overview'),
+            Field('hours'),
             Field('image'),
 
             HTML("<img class='w300 mb10' src='%s'/>" % self.image_small_url),
@@ -127,6 +131,37 @@ class TourWeeklyScheduleForm(forms.ModelForm):
     class Meta:
         model = ScheduleTemplateItem
         fields = ("time_start", "price", "seats_total")
+
+
+class WeeklyTemplateApplyForm(forms.ModelForm):
+    date_from = forms.DateField(required=True, label=_("Date from"))
+    date_to = forms.DateField(required=True, label=_("Date to"))
+
+    class Meta:
+        model = ScheduleTemplateItem
+        fields = ("date_from", "date_to")
+
+    def __init__(self, *args, **kwargs):
+        super(WeeklyTemplateApplyForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.layout.append(
+            HTML(
+                '<div class="text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '%s</button>'
+                '</div>' % _('Apply')
+            ),
+        )
+
+    def clean_date_to(self):
+        #prevent populating tours for period more than 3 months
+        date_to = self.cleaned_data.get('date_to')
+        today = datetime.datetime.today()
+        month_limit = 3
+        if date_to > (today + relativedelta(month =+ month_limit)).date():
+            raise forms.ValidationError(_("Maximum period to choose is %s month." % month_limit))
+        return self.cleaned_data.get('date_to')
 
 
 class BookingForm(forms.Form):

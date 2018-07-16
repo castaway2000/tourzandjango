@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load tours_filters %}
 
 {% block header_stuff %}
     {{ block.super }}
@@ -12,78 +13,118 @@
     <div class="row">
         <div class="col-lg-12">
             <div>
-                <a class="btn btn-primary" href="{% url 'tour_edit_price_and_schedule' slug %}">
-                    {% trans 'Back to nearest tours list' %}
+                <a class="btn btn-default" href="{% url 'tour_edit_price_and_schedule' slug %}">
+                    {% trans 'Nearest tours list' %}
+                </a>
+                <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-default">
+                    {% trans 'Create tours from weekly schedule template' %}
                 </a>
             </div>
             <form method="post" class="mt20">{% csrf_token %}
                 <div class="row">
                     <div class="form-group col-lg-12">
                         <h4>
-                            {% trans 'Quick day template' %}
+                            {% trans 'Quick day tour template' %}
                         </h4>
 
-                        {% trans 'Apply it to all days.' %}<br>
-                        {% trans 'Afterwards you can edit every weekday below.' %}
+                        {% trans 'Apply it to all days of the week.' %}<br>
+                        {% trans 'Afterwards you can edit every weekday below.' %}<br>
+                        {% trans 'If you already have week tour template, submit of this form will schedule additional tours to the existing ones.' %}<br>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="form-group col-lg-2">
-                        <label>{% trans 'time start' %}</label>
-                        <input class="form-control timeinput" name="time_start" value="{{ form.time_start.value }}">
-                    </div>
-                    <div class="form-group col-lg-2">
-                        <label>{% trans 'price' %}</label>
-                        <input class="form-control" name="price" type="number" min="0" value="{{ form.price.value }}">
-                    </div>
-                    <div class="form-group col-lg-2">
-                        <label>{% trans 'seats limit' %}</label>
-                        <input class="form-control" name="seats_total" type="number" min="0" value="{{ form.seats_total.value }}">
-                    </div>
-                    <div class="form-group col-lg-2">
-                        <input type="submit" class="btn btn-primary btn-inlineform"
-                               name="quick-template" value="{% trans 'Save' %}">
+
+                <div id="template_for_schedule_item">
+                    <div class="row weekly-template-item-row">
+                        <div class="form-group col-lg-2">
+                            <label>{% trans 'time start' %}</label>
+                            <input class="form-control timeinput" name="time_start" value="{{ scheduled_template_item.time_start|date:"H:i" }}">
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <label>{% trans 'price' %}</label>
+                            <input class="form-control" name="price" type="number" min="0" value="{{ scheduled_template_item.price }}">
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <label>{% trans 'seats limit' %}</label>
+                            <input class="form-control" name="seats_total" type="number" min="0" value="{{ scheduled_template_item.seats_total }}">
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <div class="button-apply-to-week">
+                                <input type="submit" class="btn btn-primary btn-inlineform"
+                                       name="quick-template" value="{% trans 'Apply to a week' %}">
+                             </div>
+                             <div class="buttons-area hidden">
+                                 <button class="btn btn-danger btn-inlineform btn-delete-link"
+                                    data-schedule_item_id="{{ schedule_item.id }}">x</button>
+                                 <button class="btn btn-primary btn-inlineform
+                                    btn-save-weekly-template-item">{% trans 'Save' %}</button>
+                             </div>
+                        </div>
                     </div>
                 </div>
             </form>
+
+            <div class="row">
+                <div class="form-group col-lg-12">
+                    <h4>
+                        {% trans 'Apply week template below to the period of dates' %}
+                    </h4>
+                    <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-warning">
+                        {% trans 'go to applying form' %}
+                    </a>
+                </div>
+            </div>
+
             {% if weekly_template_items %}
                 <form method="post">{% csrf_token %}
+                    <input class="hidden" id="weekly_template_item_adding_url" value="{% url 'manage_weekly_template_item' %}">
+                    <input class="hidden" id="tour_id" value="{{ tour.id }}">
                     <div class="row">
                         <div class="form-group col-lg-12 mt20">
                             <h4>{% trans 'Weekly schedule by weekdays.' %}</h4>
                         </div>
                     </div>
-                    {% regroup weekly_template_items by day as template_items_list %}
-                    {% for item in template_items_list %}
+                    <div class="row">
+                        <div class="form-group col-lg-6 text-left">
+                            <input type="submit" class="btn btn-primary" name="btn_save_template_items" value="{% trans 'Save' %}">
+                        </div>
+                    </div>
+                    {% regroup weekly_template_items by get_day_display as template_items_list %}
+                    {% for item in template_items_list|add_all_days %}
                         <div class="">
                             <b>{{ item.grouper }}</b>
+                            <button class="btn btn-success btn-xs btn-add-weekly-template-item" data-weekday="{{ item.grouper }}">+</button>
                         </div>
-                        {% for schedule_item in item.list %}
-                            <div class="row">
-                                <div class="form-group col-lg-2">
-                                    <label>{% trans 'time start' %}</label>
-                                    <input class="form-control timeinput" name="time_start-{{ forloop.counter }}"
-                                        value="{{ schedule_item.time_start|date:"H:i" }}">
+                        {% if item.list|length == 0 %}
+                            <div class="gap gap-small"></div>
+                        {% else %}
+                            {% for schedule_item in item.list %}
+                                <div class="row weekly-template-item-row">
+                                    <div class="form-group col-lg-2">
+                                        <label>{% trans 'time start' %}</label>
+                                        <input class="form-control timeinput" name="time_start-{{ schedule_item.id }}"
+                                            value="{{ schedule_item.time_start|date:"H:i" }}">
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>{% trans 'price' %}</label>
+                                        <input class="form-control" name="price-{{ schedule_item.id }}" type="number"
+                                               min="0" value="{{ schedule_item.price }}">
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>{% trans 'seats limit' %}</label>
+                                        <input class="form-control" name="seats_total-{{ schedule_item.id }}" type="number"
+                                               min="0" value="{{ schedule_item.seats_total }}">
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <button class="btn btn-danger btn-inlineform btn-delete-link"
+                                           data-schedule_item_id="{{ schedule_item.id }}">x</button>
+                                    </div>
                                 </div>
-                                <div class="form-group col-lg-2">
-                                    <label>{% trans 'price' %}</label>
-                                    <input class="form-control" name="price-{{ forloop.counter }}" type="number"
-                                           min="0" value="{{ schedule_item.price }}">
-                                </div>
-                                <div class="form-group col-lg-2">
-                                    <label>{% trans 'seats limit' %}</label>
-                                    <input class="form-control" name="seats_total-{{ forloop.counter }}" type="number"
-                                           min="0" value="{{ schedule_item.seats_total }}">
-                                </div>
-                                <div class="form-group col-lg-2">
-                                    <button class="btn btn-success btn-inlineform">+</button>
-                                </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% endif %}
                     {% endfor %}
                     <div class="row">
                         <div class="form-group col-lg-6 text-center">
-                            <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+                            <input type="submit" class="btn btn-primary" name="btn_save_template_items" value="{% trans 'Save' %}">
                         </div>
                     </div>
                 </form>
@@ -97,11 +138,89 @@
     <script>
         $(document).ready(function() {
 
-            $(".timeinput").timepicker({
-                minuteStep: 10,
-                showMeridian: false,
-                disableFocus: true
+            function applyTimePicker() {
+                $(".timeinput").timepicker({
+                    minuteStep: 10,
+                    showMeridian: false,
+                    disableFocus: true
+                });
+            };
+            applyTimePicker();
+
+            $(document).on("click", ".btn-delete-link", function(e){
+                e.preventDefault();
+                var parent_row = $(this).parents(".weekly-template-item-row");
+                schedule_item_id = $(this).data("schedule_item_id");
+                if (schedule_item_id){
+                    data = {};
+                    var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                    data["csrfmiddlewaretoken"] = csrf_token;
+                    data["id"] = schedule_item_id;
+                    data["is_delete"] = true;
+                    var url = $("#weekly_template_item_adding_url").val();
+                    $.ajax({
+                         url: url,
+                         type: 'POST',
+                         data: data,
+                         cache: true,
+                         success: function (data) {
+                             console.log(data);
+                             if (data.status == "success"){
+                                 parent_row.remove();
+                             }
+                         }
+                    })
+                }else{
+                    parent_row.remove();
+                }
             });
+
+            $(document).on("click", ".btn-save-weekly-template-item", function(e){
+                e.preventDefault();
+                var parent_row = $(this).closest(".weekly-template-item-row");
+                var clicked_btn = $(this);
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["day"] = $(this).data("weekday");
+                data["time_start"] = parent_row.find("[name='time_start']").val();
+                data["price"] = parent_row.find("[name='price']").val();
+                data["seats_total"] = parent_row.find("[name='seats_total']").val();
+                data["tour_id"] = $("#tour_id").val();
+                var url = $("#weekly_template_item_adding_url").val();
+                console.log(data);
+                console.log(url);
+                $.ajax({
+                     url: url,
+                     type: 'POST',
+                     data: data,
+                     cache: true,
+                     success: function (data) {
+                         if (data.status == "success"){
+{#                            clicked_btn.parent().append("<span>Saved!</span>");#}
+                            clicked_btn.remove();
+                            id = data["id"];
+                            parent_row.find(".btn-delete-link").data("schedule_item_id", id);
+                            parent_row.find("[name='time_start']").attr("name", "time_start-"+id);
+                            parent_row.find("[name='price']").attr("name", "price-"+id);
+                            parent_row.find("[name='seats_total']").attr("name", "seats_total-"+id);
+                         }
+                     }
+                })
+            });
+
+            $(document).on("click", ".btn-add-weekly-template-item", function(e){
+                e.preventDefault();
+                template_item_row = $("#template_for_schedule_item");
+                console.log(template_item_row);
+                template_item_row_html = template_item_row.find(".weekly-template-item-row").clone();
+                template_item_row_html.find(".button-apply-to-week").addClass("hidden");
+                template_item_row_html.find(".buttons-area").removeClass("hidden");
+                var weekday = $(this).data("weekday");
+                template_item_row_html.find(".btn-save-weekly-template-item").data("weekday", weekday);
+                $(template_item_row_html).insertAfter($(this).parent());
+                applyTimePicker();
+            })
         })
     </script>
 {% endblock %}

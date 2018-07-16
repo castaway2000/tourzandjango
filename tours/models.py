@@ -9,6 +9,8 @@ from django.utils.text import slugify
 from utils.general import random_string_creating
 from guides.models import GuideProfile
 from utils.images_resizing import optimize_size
+import datetime
+from utils.general import uuid_creating
 
 
 class PaymentType(models.Model):
@@ -21,6 +23,7 @@ class PaymentType(models.Model):
 
 
 class Tour(models.Model):
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     overview_short = models.TextField(blank=True, null=True, default=None)
     overview = models.TextField(blank=True, null=True, default=None)
@@ -68,6 +71,9 @@ class Tour(models.Model):
             return "%s" % self.id
 
     def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
         self.slug = slugify(self.name)
 
         if self.payment_type_id == 1: #hourly
@@ -141,6 +147,17 @@ class Tour(models.Model):
                 reviews.append(order.review)
         return reviews
 
+    def get_template_items(self):
+        template_items = self.scheduletemplateitem_set.filter(is_active=True, is_general_template=False)
+        template_items_dict = dict()
+        for template_item in template_items.iterator():
+            if template_item.day:
+                day = int(template_item.day)
+                if not day in template_items_dict:
+                    template_items_dict[day] = list()
+                template_items_dict[day].append(template_item)
+        return template_items_dict
+
 
 class TourIncludedItem(models.Model):
     tour = models.ForeignKey(Tour)
@@ -166,6 +183,7 @@ class TourExcludedItem(models.Model):
 
 
 class TourProgramItem(models.Model):
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
     name = models.CharField(max_length=128, blank=True, null=True, default=None)
     description = models.TextField(blank=True, null=True, default=None)
@@ -192,6 +210,9 @@ class TourProgramItem(models.Model):
                 pass
 
     def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
         if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
             self.image_large = optimize_size(self.image, "large")
             self.image_medium = optimize_size(self.image, "medium")
@@ -200,6 +221,7 @@ class TourProgramItem(models.Model):
 
 
 class ScheduledTour(models.Model):
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     tour = models.ForeignKey(Tour)
     dt = models.DateTimeField()
     time_start = models.TimeField(blank=True, null=True, default=None)
@@ -231,6 +253,9 @@ class ScheduledTour(models.Model):
                 pass
 
     def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
         if self.discount:
             self.price_final = self.price - self.discount
         else:
@@ -248,10 +273,30 @@ class ScheduledTour(models.Model):
         dt = self.dt.strftime('%m/%d/%Y %I:%M')
         return "%s -- %s USD -- %s" % (dt, self.price_final, self.tour.name)
 
+    def get_tour_end(self):
+        tour_hours = self.tour.hours
+        if self.time_start:
+            tour_ends_time = datetime.datetime.combine(datetime.datetime.today(), self.time_start) + datetime.timedelta(hours=tour_hours)
+            return tour_ends_time.time()
+        else:
+            return None
+
+    def has_pending_bookings(self):
+        return self.order_set.filter(status__in=[1, 2, 5]).exists() #pending, agreed, payment_reserved
+
 
 class ScheduleTemplateItem(models.Model):
+    DAYS = (
+                ('0', 'Monday'),
+                ('1', 'Tuesday'),
+                ('2', 'Wednesday'),
+                ('3', 'Thursday'),
+                ('4', 'Friday'),
+                ('5', 'Saturday'),
+                ('6', 'Sunday'),
+            )
     tour = models.ForeignKey(Tour)
-    day = models.IntegerField(default=0)
+    day = models.CharField(max_length=1, blank=True, null=True, default=None, choices=DAYS)
     time_start = models.TimeField(blank=True, null=True, default=None)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     seats_total = models.IntegerField(default=0)

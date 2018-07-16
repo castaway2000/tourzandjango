@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 from django.db.models import Avg, Max, Min, Sum
 from django.views.decorators.clickjacking import xframe_options_exempt
 import datetime
+from dateutil.rrule import rrule, DAILY
 
 
 @xframe_options_exempt
@@ -481,7 +482,6 @@ def guide_settings_tour_edit_price_and_schedule(request, slug):
     if slug:
         guide = user.guideprofile
         tour = get_object_or_404(Tour, slug=slug, guide=guide)
-        tour_items = tour.get_tourprogram_items()
     else:
         return HttpResponseRedirect(reverse("tour_edit_general"))
 
@@ -497,7 +497,7 @@ def available_tour_dates_template(request, slug):
     page = "tour_edit_price_and_schedule"
     title = "Tour Edit: Price and Schedule"
     user = request.user
-    days_tuple = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     if slug:
         guide = user.guideprofile
@@ -512,20 +512,151 @@ def available_tour_dates_template(request, slug):
         form = TourWeeklyScheduleForm(request.POST or None, instance=scheduled_template_item)
     else:
         form = TourWeeklyScheduleForm(request.POST or None)
-    if request.method=="POST" and form.is_valid():
-        data = request.POST
+    if request.method=="POST":
+        data = request.POST.copy()
         print(data)
-        new_form = form.save(commit=False)
-        new_form.is_general_template = True
-        new_form.tour = tour
-        new_form.save()
-        print(new_form.id)
-        if "quick-template" in data:
-            scheduled_template_item = ScheduleTemplateItem.objects.get(id=new_form.id)
-            scheduled_template_item.populate_weekdays()
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form.is_general_template = True
+            new_form.tour = tour
+            new_form.save()
+            print(new_form.id)
+            if "quick-template" in data:
+                scheduled_template_item = ScheduleTemplateItem.objects.get(id=new_form.id)
+                scheduled_template_item.populate_weekdays()
 
-    weekly_template_items = ScheduleTemplateItem.objects.filter(tour=tour, is_general_template=False, is_active=True)
+        scheduled_template_items_dict = dict()
+        fields = ["time_start", "price", "seats_total"]
+        if "btn_save_template_items" in data:
+            for k, v in data.items():
+                for field in fields:
+                    if field in k:
+                        item_id = k.split("-")[1]
+                        item_value = v
+                        if item_id not in scheduled_template_items_dict:
+                            scheduled_template_items_dict[item_id] = dict()
+                        if field == "time_start":
+                            item_value = datetime.datetime.strptime(item_value, "%H:%M")
+                        scheduled_template_items_dict[item_id][field] = item_value
+
+        for item_id, values_dict in scheduled_template_items_dict.items():
+            ScheduleTemplateItem.objects.update_or_create(id=item_id, defaults=values_dict)
+
+    weekly_template_items = ScheduleTemplateItem.objects\
+        .filter(tour=tour, is_general_template=False, is_active=True)\
+        .order_by("day")
+    #
+    # weekly_template_items_data = dict()
+    # for item in weekly_template_items.iterator():
+    #     day = item.day
+    #     if not day in weekly_template_items_data:
+    #         weekly_template_items_data[day] = list()
+    #     weekly_template_items_data[day].append(item)
+    #
+    # weekly_template_items_data_all_days = list()
+    # for weekday_index, day in enumerate(days):
+    #     if not weekday_index in weekly_template_items_data:
+    #         weekly_template_items_data[weekday_index] = list()
+    #     weekly_template_items_data_all_days.append(weekly_template_items_data[weekday_index])
+
     return render(request, 'tours/tour_schedule_weekly_template.html', locals())
+
+
+@login_required()
+def manage_weekly_template_item(request):
+    response_dict = dict()
+    user = request.user
+    if request.POST:
+        if hasattr(user, "guideprofile"):
+            guide = user.guideprofile
+            data = request.POST
+            print(data)
+            id = data.get("id")
+            is_delete = data.get("is_delete")
+            if id and is_delete:
+                if ScheduleTemplateItem.objects.filter(id=id, tour__guide=guide).exists():
+                    ScheduleTemplateItem.objects.filter(id=id, tour__guide=guide).update(is_active=False)
+                    response_dict["status"] = "success"
+                else:
+                    response_dict["status"] = "error"
+            else:
+                days_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                new_item_dict = dict()
+                new_item_dict["tour_id"] = data["tour_id"]
+                fields = ["time_start", "price", "seats_total", "day"]
+                for field in fields:
+                    new_item_dict[field] = data.get(field)
+                    if field == "day":
+                        new_item_dict[field] = days_list.index(new_item_dict[field])
+                    if field == "time_start":
+                        new_item_dict[field] = datetime.datetime.strptime(new_item_dict[field], "%H:%M")
+                new_scheduled_item = ScheduleTemplateItem.objects.create(**new_item_dict)
+                response_dict["id"] = new_scheduled_item.id
+                response_dict.update(new_item_dict)
+                response_dict["status"] = "success"
+    print(response_dict)
+    return JsonResponse(response_dict)
+
+
+@login_required()
+@never_cache
+def apply_week_template_to_dates(request, slug):
+    page = "tour_edit_price_and_schedule"
+    title = "Tour Edit: Price and Schedule"
+    user = request.user
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+    else:
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    form = WeeklyTemplateApplyForm(request.POST or None)
+    if request.POST and form.is_valid():
+        data = form.cleaned_data
+        date_from = data["date_from"]
+        date_to = data["date_to"]
+        template_items = tour.get_template_items()
+        print(template_items)
+        created_items_nmb = 0
+        existed_items_nmb = 0
+        for date_item in rrule(DAILY, dtstart=date_from, until=date_to):
+            weekday_index = date_item.weekday()
+            print(weekday_index)
+            template_items_to_populate = template_items.get(weekday_index)
+            print(template_items_to_populate)
+            if template_items_to_populate:
+                for item in template_items_to_populate:
+                    scheduled_tour, created = ScheduledTour.objects.get_or_create(tour=tour, dt=date_item, defaults={
+                        "time_start": item.time_start,
+                        "price": item.price,
+                        "seats_total": item.seats_total
+                    })
+                    if created:
+                        created_items_nmb += 1
+                    else:
+                        existed_items_nmb += 1
+
+            messages.success(request, 'Scheduled tours created: %s' % created_items_nmb)
+
+    return render(request, 'tours/apply_week_template_to_dates.html', locals())
+
+
+@login_required()
+def scheduled_tour_delete(request, uuid):
+    user = request.user
+    if uuid:
+        guide = user.guideprofile
+        scheduled_tour = get_object_or_404(ScheduledTour, uuid=uuid, tour__guide=guide)
+        if scheduled_tour.has_pending_bookings():
+            messages.error(request, _('This tour date has active bookind and can not be deleted!'))
+        else:
+            ScheduledTour.objects.filter(id=scheduled_tour.id).delete()
+            messages.success(request, _('Successfully deleted!'))
+    else:
+        messages.error(request, _('You do not have permissions to access this item!'))
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required()
