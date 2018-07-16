@@ -4,7 +4,7 @@ from django.http.response import HttpResponse
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from mobile.models import GeoTracker, GeoTrip
-from users.models import GeneralProfile
+from users.models import GeneralProfile, GuideProfile, UserInterest
 # from tourzan.settings import REDIS_ROOT
 
 import redis as rs
@@ -138,11 +138,39 @@ def book_guide(request):
 
         user = GeneralProfile.objects.get(user_id=user_id)
         point = Point(long, lat)
-        user_interests = user.user.userinterest_set
+        user_interests = user.user.userinterest_set.values()
         user_language = user.get_languages()
-        guides = GeoTracker.objects.filter(user__in=list_of_guides).values(user).distance(point).order_by('distance')
-        # gp = GeneralProfile.objects.filter(user_id__in=guides.user)
-        data = json.dumps(guides)
+        geotracker = GeoTracker.objects.filter(user__in=list_of_guides).distance(point).order_by('distance')
+        general_profile = GeneralProfile.objects.filter(user_id__in=geotracker.user).values()
+        data_set = {'guide': None, 'interest': [], 'interest_size': 0, 'language': None, 'language_size': 0}
+        guides = []
+        for g in general_profile:
+            languages = [l for l in g.get_languages() if l in user_language]
+            interests = [i for i in g.user.userinterest_set.values() if i in user_interests]
+            data_set['guide'] = g.user_id
+            data_set['interest'] = interests
+            data_set['interest_size'] = len(interests)
+            data_set['language'] = languages
+            data_set['language_size'] = len(languages)
+            guides.append(data_set)
+        languages = sorted(guides, key=lambda k: k['language_size'], reverse=True)
+        aggregate = languages[0]
+        for l in languages:
+            if l['interest_size'] > aggregate['interest_size'] and l['language_size'] > 0:
+                aggregate = l
+                break
+        guide = GuideProfile.objects.get(user_id=aggregate['user_id'])
+        location = GeoTracker.objects.get(user_id=aggregate['user_id'])
+        data = json.dumps({'name': guide.name,
+                           'picture': guide.profile_image,
+                           'interests': aggregate['interests'],
+                           'description': guide.overview,
+                           'rate': guide.rate,
+                           'rating': guide.rating,
+                           'point': location.geo_point,
+                           'latitude': location.latitude,
+                           'longitude': location.longitude
+                           })
         return HttpResponse(data)
     except Exception as err:
         print(err)
