@@ -626,7 +626,8 @@ def apply_week_template_to_dates(request, slug):
             print(template_items_to_populate)
             if template_items_to_populate:
                 for item in template_items_to_populate:
-                    scheduled_tour, created = ScheduledTour.objects.get_or_create(tour=tour, dt=date_item, defaults={
+                    date_item_with_time = datetime.datetime.combine(date_item, item.time_start)
+                    scheduled_tour, created = ScheduledTour.objects.get_or_create(tour=tour, dt=date_item_with_time, defaults={
                         "time_start": item.time_start,
                         "price": item.price,
                         "seats_total": item.seats_total
@@ -662,7 +663,7 @@ def scheduled_tour_delete(request, uuid):
 @login_required()
 @never_cache
 def deactivate_tour_image(request):
-    print (request.POST)
+    print(request.POST)
     if request.POST:
         data = request.POST
         tour_id = data.get("tour_id")

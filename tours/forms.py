@@ -159,7 +159,7 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
         date_to = self.cleaned_data.get('date_to')
         today = datetime.datetime.today()
         month_limit = 3
-        if date_to > (today + relativedelta(month =+ month_limit)).date():
+        if date_to > (today + relativedelta(months =+ month_limit)).date():
             raise forms.ValidationError(_("Maximum period to choose is %s month." % month_limit))
         return self.cleaned_data.get('date_to')
 

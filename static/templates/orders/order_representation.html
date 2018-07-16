@@ -106,7 +106,7 @@
                             <span class="booking-item-price tour-booking-price">
                                 {% blocktrans %}Starting:{% endblocktrans %}
                                 {% if order.tour_scheduled %}
-                                    {{ order.tour_scheduled.time_start|date:"H:i" }}
+                                    {{ order.tour_scheduled.dt|date:"H:i" }}
                                 {% else %}
                                     {{ order.calendaritemguide_set.all.0.calendar_item.time_from.time }}
                                 {% endif %}

@@ -275,8 +275,8 @@ class ScheduledTour(models.Model):
 
     def get_tour_end(self):
         tour_hours = self.tour.hours
-        if self.time_start:
-            tour_ends_time = datetime.datetime.combine(datetime.datetime.today(), self.time_start) + datetime.timedelta(hours=tour_hours)
+        if self.dt:
+            tour_ends_time = self.dt + datetime.timedelta(hours=tour_hours)
             return tour_ends_time.time()
         else:
             return None
