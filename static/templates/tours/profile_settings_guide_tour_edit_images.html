@@ -1,0 +1,102 @@
+{% extends 'tours/profile_settings_guide_tour_edit.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block tour_edit_content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <span id="tour_id" class="hidden">{{ tour.id }}</span>
+            <div>
+                <h4>
+                    {% blocktrans %}Upload images, which will be shown in the images section of the tour.{% endblocktrans %}
+                </h4>
+            </div>
+            <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                <div class="mb20">
+                    <div class="form-group">
+                        <label>{% blocktrans %}Upload new image (multiple upload is available){% endblocktrans %}</label>
+                        <input type="file" name="images" multiple>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">{% blocktrans %}Save Images{% endblocktrans %}</button>
+                    </div>
+                </div>
+                {% if tours_images %}
+                    <div class="mb10">
+                        <hr>
+                        <div>
+                            <h4>
+                                {% blocktrans %}Here you can view and delete existing images.{% endblocktrans %}
+                            </h4>
+                        </div>
+                        <button class="btn btn-danger" id="button_delete_image" data-action="{% url 'deactivate_tour_image' %}">{% blocktrans %}Delete Image{% endblocktrans %}</button>
+                    </div>
+                    <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                        {% for tour_image in tours_images %}
+                            <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                 data-imgid="{{ tour_image.id }}"
+                                 class="img-responsive"
+                                 title="Image for {{ tour.name }}"
+                            >
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock tour_edit_content %}
+
+{% block js_stuff %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function(){
+            $(document).on("click", "#button_delete_image", function(e){
+                e.preventDefault();
+                var fotoramaDiv = $('.fotorama').fotorama();
+                var data = fotoramaDiv.data('fotorama').activeFrame;
+                active_image = $(".fotorama__nav__shaft .fotorama__active");
+
+                if($(".fotorama__nav.fotorama__nav--thumbs").length>0){
+                    img_index = active_image.parent('.fotorama__nav__shaft').find('.fotorama__nav__frame').index(active_image);
+                    fotoramaDiv.data('fotorama').splice(img_index, 1);
+                }else{
+                    $("#tour_images_container").addClass("hidden");
+                };
+
+                var img_id = data.imgid;
+
+                if(fotoramaDiv.data('fotorama').size==0) {
+{#                    $('.fotorama').addClass('hidden');#}
+                    $('#button_make_main_image').addClass('hidden');
+                    $('#button_delete_image').addClass('hidden');
+                };
+
+
+                var tour_id = $('#tour_id').text();
+                var url = $(this).data("action");
+
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["img_id"] = img_id;
+                data["tour_id"] = tour_id;
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: data,
+                    cache: true,
+
+                    success: function (data) {
+                    },
+                    error: function(){
+                    }
+                })
+
+            });
+        });
+    </script>
+{% endblock js_stuff %}

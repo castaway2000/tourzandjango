@@ -207,7 +207,7 @@
 .tour-item,
 .tour-item:hover{
     cursor: auto;
-    border: 1px solid #31dc72;
+    border: 1px solid #ede7e7;
 }
 
 .tour-item{
@@ -215,6 +215,13 @@
     position: relative;
     padding: 17px;
     color: #737373;
+    box-shadow: 10px 10px 5px grey;
+    margin-bottom: 30px;
+}
+
+.booking-item{
+    box-shadow: 10px 10px 5px grey;
+    margin-bottom: 30px;
 }
 
 .booking-item.booking-item-small .booking-item-price {
@@ -714,10 +721,11 @@ a{
     background-size: cover !important;
     background-position: center !important;
     position: relative;
+    font-weight: 100;
 }
 
 .tour-section.hero-section .title{
-    margin-top: 100px;
+    margin-top: 120px;
     font-size: 80px;
     line-height: 1;
 }
@@ -835,7 +843,7 @@ a{
     bottom: -20px;
     color: white;
     font-weight: 700;
-    padding: 24px 14px;
+    padding: 24px 12px;
 
     left: 50%;
     -webkit-transform: translateX(-50%);
@@ -943,6 +951,7 @@ a{
     color: black;
     height: 550px;
     padding: 100px;
+    background-color: white;
 }
 
 .tour-section.tour-reviews .title{
@@ -973,6 +982,72 @@ a{
 
 .tour-section.tour-reviews .owl-carousel .booking-item-rating-stars{
     color: #18aa24;
+}
+
+.tour-booking-form{
+    padding: 80px 0!important;
+    height: auto!important;
+}
+
+.page-tabs li.active,
+.page-tabs li.active a,
+.page-tabs li.active a:hover,
+.page-tabs li.active a:focus,
+.page-tabs li a:hover,
+.page-tabs li a:focus{
+    background: #31dc72;
+    color: white;
+    border-left: none!important;
+    border-right: none !important;
+    border-bottom: none !important;
+}
+
+.tour-edit{
+    padding: 10px;
+}
+
+.page-tabs > li > a{
+    margin-right: 0!important;
+}
+
+.page-tabs > li, .page-tabs > li:hover{
+    margin-right: 2px!important;
+}
+
+.w100{
+    width: 100px;
+}
+
+.w300{
+    width: 300px;
+}
+
+.tour-program-items.guide-editing{
+    padding: 10px;
+}
+
+
+.tour-section.hero-section .breadcrumb{
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.tour-section.hero-section .breadcrumb a:hover,
+.tour-section.hero-section .breadcrumb li.active{
+    color: #31dc72;
+}
+
+.tour-section.hero-section .breadcrumb a{
+    color: white;
+}
+
+.modal-tour-program-edit .modal-content{
+    height: 500px;
+    overflow-y: auto;
+}
+
+.btn-inlineform{
+    margin-top: 26px;
 }
 
 @media (min-width: 768px) {
@@ -1021,6 +1096,14 @@ a{
 }
 
 @media (max-width:768px) {
+    .btn-inlineform{
+        margin-top: 0;
+    }
+
+
+    .tour-program-item .img-container{
+        min-height: 180px;
+    }
 
   .booking-filters-container{
       top: 0;

@@ -94,23 +94,42 @@
                                 {{ order.number_persons }}
                             {% endif %}
                             <br/>
-                            <b>{% trans 'What you are agreeing to' %}:</b>
+                            <b>{% trans 'What you are agreeing to' %}:</b><br>
                             <span class="booking-item-price tour-booking-price">
-                                {% blocktrans %}Date{% endblocktrans %}: {{ order.date_booked_for.date }}
+                                {% if order.tour_scheduled %}
+                                    {% blocktrans %}Date{% endblocktrans %}:
+                                        {{ order.tour_scheduled.dt|date:"m/d/Y" }}
+                                {% else %}
+                                    {% blocktrans %}Date{% endblocktrans %}: {{ order.date_booked_for|date:"m/d/y" }}
+                                {% endif %}
                             </span><br/>
                             <span class="booking-item-price tour-booking-price">
-                                {% blocktrans %}Hours{% endblocktrans %}: {{ order.hours_nmb }}
-                            </span>
-                            <br/>
-                            <span class="booking-item-price tour-booking-price">
                                 {% blocktrans %}Starting:{% endblocktrans %}
-                                {{ order.calendaritemguide_set.all.0.calendar_item.time_from.time }}
+                                {% if order.tour_scheduled %}
+                                    {{ order.tour_scheduled.dt|date:"H:i" }}
+                                {% else %}
+                                    {{ order.calendaritemguide_set.all.0.calendar_item.time_from.time }}
+                                {% endif %}
                             </span>
                             <br/>
                             <span class="booking-item-price tour-booking-price">
                                 {% blocktrans %}Ending:{% endblocktrans %}
-                                    {{ order.calendaritemguide_set.last.calendar_item.time_to.time }}
+                                    {% if order.tour_scheduled %}
+                                        {% if order.tour_scheduled.get_tour_end %}
+                                            {{ order.tour_scheduled.get_tour_end|date:"H:i" }}
+                                        {% endif %}
+                                    {% else %}
+                                        {{ order.calendaritemguide_set.last.calendar_item.time_to.time }}
+                                    {% endif %}
                             </span><br/>
+                            <span class="booking-item-price tour-booking-price">
+                                {% blocktrans %}Hours{% endblocktrans %}:
+                                {% if order.tour %}
+                                    {{ order.tour.hours }}
+                                {% else %}
+                                    {{ order.hours_nmb }}
+                                {% endif %}
+                            </span>
                 </p>
                 {% if order.status.id == 5 %}
                     <p><b>{% trans 'Press confirm if you accept this agreement' %}!</b></p>
@@ -122,10 +141,10 @@
                     <b>{% trans 'Status' %}: </b>{{ order.status.name }}
                 </p>
                 <p>
-                    <b>{% trans 'Booked' %}: </b>{{ order.date_ordered|date:"m.d.Y" }}
+                    <b>{% trans 'Booked' %}: </b>{{ order.date_ordered|date:"m/d/Y" }}
                 </p>
                 <p>
-                    <b>{% trans 'Booked for' %}: </b>{{ order.date_booked_for|date:"m.d.Y" }}
+                    <b>{% trans 'Booked for' %}: </b>{{ order.date_booked_for|date:"m/d/Y" }}
                 </p>
                 {% if order.status_id == 9 %}
                     <b>{% trans 'What you agree to' %}:</b><br/>
