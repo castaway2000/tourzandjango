@@ -1,0 +1,13 @@
+{% extends 'tours/profile_settings_guide_tour_edit.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block tour_edit_content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock tour_edit_content %}

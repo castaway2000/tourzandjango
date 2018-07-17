@@ -20,6 +20,10 @@ urlpatterns = [
     url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/images/$', views.guide_settings_tour_edit_images, name='tour_edit_images'),
     url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/price-and-schedule/$', views.guide_settings_tour_edit_price_and_schedule,
         name='tour_edit_price_and_schedule'),
+    url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/(?P<uuid>[-\w]+)/scheduled-tour/$', views.tour_edit_scheduled_tour,
+        name='tour_edit_scheduled_tour'),
+    url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/price/$', views.tour_edit_price,
+        name='tour_edit_price'),
 
     url(r'^settings/guide/tour-new/manage-weekly-template-item/$',
         views.manage_weekly_template_item, name='manage_weekly_template_item'),

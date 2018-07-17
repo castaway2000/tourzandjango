@@ -1050,6 +1050,10 @@ a{
     margin-top: 26px;
 }
 
+.btn-forminline-22{
+    margin-top: 22px;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;

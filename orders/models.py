@@ -359,6 +359,14 @@ def order_post_save(sender, instance, created, **kwargs):
         data = {"order": instance, "is_guide_saving": is_guide_saving}
         SendingEmail(data).email_for_order()
 
+        if int(instance.status_id) == 2 and instance.tour_scheduled:#agreed
+            instance.tour_scheduled.seats_booked += instance.number_persons
+            instance.tour_scheduled.save(force_update=True)
+        if instance._original_fields["status"].id == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
+            instance.tour_scheduled.seats_booked -= instance.number_persons
+            instance.tour_scheduled.save(force_update=True)
+
+
 post_save.connect(order_post_save, sender=Order)
 
 

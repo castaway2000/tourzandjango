@@ -32,7 +32,7 @@
                                                     </a>
                                                 {% endif %}
                                                 <a class="btn btn-primary btn-lg"
-                                                   href="/">
+                                                   href="{% url 'tour_edit_scheduled_tour' slug item.uuid %}">
                                                     {% trans 'Details' %}
                                                 </a>
                                             </div>

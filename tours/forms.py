@@ -47,10 +47,11 @@ class TourGeneralForm(forms.ModelForm):
                                     error_messages ={'invalid':_("Image files only")},\
                                     widget=forms.FileInput)
     hours = forms.DecimalField(required=True, min_value=1)
+    type = forms.ChoiceField(choices=Tour().TOUR_TYPES, widget=forms.RadioSelect)
 
     class Meta:
         model = Tour
-        fields = ("name", "overview_short", "overview", "hours", "image", "is_active",)
+        fields = ("name", "overview_short", "overview", "hours", "image", "is_active", "type")
 
     def __init__(self, *args, **kwargs):
         super(TourGeneralForm, self).__init__(*args, **kwargs)
@@ -63,6 +64,7 @@ class TourGeneralForm(forms.ModelForm):
 
         self.helper.layout = Layout(
             Field('is_active'),
+            Field('type'),
             Field('name'),
             Field('overview_short'),
             Field('overview'),
@@ -124,13 +126,46 @@ class TourProgramItemForm(forms.Form):
 
 
 class TourWeeklyScheduleForm(forms.ModelForm):
+    dt = forms.DateTimeField(widget=forms.TimeInput(format='%m/%d/%Y'), label=_("Date and time start"))
     time_start = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), label=_("Typical start time"))
     price = forms.DecimalField(required=True, min_value=0)
+    discount = forms.DecimalField(required=True, min_value=0)
     seats_total = forms.IntegerField(required=True, min_value=0)
 
     class Meta:
-        model = ScheduleTemplateItem
-        fields = ("time_start", "price", "seats_total")
+        model = ScheduledTour
+        fields = ("dt", "time_start", "price", "discount", "seats_total")
+
+    def __init__(self, *args, **kwargs):
+        super(TourWeeklyScheduleForm, self).__init__(*args, **kwargs)
+        self.form_title = _("Create new Scheduled Item") if not kwargs.get("instance") else _("Edit Scheduled Item")
+        print(kwargs)
+        self.price_final = kwargs["instance"].price_final if kwargs.get("instance") else 0
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+            HTML(
+                '<div class="mt20"><h4>%s</h4></div>' % self.form_title
+            ),
+
+            Div(
+                Field("dt"),
+                Field("time_start"),
+
+            ),
+            Field("price"),
+            Field("discount"),
+            HTML("<div class='mb20'><b>%s </b> <span id='price_final'>%s</span></div>" % (_("Price final:"), self.price_final)),
+
+            Field("seats_total"),
+            HTML(
+                '<div class="form-group text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '%s</button>'
+                '</div>' % _('Save')
+            )
+        )
+
 
 
 class WeeklyTemplateApplyForm(forms.ModelForm):
@@ -186,5 +221,30 @@ class BookingForm(forms.Form):
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '%s</button>'
                 '</div>' % _('Submit')
+            ),
+        )
+
+
+class PrivateTourPriceForm(forms.ModelForm):
+    price = forms.DecimalField(required=True, min_value=1)
+    discount = forms.DecimalField(required=True, min_value=0)
+    persons_nmb_for_min_price = forms.IntegerField(required=True, min_value=1)
+    max_persons_nmb = forms.IntegerField(required=True, min_value=2)#1 person more than persons_nmb_for_min_price
+    additional_person_price = forms.DecimalField(required=True, min_value=1)
+
+    class Meta:
+        model = Tour
+        fields = ("price", "persons_nmb_for_min_price", "max_persons_nmb", "additional_person_price",)
+
+    def __init__(self, *args, **kwargs):
+        super(PrivateTourPriceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.layout.append(
+            HTML(
+                '<div class="text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '%s</button>'
+                '</div>' % _('Apply')
             ),
         )

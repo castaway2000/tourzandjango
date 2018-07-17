@@ -1,5 +1,19 @@
 $(document).ready(function(){
 
+    function finalPriceCalculation(){
+        if ($("#id_price")){
+            price = $("#id_price").val();
+            discount = $("#id_discount").val();
+            final_price = price-discount;
+            $("#price_final").text(final_price);
+        }
+    }
+    finalPriceCalculation();
+    $("#id_price, #id_discount").on("change", function(){
+        finalPriceCalculation();
+    })
+
+
     if($('.owl-carousel').length>0){
         $('.owl-carousel').owlCarousel({
             dots: false,
