@@ -28,17 +28,13 @@ function initialize(){
         console.log(place);
         console.log('yahoo motherfuckers!');
          if (name_original){
-            console.log('name original is true');
                 $.ajax({
                     url: "/en/ajax/rate_agregate/",
                     data: {'location': name_original},
                     dataType: 'json',
                     success: function (res) {
+                        console.log(res.rates.rate__avg);
                         if (res.rates.rate__avg !== null) {
-                            console.log('success!');
-                            console.log(res);
-                            console.log(res.rates);
-                            console.log(res.rates.rate__avg);
                             document.getElementById("average-rate").innerText = 'The average rate in your area is: $'
                                 + res.rates.rate__avg + ' per hour';
                         }
