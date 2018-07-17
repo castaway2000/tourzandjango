@@ -26,6 +26,24 @@ function initialize(){
         name_original = location_input.split(",")[0];
         console.log("name_original: "+name_original);
         console.log(place);
+        console.log('yahoo motherfuckers!');
+         if (name_original){
+                $.ajax({
+                    url: "/en/ajax/rate_agregate/",
+                    data: {'location': name_original},
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res.rates.rate__avg);
+                        if (res.rates.rate__avg !== null) {
+                            document.getElementById("average-rate").innerText = 'The average rate in your area is: $'
+                                + res.rates.rate__avg + ' per hour';
+                        }
+                        else{
+                            document.getElementById("average-rate").innerText = '';
+                        }
+                    }
+                })
+         }
         if ("address_components" in place){
             var place_types = place["address_components"][0]["types"];
             console.log(place_types);
@@ -38,7 +56,6 @@ function initialize(){
         }else{
             $("#is_country").prop("checked", false);
         }
-
         search_input.focus();
     })
 }

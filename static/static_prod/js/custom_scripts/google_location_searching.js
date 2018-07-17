@@ -5,7 +5,7 @@ function initialize(){
         enablePoweredByContainer: false
     };
     var autocomplete = new google.maps.places.Autocomplete(input, options);
-    console.log(1)
+    console.log(1);
     google.maps.event.addListener(autocomplete, 'place_changed', function(){
         place = autocomplete.getPlace();
         document.getElementById('place_id').value = place.place_id;
@@ -14,7 +14,24 @@ function initialize(){
         console.log("full location: "+city_input);
         name_original = city_input.split(",")[0];
         console.log("name_original: "+name_original);
-    })
+         if (name_original){
+                $.ajax({
+                    url: "/en/ajax/rate_agregate/",
+                    data: {'location': name_original},
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res.rates.rate__avg);
+                        if (res.rates.rate__avg !== null) {
+                            document.getElementById("average-rate").innerText = 'The average rate in your area is: $'
+                                + res.rates.rate__avg + ' per hour';
+                        }
+                        else{
+                            document.getElementById("average-rate").innerText = '';
+                        }
+                    }
+                })
+         }
+    });
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -26,3 +43,4 @@ $(document).ready(function(){
         }
     })
 })
+console.log('yahoo mother trucker');
