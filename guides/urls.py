@@ -22,5 +22,6 @@ urlpatterns = [
 
     url(r'^guides_for_clients/$', views.guides_for_clients, name='guides_for_clients'),
     url(r'^tours_for_clients/$', views.tours_for_clients, name='tours_for_clients'),
+    url(r'^ajax/rate_agregate/$', views.get_average_rate, name='get_average_rate'),
 
 ]

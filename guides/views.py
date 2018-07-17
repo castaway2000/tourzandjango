@@ -18,6 +18,7 @@ from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
 import time
+import json
 
 
 @xframe_options_exempt
@@ -570,3 +571,18 @@ def guides_for_clients(request):
 
 def tours_for_clients(request):
     return render(request, 'guides/tours_for_clients.html', locals())
+
+
+def get_average_rate(request):
+    loc = request.GET.get('location')
+    print(loc)
+    print(request)
+    rates = None
+    if request.is_ajax():
+        try:
+            rates = GuideProfile.objects.filter(city__original_name=loc).aggregate(Avg('rate'))
+            print(rates)
+        except Exception as err:
+            print(err)
+    rate = {"rates": rates}
+    return JsonResponse(rate)
