@@ -280,10 +280,11 @@ def tour(request, slug, tour_id, tour_new=None):
         reviews = paginator.page(paginator.num_pages)
 
     if tour_new == "new":
-        form = BookingForm(request.POST or None, tour=tour)
-        if request.method == "POST" and form.is_valid():
-            tour_scheduled = form.cleaned_data["tour_scheduled"]
-            seats = form.cleaned_data["seats"]
+        if tour.type == "1":
+            form = BookingScheduledTourForm(request.POST or None, tour=tour)
+        else:
+            now = datetime.datetime.now().date()
+            form = BookingPrivateTourForm(request.POST or None, tour=tour, initial={"tour_id": tour.id, "date": now})
         return render(request, 'tours/tour_new.html', locals())
     else:
         return render(request, 'tours/tour.html', locals())

@@ -22,6 +22,8 @@ from partners.models import Partner
 from guides_calendar.models import CalendarItemGuide, CalendarItem
 from django.utils.translation import ugettext as _
 import time
+from django.db.models import Q
+from chats.models import Chat
 
 
 if ON_PRODUCTION:
@@ -72,7 +74,10 @@ def making_booking(request):
         guide = tour.guide
         kwargs["tour"] = tour
         kwargs["guide"] = guide
-        date_booked_for = data["start"]
+        if data.get("start"):
+            date_booked_for = data.get("start")
+        else:
+            date_booked_for = data.get("date")
     elif tour_scheduled:
         tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled)
         tour = tour_scheduled.tour
@@ -100,7 +105,10 @@ def making_booking(request):
         try:
             date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A')
         except:
-            date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y')
+            try:
+                date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y')
+            except:
+                date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y')
     kwargs["date_booked_for"] = date_booked_for
 
     hours_nmb = data.get("booking_hours", 0)
@@ -165,14 +173,37 @@ def making_booking(request):
             break
     #got rid of returning data for ajax calls
     #always return a redirect
-    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": order.id}))
+    if (order.tour and order.tour.type == "2") or not hasattr(order, "tour"):#private tours
+        topic = "Chat with %s" % guide.user.generalprofile.first_name
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+        initial_message = data.get("message")
+
+        #message about creation of the order
+        message = _("Tour: {tour_name}. \n"
+                    "Persons number: {persons_nmb}.\n"
+                    "Date: {tour_date}.".format(tour_name=tour.name,
+                                                 persons_nmb=order.number_persons,
+                                                 tour_date=order.date_booked_for
+                                                 ))
+        chat.create_message(user, message)
+
+        #initial message of the user
+        if initial_message:
+            chat.create_message(user, initial_message)
+
+        messages.success(request, _("We have successfully sent your request to a guide. "
+                                    "You will receive email confirmation of the tour by emails soon"))
+        return HttpResponseRedirect(reverse("livechat_room", kwargs={"chat_uuid": chat.uuid} ))
+
+    else:
+        return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}))
 
 
 @login_required
 def bookings(request, status=None):
     print("bookings")
     current_page = "bookings"
-    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).values("name")
     user = request.user
     kwargs = dict()
 
@@ -220,10 +251,12 @@ def bookings(request, status=None):
     if filtered_statuses and len(filtered_statuses[0])>1:#to handle empty imputs
         kwargs["status__name__in"] = filtered_statuses
 
+    orders_to_exclude = Order.objects.filter(Q(tour__type="1", status_id=1)|Q(tour__isnull=True, status_id=1))
+    orders_to_exclude_ids = [item.id for item in orders_to_exclude.iterator()]
     if not status:
         # print (kwargs)
         initial_orders = Order.objects.filter(tourist__user=user)#it is needed for citieas and guides list
-        orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
+        orders = initial_orders.filter(**kwargs).exclude(id__in=orders_to_exclude_ids).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
         # print(kwargs)
         # print (orders)
@@ -231,7 +264,7 @@ def bookings(request, status=None):
     elif not user.is_anonymous():
         kwargs["status__name"] = status
         initial_orders = Order.objects.filter(tourist__user=user, status__name=status)#it is needed for citieas and guides list
-        orders = initial_orders.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
+        orders = initial_orders.filter(**kwargs).exclude(id__in=orders_to_exclude_ids).order_by('-id')#exclude pending status
         bookings_nmb = orders.count()
     else:
         current_url = request.path
@@ -260,7 +293,7 @@ def bookings(request, status=None):
 @login_required()
 def orders(request, status=None):
     current_page = "orders"
-    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).values("name")
 
     user = request.user
 
@@ -281,15 +314,17 @@ def orders(request, status=None):
         if tour_id:
             kwargs["tour_id"] = tour_id
 
+        orders_to_exclude = Order.objects.filter(Q(tour__type="1", status_id=1)|Q(tour__isnull=True, status_id=1))
+        orders_to_exclude_ids = [item.id for item in orders_to_exclude.iterator()]
         if not status:
             kwargs["guide"] = guide
             # print("kwargs %s" % kwargs)
-            orders = Order.objects.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
+            orders = Order.objects.filter(**kwargs).exclude(id__in=orders_to_exclude_ids).order_by('-id')#exclude pending status
             # print("not status")
         else:
             kwargs["guide"] = guide
             kwargs["status__slug"] = status
-            orders = Order.objects.filter(**kwargs).exclude(status_id=1).order_by('-id')#exclude pending status
+            orders = Order.objects.filter(**kwargs).exclude(id__in=orders_to_exclude_ids).order_by('-id')#exclude pending status
 
         orders_nmb = orders.count()
 
@@ -353,9 +388,9 @@ def cancel_order(request, order_id):
             order.status_id = 3
             order.save(force_update=True)
             print("try 2")
-            messages.success(request, 'Order has been successfully cancelled!')
+            messages.success(request, _('Order has been successfully cancelled!'))
         except:
-            messages.error(request, 'You have no permissions for this action!')
+            messages.error(request, _('You have no permissions for this action!'))
     else:
         #check if a user is a guide
         try:

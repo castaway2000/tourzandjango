@@ -3,13 +3,21 @@
 
 <div class="tour-section tour-available-dates">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="title">
-                    {% trans 'Nearest available dates' %}
+        {% if tour.type == "2" %}
+            <div class="row">
+                <div class="col-lg-4 col-lg-offset-4 text-center">
+                    <button class="btn btn-primary btn-lg book-private-tour">{% trans 'Book a tour for your date' %}</button>
                 </div>
             </div>
-        </div>
-        {% include 'tours/available_tour_dates_template.html' %}
+        {% else %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title">
+                        {% trans 'Nearest available dates' %}
+                    </div>
+                </div>
+            </div>
+            {% include 'tours/available_tour_dates_template.html' %}
+        {% endif %}
     </div>
 </div>

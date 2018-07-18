@@ -21,6 +21,10 @@ class Chat(models.Model):
     def __str__(self):
         return "%s-%s" % (self.guide.generalprofile.first_name, self.tourist.generalprofile.first_name)
 
+    def create_message(self, user, message):
+        ChatMessage.objects.create(chat=self, message=message, user=user)
+        return True
+
 
 class ChatMessage(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)

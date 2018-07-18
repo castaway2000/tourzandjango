@@ -24,7 +24,7 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="text-center">
-                                <a href="{% url 'chat_creation_guide' order.guide.id %}">
+                                <a href="{% url 'chat_creation_guide' order.guide.uuid %}">
                                     {% trans 'Go to Chat' %}
                                 </a>
                             </div>
@@ -95,6 +95,9 @@
                         {% else %}
                             <div class="text-center">
                                 <form class="" method="post" >{% csrf_token %}
+                                    <div class="form-group">
+                                        <h3>{% trans 'Please click a button below to confirm booking' %}</h3>
+                                    </div>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary btn-lg">{% trans 'Confirm' %}</button>
                                     </div>

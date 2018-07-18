@@ -199,18 +199,46 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
         return self.cleaned_data.get('date_to')
 
 
-class BookingForm(forms.Form):
+class BookingScheduledTourForm(forms.Form):
     tour_scheduled = forms.ChoiceField(required=True, label=_("Selected tour date"))
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
 
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
-        super(BookingForm, self).__init__(*args, **kwargs)
+        super(BookingScheduledTourForm, self).__init__(*args, **kwargs)
         # self.fields['seats'].widget.attrs['min'] = 0
         self.fields['tour_scheduled'] = forms.ChoiceField(
             choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates()]
         )
 
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.form_action = reverse('making_booking')
+
+        self.helper.layout.append(
+            HTML(
+                '<div class="text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '%s</button>'
+                '</div>' % _('Submit')
+            ),
+        )
+
+
+class BookingPrivateTourForm(forms.Form):
+    # , widget=forms.HiddenInput()
+    date = forms.DateField(required=True, widget=forms.TimeInput(format='%m/%d/%Y'))
+    tour_id = forms.ChoiceField(required=True)
+    number_people = forms.IntegerField(required=True, initial=1, min_value=1)
+    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}))
+
+    def __init__(self, *args, **kwargs):
+        tour = kwargs.pop("tour")
+        self.min_nmb_of_people = 1
+        super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
+        self.fields['tour_id'] = forms.ChoiceField(
+            choices=[(tour.id, tour.id)]
+        )
         self.helper = FormHelper(self)
         self.helper.form_tag = True
         self.helper.form_action = reverse('making_booking')

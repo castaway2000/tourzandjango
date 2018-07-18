@@ -64,56 +64,56 @@
     </div>
 
     {% with tour.get_included_items as included_items %}
-    {% with tour.get_excluded_items as  excluded_items %}
-    {% if included_items or excluded_items %}
-        <div class="tour-section tour-included">
-            <div class="container">
-                {% if included_items %}
-                <div class="row">
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div class="tour-included-items-container">
-                            <div class="title">
-                                {% trans 'What is included' %}
-                            </div>
-                            {% for item in included_items %}
-                                <div class="tour-included-item">
-                                    {{ item.name }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                {% if excluded_items %}
-                <div class="row">
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div class="tour-excluded-items-container">
-                            <div class="title">
-                                {% trans 'What is NOT included' %}
-                            </div>
-
-                                {% for item in excluded_items %}
-                                    <div class ="tour-excluded-item">
-                                        <div class="row">
-                                            <div class="col-lg-9">
-                                                <div class="">
-                                                    {{ item.name }}
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 text-center">
-                                                {{ item.price }} USD
-                                            </div>
+        {% with tour.get_excluded_items as  excluded_items %}
+            {% if included_items or excluded_items %}
+                <div class="tour-section tour-included">
+                    <div class="container">
+                        {% if included_items %}
+                        <div class="row">
+                            <div class="col-lg-6 col-lg-offset-3">
+                                <div class="tour-included-items-container">
+                                    <div class="title">
+                                        {% trans 'What is included' %}
+                                    </div>
+                                    {% for item in included_items %}
+                                        <div class="tour-included-item">
+                                            {{ item.name }}
                                         </div>
-                                     </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
+                        {% endif %}
+                        {% if excluded_items %}
+                        <div class="row">
+                            <div class="col-lg-6 col-lg-offset-3">
+                                <div class="tour-excluded-items-container">
+                                    <div class="title">
+                                        {% trans 'What is NOT included' %}
+                                    </div>
+
+                                        {% for item in excluded_items %}
+                                            <div class ="tour-excluded-item">
+                                                <div class="row">
+                                                    <div class="col-lg-9">
+                                                        <div class="">
+                                                            {{ item.name }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 text-center">
+                                                        {{ item.price }} USD
+                                                    </div>
+                                                </div>
+                                             </div>
+                                        {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-    {% endwith %}
+            {% endif %}
+        {% endwith %}
     {% endwith %}
 
     {% include "tours/nearest_available_dates.html" %}
@@ -162,7 +162,6 @@
     </div>
 
     {% include "tours/nearest_available_dates.html" %}
-
 
     <div class="tour-section tour-pictures">
         <div class="container">
@@ -258,63 +257,16 @@
 {% block js_stuff %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <script>
+
         $(document).ready(function(){
-
-            $(document).ready(function(){
-                  $('.owl-carousel').owlCarousel();
-            });
-
-            function gettingTimeSlotsForDate(){
-                data = {};
-                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
-                data["csrfmiddlewaretoken"] = csrf_token;
-                data["booking_date"] = $('#booking_date').val();
-                data["guide_id"] = $('#guide_id').val();
-                var url = $('#time_slots').data('link');
-                $.ajax({
-                     url: url,
-                     type: 'POST',
-                     data: data,
-                     cache: true,
-                     success: function(data){
-                         time_slots_container = $('#time_slots');
-
-                         $('#booking_form_error_container').html("");
-                         time_slots_container.html("");
-
-                         available_time_slots = data.available_time_slots;
-
-                         if (available_time_slots.length > 0){
-                             $.each(available_time_slots, function(index, el){
-                                slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
-                                slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
-                                time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
-                             })
-                         }else{
-                             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
-                                     "There are no available time slots for this date. <br>" +
-                                     "Please select another date.</div>")
-                         }
-                     }
+            $('.owl-carousel').owlCarousel();
+            if ($("#id_date") !== undefined){
+                $("#id_date").datepicker({
+                    startDate: '0d'
                 })
             }
+        });
 
-            $('.d_picker').datepicker({
-                todayHighlight: true,
-                format: "mm.dd.yyyy",
-                weekStart: 1
-            }).datepicker("setDate", new Date()).on("changeDate", function(e) {
-                // `e` here contains the extra attributes
-                gettingTimeSlotsForDate();
-            });
-
-            gettingTimeSlotsForDate();
-
-            $(document).on("click", '.time-slots-container .time-slot', function(){
-                $(this).toggleClass("chosen");
-            })
-
-        })
     </script>
 {% endblock js_stuff %}
 

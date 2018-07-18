@@ -86,7 +86,7 @@ def sending_chat_message(request):
 
 
 @login_required()
-def chat_creation(request, tour_id=None, guide_id=None):
+def chat_creation(request, tour_id=None, guide_uuid=None):
     user = request.user
 
     if tour_id:
@@ -96,8 +96,8 @@ def chat_creation(request, tour_id=None, guide_id=None):
         chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user,
                                                    defaults={"guide": guide_user,
                                                              "topic": topic})
-    elif guide_id:
-        guide = GuideProfile.objects.get(id=guide_id)
+    elif guide_uuid:
+        guide = GuideProfile.objects.get(uuid=guide_uuid)
         topic = "Chat with %s" % guide.user.generalprofile.first_name
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
 

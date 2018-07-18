@@ -11,7 +11,7 @@ $(document).ready(function(){
     finalPriceCalculation();
     $("#id_price, #id_discount").on("change", function(){
         finalPriceCalculation();
-    })
+    });
 
 
     if($('.owl-carousel').length>0){
@@ -44,7 +44,7 @@ $(document).ready(function(){
         });
     }
 
-    $(".book-scheduled-tour").on("click", function(e){
+    $(".book-scheduled-tour, .book-private-tour").on("click", function(e){
         e.preventDefault();
         scheduled_tour = $(this).data("scheduled_tour");
         $("#id_tour_scheduled").val(scheduled_tour);

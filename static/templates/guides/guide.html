@@ -51,7 +51,7 @@
                                     {% endif %}
                                     <div class="mt10 text-center">
                                         {% if guide == request.user.guideprofile %}
-                                            <a href="{% url 'chat_creation_guide' guide.id %}"
+                                            <a href="{% url 'chat_creation_guide' guide.uuid %}"
                                                class="btn btn-default btn-sm" disabled="">
                                                 {% blocktrans %}Send Message{% endblocktrans %}
                                             </a>
@@ -63,7 +63,7 @@
                                                     {% blocktrans %}Write Review{% endblocktrans %}
                                                 </a>
                                             {% endif %}
-                                            <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
+                                            <a href="{% url 'chat_creation_guide' guide.uuid %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
                                         {% endif %}
                                     <br/>
 

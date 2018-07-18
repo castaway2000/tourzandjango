@@ -17,6 +17,7 @@ from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINT
 import braintree
 from partners.models import Partner
 from coupons.models import CouponUser, Coupon, Campaign, CouponType
+from utils.general import uuid_creating
 
 
 if ON_PRODUCTION:
@@ -66,6 +67,7 @@ class PaymentStatus(models.Model):
 
 
 class Order(models.Model):
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1) #pending (initiated, but not paid)
 
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
@@ -142,6 +144,9 @@ class Order(models.Model):
         """
         the following code is transfered here from making_booking view
         """
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
         if not self.pk:
             if not self.guide:
                 guide = self.tour.guide
