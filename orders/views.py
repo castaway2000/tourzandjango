@@ -175,7 +175,8 @@ def making_booking(request):
     #always return a redirect
     if (order.tour and order.tour.type == "2") or not hasattr(order, "tour"):#private tours
         topic = "Chat with %s" % guide.user.generalprofile.first_name
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
+                                                   defaults={"topic": topic})
         initial_message = data.get("message")
 
         #message about creation of the order

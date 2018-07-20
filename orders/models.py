@@ -18,7 +18,7 @@ import braintree
 from partners.models import Partner
 from coupons.models import CouponUser, Coupon, Campaign, CouponType
 from utils.general import uuid_creating
-
+import datetime
 
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
@@ -119,6 +119,7 @@ class Order(models.Model):
     tourist_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     guide_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_discount_on_tourzan_side = models.BooleanField(default=False)
+    is_approved_by_guide = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
@@ -281,6 +282,11 @@ class Order(models.Model):
             order.status_id = 5 # payment reserved
             order.payment_status_id = 2 #full payment reserverd
             order.save(force_update=True)
+
+            if order.is_approved_by_guide:#order details can be approved from chat window by a guide
+                order.status_id = 2
+                order.save(force_update=True)
+
             return {"result": True}
         else:
             return {"result": False}
@@ -337,6 +343,16 @@ class Order(models.Model):
             return self.total_price + self.discount
         else:
             return self.total_price
+
+    def get_order_end(self):
+        print("get_order_end")
+        tour_hours = self.tour.hours if self.tour else self.hours_nmb
+        print(tour_hours)
+        if self.date_booked_for:
+            tour_ends_time = self.date_booked_for + datetime.timedelta(hours=tour_hours)
+            return tour_ends_time.time()
+        else:
+            return None
 
 
 """

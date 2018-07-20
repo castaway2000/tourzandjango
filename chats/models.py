@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from tours.models import Tour
+from orders.models import Order
 import uuid
 from utils.sending_emails import SendingEmail
 from django.db.models.signals import post_save
@@ -13,6 +14,7 @@ class Chat(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     guide = models.ForeignKey(User, related_name="guide")
     tourist = models.ForeignKey(User, related_name="tourist")
+    order = models.ForeignKey(Order, blank=True, null=True, default=None)
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)#a chat converstion can be around some specific tour
     topic = models.CharField(max_length=256, blank=True, null=True, default=None)#some topic can be specified as well
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -24,6 +26,14 @@ class Chat(models.Model):
     def create_message(self, user, message):
         ChatMessage.objects.create(chat=self, message=message, user=user)
         return True
+
+    @property
+    def last_chat_message_dt(self):
+        last_chat_message = self.chatmessage_set.all().last()
+        if last_chat_message:
+            return last_chat_message.created
+        else:
+            return 1
 
 
 class ChatMessage(models.Model):

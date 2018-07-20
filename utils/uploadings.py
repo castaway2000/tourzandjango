@@ -9,6 +9,10 @@ def upload_path_handler_tour(instance, filename):
     return "tours/original_size%s" % (filename)
 
 
+def upload_path_handler_tour_large(instance, filename):
+    return "tours/large_size/%s" % (filename)
+
+
 def upload_path_handler_tour_medium(instance, filename):
     return "tours/medium_size/%s" % (filename)
 

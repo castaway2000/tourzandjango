@@ -43,15 +43,17 @@ class TourGeneralForm(forms.ModelForm):
     name = forms.CharField()
     overview_short = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 2}))
     overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
-    image = forms.ImageField(label=_('Tour image'),required=False, \
+    image = forms.ImageField(label=_('Tour main image'),required=False, \
                                     error_messages ={'invalid':_("Image files only")},\
                                     widget=forms.FileInput)
     hours = forms.DecimalField(required=True, min_value=1)
+    included = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is included?"))
+    excluded = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is excluded?"))
     type = forms.ChoiceField(choices=Tour().TOUR_TYPES, widget=forms.RadioSelect)
 
     class Meta:
         model = Tour
-        fields = ("name", "overview_short", "overview", "hours", "image", "is_active", "type")
+        fields = ("name", "overview_short", "overview", "hours", "included", "excluded", "image", "is_active", "type")
 
     def __init__(self, *args, **kwargs):
         super(TourGeneralForm, self).__init__(*args, **kwargs)
@@ -69,6 +71,8 @@ class TourGeneralForm(forms.ModelForm):
             Field('overview_short'),
             Field('overview'),
             Field('hours'),
+            Field('included'),
+            Field('excluded'),
             Field('image'),
 
             HTML("<img class='w300 mb10' src='%s'/>" % self.image_small_url),
@@ -139,7 +143,6 @@ class TourWeeklyScheduleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TourWeeklyScheduleForm, self).__init__(*args, **kwargs)
         self.form_title = _("Create new Scheduled Item") if not kwargs.get("instance") else _("Edit Scheduled Item")
-        print(kwargs)
         self.price_final = kwargs["instance"].price_final if kwargs.get("instance") else 0
         self.helper = FormHelper(self)
         self.helper.form_tag = True
@@ -165,7 +168,6 @@ class TourWeeklyScheduleForm(forms.ModelForm):
                 '</div>' % _('Save')
             )
         )
-
 
 
 class WeeklyTemplateApplyForm(forms.ModelForm):
@@ -208,7 +210,7 @@ class BookingScheduledTourForm(forms.Form):
         super(BookingScheduledTourForm, self).__init__(*args, **kwargs)
         # self.fields['seats'].widget.attrs['min'] = 0
         self.fields['tour_scheduled'] = forms.ChoiceField(
-            choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates()]
+            choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates(14)]
         )
 
         self.helper = FormHelper(self)
@@ -262,7 +264,7 @@ class PrivateTourPriceForm(forms.ModelForm):
 
     class Meta:
         model = Tour
-        fields = ("price", "persons_nmb_for_min_price", "max_persons_nmb", "additional_person_price",)
+        fields = ("price", "persons_nmb_for_min_price", "max_persons_nmb", "additional_person_price", "discount")
 
     def __init__(self, *args, **kwargs):
         super(PrivateTourPriceForm, self).__init__(*args, **kwargs)
@@ -270,9 +272,10 @@ class PrivateTourPriceForm(forms.ModelForm):
         self.helper.form_tag = True
         self.helper.layout.append(
             HTML(
+                '<div class="mb10"><b>%s: </b><span id="price_final"></span> USD</div>'
                 '<div class="text-center">'
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '%s</button>'
-                '</div>' % _('Apply')
+                '</div>' % (_("Price final"), _('Apply'))
             ),
         )

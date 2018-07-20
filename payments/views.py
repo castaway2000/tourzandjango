@@ -200,7 +200,9 @@ def order_payment_checkout(request, order_uuid):
         data = request.POST
         guide = order.guide
         topic = "Chat with %s" % guide.user.generalprofile.first_name
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user,
+                                                   order=order,
+                                                   defaults={"topic": topic})
 
         message = data.get("message")
         if message:

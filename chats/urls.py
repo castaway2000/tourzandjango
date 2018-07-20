@@ -10,4 +10,5 @@ urlpatterns = [
 
     url(r'^chat_creation/tour/(?P<tour_id>\S+)/$', views.chat_creation, name='chat_creation_tour'),
     url(r'^chat_creation/guide/(?P<guide_uuid>\S+)/$', views.chat_creation, name='chat_creation_guide'),
+    url(r'^chat_creation/order/(?P<order_uuid>\S+)/$', views.chat_creation, name='chat_creation_order'),
 ]

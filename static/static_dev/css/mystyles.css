@@ -257,7 +257,7 @@
 
 .payment-summary{
     border: 1px solid black;
-    padding: 20px 20px 30px 20px;
+    padding: 30px 20px 30px 20px;
     position: relative;
 }
 
@@ -738,12 +738,15 @@ a{
 
 
 .tour-section.tour-program-description{
-    background-color: #6587dd;
+    /*background-color: #6587dd;*/
+    background-color: white;
+    color: black;
     font-size: 24px;
     line-height: 1.5;
     font-weight: 100;
     padding: 80px;
     height: auto;
+
 }
 
 .tour-section.tour-included{
@@ -963,7 +966,8 @@ a{
 }
 
 .tour-section.tour-reviews .owl-carousel{
-    background-color: #ffec81;
+    /*background-color: #ffec81;*/
+    background-color: #f3f3f3;
     padding: 50px;
     color: black;
 }
@@ -987,6 +991,7 @@ a{
 .tour-booking-form{
     padding: 80px 0!important;
     height: auto!important;
+    background-color: #e0e0e0;
 }
 
 .page-tabs li.active,
@@ -1022,10 +1027,59 @@ a{
     width: 300px;
 }
 
+.section-mask{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background: black;
+    opacity: 0.25;
+}
+
+.tour-section.hero-section .breadcrumb{
+    z-index: 10;
+    position: relative;
+}
+
+.tour-section.guide-section{
+    /*background-color: #f7d049;*/
+    /*background-color: #1ace84;*/
+    background-color: #6587dd;
+    color: white;
+    height: auto;
+}
+
+.tour-section.guide-section .title{
+    text-align: center;
+    font-size: 44px;
+    padding: 25px 15px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.tour-section.guide-section h3,
+.tour-section.guide-section h4,
+.tour-section.guide-section h5{
+    color: white;
+}
+
+.tour-section.guide-section a,
+.tour-section.guide-section a:hover{
+    color: white;
+}
+
+.tour-section.hero-section .breadcrumb li.active{
+    color: #e1e1e1!important;
+}
+
 .tour-program-items.guide-editing{
     padding: 10px;
 }
 
+.tour-section.hero-section{
+    background-color: #f3f3f3;
+}
 
 .tour-section.hero-section .breadcrumb{
     font-size: 14px;

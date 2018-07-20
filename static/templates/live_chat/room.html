@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load crispy_forms_tags %}
 
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-lg-5 col-lg-offset-2">
 
                 <div class="box bg-gray chat-item single-chat">
                     <div>
@@ -35,10 +40,6 @@
                             {% endif %}
                         </h3>
                     </div>
-                    <div>
-{#                        <b>{% blocktrans %}with {% endblocktrans %}</b>#}
-                         <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
-                    </div>
 
                     <div id="messages_area">
                         {% if chat_messages %}
@@ -53,7 +54,7 @@
                                             {% else %}
                                                 {{ message.user__username }}
                                             {% endif %}
-                                        {% endif %}, {{ message.created|date:"m.d.Y H:i:s" }}
+                                        {% endif %}, {{ message.created|date:"m/d/Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
                                         {{ message.message|linebreaks }}
@@ -76,11 +77,100 @@
 
                 </div>
             </div>
+
+            <div class="col-lg-3 col-lg-offset-1">
+                {% if form %}
+                    <h3 class="text-center">
+                        {% trans 'Order details' %}
+                    </h3>
+                    <div>
+                        {% if order %}
+                            {% if not order.is_approved_by_guide and request.session.current_role == "guide" %}
+                                <div class="text-center">
+                                    <p>{% trans 'Modify order defails if needed' %}</p>
+                                </div>
+                                {% with order.tour as tour %}
+                                    {% if tour %}
+                                        <div>
+                                            <p>
+                                                <b>{% trans "Tour" %}: </b>
+                                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
+                                                                              target="_blank">{{ tour.name }}
+                                                </a>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                                <div>
+                                    <p>
+                                        <b>{% trans "Status" %}: </b>{{ order.status.name }}
+                                    </p>
+                                </div>
+                                {% crispy form %}
+                            {% else %}
+                                {% with order.tour as tour %}
+                                    {% if tour %}
+                                        <div>
+                                            <p>
+                                                <b>{% trans "Tour" %}: </b>
+                                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
+                                                                              target="_blank">{{ tour.name }}
+                                                </a>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <p>
+                                            <b>{% trans "Status" %}: </b>{{ order.status.name }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        {% if not tour %}
+                                            <p>
+                                                <b>{% trans "Hours" %}: </b>{{ order.hours_nmb }}
+                                            </p>
+                                        {% endif %}
+                                        <p>
+                                            <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
+                                        </p>
+                                        <p>
+                                            <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
+                                        </p>
+                                        {% if order.status.id == 1 %}
+                                            <div class="text-left">
+                                                <form method="post">{% csrf_token %}
+                                                    <div class="form-group">
+                                                        {% if request.session.current_role != "guide" %}
+    {#                                                        <input class="btn btn-default" type="submit" name="edit_details"#}
+    {#                                                               value="{% trans 'Edit Details' %}">#}
+                                                            <input class="btn btn-success" type="submit" name="approve"
+                                                               value="{% trans 'Approve and checkout' %}">
+                                                        {% endif %}
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endwith %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
         </div>
     </div>
 {% endblock content %}
 
 
 {% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $('#id_date_booked_for').datetimepicker({
+            minDate: new Date(),
+            format: 'MM/DD/YYYY HH:mm',
+        });
+    </script>
     <script src="{% static 'js/custom_scripts/chat_on_sockets.js' %}"></script>
 {% endblock js_stuff %}
