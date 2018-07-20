@@ -392,8 +392,11 @@ def order_post_save(sender, instance, created, **kwargs):
 
     #sening email according to orders changing
     current_request = CrequestMiddleware.get_request()
-    user = current_request.user
-    is_guide_saving = True if instance.guide.user == user else False
+    if current_request:
+        user = current_request.user
+        is_guide_saving = True if instance.guide.user == user else False
+    else:
+        is_guide_saving = False
 
     if instance._original_fields["status"] and int(instance.status_id) != instance._original_fields["status"].id and int(instance.status_id) != 1:#exclude pending status
         # print ("pre sending")
