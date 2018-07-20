@@ -919,7 +919,7 @@ a{
 
 .tour-section.tour-pictures{
     background-color: #1ace84;
-    height: auto;
+    height: 700px;
 }
 
 .tour-section.tour-pictures .title{
@@ -953,6 +953,7 @@ a{
 .tour-section.tour-reviews{
     color: black;
     height: 550px;
+    min-height: 550px;
     padding: 100px;
     background-color: white;
 }
@@ -1106,6 +1107,19 @@ a{
 
 .btn-forminline-22{
     margin-top: 22px;
+}
+
+.text-strike{
+    text-decoration: line-through;
+}
+
+.text-with-discount{
+    color: #000;
+}
+
+.tour-price .text-with-discount{
+    color: white;
+    margin-top: 15px;
 }
 
 @media (min-width: 768px) {

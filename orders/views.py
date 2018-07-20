@@ -108,7 +108,10 @@ def making_booking(request):
             try:
                 date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y')
             except:
-                date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y')
+                try:
+                    date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y')
+                except:
+                    date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y %H:%M')
     kwargs["date_booked_for"] = date_booked_for
 
     hours_nmb = data.get("booking_hours", 0)
@@ -378,14 +381,14 @@ def tourist_settings_orders(request):
 
 
 @login_required()
-def cancel_order(request, order_id):
+def cancel_order(request, order_uuid):
     user = request.user
     current_role = request.session.get("current_role")
     if current_role == "tourist" or not current_role:
         #check if a user is a tourist in an order
         try:
             tourist = user.touristprofile
-            order = Order.objects.get(id=order_id, tourist=tourist)
+            order = Order.objects.get(uuid=order_uuid, tourist=tourist)
             order.status_id = 3
             order.save(force_update=True)
             print("try 2")
@@ -396,7 +399,7 @@ def cancel_order(request, order_id):
         #check if a user is a guide
         try:
             guide = user.guideprofile
-            order = Order.objects.get(id=order_id, guide=guide)
+            order = Order.objects.get(uuid=order_uuid, guide=guide)
             order.status_id = 6
             order.save(force_update=True)
             print("try 1")

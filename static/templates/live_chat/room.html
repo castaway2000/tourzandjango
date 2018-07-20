@@ -11,7 +11,7 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-lg-5 col-lg-offset-2">
+            <div class="col-lg-5 col-lg-offset-3">
 
                 <div class="box bg-gray chat-item single-chat">
                     <div>
@@ -85,10 +85,7 @@
                     </h3>
                     <div>
                         {% if order %}
-                            {% if not order.is_approved_by_guide and request.session.current_role == "guide" %}
-                                <div class="text-center">
-                                    <p>{% trans 'Modify order defails if needed' %}</p>
-                                </div>
+                            {% if request.session.current_role == "guide" %}
                                 {% with order.tour as tour %}
                                     {% if tour %}
                                         <div>
@@ -106,7 +103,20 @@
                                         <b>{% trans "Status" %}: </b>{{ order.status.name }}
                                     </p>
                                 </div>
-                                {% crispy form %}
+                                {% if not order.is_approved_by_guide %}
+                                    {% crispy form %}
+                                {% elif order.status.id == 1 %}
+                                    <p>
+                                        <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
+                                    </p>
+                                    <p>
+                                        <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
+                                    </p>
+
+                                    <div class="mt20">
+                                        <b>{% trans 'Waiting for tourist confirmation and payment reservation' %}</b>
+                                    </div>
+                                {% endif %}
                             {% else %}
                                 {% with order.tour as tour %}
                                     {% if tour %}
@@ -137,22 +147,37 @@
                                             <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
                                         </p>
                                         {% if order.status.id == 1 %}
-                                            <div class="text-left">
-                                                <form method="post">{% csrf_token %}
-                                                    <div class="form-group">
-                                                        {% if request.session.current_role != "guide" %}
-    {#                                                        <input class="btn btn-default" type="submit" name="edit_details"#}
-    {#                                                               value="{% trans 'Edit Details' %}">#}
-                                                            <p>
-                                                                {% trans 'Your guide has approved booking conditions.' %}
-                                                                {% trans 'Click the button below to go to checkout page.' %}
-                                                            </p>
-                                                            <input class="btn btn-success" type="submit" name="approve"
-                                                               value="{% trans 'Approve and checkout' %}">
-                                                        {% endif %}
-                                                    </div>
-                                                </form>
-                                            </div>
+                                            {% if order.is_approved_by_guide  %}
+                                                <div class="text-left">
+                                                    <form method="post">{% csrf_token %}
+                                                        <div class="form-group">
+                                                            {% if request.session.current_role != "guide" %}
+        {#                                                        <input class="btn btn-default" type="submit" name="edit_details"#}
+        {#                                                               value="{% trans 'Edit Details' %}">#}
+                                                                <p>
+                                                                    {% trans 'Your guide has approved booking conditions.' %}
+                                                                    {% trans 'Click the button below to go to checkout page.' %}
+                                                                </p>
+                                                                <div class="form-group">
+                                                                    <input class="btn btn-success" type="submit" name="approve"
+                                                                        value="{% trans 'Approve and checkout' %}">
+                                                                </div>
+                                                                {% trans 'or' %}
+                                                                <div class="form-group mt10">
+                                                                    <a href="{% url 'cancel_order' order.uuid %}"
+                                                                        class="btn btn-danger">
+                                                                        {% trans 'Cancel booking' %}
+                                                                    </a>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            {% elif order.status.id == 1 %}
+                                                <div class="mt20">
+                                                    <b>{% trans 'Waiting for guide confirmation' %}</b>
+                                                </div>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 {% endwith %}

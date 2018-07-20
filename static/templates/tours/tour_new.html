@@ -74,15 +74,24 @@
                 {% if tour.included %}
                     <div class="row">
                         <div class="col-lg-6 col-lg-offset-3">
+
                             <div class="tour-included-items-container">
                                 <div class="title">
                                     {% trans 'What is included' %}
+
                                 </div>
-                                {% for item in tour.included.splitlines %}
-                                    <div class="tour-included-item">
-                                        {{ item }}
+                                <div class="tour-included-item">
+                                        {{ tour.included|linebreaks }}
                                     </div>
-                                {% endfor %}
+
+{#                                <div class="title">#}
+{#                                    {% trans 'What is included' %}#}
+{#                                </div>#}
+{#                                {% for item in tour.included.splitlines %}#}
+{#                                    <div class="tour-included-item">#}
+{#                                        {{ item }}#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
                             </div>
                         </div>
                     </div>
@@ -263,6 +272,23 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-4">
+
+                    {% if tour.type == "2" %}
+                        <div class="mb50">
+                            <div class="title text-center">{% trans 'Tour payment description' %}</div>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <b>1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}:</b>
+                                    {{ tour.price_final }} {{ tour.currency.name }}</li>
+                                <li>
+                                    <b>{% trans 'Additional people' %}:</b>
+                                    {{ tour.additional_person_price }} {{ tour.currency.name }} {% trans 'for each person' %}
+                                </li>
+                                <li><b>{% trans 'Maximum participants' %}:</b> {{ tour.max_persons_nmb }}</li>
+                            </ul>
+                        </div>
+                    {% endif %}
+
                     <div class="title">
                         {% trans 'Booking form' %}
                     </div>
@@ -271,9 +297,6 @@
             </div>
         </div>
     </div>
-
-{#    <div class="gap gap-small"></div>#}
-
 
 {% endblock %}
 
@@ -293,6 +316,31 @@
                      format: 'MM/DD/YYYY HH:mm',
                 });
             }
+
+
+            function finalPriceCalculation(){
+                if ($("#price_total")){
+                    price = {{ tour.price_final }};
+                    nmb_people = $("#id_number_people").val();
+                    max_people = {{ tour.max_persons_nmb }};
+                    limit_people_for_low_price = {{ tour.persons_nmb_for_min_price }};
+                    additional_person_price = {{ tour.additional_person_price }}
+                    final_price = 0;
+                    nmb_people_additional = nmb_people - limit_people_for_low_price;
+                    if (nmb_people_additional>0){
+                        final_price = price + (nmb_people_additional*additional_person_price);
+                        console.log(nmb_people_additional*additional_person_price);
+                        console.log(final_price);
+                    }else{
+                        final_price = price;
+                    }
+                    $("#price_total").text(final_price);
+                }
+            }
+            finalPriceCalculation();
+            $("#id_number_people").on("change", function(){
+                finalPriceCalculation();
+            });
         });
 
     </script>

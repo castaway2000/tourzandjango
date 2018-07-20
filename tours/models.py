@@ -12,7 +12,7 @@ from utils.images_resizing import optimize_size
 import datetime
 from utils.general import uuid_creating
 from django.utils.translation import ugettext as _
-from django.db.models import Sum
+from django.db.models import Sum, Min
 
 
 class PaymentType(models.Model):
@@ -190,6 +190,14 @@ class Tour(models.Model):
                     template_items_dict[day] = list()
                 template_items_dict[day].append(template_item)
         return template_items_dict
+
+    def get_lowest_scheduled_tour_prices(self):
+        nearest_tours = self.get_nearest_available_dates(20)
+        if nearest_tours:
+            price_final_item = nearest_tours.aggregate(min_price_final=Min('price_final'))
+            return price_final_item["min_price_final"]
+        else:
+            return 0
 
 
 class TourIncludedItem(models.Model):

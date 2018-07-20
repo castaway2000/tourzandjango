@@ -205,7 +205,7 @@
 
                 {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
                     <p>
-                        <a href="{% url 'cancel_order' order.id %}"
+                        <a href="{% url 'cancel_order' order.uuid %}"
                             class="btn btn-danger btn-sm">
                             {% trans 'Cancel' %}
                         </a>

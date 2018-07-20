@@ -207,15 +207,15 @@ class BookingScheduledTourForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
+        self.tour = tour
         super(BookingScheduledTourForm, self).__init__(*args, **kwargs)
         # self.fields['seats'].widget.attrs['min'] = 0
-        self.fields['tour_scheduled'] = forms.ChoiceField(
+        self.fields['tour_scheduled'] = forms.ChoiceField(required=True, label=_("Select tour date"),
             choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates(14)]
         )
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True
-        self.helper.form_action = reverse('making_booking')
 
         self.helper.layout.append(
             HTML(
@@ -225,6 +225,16 @@ class BookingScheduledTourForm(forms.Form):
                 '</div>' % _('Submit')
             ),
         )
+
+    def clean_number_people(self):
+        print("cleannnnnnnnnnnnnnnn")
+        number_people = self.cleaned_data.get("number_people")
+        tour_scheduled_id = self.cleaned_data.get("tour_scheduled")
+        tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
+
+        if number_people > tour_scheduled.seats_available:
+            raise forms.ValidationError(_("Maximum number of tour participants is: %s") % tour_scheduled.seats_available)
+        return self.cleaned_data.get("number_people")
 
 
 class BookingPrivateTourForm(forms.Form):
@@ -236,23 +246,37 @@ class BookingPrivateTourForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
+        self.tour = tour
         self.min_nmb_of_people = 1
+
         super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
         self.fields['tour_id'] = forms.ChoiceField(
             choices=[(tour.id, tour.id)]
         )
+        self.fields['tour_id'].widget = forms.HiddenInput()
+        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.tour.max_persons_nmb)
+
         self.helper = FormHelper(self)
         self.helper.form_tag = True
         self.helper.form_action = reverse('making_booking')
 
         self.helper.layout.append(
             HTML(
+                '<div class="mb10"><b>{}: </b><span id="price_total">{}</span> USD</div>'
                 '<div class="text-center">'
                 '<button name="action" class="btn btn-primary" type="submit">'
-                '%s</button>'
-                '</div>' % _('Submit')
+                '{}</button>'
+                '</div>'.format(_("Total price") if not tour.discount else _("Total price with discount"),
+                            tour.price_final, _('Submit'))
             ),
         )
+
+
+    def clean_number_people(self):
+        number_people = self.cleaned_data.get("number_people")
+        if number_people > self.tour.max_persons_nmb:
+            raise forms.ValidationError(_("Maximum number of tour participants is: %s") % self.tour.max_persons_nmb)
+        return self.cleaned_data.get("number_people")
 
 
 class PrivateTourPriceForm(forms.ModelForm):

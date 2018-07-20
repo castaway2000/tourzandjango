@@ -84,6 +84,7 @@ class Order(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     number_persons = models.IntegerField(default=1)
+    number_additional_persons = models.IntegerField(default=0)
     price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_services_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -156,28 +157,47 @@ class Order(models.Model):
                 guide = self.guide
 
             tour = self.tour
-
             number_people = self.number_persons
-            if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
-                guide_additional_person_cost = guide.additional_person_cost
-                additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
-                self.price_per_additional_person = guide.additional_person_cost
-                self.additional_person_total = additional_person_total
             if tour:
-                if tour.payment_type.id==1:#hourly
+                if tour.payment_type.id == 1:#hourly
                     self.price_hourly = tour.price_hourly
                     #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
 
                 elif tour.payment_type.id == 2:#fixed
                     if self.tour_scheduled:
-                        self.discount = self.tour_scheduled.discount
-                        self.price = self.tour_scheduled.price_final*number_people#price final (after discount)
+                        self.discount = self.tour_scheduled.discount*number_people
+                        self.price = self.tour_scheduled.price*number_people
                     else:
-                        self.price = tour.price*number_people
+                        self.discount = tour.discount
+
+                        #preventing overlimiting for API
+                        if number_people > tour.max_persons_nmb:
+                            target_people_nmb = tour.max_persons_nmb
+                        else:
+                            target_people_nmb = number_people
+
+                        persons_nmb_for_min_price_overlimit = target_people_nmb - tour.persons_nmb_for_min_price
+                        if persons_nmb_for_min_price_overlimit > 0:
+                            self.number_additional_persons = persons_nmb_for_min_price_overlimit
+
+                            self.price_per_additional_person = tour.additional_person_price
+                            self.additional_person_total = tour.additional_person_price*persons_nmb_for_min_price_overlimit
+
+                        self.price = tour.price #price final means price after discount
                 else:#free tours
                     pass
 
             else:#guide
+
+                #only for guides, not for tours
+                if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
+                    guide_additional_person_cost = guide.additional_person_cost
+                    self.number_additional_persons = (number_people-1)
+                    additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
+                    self.price_per_additional_person = guide.additional_person_cost
+                    self.additional_person_total = additional_person_total
+
+
                 self.price_hourly = guide.rate
                 #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
 

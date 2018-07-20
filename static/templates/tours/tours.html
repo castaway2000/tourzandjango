@@ -223,13 +223,24 @@
                                     {% endif %}
 
                                     <p class="tour-price">
-                                        <b>{% blocktrans %}Price: {% endblocktrans %}</b>
-                                        {% if tour.payment_type_id == 1 %}
-                                            {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
-                                        {% elif tour.payment_type_id == 2 %}
-                                            {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
-                                        {% elif tour.payment_type_id == 3 %}
-                                            {% blocktrans %}Free!{% endblocktrans %}
+                                        <b>{% blocktrans %}Price:{% endblocktrans %}</b>
+                                        {% if tour.type == "1" %}
+                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_prices }} {{ tour.currency.name }}
+                                        {% else %}
+                                            {% if tour.payment_type_id == 1 %}
+                                                {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
+                                            {% elif tour.payment_type_id == 2 %}
+                                                {% if not tour.discount %}
+                                                    {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                {% else %}
+                                                    <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
+                                                    <span class="text-with-discount">{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                {% endif %}
+                                            {% elif tour.payment_type_id == 3 %}
+                                                {% blocktrans %}Free!{% endblocktrans %}
+                                            {% else  %}
+                                                {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                            {% endif %}
                                         {% endif %}
                                         <br>
                                         {% if tour.min_hours %}
@@ -237,7 +248,7 @@
                                         {% endif %}
                                     </p>
                                     <p>
-                                        <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary">
+                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary">
                                             {% blocktrans %}Go to Tour{% endblocktrans %}
                                         </a>
                                     </p>

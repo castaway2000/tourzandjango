@@ -1,3 +1,8 @@
+if ($(".has-error").length>0){
+    console.log(5);
+     $('html, body').animate({scrollTop: ($(".has-error:last").parent("form").offset().top-100)}, 1);
+}
+
 $(document).ready(function(){
 
     function finalPriceCalculation(){

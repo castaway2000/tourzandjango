@@ -19,6 +19,7 @@ from django.db.models import Avg, Max, Min, Sum
 from django.views.decorators.clickjacking import xframe_options_exempt
 import datetime
 from dateutil.rrule import rrule, DAILY
+from orders.views import making_booking
 
 
 @xframe_options_exempt
@@ -246,7 +247,7 @@ def guide_tours(request, username):
     return render(request, 'tours/guide_tours.html', context)
 
 
-def tour(request, slug, tour_id, tour_new=None):
+def tour(request, slug, tour_uuid, tour_new=None):
     user = request.user
 
     #referal id for partner to track clicks in iframe
@@ -254,12 +255,12 @@ def tour(request, slug, tour_id, tour_new=None):
     if ref_id and not "ref_id" in request.session:
         request.session["ref_id"] = ref_id
 
-    tour = Tour.objects.get(id=tour_id, slug=slug)
+    tour = get_object_or_404(Tour, uuid=tour_uuid, slug=slug)
     guide = tour.guide
 
     try:
         tourist = user.touristprofile
-        current_order = Order.objects.filter(tourist=tourist, tour_id=tour_id).last()
+        current_order = Order.objects.filter(tourist=tourist, tour_id=tour.id).last()
     except:
         pass
 
@@ -285,6 +286,10 @@ def tour(request, slug, tour_id, tour_new=None):
         else:
             now = datetime.datetime.now().date()
             form = BookingPrivateTourForm(request.POST or None, tour=tour, initial={"tour_id": tour.id, "date": now})
+
+        if request.method=="POST" and form.is_valid():
+            making_booking(request)
+
         return render(request, 'tours/tour_new.html', locals())
     else:
         return render(request, 'tours/tour.html', locals())

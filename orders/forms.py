@@ -13,13 +13,14 @@ import datetime
 
 
 class GuideOrderAdjustForm(forms.ModelForm):
-    number_persons = forms.IntegerField(required=True, min_value=1)
+    # number_persons = forms.IntegerField(required=True, min_value=1)
     hours = forms.IntegerField(required=True, min_value=0)
-    date_booked_for = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'))
+    date_booked_for = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'),
+                                          label=_("Modify requested tour date and time and save it for tourist's approval"))
 
     class Meta:
         model = Order
-        fields = ["number_persons", "hours", "date_booked_for"]
+        fields = ["hours", "date_booked_for"]
 
     def __init__(self, *args, **kwargs):
         super(GuideOrderAdjustForm, self).__init__(*args, **kwargs)

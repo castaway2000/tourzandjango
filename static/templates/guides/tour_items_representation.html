@@ -26,14 +26,14 @@
                     {% if tour.price %}
                         {{ tour.price }} {{ tour.currency.name }}
                     {% elif tour.price_hourly %}
-                        {{ tour.price_hourly }} {{ tour.currency.name }} per hour
+                        {{ tour.price_hourly }} {{ tour.currency.name }} {% trans 'per hour' %}
                     {% else %}
-                        free!
+                        {% trans 'free' %}!
                     {% endif %}
                 </p>
                 <p>
-                    <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary btn-xs">
-                        Go to Tour
+                    <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary btn-xs">
+                        {% trans 'Go to Tour' %}
                     </a>
                 </p>
             </div>
