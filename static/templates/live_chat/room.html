@@ -143,6 +143,10 @@
                                                         {% if request.session.current_role != "guide" %}
     {#                                                        <input class="btn btn-default" type="submit" name="edit_details"#}
     {#                                                               value="{% trans 'Edit Details' %}">#}
+                                                            <p>
+                                                                {% trans 'Your guide has approved booking conditions.' %}
+                                                                {% trans 'Click the button below to go to checkout page.' %}
+                                                            </p>
                                                             <input class="btn btn-success" type="submit" name="approve"
                                                                value="{% trans 'Approve and checkout' %}">
                                                         {% endif %}
