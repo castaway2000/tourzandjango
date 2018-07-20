@@ -17,9 +17,15 @@
             <li class="{% if page == "tour_edit_images" %}active{% endif %}">
                 <a href="{% url 'tour_edit_images' slug %}">{% trans 'Images' %}</a>
             </li>
-            <li class="{% if page == "tour_edit_price_and_schedule" %}active{% endif %}">
-                <a href="{% url 'tour_edit_price_and_schedule' slug %}">{% trans 'Tours Schedule' %}</a>
-            </li>
+            {% if not tour or tour.type == "1" %}
+                <li class="{% if page == "tour_edit_price_and_schedule" %}active{% endif %}">
+                    <a href="{% url 'tour_edit_price_and_schedule' slug %}">{% trans 'Tours Schedule' %}</a>
+                </li>
+            {% else %}
+                <li class="{% if page == "tour_edit_price" %}active{% endif %}">
+                    <a href="{% url 'tour_edit_price' slug %}">{% trans 'Price' %}</a>
+                </li>
+            {% endif %}
             <li class="">
                 <a href="{% url 'guide_settings_tours' %}">{% trans 'Back to tours list' %}</a>
             </li>

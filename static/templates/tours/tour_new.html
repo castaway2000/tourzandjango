@@ -7,7 +7,10 @@
 
 {% block header_stuff %}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
 {% endblock  %}
+
+
 {% block content %}
     <div class="container">
 
@@ -15,11 +18,12 @@
 
     <div class="tour-section hero-section" style="
         {% if tour.image %}
-            background: url('{{ tour.image.url }}')
+            background: url('{{ tour.image_large.url }}')
         {% else %}
             background: url('{% static "img/1280x848.png" %}')
         {% endif %}
     ">
+        <div class="section-mask"></div>
         <div class="container">
             <div>
                 <ul class="breadcrumb">
@@ -63,58 +67,86 @@
         </div>
     </div>
 
-    {% with tour.get_included_items as included_items %}
-    {% with tour.get_excluded_items as  excluded_items %}
-    {% if included_items or excluded_items %}
+
+    {% if tour.included or tour.excluded %}
         <div class="tour-section tour-included">
             <div class="container">
-                {% if included_items %}
-                <div class="row">
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div class="tour-included-items-container">
-                            <div class="title">
-                                {% trans 'What is included' %}
-                            </div>
-                            {% for item in included_items %}
-                                <div class="tour-included-item">
-                                    {{ item.name }}
+                {% if tour.included %}
+                    <div class="row">
+                        <div class="col-lg-6 col-lg-offset-3">
+
+                            <div class="tour-included-items-container">
+                                <div class="title">
+                                    {% trans 'What is included' %}
+
                                 </div>
-                            {% endfor %}
+                                <div class="tour-included-item">
+                                        {{ tour.included|linebreaks }}
+                                    </div>
+
+{#                                <div class="title">#}
+{#                                    {% trans 'What is included' %}#}
+{#                                </div>#}
+{#                                {% for item in tour.included.splitlines %}#}
+{#                                    <div class="tour-included-item">#}
+{#                                        {{ item }}#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+                            </div>
                         </div>
                     </div>
-                </div>
                 {% endif %}
-                {% if excluded_items %}
-                <div class="row">
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div class="tour-excluded-items-container">
-                            <div class="title">
-                                {% trans 'What is NOT included' %}
-                            </div>
+                {% if tour.excluded %}
+                    <div class="row">
+                        <div class="col-lg-6 col-lg-offset-3">
+                            <div class="tour-excluded-items-container">
+                                <div class="title">
+                                    {% trans 'What is NOT included' %}
+                                </div>
 
-                                {% for item in excluded_items %}
-                                    <div class ="tour-excluded-item">
-                                        <div class="row">
-                                            <div class="col-lg-9">
-                                                <div class="">
-                                                    {{ item.name }}
+                                    {% for item in tour.excluded.splitlines %}
+                                        <div class ="tour-excluded-item">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    {{ item }}
                                                 </div>
                                             </div>
-                                            <div class="col-lg-3 text-center">
-                                                {{ item.price }} USD
-                                            </div>
-                                        </div>
-                                     </div>
-                                {% endfor %}
+                                         </div>
+                                    {% endfor %}
+                            </div>
                         </div>
                     </div>
-                </div>
                 {% endif %}
             </div>
         </div>
     {% endif %}
-    {% endwith %}
-    {% endwith %}
+
+    <div class="tour-section guide-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title">
+                        {% trans 'Who is the guide?' %}
+                    </div>
+                    <div>
+                        <h4 class="text-center">
+                            {{ tour.guide.name }}
+                        </h4>
+                        <div class="text-center mb10">
+                            (<a href="{% url 'guide_new' tour.guide.user.generalprfile.first_name tour.guide.user.generalprofile.uuid "new" %}" target="_blank">{% trans 'view profile' %}</a>)
+                        </div>
+                        <div class="text-center">
+                            {% if tour.guide.profile_image %}
+                                <img src="{{ tour.guide.profile_image.url }}" class="w300">
+                            {% else %}
+                                <img src="{% static 'img/300x300.png' %}" class="w300">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {% include "tours/nearest_available_dates.html" %}
 
@@ -162,7 +194,6 @@
     </div>
 
     {% include "tours/nearest_available_dates.html" %}
-
 
     <div class="tour-section tour-pictures">
         <div class="container">
@@ -241,6 +272,23 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-4">
+
+                    {% if tour.type == "2" %}
+                        <div class="mb50">
+                            <div class="title text-center">{% trans 'Tour payment description' %}</div>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <b>1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}:</b>
+                                    {{ tour.price_final }} {{ tour.currency.name }}</li>
+                                <li>
+                                    <b>{% trans 'Additional people' %}:</b>
+                                    {{ tour.additional_person_price }} {{ tour.currency.name }} {% trans 'for each person' %}
+                                </li>
+                                <li><b>{% trans 'Maximum participants' %}:</b> {{ tour.max_persons_nmb }}</li>
+                            </ul>
+                        </div>
+                    {% endif %}
+
                     <div class="title">
                         {% trans 'Booking form' %}
                     </div>
@@ -250,71 +298,51 @@
         </div>
     </div>
 
-{#    <div class="gap gap-small"></div>#}
-
-
 {% endblock %}
 
 {% block js_stuff %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
     <script>
+
         $(document).ready(function(){
-
-            $(document).ready(function(){
-                  $('.owl-carousel').owlCarousel();
-            });
-
-            function gettingTimeSlotsForDate(){
-                data = {};
-                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
-                data["csrfmiddlewaretoken"] = csrf_token;
-                data["booking_date"] = $('#booking_date').val();
-                data["guide_id"] = $('#guide_id').val();
-                var url = $('#time_slots').data('link');
-                $.ajax({
-                     url: url,
-                     type: 'POST',
-                     data: data,
-                     cache: true,
-                     success: function(data){
-                         time_slots_container = $('#time_slots');
-
-                         $('#booking_form_error_container').html("");
-                         time_slots_container.html("");
-
-                         available_time_slots = data.available_time_slots;
-
-                         if (available_time_slots.length > 0){
-                             $.each(available_time_slots, function(index, el){
-                                slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
-                                slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
-                                time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
-                             })
-                         }else{
-                             $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
-                                     "There are no available time slots for this date. <br>" +
-                                     "Please select another date.</div>")
-                         }
-                     }
-                })
+            $('.owl-carousel').owlCarousel();
+            if ($("#id_date") !== undefined){
+                $("#id_date").datetimepicker({
+                     minDate: new Date(),
+                     format: 'MM/DD/YYYY HH:mm',
+                });
             }
 
-            $('.d_picker').datepicker({
-                todayHighlight: true,
-                format: "mm.dd.yyyy",
-                weekStart: 1
-            }).datepicker("setDate", new Date()).on("changeDate", function(e) {
-                // `e` here contains the extra attributes
-                gettingTimeSlotsForDate();
+
+            function finalPriceCalculation(){
+                if ($("#price_total")){
+                    price = {{ tour.price_final }};
+                    nmb_people = $("#id_number_people").val();
+                    max_people = {{ tour.max_persons_nmb }};
+                    limit_people_for_low_price = {{ tour.persons_nmb_for_min_price }};
+                    additional_person_price = {{ tour.additional_person_price }}
+                    final_price = 0;
+                    nmb_people_additional = nmb_people - limit_people_for_low_price;
+                    if (nmb_people_additional>0){
+                        final_price = price + (nmb_people_additional*additional_person_price);
+                        console.log(nmb_people_additional*additional_person_price);
+                        console.log(final_price);
+                    }else{
+                        final_price = price;
+                    }
+                    $("#price_total").text(final_price);
+                }
+            }
+            finalPriceCalculation();
+            $("#id_number_people").on("change", function(){
+                finalPriceCalculation();
             });
+        });
 
-            gettingTimeSlotsForDate();
-
-            $(document).on("click", '.time-slots-container .time-slot', function(){
-                $(this).toggleClass("chosen");
-            })
-
-        })
     </script>
 {% endblock js_stuff %}
 

@@ -18,7 +18,7 @@
 
     <div class="guide-action-container">
         <div class="main-buttons">
-            <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.id %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
+            <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.uuid %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
             <a href="#booking_area" class="btn btn-primary btn-booking-proposal">{%  trans 'Book' %}</a>
         </div>
         <div class="scroll-top-container">
@@ -117,7 +117,7 @@
                                         {% blocktrans %}Write Review{% endblocktrans %}
                                     </a>
                                 {% endif %}
-                                <a class="btn btn-default btn-lg" href="{% url 'chat_creation_guide' guide.id %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
+                                <a class="btn btn-default btn-lg" href="{% url 'chat_creation_guide' guide.uuid %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
                             {% endif %}
                         </div>
                     </div>

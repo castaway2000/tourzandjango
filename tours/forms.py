@@ -43,14 +43,17 @@ class TourGeneralForm(forms.ModelForm):
     name = forms.CharField()
     overview_short = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 2}))
     overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
-    image = forms.ImageField(label=_('Tour image'),required=False, \
+    image = forms.ImageField(label=_('Tour main image'),required=False, \
                                     error_messages ={'invalid':_("Image files only")},\
                                     widget=forms.FileInput)
     hours = forms.DecimalField(required=True, min_value=1)
+    included = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is included?"))
+    excluded = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is excluded?"))
+    type = forms.ChoiceField(choices=Tour().TOUR_TYPES, widget=forms.RadioSelect)
 
     class Meta:
         model = Tour
-        fields = ("name", "overview_short", "overview", "hours", "image", "is_active",)
+        fields = ("name", "overview_short", "overview", "hours", "included", "excluded", "image", "is_active", "type")
 
     def __init__(self, *args, **kwargs):
         super(TourGeneralForm, self).__init__(*args, **kwargs)
@@ -63,10 +66,13 @@ class TourGeneralForm(forms.ModelForm):
 
         self.helper.layout = Layout(
             Field('is_active'),
+            Field('type'),
             Field('name'),
             Field('overview_short'),
             Field('overview'),
             Field('hours'),
+            Field('included'),
+            Field('excluded'),
             Field('image'),
 
             HTML("<img class='w300 mb10' src='%s'/>" % self.image_small_url),
@@ -124,13 +130,44 @@ class TourProgramItemForm(forms.Form):
 
 
 class TourWeeklyScheduleForm(forms.ModelForm):
+    dt = forms.DateTimeField(widget=forms.TimeInput(format='%m/%d/%Y'), label=_("Date and time start"))
     time_start = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), label=_("Typical start time"))
     price = forms.DecimalField(required=True, min_value=0)
+    discount = forms.DecimalField(required=True, min_value=0)
     seats_total = forms.IntegerField(required=True, min_value=0)
 
     class Meta:
-        model = ScheduleTemplateItem
-        fields = ("time_start", "price", "seats_total")
+        model = ScheduledTour
+        fields = ("dt", "time_start", "price", "discount", "seats_total")
+
+    def __init__(self, *args, **kwargs):
+        super(TourWeeklyScheduleForm, self).__init__(*args, **kwargs)
+        self.form_title = _("Create new Scheduled Item") if not kwargs.get("instance") else _("Edit Scheduled Item")
+        self.price_final = kwargs["instance"].price_final if kwargs.get("instance") else 0
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+            HTML(
+                '<div class="mt20"><h4>%s</h4></div>' % self.form_title
+            ),
+
+            Div(
+                Field("dt"),
+                Field("time_start"),
+
+            ),
+            Field("price"),
+            Field("discount"),
+            HTML("<div class='mb20'><b>%s </b> <span id='price_final'>%s</span></div>" % (_("Price final:"), self.price_final)),
+
+            Field("seats_total"),
+            HTML(
+                '<div class="form-group text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '%s</button>'
+                '</div>' % _('Save')
+            )
+        )
 
 
 class WeeklyTemplateApplyForm(forms.ModelForm):
@@ -164,21 +201,21 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
         return self.cleaned_data.get('date_to')
 
 
-class BookingForm(forms.Form):
+class BookingScheduledTourForm(forms.Form):
     tour_scheduled = forms.ChoiceField(required=True, label=_("Selected tour date"))
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
 
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
-        super(BookingForm, self).__init__(*args, **kwargs)
+        self.tour = tour
+        super(BookingScheduledTourForm, self).__init__(*args, **kwargs)
         # self.fields['seats'].widget.attrs['min'] = 0
-        self.fields['tour_scheduled'] = forms.ChoiceField(
-            choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates()]
+        self.fields['tour_scheduled'] = forms.ChoiceField(required=True, label=_("Select tour date"),
+            choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates(14)]
         )
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True
-        self.helper.form_action = reverse('making_booking')
 
         self.helper.layout.append(
             HTML(
@@ -186,5 +223,83 @@ class BookingForm(forms.Form):
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '%s</button>'
                 '</div>' % _('Submit')
+            ),
+        )
+
+    def clean_number_people(self):
+        print("cleannnnnnnnnnnnnnnn")
+        number_people = self.cleaned_data.get("number_people")
+        tour_scheduled_id = self.cleaned_data.get("tour_scheduled")
+        tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
+
+        if number_people > tour_scheduled.seats_available:
+            raise forms.ValidationError(_("Maximum number of tour participants is: %s") % tour_scheduled.seats_available)
+        return self.cleaned_data.get("number_people")
+
+
+class BookingPrivateTourForm(forms.Form):
+    # , widget=forms.HiddenInput()
+    date = forms.DateField(required=True, widget=forms.TimeInput(format='%m/%d/%Y'))
+    tour_id = forms.ChoiceField(required=True)
+    number_people = forms.IntegerField(required=True, initial=1, min_value=1)
+    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}))
+
+    def __init__(self, *args, **kwargs):
+        tour = kwargs.pop("tour")
+        self.tour = tour
+        self.min_nmb_of_people = 1
+
+        super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
+        self.fields['tour_id'] = forms.ChoiceField(
+            choices=[(tour.id, tour.id)]
+        )
+        self.fields['tour_id'].widget = forms.HiddenInput()
+        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.tour.max_persons_nmb)
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.form_action = reverse('making_booking')
+
+        self.helper.layout.append(
+            HTML(
+                '<div class="mb10"><b>{}: </b><span id="price_total">{}</span> USD</div>'
+                '<div class="text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '{}</button>'
+                '</div>'.format(_("Total price") if not tour.discount else _("Total price with discount"),
+                            tour.price_final, _('Submit'))
+            ),
+        )
+
+
+    def clean_number_people(self):
+        number_people = self.cleaned_data.get("number_people")
+        if number_people > self.tour.max_persons_nmb:
+            raise forms.ValidationError(_("Maximum number of tour participants is: %s") % self.tour.max_persons_nmb)
+        return self.cleaned_data.get("number_people")
+
+
+class PrivateTourPriceForm(forms.ModelForm):
+    price = forms.DecimalField(required=True, min_value=1)
+    discount = forms.DecimalField(required=True, min_value=0)
+    persons_nmb_for_min_price = forms.IntegerField(required=True, min_value=1)
+    max_persons_nmb = forms.IntegerField(required=True, min_value=2)#1 person more than persons_nmb_for_min_price
+    additional_person_price = forms.DecimalField(required=True, min_value=1)
+
+    class Meta:
+        model = Tour
+        fields = ("price", "persons_nmb_for_min_price", "max_persons_nmb", "additional_person_price", "discount")
+
+    def __init__(self, *args, **kwargs):
+        super(PrivateTourPriceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.layout.append(
+            HTML(
+                '<div class="mb10"><b>%s: </b><span id="price_final"></span> USD</div>'
+                '<div class="text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '%s</button>'
+                '</div>' % (_("Price final"), _('Apply'))
             ),
         )

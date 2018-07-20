@@ -22,7 +22,7 @@ def chats(request):
                          "guide__generalprofile__uuid",
                          "tourist__generalprofile__uuid",
                          "tourist__username", "guide__username",
-                         "uuid", "id", "topic", "created").order_by('-id'))
+                         "uuid", "id", "topic", "created"))
 
     chat_ids = [item["id"] for item in chats]
 
@@ -42,6 +42,7 @@ def chats(request):
 
     for chat in chats:
         chat["last_message"] = last_messages_dict.get(chat["id"])
+        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else None
 
     return render(request, 'chats/chats.html', locals())
 
@@ -86,7 +87,7 @@ def sending_chat_message(request):
 
 
 @login_required()
-def chat_creation(request, tour_id=None, guide_id=None):
+def chat_creation(request, tour_id=None, guide_uuid=None, order_uuid=None):
     user = request.user
 
     if tour_id:
@@ -96,9 +97,17 @@ def chat_creation(request, tour_id=None, guide_id=None):
         chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user,
                                                    defaults={"guide": guide_user,
                                                              "topic": topic})
-    elif guide_id:
-        guide = GuideProfile.objects.get(id=guide_id)
+    elif guide_uuid:
+        guide = GuideProfile.objects.get(uuid=guide_uuid)
         topic = "Chat with %s" % guide.user.generalprofile.first_name
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+
+    elif order_uuid:
+        order = Order.objects.get(uuid=order_uuid)
+        guide = order.guide
+        topic = "Chat with %s" % guide.user.generalprofile.first_name
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
+                                                   defaults={"topic": topic})
+
 
     return HttpResponseRedirect(reverse("livechat_room", kwargs={"chat_uuid": chat.uuid} ))

@@ -112,11 +112,11 @@ def payment_methods_adding(request):
                     PaymentMethod.objects.create(**kwargs)
 
                 #redirecting after payment method adding if there is a pending order id
-                pending_order_id = request.session.get("pending_order")
-                if pending_order_id:
+                pending_order_uuid = request.session.get("pending_order")
+                if pending_order_uuid:
                     del request.session["pending_order"]
                     messages.success(request, _('A new payment method was successfully added and now you can proceed with your order'))
-                    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_id": pending_order_id}))
+                    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_uuid": pending_order_uuid}))
                 else:
                     messages.success(request, _('A new payment method was successfully added!'))
                     return HttpResponseRedirect(reverse("payment_methods"))
@@ -127,9 +127,9 @@ def payment_methods_adding(request):
 
 
 @login_required()
-def making_order_payment(request, order_id):
+def making_order_payment(request, order_uuid):
     user = request.user
-    order = Order.objects.get(id=order_id)
+    order = Order.objects.get(uuid=order_uuid)
     if order.tourist.user == user:
         payment_method = PaymentMethod.objects.filter(is_active=True).order_by('is_default', '-id').first()
         amount = "%s" % float(order.total_price)
@@ -175,9 +175,9 @@ def payments(request):
 
 
 @login_required()
-def order_payment_checkout(request, order_id):
+def order_payment_checkout(request, order_uuid):
     user = request.user
-    order = get_object_or_404(Order, id=order_id, tourist__user=user) #fix for preventing accessing to other tourist orders
+    order = get_object_or_404(Order, uuid=order_uuid, tourist__user=user) #fix for preventing accessing to other tourist orders
     services_in_order = order.serviceinorder_set.all()
     city = order.guide.city_id
     country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
@@ -186,10 +186,11 @@ def order_payment_checkout(request, order_id):
         if i == country:
             illegal_country = True
             break
+
     #adding variable to session for redirecting after adding a payment method
     user_payment_method = PaymentMethod.objects.filter(user=user, is_active=True).exists()
     if not user_payment_method:
-        request.session["pending_order"] = order.id
+        request.session["pending_order"] = order.uuid
 
     #check for preventing unauthorized access
     if order.tourist.user != user and order.guide.user != user:
@@ -199,7 +200,9 @@ def order_payment_checkout(request, order_id):
         data = request.POST
         guide = order.guide
         topic = "Chat with %s" % guide.user.generalprofile.first_name
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user,
+                                                   order=order,
+                                                   defaults={"topic": topic})
 
         message = data.get("message")
         if message:

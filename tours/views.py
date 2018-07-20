@@ -19,6 +19,7 @@ from django.db.models import Avg, Max, Min, Sum
 from django.views.decorators.clickjacking import xframe_options_exempt
 import datetime
 from dateutil.rrule import rrule, DAILY
+from orders.views import making_booking
 
 
 @xframe_options_exempt
@@ -246,7 +247,7 @@ def guide_tours(request, username):
     return render(request, 'tours/guide_tours.html', context)
 
 
-def tour(request, slug, tour_id, tour_new=None):
+def tour(request, slug, tour_uuid, tour_new=None):
     user = request.user
 
     #referal id for partner to track clicks in iframe
@@ -254,12 +255,12 @@ def tour(request, slug, tour_id, tour_new=None):
     if ref_id and not "ref_id" in request.session:
         request.session["ref_id"] = ref_id
 
-    tour = Tour.objects.get(id=tour_id, slug=slug)
+    tour = get_object_or_404(Tour, uuid=tour_uuid, slug=slug)
     guide = tour.guide
 
     try:
         tourist = user.touristprofile
-        current_order = Order.objects.filter(tourist=tourist, tour_id=tour_id).last()
+        current_order = Order.objects.filter(tourist=tourist, tour_id=tour.id).last()
     except:
         pass
 
@@ -280,10 +281,15 @@ def tour(request, slug, tour_id, tour_new=None):
         reviews = paginator.page(paginator.num_pages)
 
     if tour_new == "new":
-        form = BookingForm(request.POST or None, tour=tour)
-        if request.method == "POST" and form.is_valid():
-            tour_scheduled = form.cleaned_data["tour_scheduled"]
-            seats = form.cleaned_data["seats"]
+        if tour.type == "1":
+            form = BookingScheduledTourForm(request.POST or None, tour=tour)
+        else:
+            now = datetime.datetime.now().date()
+            form = BookingPrivateTourForm(request.POST or None, tour=tour, initial={"tour_id": tour.id, "date": now})
+
+        if request.method=="POST" and form.is_valid():
+            making_booking(request)
+
         return render(request, 'tours/tour_new.html', locals())
     else:
         return render(request, 'tours/tour.html', locals())
@@ -361,7 +367,7 @@ def guide_settings_tour_edit(request, slug=None, tour_id=None):
 @never_cache
 def guide_settings_tour_edit_general(request, slug=None):
     page = "tour_edit_general"
-    title = "Tour Edit: General"
+    title = _("Tour Edit: General")
     user = request.user
 
     if slug:
@@ -404,7 +410,7 @@ def delete_program_tour_item(request, id):
 @never_cache
 def guide_settings_tour_edit_program(request, slug=None):
     page = "tour_edit_program"
-    title = "Tour Edit: Program"
+    title = _("Tour Edit: Program")
     user = request.user
     form = TourProgramItemForm(request.POST or None, request.FILES or None)
 
@@ -446,7 +452,7 @@ def guide_settings_tour_edit_program(request, slug=None):
 @never_cache
 def guide_settings_tour_edit_images(request, slug=None):
     page = "tour_edit_images"
-    title = "Tour Edit: Images"
+    title = _("Tour Edit: Images")
     user = request.user
 
     if slug:
@@ -471,31 +477,33 @@ def guide_settings_tour_edit_images(request, slug=None):
 
 @login_required()
 @never_cache
-def guide_settings_tour_edit_price_and_schedule(request, slug):
-    page = "tour_edit_price_and_schedule"
-    title = "Tour Edit: Price and Schedule"
+def tour_edit_price(request, slug):
+    #for private tours
+    page = "tour_edit_price"
+    title = _("Tour Edit: Price")
     user = request.user
-
-    now = datetime.datetime.now()
-    form = TourWeeklyScheduleForm(request.POST or None)
 
     if slug:
         guide = user.guideprofile
         tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        if tour.type == "1":
+            return HttpResponseRedirect(reverse("tour_edit_general"))
     else:
         return HttpResponseRedirect(reverse("tour_edit_general"))
 
+    form = PrivateTourPriceForm(request.POST or None, instance=tour)
     if request.method == 'POST':
-        pass
-
-    return render(request, 'tours/tour_edit_price_and_schedule.html', locals())
+        new_form = form.save(commit=False)
+        new_form.save()
+        messages.success(request, _("Successfully updated!"))
+    return render(request, 'tours/tour_edit_price.html', locals())
 
 
 @login_required()
 @never_cache
 def available_tour_dates_template(request, slug):
     page = "tour_edit_price_and_schedule"
-    title = "Tour Edit: Price and Schedule"
+    title = _("Tour Edit: Price and Schedule")
     user = request.user
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
@@ -545,20 +553,6 @@ def available_tour_dates_template(request, slug):
     weekly_template_items = ScheduleTemplateItem.objects\
         .filter(tour=tour, is_general_template=False, is_active=True)\
         .order_by("day")
-    #
-    # weekly_template_items_data = dict()
-    # for item in weekly_template_items.iterator():
-    #     day = item.day
-    #     if not day in weekly_template_items_data:
-    #         weekly_template_items_data[day] = list()
-    #     weekly_template_items_data[day].append(item)
-    #
-    # weekly_template_items_data_all_days = list()
-    # for weekday_index, day in enumerate(days):
-    #     if not weekday_index in weekly_template_items_data:
-    #         weekly_template_items_data[weekday_index] = list()
-    #     weekly_template_items_data_all_days.append(weekly_template_items_data[weekday_index])
-
     return render(request, 'tours/tour_schedule_weekly_template.html', locals())
 
 
@@ -602,7 +596,7 @@ def manage_weekly_template_item(request):
 @never_cache
 def apply_week_template_to_dates(request, slug):
     page = "tour_edit_price_and_schedule"
-    title = "Tour Edit: Price and Schedule"
+    title = _("Tour Edit: Price and Schedule")
     user = request.user
     if slug:
         guide = user.guideprofile
@@ -643,13 +637,63 @@ def apply_week_template_to_dates(request, slug):
 
 
 @login_required()
+@never_cache
+def guide_settings_tour_edit_price_and_schedule(request, slug):
+    page = "tour_edit_price_and_schedule"
+    title = _("Tour Edit: Price and Schedule")
+    user = request.user
+
+    if slug:
+        guide = user.guideprofile
+        tour = get_object_or_404(Tour, slug=slug, guide=guide)
+    else:
+        return HttpResponseRedirect(reverse("tour_edit_general"))
+
+    now = datetime.datetime.now()
+    time_start = datetime.datetime.strptime("09:00", "%H:%M")
+    form = TourWeeklyScheduleForm(request.POST or None, initial={"dt": now, "time_start": time_start, "seats_total": 10, "price": "20"})
+    if request.method == 'POST' and form.is_valid():
+        new_form = form.save(commit=False)
+        new_form.tour = tour
+        new_form.save()
+        messages.success(request, _("Successfully created!"))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'tours/tour_edit_price_and_schedule.html', locals())
+
+
+@login_required()
+@never_cache
+def tour_edit_scheduled_tour(request, slug, uuid):
+    page = "tour_edit_price_and_schedule"
+    title = _("Schedule tour editing")
+    user = request.user
+    if uuid:
+        guide = user.guideprofile
+        scheduled_tour = get_object_or_404(ScheduledTour, uuid=uuid, tour__guide=guide)
+    else:
+        messages.error(request, _('You do not have permissions to access this item!'))
+        return HttpResponseRedirect(reverse("guide_settings_tours"))
+
+    if not scheduled_tour.has_pending_reserved_bookings():
+        form = TourWeeklyScheduleForm(request.POST or None, instance=scheduled_tour)
+        if request.method == 'POST' and form.is_valid():
+            new_form = form.save(commit=False)
+            new_form.save()
+            messages.success(request, _("Successfully updated!"))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'tours/tour_edit_scheduled_tour.html', locals())
+
+
+@login_required()
 def scheduled_tour_delete(request, uuid):
     user = request.user
     if uuid:
         guide = user.guideprofile
         scheduled_tour = get_object_or_404(ScheduledTour, uuid=uuid, tour__guide=guide)
-        if scheduled_tour.has_pending_bookings():
-            messages.error(request, _('This tour date has active bookind and can not be deleted!'))
+        if scheduled_tour.has_pending_reserved_bookings():
+            messages.error(request, _('This tour date has active booking and can not be deleted!'))
         else:
             ScheduledTour.objects.filter(id=scheduled_tour.id).delete()
             messages.success(request, _('Successfully deleted!'))

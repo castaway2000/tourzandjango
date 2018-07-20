@@ -1,48 +1,56 @@
 {% load static %}
 {% load i18n %}
 
+
 {% with tour.get_nearest_available_dates as available_dates %}
-        <div class="row">
-            {% if available_dates %}
-                {% for item in available_dates %}
-                    <div class="col-lg-12 scheduled-tour">
-                        <div class="">
-                            <div class="row row-eq-height">
-                                <div class="col-lg-7 tour-details">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="pull-left info-title">{% trans 'Tour Date' %}:
-                                                <div class="text-center tour-date">{{ item.dt|date:"m/d/Y h:i" }}</div>
-                                            </div>
-                                            <div class="pull-right info-title">{% trans 'Available seats' %}:
-                                                <div class="available-seats text-center">{{ item.seats_available }}/{{ item.seats_total }}</div>
-                                            </div>
+    <div class="row">
+        {% if available_dates %}
+            {% for item in available_dates %}
+                <div class="col-lg-12 scheduled-tour">
+                    <div class="">
+                        <div class="row row-eq-height">
+                            <div class="col-lg-7 tour-details">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="pull-left info-title">{% trans 'Tour Date' %}:
+                                            <div class="text-center tour-date">{{ item.dt|date:"m/d/Y h:i" }}</div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-12 mt30">
-                                            <div class="text-center tour-title">
-                                                {{ tour.name }}
-                                            </div>
-                                            <div class="text-center">
-                                                <button class="btn btn-primary btn-lg book-scheduled-tour" data-scheduled_tour="{{ item.id }}">
-                                                    {% trans 'Book now!' %}
-                                                </button>
-                                            </div>
+                                        <div class="pull-right info-title">{% trans 'Available seats' %}:
+                                            <div class="available-seats text-center">{{ item.seats_available }}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-5 tour-price text-center">
-                                    {{ item.price_final|floatformat }} USD
+                                <div class="row">
+                                    <div class="col-lg-12 mt30">
+                                        <div class="text-center tour-title">
+                                            {{ tour.name }}
+                                        </div>
+                                        <div class="text-center">
+                                            <button class="btn btn-primary btn-lg book-scheduled-tour" data-scheduled_tour="{{ item.id }}">
+                                                {% trans 'Book now!' %}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="col-lg-5 tour-price text-center">
+                                {% if item.discount %}
+                                    <div>
+                                        <div class="text-strike">{{ item.price|floatformat:"-2" }} {{ item.tour.currency.name }}</div>
+                                        <div class="text-with-discount">{{ item.price_final|floatformat:"-2"  }} {{ item.tour.currency.name }}</div>
+                                    </div>
+                                {% else %}
+                                    {{ item.price_final|floatformat }} {{ item.tour.currency.name }}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-lg-12">
-                    <div class="notification">{% trans 'No available dates for this tour' %}</div>
                 </div>
-            {% endif %}
-        </div>
-    {% endwith %}
+            {% endfor %}
+        {% else %}
+            <div class="col-lg-12">
+                <div class="notification">{% trans 'No available dates for this tour' %}</div>
+            </div>
+        {% endif %}
+    </div>
+{% endwith %}

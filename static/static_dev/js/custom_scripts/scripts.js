@@ -1,4 +1,23 @@
+if ($(".has-error").length>0){
+    console.log(5);
+     $('html, body').animate({scrollTop: ($(".has-error:last").parent("form").offset().top-100)}, 1);
+}
+
 $(document).ready(function(){
+
+    function finalPriceCalculation(){
+        if ($("#id_price")){
+            price = $("#id_price").val();
+            discount = $("#id_discount").val();
+            final_price = price-discount;
+            $("#price_final").text(final_price);
+        }
+    }
+    finalPriceCalculation();
+    $("#id_price, #id_discount").on("change", function(){
+        finalPriceCalculation();
+    });
+
 
     if($('.owl-carousel').length>0){
         $('.owl-carousel').owlCarousel({
@@ -30,7 +49,7 @@ $(document).ready(function(){
         });
     }
 
-    $(".book-scheduled-tour").on("click", function(e){
+    $(".book-scheduled-tour, .book-private-tour").on("click", function(e){
         e.preventDefault();
         scheduled_tour = $(this).data("scheduled_tour");
         $("#id_tour_scheduled").val(scheduled_tour);
