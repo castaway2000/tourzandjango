@@ -383,6 +383,7 @@ def guide_settings_tour_edit_general(request, slug=None):
         guide = user.guideprofile
         new_form.guide = guide
         new_form.city = guide.city
+        new_form.payment_type_id = 2 #fixed type
         new_form = form.save()
 
         if slug:
