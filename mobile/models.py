@@ -8,9 +8,8 @@ from django.db.models.signals import post_save
 from guides.models import GuideProfile
 from utils.disabling_signals_for_load_data import disable_for_loaddata
 from django.contrib.gis.geos import Point
-point = Point(1, 1)
-print(point)
 import uuid
+point = Point(1, 1)
 
 
 class GeoTracker(models.Model):
@@ -23,7 +22,7 @@ class GeoTracker(models.Model):
 
 
 class GeoTrip(models.Model):
-    user = models.OneToOneField(User)
+    user = models.ForeignKey(User)
     guide = models.ForeignKey(GuideProfile)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -32,6 +31,10 @@ class GeoTrip(models.Model):
     cost = models.FloatField()
     time_remaining = models.IntegerField()
     time_flag = models.CharField(max_length=64)
+
+    def save(self, *args, **kwargs):
+        print('save() is called.')
+        super(GeoTrip, self).save(*args, **kwargs)
 
 
 class GeoChat(models.Model):
