@@ -7,10 +7,9 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-lg-offset-3">
-                123 {{ chats }}
                 {% if chats %}
                     <div class="chat-container" id="chats_list">
-                        {% for chat in chats|dictsortreversed:"last_message_dt" %}
+                        {% for chat in chats %}
                             <div class="box bg-gray chat-item">
                                 <div>
 {#                                    <h3>{{ chat.topic }}</h3>#}

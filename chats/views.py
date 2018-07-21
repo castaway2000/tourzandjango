@@ -9,9 +9,8 @@ from guides.models import GuideProfile
 from django.contrib.auth.decorators import login_required
 from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 from django.contrib import messages
-
+from operator import itemgetter
 import requests
-
 
 
 @login_required()
@@ -42,8 +41,9 @@ def chats(request):
 
     for chat in chats:
         chat["last_message"] = last_messages_dict.get(chat["id"])
-        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else " "
+        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else None
 
+    chats = sorted(chats, key=itemgetter('last_message_dt'), reverse=True)
     return render(request, 'chats/chats.html', locals())
 
 
