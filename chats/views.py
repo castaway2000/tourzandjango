@@ -11,6 +11,7 @@ from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 from django.contrib import messages
 from operator import itemgetter
 import requests
+import datetime
 
 
 @login_required()
@@ -41,7 +42,7 @@ def chats(request):
 
     for chat in chats:
         chat["last_message"] = last_messages_dict.get(chat["id"])
-        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else " "
+        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else datetime.datetime.strptime('01/01/2017', '%m/%d/%Y')
 
     chats = sorted(chats, key=itemgetter('last_message_dt'), reverse=True)
     return render(request, 'chats/chats.html', locals())
@@ -82,7 +83,7 @@ def sending_chat_message(request):
                     chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
                     return_data["message"] = message
                     return_data["author"] = "me"
-                    return_data["created"] = datetime.strftime(chat_message.created, "%m.%d.%Y %H:%M:%S")
+                    return_data["created"] = datetime.datetime.strftime(chat_message.created, "%m/%d/%Y %H:%M:%S")
             return JsonResponse(return_data)
 
 
