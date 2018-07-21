@@ -246,7 +246,7 @@ def guide_tours(request, username):
     }
     return render(request, 'tours/guide_tours.html', context)
 
-
+@never_cache
 def tour(request, slug, tour_uuid, tour_new=None):
     user = request.user
 
