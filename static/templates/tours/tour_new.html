@@ -195,26 +195,30 @@
 
     {% include "tours/nearest_available_dates.html" %}
 
-    <div class="tour-section tour-pictures">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="title">
-                        {% trans 'Other pictures' %}
-                    </div>
-                </div>
-                <div class="col-lg-8 col-lg-offset-2">
-                     <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
-                        {% for tour_image in tour.get_tours_images %}
-                            <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
-                                 class="img-responsive"
-                                 title="Image for {{ tour.name }}" />
-                        {% endfor %}
+    {% with tour.get_tours_images as tour_images %}
+        {% if tour_images %}
+            <div class="tour-section tour-pictures">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="title">
+                                {% trans 'Other pictures' %}
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-lg-offset-2">
+                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                {% for tour_image in tour_images %}
+                                    <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                         class="img-responsive"
+                                         title="Image for {{ tour.name }}" />
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        {% endif %}
+    {% endwith %}
 
 
     {% with tour.get_reviews as reviews %}
@@ -267,28 +271,10 @@
         {% endif %}
     {% endwith %}
 
-
     <div id="tour_booking_form" class="tour-section tour-booking-form">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-4">
-
-                    {% if tour.type == "2" %}
-                        <div class="mb50">
-                            <div class="title text-center">{% trans 'Tour payment description' %}</div>
-                            <ul class="list-unstyled">
-                                <li>
-                                    <b>1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}:</b>
-                                    {{ tour.price_final }} {{ tour.currency.name }}</li>
-                                <li>
-                                    <b>{% trans 'Additional people' %}:</b>
-                                    {{ tour.additional_person_price }} {{ tour.currency.name }} {% trans 'for each person' %}
-                                </li>
-                                <li><b>{% trans 'Maximum participants' %}:</b> {{ tour.max_persons_nmb }}</li>
-                            </ul>
-                        </div>
-                    {% endif %}
-
                     <div class="title">
                         {% trans 'Booking form' %}
                     </div>
@@ -317,7 +303,6 @@
                 });
             }
 
-
             function finalPriceCalculation(){
                 if ($("#price_total")){
                     price = {{ tour.price_final }};
@@ -329,8 +314,6 @@
                     nmb_people_additional = nmb_people - limit_people_for_low_price;
                     if (nmb_people_additional>0){
                         final_price = price + (nmb_people_additional*additional_person_price);
-                        console.log(nmb_people_additional*additional_person_price);
-                        console.log(final_price);
                     }else{
                         final_price = price;
                     }

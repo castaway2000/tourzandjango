@@ -856,7 +856,8 @@ a{
 .tour-available-dates{
     color: black;
     height: auto!important;
-    padding-bottom: 30px;
+    padding-top: 50px;
+    padding-bottom: 50px;
 }
 
 .tour-available-dates .title{
@@ -1096,6 +1097,11 @@ a{
     color: white;
 }
 
+.tour-details-text{
+    font-size: 14px!important;
+    margin-bottom: 10px;
+}
+
 .modal-tour-program-edit .modal-content{
     height: 600px;
     overflow-y: auto;
@@ -1120,6 +1126,13 @@ a{
 .tour-price .text-with-discount{
     color: white;
     margin-top: 15px;
+}
+
+.profile-container .actions-panel{
+    padding: 30px;
+    padding: 30px;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 @media (min-width: 768px) {

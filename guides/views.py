@@ -19,6 +19,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
 import time
 import json
+from orders.views import making_booking
 
 
 @xframe_options_exempt
@@ -246,23 +247,26 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
     guide_services = GuideService.objects.filter(guide=guide)
 
-    if request.POST:
-        data = request.POST
-        if data.get("text") and user:
-            kwargs = dict()
-            kwargs["text"] = data.get("text")
-            if data.get("name"):
-                kwargs["name"] = data.get("name")
-
-            kwargs["rating"] = 5
-
-            review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
-
-            if created:
-                #add messages here
-                pass
-
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    now = datetime.datetime.now().date()
+    form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id, "date": now})
+    if request.POST and form.is_valid():
+        return making_booking(request)
+        # data = request.POST
+        # if data.get("text") and user:
+        #     kwargs = dict()
+        #     kwargs["text"] = data.get("text")
+        #     if data.get("name"):
+        #         kwargs["name"] = data.get("name")
+        #
+        #     kwargs["rating"] = 5
+        #
+        #     review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
+        #
+        #     if created:
+        #         #add messages here
+        #         pass
+        #
+        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
     page = request.GET.get('page', 1)
