@@ -93,6 +93,8 @@ class Tour(models.Model):
             return "%s" % self.id
 
     def save(self, *args, **kwargs):
+        if not self.payment_type:
+            self.payment_type_id = 2#fixed price
 
         self.price_final = self.price - self.discount
 
