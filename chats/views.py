@@ -41,7 +41,7 @@ def chats(request):
 
     for chat in chats:
         chat["last_message"] = last_messages_dict.get(chat["id"])
-        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else None
+        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else " "
 
     chats = sorted(chats, key=itemgetter('last_message_dt'), reverse=True)
     return render(request, 'chats/chats.html', locals())
