@@ -1,6 +1,5 @@
 from django import forms
 from .models import *
-from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Field, Submit, HTML, Div
@@ -11,6 +10,7 @@ from string import Template
 from django.utils.safestring import mark_safe
 import datetime
 from dateutil.relativedelta import relativedelta
+from utils.general import remove_zeros_from_float
 
 
 class PictureWidget(forms.widgets.Widget):
@@ -227,7 +227,6 @@ class BookingScheduledTourForm(forms.Form):
         )
 
     def clean_number_people(self):
-        print("cleannnnnnnnnnnnnnnn")
         number_people = self.cleaned_data.get("number_people")
         tour_scheduled_id = self.cleaned_data.get("tour_scheduled")
         tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
@@ -239,7 +238,7 @@ class BookingScheduledTourForm(forms.Form):
 
 class BookingPrivateTourForm(forms.Form):
     # , widget=forms.HiddenInput()
-    date = forms.DateField(required=True, widget=forms.TimeInput(format='%m/%d/%Y'))
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'))
     tour_id = forms.ChoiceField(required=True)
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
     message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}))
@@ -247,26 +246,32 @@ class BookingPrivateTourForm(forms.Form):
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
         self.tour = tour
-        self.min_nmb_of_people = 1
 
         super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
         self.fields['tour_id'] = forms.ChoiceField(
             choices=[(tour.id, tour.id)]
         )
         self.fields['tour_id'].widget = forms.HiddenInput()
-        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.tour.max_persons_nmb)
+        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.tour.max_persons_nmb,
+                                                          label=_("Number people (max: %s)" % tour.max_persons_nmb))
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True
-        self.helper.form_action = reverse('making_booking')
-
         self.helper.layout.append(
             HTML(
-                '<div class="mb10"><b>{}: </b><span id="price_total">{}</span> USD</div>'
+                '<div class="tour-details-text">'
+                '<div class="">1-{} {}: {} USD {}</div>'
+                '<div class="">{}: {} USD {}</div>'
+                '<div class="">{}: {}</div>'
+                '</div>'
+                '<div class="mb10">{}: <span id="price_total">{}</span> USD</div>'
                 '<div class="text-center">'
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '{}</button>'
-                '</div>'.format(_("Total price") if not tour.discount else _("Total price with discount"),
+                '</div>'.format(tour.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
+                                _("Additional people"), remove_zeros_from_float(tour.additional_person_price), _("for each person"),
+                                _("Maximum participants"), tour.max_persons_nmb,
+                                _("Total price") if not tour.discount else _("Total price with discount"),
                             tour.price_final, _('Submit'))
             ),
         )

@@ -288,7 +288,7 @@ def tour(request, slug, tour_uuid, tour_new=None):
             form = BookingPrivateTourForm(request.POST or None, tour=tour, initial={"tour_id": tour.id, "date": now})
 
         if request.method=="POST" and form.is_valid():
-            making_booking(request)
+            return  making_booking(request)
 
         return render(request, 'tours/tour_new.html', locals())
     else:

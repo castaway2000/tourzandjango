@@ -27,25 +27,21 @@ def livechat_room(request, chat_uuid):
                                                       "user__generalprofile__first_name").order_by("created")
 
     order = chat.order
-    if order and ((hasattr(order, "tour") and order.tour.type=="2") or (hasattr(order, "tour") == False)):#only dates for private tours or guide hourly booking can be adjusted
+    if order and ((order.tour and order.tour.type=="2") or (not order.tour)):#only dates for private tours or guide hourly booking can be adjusted
         form = GuideOrderAdjustForm(request.POST or None, instance=order)
         if request.method == "POST" and order.status.id == 1:#pending
             if form.is_valid() and not order.is_approved_by_guide:
                 new_form = form.save(commit=False)
                 new_form.save()
-                print("form is valid")
-                print(request.session["current_role"])
                 if order.guide.user == user and request.session["current_role"] == "guide":
                     order.is_approved_by_guide = True
                     order.save(force_update=True)
 
             elif order.tourist.user == user and request.session["current_role"] != "guide":
-                print("ELIF")
                 if "approve" in request.POST:
                     return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}))
                 elif "edit_details" in request.POST:
                     order.is_approved_by_guide = False
                     order.save(force_update=True)
-
-            return  HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'live_chat/room.html', locals())
