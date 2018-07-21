@@ -22,7 +22,9 @@
         <li><a href="{% url 'guide_settings_tours' %}">{% blocktrans %}MY TOURS{% endblocktrans %}</a>
     {% endif %}
 
-    <li><a href="{% url 'chats' %}">{% blocktrans %}CHATS{% endblocktrans %}</a>
+    <li class="{% if current_page == "chat" %}active{% endif %}">
+        <a href="{% url 'chats' %}">{% blocktrans %}CHATS{% endblocktrans %}</a>
+    </li>
 
     {% if request.session.current_role == "tourist" or not request.session.current_role %}
         <li class="{% if current_page == "bookings" %}active{% endif %}">

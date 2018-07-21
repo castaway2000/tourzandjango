@@ -9,20 +9,22 @@ from guides.models import GuideProfile
 from django.contrib.auth.decorators import login_required
 from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
 from django.contrib import messages
-
+from operator import itemgetter
 import requests
-
+import datetime
+import pytz
 
 
 @login_required()
 def chats(request):
+    current_page = "chat"
     user = request.user
     chats = list(Chat.objects.filter(Q(guide=user)|Q(tourist=user))
                  .values("guide__generalprofile__first_name", "tourist__generalprofile__first_name",
                          "guide__generalprofile__uuid",
                          "tourist__generalprofile__uuid",
                          "tourist__username", "guide__username",
-                         "uuid", "id", "topic", "created").order_by('-id'))
+                         "uuid", "id", "topic", "created"))
 
     chat_ids = [item["id"] for item in chats]
 
@@ -42,7 +44,9 @@ def chats(request):
 
     for chat in chats:
         chat["last_message"] = last_messages_dict.get(chat["id"])
+        chat["last_message_dt"] = last_messages_dict[chat["id"]]["created"] if last_messages_dict.get(chat["id"]) else datetime.datetime.strptime('01/01/2017', '%m/%d/%Y').replace(tzinfo=pytz.UTC)
 
+    chats = sorted(chats, key=itemgetter('last_message_dt'), reverse=True)
     return render(request, 'chats/chats.html', locals())
 
 
@@ -81,12 +85,12 @@ def sending_chat_message(request):
                     chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
                     return_data["message"] = message
                     return_data["author"] = "me"
-                    return_data["created"] = datetime.strftime(chat_message.created, "%m.%d.%Y %H:%M:%S")
+                    return_data["created"] = datetime.datetime.strftime(chat_message.created, "%m/%d/%Y %H:%M:%S")
             return JsonResponse(return_data)
 
 
 @login_required()
-def chat_creation(request, tour_id=None, guide_id=None):
+def chat_creation(request, tour_id=None, guide_uuid=None, order_uuid=None):
     user = request.user
 
     if tour_id:
@@ -96,9 +100,17 @@ def chat_creation(request, tour_id=None, guide_id=None):
         chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user,
                                                    defaults={"guide": guide_user,
                                                              "topic": topic})
-    elif guide_id:
-        guide = GuideProfile.objects.get(id=guide_id)
+    elif guide_uuid:
+        guide = GuideProfile.objects.get(uuid=guide_uuid)
         topic = "Chat with %s" % guide.user.generalprofile.first_name
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+
+    elif order_uuid:
+        order = Order.objects.get(uuid=order_uuid)
+        guide = order.guide
+        topic = "Chat with %s" % guide.user.generalprofile.first_name
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
+                                                   defaults={"topic": topic})
+
 
     return HttpResponseRedirect(reverse("livechat_room", kwargs={"chat_uuid": chat.uuid} ))

@@ -17,7 +17,8 @@ from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINT
 import braintree
 from partners.models import Partner
 from coupons.models import CouponUser, Coupon, Campaign, CouponType
-
+from utils.general import uuid_creating
+import datetime
 
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
@@ -66,6 +67,7 @@ class PaymentStatus(models.Model):
 
 
 class Order(models.Model):
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1) #pending (initiated, but not paid)
 
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
@@ -82,6 +84,7 @@ class Order(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     number_persons = models.IntegerField(default=1)
+    number_additional_persons = models.IntegerField(default=0)
     price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_services_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -117,6 +120,7 @@ class Order(models.Model):
     tourist_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     guide_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_discount_on_tourzan_side = models.BooleanField(default=False)
+    is_approved_by_guide = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
@@ -142,6 +146,9 @@ class Order(models.Model):
         """
         the following code is transfered here from making_booking view
         """
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
         if not self.pk:
             if not self.guide:
                 guide = self.tour.guide
@@ -150,28 +157,47 @@ class Order(models.Model):
                 guide = self.guide
 
             tour = self.tour
-
             number_people = self.number_persons
-            if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
-                guide_additional_person_cost = guide.additional_person_cost
-                additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
-                self.price_per_additional_person = guide.additional_person_cost
-                self.additional_person_total = additional_person_total
             if tour:
-                if tour.payment_type.id==1:#hourly
+                if tour.payment_type.id == 1:#hourly
                     self.price_hourly = tour.price_hourly
                     #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
 
                 elif tour.payment_type.id == 2:#fixed
                     if self.tour_scheduled:
-                        self.discount = self.tour_scheduled.discount
-                        self.price = self.tour_scheduled.price_final*number_people#price final (after discount)
+                        self.discount = self.tour_scheduled.discount*number_people
+                        self.price = self.tour_scheduled.price*number_people
                     else:
-                        self.price = tour.price*number_people
+                        self.discount = tour.discount
+
+                        #preventing overlimiting for API
+                        if number_people > tour.max_persons_nmb:
+                            target_people_nmb = tour.max_persons_nmb
+                        else:
+                            target_people_nmb = number_people
+
+                        persons_nmb_for_min_price_overlimit = target_people_nmb - tour.persons_nmb_for_min_price
+                        if persons_nmb_for_min_price_overlimit > 0:
+                            self.number_additional_persons = persons_nmb_for_min_price_overlimit
+
+                            self.price_per_additional_person = tour.additional_person_price
+                            self.additional_person_total = tour.additional_person_price*persons_nmb_for_min_price_overlimit
+
+                        self.price = tour.price #price final means price after discount
                 else:#free tours
                     pass
 
             else:#guide
+
+                #only for guides, not for tours
+                if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
+                    guide_additional_person_cost = guide.additional_person_cost
+                    self.number_additional_persons = (number_people-1)
+                    additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
+                    self.price_per_additional_person = guide.additional_person_cost
+                    self.additional_person_total = additional_person_total
+
+
                 self.price_hourly = guide.rate
                 #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
 
@@ -276,6 +302,11 @@ class Order(models.Model):
             order.status_id = 5 # payment reserved
             order.payment_status_id = 2 #full payment reserverd
             order.save(force_update=True)
+
+            if order.is_approved_by_guide:#order details can be approved from chat window by a guide
+                order.status_id = 2
+                order.save(force_update=True)
+
             return {"result": True}
         else:
             return {"result": False}
@@ -333,6 +364,16 @@ class Order(models.Model):
         else:
             return self.total_price
 
+    def get_order_end(self):
+        print("get_order_end")
+        tour_hours = self.tour.hours if self.tour else self.hours_nmb
+        print(tour_hours)
+        if self.date_booked_for:
+            tour_ends_time = self.date_booked_for + datetime.timedelta(hours=tour_hours)
+            return tour_ends_time.time()
+        else:
+            return None
+
 
 """
 saving ratings from review to Order object
@@ -351,13 +392,24 @@ def order_post_save(sender, instance, created, **kwargs):
 
     #sening email according to orders changing
     current_request = CrequestMiddleware.get_request()
-    user = current_request.user
-    is_guide_saving = True if instance.guide.user == user else False
+    if current_request:
+        user = current_request.user
+        is_guide_saving = True if instance.guide.user == user else False
+    else:
+        is_guide_saving = False
 
     if instance._original_fields["status"] and int(instance.status_id) != instance._original_fields["status"].id and int(instance.status_id) != 1:#exclude pending status
         # print ("pre sending")
         data = {"order": instance, "is_guide_saving": is_guide_saving}
         SendingEmail(data).email_for_order()
+
+        if int(instance.status_id) == 2 and instance.tour_scheduled:#agreed
+            instance.tour_scheduled.seats_booked += instance.number_persons
+            instance.tour_scheduled.save(force_update=True)
+        if instance._original_fields["status"].id == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
+            instance.tour_scheduled.seats_booked -= instance.number_persons
+            instance.tour_scheduled.save(force_update=True)
+
 
 post_save.connect(order_post_save, sender=Order)
 

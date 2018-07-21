@@ -80,8 +80,6 @@ def logout_view(request):
 @login_required()
 def after_login_router(request):
     user = request.user
-    print("after_login_router")
-    print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))

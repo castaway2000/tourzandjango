@@ -11,6 +11,8 @@ from guides.models import GuideProfile
 from utils.images_resizing import optimize_size
 import datetime
 from utils.general import uuid_creating
+from django.utils.translation import ugettext as _
+from django.db.models import Sum, Min
 
 
 class PaymentType(models.Model):
@@ -23,6 +25,13 @@ class PaymentType(models.Model):
 
 
 class Tour(models.Model):
+    SCHEDULED = "1"
+    PRIVATE = "2"
+    TOUR_TYPES = (
+        (SCHEDULED, _("Scheduled - this tour must take place with any number of participants on schedule.")),
+        (PRIVATE, _("Private - this tour must take place in the custom date and time after your negotiation with a tourist and approve it."))
+    )
+
     uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
     overview_short = models.TextField(blank=True, null=True, default=None)
@@ -30,6 +39,7 @@ class Tour(models.Model):
     included = models.TextField(blank=True, null=True, default=None)
     excluded = models.TextField(blank=True, null=True, default=None)
     image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default="/tours/images/default_tour_image.jpg")
+    image_large = models.ImageField(upload_to=upload_path_handler_tour_large, blank=True, null=True, default="/tours/images/default_tour_image_large.jpg")
     image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default="/tours/images/default_tour_image_medium.jpg")
     image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default="/tours/images/default_tour_image_small.jpg")
 
@@ -37,14 +47,26 @@ class Tour(models.Model):
     city = models.ForeignKey(City, blank=True, null=True, default=None)
     rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
-    #for fixed price tours
+    #scheduled or private tour
+    type = models.CharField(max_length=12, blank=True, null=True, default=PRIVATE, choices=TOUR_TYPES)
+
+    #for Scheduled fixed price tours
     currency = models.ForeignKey(Currency, blank=True, null=True, default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours = models.IntegerField(default=0)
 
+    #for Private FIXED price tours
+    persons_nmb_for_min_price = models.IntegerField(default=0)
+    max_persons_nmb = models.IntegerField(default=0)
+    additional_person_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
+    #for Private HOURLY tours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     min_hours = models.IntegerField(default=0)
+
     discount = models.DecimalField(max_digits=8, decimal_places=2, default=0)#in decimals
+    price_final = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
     payment_type = models.ForeignKey(PaymentType, blank=True, null=True, default=None)#hourly or fixed price
     slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, default=random_string_creating)
 
@@ -71,6 +93,14 @@ class Tour(models.Model):
             return "%s" % self.id
 
     def save(self, *args, **kwargs):
+        if not self.payment_type:
+            self.payment_type_id = 2#fixed price
+
+        self.price_final = self.price - self.discount
+
+        if not self.city and self.guide.city:
+            self.city == self.guide.city
+
         if not self.uuid:
             self.uuid = uuid_creating()
 
@@ -96,10 +126,10 @@ class Tour(models.Model):
             self.price_hourly = 0
             self.min_hours = 0
 
-
         if self._original_fields["image"] != self.image or (self.image and (not self.image_medium or not self.image_small)):
             self.image_small = optimize_size(self.image, "small")
             self.image_medium = optimize_size(self.image, "medium")
+            self.image_large = optimize_size(self.image, "large")
 
         super(Tour, self).save(*args, **kwargs)
         try:
@@ -132,8 +162,13 @@ class Tour(models.Model):
         program_items = self.tourprogramitem_set.filter(is_active=True).order_by("day", "time")
         return program_items
 
-    def get_nearest_available_dates(self):
-        scheduled_tours = self.scheduledtour_set.filter(is_active=True)[:3]
+    def get_nearest_available_dates(self, days_nmb=None):
+        now = datetime.datetime.now()
+        if days_nmb:
+            period_end = now + datetime.timedelta(days=days_nmb)
+            scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now, dt__lte=period_end).order_by("dt")
+        else:
+            scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now).order_by("dt")[:5]
         return scheduled_tours
 
     def get_tours_images(self):
@@ -157,6 +192,14 @@ class Tour(models.Model):
                     template_items_dict[day] = list()
                 template_items_dict[day].append(template_item)
         return template_items_dict
+
+    def get_lowest_scheduled_tour_prices(self):
+        nearest_tours = self.get_nearest_available_dates(20)
+        if nearest_tours:
+            price_final_item = nearest_tours.aggregate(min_price_final=Min('price_final'))
+            return price_final_item["min_price_final"]
+        else:
+            return 0
 
 
 class TourIncludedItem(models.Model):
@@ -253,6 +296,9 @@ class ScheduledTour(models.Model):
                 pass
 
     def save(self, *args, **kwargs):
+        if self.time_start and self.dt:
+            self.dt = datetime.datetime.combine(self.dt, self.time_start)
+
         if not self.uuid:
             self.uuid = uuid_creating()
 
@@ -281,8 +327,16 @@ class ScheduledTour(models.Model):
         else:
             return None
 
-    def has_pending_bookings(self):
-        return self.order_set.filter(status__in=[1, 2, 5]).exists() #pending, agreed, payment_reserved
+    def has_pending_reserved_bookings(self):
+        return self.order_set.filter(status__in=[2, 5]).exists() #pending, agreed, payment_reserved
+
+    def get_pending_reserved_seats(self):
+        #pending seats from bookings in payment reserved status
+        pending_orders = self.order_set.filter(status__in=[5]).aggregate(nmb_seats=Sum("number_persons"))
+        return pending_orders["nmb_seats"] if pending_orders["nmb_seats"] else 0
+
+    def get_all_orders(self):
+        return self.order_set.all().exclude(status_id=1).order_by("-id")
 
 
 class ScheduleTemplateItem(models.Model):

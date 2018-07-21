@@ -344,10 +344,12 @@
                                     {% endif %}
                                 {% endfor %}
                                 {% if guides.has_next %}
-                                    <li class="next"><a
-                                            href="?{% url_replace page=guides.next_page_number %}">{% trans 'Next Page' %}</a></li>
+                                    <li class="next">
+                                        <a href="?{% url_replace page=guides.next_page_number %}">
+                                            {% trans 'Next Page of' %} {{ paginator.num_pages }}
+                                        </a>
+                                    </li>
                                 {% endif %}
-                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>
