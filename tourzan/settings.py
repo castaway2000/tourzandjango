@@ -97,7 +97,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -120,7 +120,7 @@ MIDDLEWARE = [
     'users.middleware.TrackingActiveUserMiddleware',
     'users.middleware.ReferralCodesGettingMiddleware',
 
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 
 ]
 
@@ -395,7 +395,7 @@ except Exception as e:
     print(e)
     pass
 
-#removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
-MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
-    .remove("django.middleware.cache.FetchFromCacheMiddleware")
+# #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+# MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
+#     .remove("django.middleware.cache.FetchFromCacheMiddleware")
 
