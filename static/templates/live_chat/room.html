@@ -20,7 +20,7 @@
                             {% blocktrans %}Chat {% endblocktrans %}
                             {% blocktrans %}with {% endblocktrans %}
                             {% if request.user != chat.guide %}
-                                <a href="{% url 'guide' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid %}">
+                                <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
                                     {% if chat.guide.generalprofile.first_name %}
                                         {{ chat.guide.generalprofile.first_name }}
                                     {% else %}
@@ -93,6 +93,7 @@
                                                 <b>{% trans "Tour" %}: </b>
                                                 <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
                                                                               target="_blank">{{ tour.name }}
+                                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
                                                 </a>
                                             </p>
                                         </div>
@@ -105,17 +106,18 @@
                                 </div>
                                 {% if not order.is_approved_by_guide %}
                                     {% crispy form %}
-                                {% elif order.status.id == 1 %}
+                                {% else %}
                                     <p>
                                         <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
                                     </p>
                                     <p>
                                         <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
                                     </p>
-
-                                    <div class="mt20">
-                                        <b>{% trans 'Waiting for tourist confirmation and payment reservation' %}</b>
-                                    </div>
+                                    {% if order.status.id == 1 %}
+                                        <div class="mt20">
+                                            <b>{% trans 'Waiting for tourist confirmation and payment reservation' %}</b>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             {% else %}
                                 {% with order.tour as tour %}
@@ -125,6 +127,7 @@
                                                 <b>{% trans "Tour" %}: </b>
                                                 <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
                                                                               target="_blank">{{ tour.name }}
+                                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
                                                 </a>
                                             </p>
                                         </div>
@@ -152,8 +155,6 @@
                                                     <form method="post">{% csrf_token %}
                                                         <div class="form-group">
                                                             {% if request.session.current_role != "guide" %}
-        {#                                                        <input class="btn btn-default" type="submit" name="edit_details"#}
-        {#                                                               value="{% trans 'Edit Details' %}">#}
                                                                 <p>
                                                                     {% trans 'Your guide has approved booking conditions.' %}
                                                                     {% trans 'Click the button below to go to checkout page.' %}
@@ -184,6 +185,43 @@
                             {% endif %}
                         {% endif %}
                     </div>
+                {% elif order %}
+                    {% with order.tour as tour %}
+                        {% if tour %}
+                            <p>
+                                <b>{% trans "Tour" %}: </b>
+                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
+                                                              target="_blank">{{ tour.name }}
+                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
+                                </a>
+                            </p>
+                        {% endif %}
+
+                        <p>
+                            <b>{% trans "Status" %}: </b>{{ order.status.name }}
+                        </p>
+                        {% if not tour %}
+                            <p>
+                                <b>{% trans "Hours" %}: </b>{{ order.hours_nmb }}
+                            </p>
+                        {% endif %}
+                        <p>
+                            <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
+                        </p>
+                        <p>
+                            <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
+                        </p>
+                        {% if request.session.current_role == "guide" %}
+                            {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
+                                <p>
+                                    <a href="{% url 'cancel_order' order.uuid %}"
+                                        class="btn btn-danger btn-sm">
+                                        {% trans 'Cancel' %}
+                                    </a>
+                                </p>
+                            {% endif %}
+                        {% endif %}
+                    {% endwith %}
                 {% endif %}
             </div>
 

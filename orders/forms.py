@@ -16,7 +16,7 @@ class GuideOrderAdjustForm(forms.ModelForm):
     # number_persons = forms.IntegerField(required=True, min_value=1)
     hours = forms.IntegerField(required=True, min_value=0)
     date_booked_for = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'),
-                                          label=_("Modify requested tour date and time and save it for tourist's approval"))
+                                          label=_("Modify requested tour date and time (if needed) or approve the current one"))
 
     class Meta:
         model = Order

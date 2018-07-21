@@ -207,7 +207,7 @@ def making_booking(request):
 def bookings(request, status=None):
     print("bookings")
     current_page = "bookings"
-    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
     user = request.user
     kwargs = dict()
 
@@ -297,7 +297,7 @@ def bookings(request, status=None):
 @login_required()
 def orders(request, status=None):
     current_page = "orders"
-    statuses = OrderStatus.objects.filter(is_active=True).values("name")
+    statuses = OrderStatus.objects.filter(is_active=True).exclude(id=1).values("name")
 
     user = request.user
 

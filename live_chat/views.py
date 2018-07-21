@@ -27,12 +27,8 @@ def livechat_room(request, chat_uuid):
                                                       "user__generalprofile__first_name").order_by("created")
 
     order = chat.order
-    print(request.session["current_role"])
-    if order and ((hasattr(order, "tour") and order.tour.type=="2") or (hasattr(order, "tour") == False)):
-        print("in if")
+    if order and ((hasattr(order, "tour") and order.tour.type=="2") or (hasattr(order, "tour") == False)):#only dates for private tours or guide hourly booking can be adjusted
         form = GuideOrderAdjustForm(request.POST or None, instance=order)
-        print(form.is_valid())
-        print(form.errors)
         if request.method == "POST" and order.status.id == 1:#pending
             if form.is_valid() and not order.is_approved_by_guide:
                 new_form = form.save(commit=False)

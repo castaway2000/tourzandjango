@@ -17,6 +17,7 @@ import pytz
 
 @login_required()
 def chats(request):
+    current_page = "chat"
     user = request.user
     chats = list(Chat.objects.filter(Q(guide=user)|Q(tourist=user))
                  .values("guide__generalprofile__first_name", "tourist__generalprofile__first_name",
