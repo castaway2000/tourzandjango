@@ -76,15 +76,16 @@ def get_trip_status(request):
         guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
         if hasattr(guide_profile, 'guideprofile'):
             price = guide_profile.guideprofile.rate
-            cost_update = tdelta.total_seconds() / 3600 * price
+            cost_update = round(float(tdelta.total_seconds() / 3600) * float(price), 2)
         else:
             return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'trip_status.guide_id has no guide profile'}]}))
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(), cost=cost_update)
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
-        data = json.dumps({'guide_id': trip_status.guide_id, 'total_time': trip_status.duration,
-                           'remianing_time': trip_status.time_remaining, 'flag': trip_status.time_flag,
-                           'booking_created': trip_status.created.date()})
-        return HttpResponse(data)
+        print('owo')
+        data = {'guide_id': trip_status.guide_id, 'total_time': trip_status.duration,
+                'remianing_time': trip_status.time_remaining, 'flag': trip_status.time_flag,
+                'booking_created': trip_status.created.date().isoformat()}
+        return HttpResponse(json.dumps(data))
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
@@ -105,7 +106,7 @@ def extend_time(request):
         guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
         if hasattr(guide_profile, 'guideprofile'):
             price = guide_profile.guideprofile.rate
-            cost_update = tdelta.total_seconds() / 3600 * price
+            cost_update = round(float(tdelta.total_seconds() / 3600) * float(price), 2)
         else:
             return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'trip_status.guide_id has no guide profile'}]}))
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(),
@@ -258,7 +259,6 @@ def update_trip(request):
             user_type = request.POST['type']
             user_id = request.POST['user_id']
             trip_id = request.POST['trip_id']
-            # if status == 'isCancelled':
             GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=False)
             return HttpResponse(json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type}))
         elif status == 'ended':
