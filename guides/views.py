@@ -19,6 +19,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
 import time
 import json
+from orders.views import making_booking
 
 
 @xframe_options_exempt
@@ -230,12 +231,17 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
-    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
-    for i in ILLEGAL_COUNTRIES:
-        if i == country:
-            illegal_country = True
-            break
+    countries = City.objects.filter(id=guide.city_id).values()
+    if countries:
+        try:
+            country = countries[0]['full_location'].split(',')[-1].strip()
+            for i in ILLEGAL_COUNTRIES:
+                if i == country:
+                    illegal_country = True
+                    break
+        except:
+            pass
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
@@ -246,23 +252,26 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
     guide_services = GuideService.objects.filter(guide=guide)
 
-    if request.POST:
-        data = request.POST
-        if data.get("text") and user:
-            kwargs = dict()
-            kwargs["text"] = data.get("text")
-            if data.get("name"):
-                kwargs["name"] = data.get("name")
-
-            kwargs["rating"] = 5
-
-            review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
-
-            if created:
-                #add messages here
-                pass
-
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    now = datetime.datetime.now().date()
+    form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id, "date": now})
+    if request.POST and form.is_valid():
+        return making_booking(request)
+        # data = request.POST
+        # if data.get("text") and user:
+        #     kwargs = dict()
+        #     kwargs["text"] = data.get("text")
+        #     if data.get("name"):
+        #         kwargs["name"] = data.get("name")
+        #
+        #     kwargs["rating"] = 5
+        #
+        #     review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
+        #
+        #     if created:
+        #         #add messages here
+        #         pass
+        #
+        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
     page = request.GET.get('page', 1)

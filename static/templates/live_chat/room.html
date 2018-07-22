@@ -11,14 +11,12 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-lg-5 col-lg-offset-3">
+            <div class="col-lg-7 col-lg-offset-2">
 
                 <div class="box bg-gray chat-item single-chat">
                     <div>
-{#                        <h3>{{ chat.topic }}</h3>#}
                         <h3>
-                            {% blocktrans %}Chat {% endblocktrans %}
-                            {% blocktrans %}with {% endblocktrans %}
+                            {% trans 'Chat with' %}
                             {% if request.user != chat.guide %}
                                 <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
                                     {% if chat.guide.generalprofile.first_name %}
@@ -27,8 +25,17 @@
                                         {{ chat.guide.username }}
                                     {% endif %}
                                 </a>
-                                {% blocktrans %}(guide){% endblocktrans %}
-                            {% else %}
+                                ({% trans 'guide' %})
+                            {% elif request.user == chat.tourist and request.session.current_role != "guide" %}
+                                <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
+                                    {% if chat.guide.generalprofile.first_name %}
+                                        {{ chat.guide.generalprofile.first_name }}
+                                    {% else %}
+                                        {{ chat.guide.username }}
+                                    {% endif %}
+                                </a>
+                                ({% trans 'guide' %})
+                            {% elif request.user == chat.guide %}
                                  <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
                                     {% if chat.tourist.generalprofile.first_name %}
                                         {{ chat.tourist.generalprofile.first_name }}
@@ -36,7 +43,7 @@
                                         {{ chat.tourist.username }}
                                     {% endif %}
                                 </a>
-                                {% blocktrans %}(tourist){% endblocktrans %}
+                                ({% trans 'tourist' %})
                             {% endif %}
                         </h3>
                     </div>
@@ -78,7 +85,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-lg-offset-1">
+            <div class="col-lg-3 col-lg-offset-0">
                 {% if form %}
                     <h3 class="text-center">
                         {% trans 'Order details' %}

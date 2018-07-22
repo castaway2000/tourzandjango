@@ -88,7 +88,10 @@ def making_booking(request):
         date_booked_for = tour_scheduled.dt
     else:
         guide = GuideProfile.objects.get(id=guide_id)
-        date_booked_for = data["start"]
+        if data.get("start"):
+            date_booked_for = data.get("start")
+        else:
+            date_booked_for = data.get("date")
         kwargs["guide"] = guide
 
     #creating booked time slots in guide's schedule
@@ -114,7 +117,8 @@ def making_booking(request):
                     date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y %H:%M')
     kwargs["date_booked_for"] = date_booked_for
 
-    hours_nmb = data.get("booking_hours", 0)
+    # hours_nmb = data.get("booking_hours", 0)
+    hours_nmb = data.get("hours", 0)
     kwargs["hours_nmb"] = hours_nmb
 
     number_people = int(data.get("number_people", 0))
@@ -175,28 +179,37 @@ def making_booking(request):
             illegal_country = True
             break
     #got rid of returning data for ajax calls
-    #always return a redirect
-    if (order.tour and order.tour.type == "2") or not hasattr(order, "tour"):#private tours
+
+    if (order.tour and order.tour.type == "2") or not order.tour:#private tours and guide booking leads to chat page
+        print(11)
         topic = "Chat with %s" % guide.user.generalprofile.first_name
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
                                                    defaults={"topic": topic})
         initial_message = data.get("message")
 
         #message about creation of the order
-        message = _("Tour: {tour_name}. \n"
-                    "Persons number: {persons_nmb}.\n"
-                    "Date: {tour_date}.".format(tour_name=tour.name,
-                                                 persons_nmb=order.number_persons,
-                                                 tour_date=order.date_booked_for
-                                                 ))
+        if order.tour:
+            message = _("Tour: {tour_name}. \n"
+                        "Persons number: {persons_nmb}.\n"
+                        "Date: {tour_date}.".format(tour_name=tour.name,
+                                                     persons_nmb=order.number_persons,
+                                                     tour_date=order.date_booked_for
+                                                     ))
+        else:
+             message = _("Guide booking request.\n"
+                        "Persons number: {persons_nmb}.\n"
+                        "Date: {tour_date}.".format(persons_nmb=order.number_persons,
+                                                     tour_date=order.date_booked_for
+                                                     ))
         chat.create_message(user, message)
 
         #initial message of the user
         if initial_message:
             chat.create_message(user, initial_message)
 
-        messages.success(request, _("We have successfully sent your request to a guide. "
-                                    "You will receive email confirmation of the tour by emails soon"))
+        messages.success(request, _("We have successfully sent your request to a guide. "))
+        # messages.success(request, _("We have successfully sent your request to a guide. "
+        #                             "You will receive email confirmation of the tour by emails soon"))
         return HttpResponseRedirect(reverse("livechat_room", kwargs={"chat_uuid": chat.uuid} ))
 
     else:
