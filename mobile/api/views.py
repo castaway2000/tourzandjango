@@ -74,7 +74,7 @@ def get_trip_status(request):
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         tdelta = trip_status.updated - trip_status.created
         guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
-        if hasattr('guideprofile', guide_profile):
+        if hasattr(guide_profile, 'guideprofile'):
             price = guide_profile.guideprofile.rate
             cost_update = tdelta.total_seconds() / 3600 * price
         else:
@@ -98,12 +98,12 @@ def extend_time(request):
     """
     try:
         trip_id = int(request.POST['trip_id'])
-        time_extending = request.POST['add_time']
+        time_extending = int(request.POST['add_time'])
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         tdelta = trip_status.updated - trip_status.created
         tremaining = trip_status.time_remaining + time_extending
         guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
-        if hasattr('guideprofile', guide_profile):
+        if hasattr(guide_profile, 'guideprofile'):
             price = guide_profile.guideprofile.rate
             cost_update = tdelta.total_seconds() / 3600 * price
         else:
@@ -233,7 +233,6 @@ def update_trip(request):
                 print(trip_status)
                 return HttpResponse(json.dumps({'latitude': lat, 'longitude': long, 'trip_status': list(trip_status)},
                                                default=datetime_handler))
-
         elif status == 'isAccepted':
             """
             if accepted subscribe to other users channel
@@ -271,9 +270,9 @@ def update_trip(request):
             """
             trip_id = request.POST['trip_id']
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
-            trip_status.save()
+            trip_status.save()  # this is to update the 'updated' timestamp
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
+            guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
             if hasattr(guide_profile, 'guideprofile'):
                 price = float(guide_profile.guideprofile.rate)
                 cost_update = round((tdelta.total_seconds() / 3600) * price, 2)
@@ -291,7 +290,7 @@ def update_trip(request):
 
 
 def no_geo_point_fields(model):
-   return [f.name for f in model._meta.get_fields() if f.name != 'geo_point']
+    return [f.name for f in model._meta.get_fields() if f.name != 'geo_point']
 
 
 def set_user_location(channel, user_type, user_id, lat, long):
