@@ -4,15 +4,13 @@ from django.http.response import HttpResponse
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from mobile.models import GeoTracker, GeoTrip
-from users.models import GeneralProfile, GuideProfile, UserInterest
+from users.models import GeneralProfile, GuideProfile, UserInterest, User
 # from tourzan.settings import REDIS_ROOT
 
 import redis as rs
 from datetime import datetime
 import json
 r = rs.StrictRedis()
-status_data = json.dumps({'status_cdde': 400})
-
 """
 HEADS UP, this section of the code requires spatialite or postgis for it to work.
 """
@@ -35,23 +33,23 @@ def show_nearby_guides(request):
         units = request.POST['units']
         point = Point(long, lat)
 
-        GeoTracker.objects.update_or_create(user_id=user_id, latitude=lat, longitude=long)
-        GeoTracker.objects.filter(user_id=user_id).update(geo_point=point)
+        GeoTracker.objects.get_or_create(user_id=user_id)
+        GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
+        field = no_geo_point_fields(GeoTracker)
         if units == 'km':
             guides = GeoTracker.objects.filter(geo_point__dwithin=(point, D(km=range)),
                                                user__guideprofile__isnull=False,
-                                               is_online=True, trip_in_progress=False).values()
+                                               is_online=True, trip_in_progress=False).values(*field)
         elif units == 'mi':
             guides = GeoTracker.objects.filter(geo_point__dwithin=(point, D(mi=range)),
                                                user__guideprofile__isnull=False,
-                                               is_online=True, trip_in_progress=False).values()
+                                               is_online=True, trip_in_progress=False).values(*field)
         else:
-            return HttpResponse(status_data)
-        data = json.dumps({'nearby_guides': guides})
+            return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'incorrect unit of distance'}]}))
+        data = json.dumps(list(guides))
         return HttpResponse(data)
     except Exception as err:
-        print(err)
-        return HttpResponse(status_data)
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
 @api_view(['POST'])
@@ -80,7 +78,7 @@ def get_trip_status(request):
             price = guide_profile.guideprofile.rate
             cost_update = tdelta.total_seconds() / 3600 * price
         else:
-            return HttpResponse(400)
+            return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'trip_status.guide_id has no guide profile'}]}))
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(), cost=cost_update)
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         data = json.dumps({'guide_id': trip_status.guide_id, 'total_time': trip_status.duration,
@@ -88,8 +86,7 @@ def get_trip_status(request):
                            'booking_created': trip_status.created.date()})
         return HttpResponse(data)
     except Exception as err:
-        print(err)
-        return HttpResponse(status_data)
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 @api_view(['POST'])
 def extend_time(request):
@@ -110,15 +107,14 @@ def extend_time(request):
             price = guide_profile.guideprofile.rate
             cost_update = tdelta.total_seconds() / 3600 * price
         else:
-            return HttpResponse(status_data)
+            return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'trip_status.guide_id has no guide profile'}]}))
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(),
                                                                     cost=cost_update, time_remaining=tremaining)
 
         data = json.dumps({'new_time': tremaining, 'cost': cost_update})
         return HttpResponse(data)
     except Exception as err:
-        print(err)
-        return HttpResponse(status_data)
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 @api_view(['POST'])
 def book_guide(request):
@@ -167,20 +163,19 @@ def book_guide(request):
                            'description': guide.overview,
                            'rate': guide.rate,
                            'rating': guide.rating,
-                           'point': location.geo_point,
                            'latitude': location.latitude,
                            'longitude': location.longitude
                            })
         return HttpResponse(data)
     except Exception as err:
-        print(err)
-        return HttpResponse(status_data)
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
 @api_view(['POST'])
 def update_trip(request):
     try:
         status = request.POST['status']
+        print(status)
         if status == 'login' or status == 'update':
             """
             user_id
@@ -188,25 +183,16 @@ def update_trip(request):
             lon
             return channel
             """
-            try:
-                # user_type = request.POST['type']
-                # guide_id = request.POST['guide_id']
-                user_id = int(request.POST['user_id'])
-                lat = float(request.POST['latitude'])
-                long = float(request.POST['longitude'])
-                point = Point(long, lat)
-                GeoTracker.objects.update_or_create(user_id=user_id, latitude=lat, longitude=long)
-                GeoTracker.objects.filter(user_id=user_id).update(geo_point=point)
-                user = GeoTracker.objects.filter(user_id=user_id).values()
-                data = json.dumps({'data': user})
-                return HttpResponse(data)
-                # channel = "{}{}".format(user_type, user_id)
-                # r.pubsub().subscribe(channel, 'global')
-            except Exception as err:
-                print(err)
-                return HttpResponse(status_data)
-
-        elif status == 'clockin' or status == 'update_trip':
+            user_id = int(request.POST['user_id'])
+            lat = float(request.POST['latitude'])
+            long = float(request.POST['longitude'])
+            point = Point(long, lat)
+            GeoTracker.objects.update_or_create(user_id=user_id, latitude=lat, longitude=long)
+            GeoTracker.objects.filter(user_id=user_id).update(geo_point=point)
+            field = no_geo_point_fields(GeoTracker)
+            user = GeoTracker.objects.filter(user_id=user_id).values(*field)
+            return HttpResponse(json.dumps(list(user)))
+        elif status == 'clockin':
             """
             guide_id
             return private channel and global channel
@@ -214,48 +200,56 @@ def update_trip(request):
             user_id = int(request.POST['user_id'])
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
-            trip_id = request.POST['trip_id']
             point = Point(long, lat)
-            if status == 'clockin':
-                GeoTracker.objects.update_or_create(user_id=user_id, is_online=True, latitude=lat, longitude=long)
-                GeoTracker.objects.filter(user_id=user_id).update(geo_point=point)
-
-            # set_user_location('global', user_type, user_id, lat, long)
-            if status == 'update':
-                trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
-                tdelta = trip_status.updated - trip_status.created
-                guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
-                if hasattr('guideprofile', guide_profile):
-                    price = guide_profile.guideprofile.rate
-                    cost_update = tdelta.total_seconds()/3600 * price
-                else:
-                    return HttpResponse(status_data)
-                GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(),
-                                                                            cost=cost_update, latitude=lat,
-                                                                            longitude=long, geo_point=point)
-                trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
-                data = json.dumps({'location': point, 'trip_status': trip_status})
-                return HttpResponse(data)
-            status_data['status_code'] = 200
-            return HttpResponse(status_data)
+            GeoTracker.objects.get_or_create(user_id=user_id)
+            GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=True, latitude=lat, longitude=long)
+            return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked in'}))
+        elif status == 'clockout':
+            """
+            guide_id
+            return private channel and global channel
+            """
+            user_id = int(request.POST['user_id'])
+            lat = float(request.POST['latitude'])
+            long = float(request.POST['longitude'])
+            point = Point(long, lat)
+            GeoTracker.objects.get(user_id=user_id)
+            GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=False, latitude=lat, longitude=long)
+            return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked out'}))
+        elif status == 'update_trip':
+            trip_id = int(request.POST['trip_id'])
+            lat = float(request.POST['latitude'])
+            long = float(request.POST['longitude'])
+            trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
+            trip_status.save(force_update=True)
+            tdelta = trip_status.updated - trip_status.created
+            guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
+            if hasattr(guide_profile, 'guideprofile'):
+                price = float(guide_profile.guideprofile.rate)
+                cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
+                gtrip = GeoTrip.objects.filter(id=trip_id, in_progress=True)
+                gtrip.update(duration=tdelta.total_seconds(), cost=cost_update)
+                trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).values()
+                print(trip_status)
+                return HttpResponse(json.dumps({'latitude': lat, 'longitude': long, 'trip_status': list(trip_status)},
+                                               default=datetime_handler))
 
         elif status == 'isAccepted':
             """
             if accepted subscribe to other users channel
             """
-            # user_type = request.POST['type']
-            user_id = request.POST['user_id']
-            guide_id = request.POST['guide_id']
+            flag = request.POST['type']
+            user_id = int(request.POST['user_id'])
+            guide_id = int(request.POST['guide_id'])
+            tdelta = 0
+            if hasattr(request.POST, 'time') and flag == 'manual':
+                tdelta = request.POST['time']
             GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=True)
-            trip = GeoTrip.objects.update_or_create(user=user_id, guide=guide_id, in_progress=True)
-            data = json.dumps({'trip_id': trip.id})
-            HttpResponse(data)
+            GeoTracker.objects.filter(user_id=guide_id).update(trip_in_progress=True)
+            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
+                                                    duration=0, cost=0, time_flag=flag, time_remaining=tdelta)
+            return HttpResponse(json.dumps({'trip_id': trip[0].id}))
             #TODO: create trip orders
-            # get_private_channel(user_type, user_id)  # subscribe to opponents channel
-            # r.pubsub().unsubscribe('global')
-            # post_private_channel('traveler', user_id)
-            # post_private_channel('guide', guide_id)
-
         elif status == 'isCancelled' or status == 'isDeclined':
             """
             token
@@ -264,12 +258,10 @@ def update_trip(request):
             """
             user_type = request.POST['type']
             user_id = request.POST['user_id']
-            if status == 'isCancelled':
-                GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=False)
-                # get_global_channel()
-            data = json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type})
-            return HttpResponse(data)
-
+            trip_id = request.POST['trip_id']
+            # if status == 'isCancelled':
+            GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=False)
+            return HttpResponse(json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type}))
         elif status == 'ended':
             """
             status
@@ -278,45 +270,32 @@ def update_trip(request):
             total amount in USD
             """
             trip_id = request.POST['trip_id']
-            guide_id = request.POST['guide_id']
-            end_trip(trip_id, guide_id)
-        else:
-            return HttpResponse(status_data)
-        status_data['status_code'] = 200
-        return HttpResponse(status_data)
+            trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
+            trip_status.save()
+            tdelta = trip_status.updated - trip_status.created
+            guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
+            if hasattr(guide_profile, 'guideprofile'):
+                price = float(guide_profile.guideprofile.rate)
+                cost_update = round((tdelta.total_seconds() / 3600) * price, 2)
+                GeoTrip.objects.filter(id=trip_id, in_progress=True)\
+                    .update(duration=tdelta.total_seconds(), cost=cost_update)
+                trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
+                GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
+                # TODO: make the trip register in the database and process payments from phone.
+            else:
+                return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
+            return HttpResponse(json.dumps({'trip_id': trip_status.id, 'price': trip_status.cost, 'isEnded': True}))
+        return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'incorrect status value'}]}))
     except Exception as err:
-        print(err)
-        status_data['status_code'] = 400
-        return HttpResponse(status_data)
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
-def end_trip(trip_id, guide_id):
-    try:
-        #TODO: make the trip register in the database and process payments from phone.
-        trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
-        tdelta = trip_status.updated - trip_status.created
-        guide_profile = GeneralProfile.objects.filter(id=guide_id).get().user
-        if hasattr('guideprofile', guide_profile):
-            price = guide_profile.guideprofile.rate
-            cost_update = tdelta.total_seconds() / 3600 * price
-        else:
-            return HttpResponse(status_data)
-        GeoTrip.objects.filter(id=trip_id, in_progress=True)\
-            .update(duration=tdelta.total_seconds(), cost=cost_update)
-        trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
-        GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
-        data = json.dumps({'trip_id': trip_status.id, 'price': trip_status.cost, 'isEnded': True})
-        return HttpResponse(data)
-        # channel = "{}{}".format(user_type, user_id)
-        # r.pubsub().unsubscribe(channel)
-        # get_global_channel()
-        # r.pubsub().listen()
-    except Exception as err:
-        print(err)
-        return HttpResponse(status_data)
+def no_geo_point_fields(model):
+   return [f.name for f in model._meta.get_fields() if f.name != 'geo_point']
+
 
 def set_user_location(channel, user_type, user_id, lat, long):
-    msg = str({'type': user_type, 'user_id':user_id, 'lat':lat, 'long':long})
+    msg = str({'type': user_type, 'user_id': user_id, 'lat': lat, 'long':long})
     r.publish(channel=channel, message=msg)
 
 
@@ -327,7 +306,7 @@ def get_private_channel(user_type, user_id):
 
 def post_private_channel(user_type, user_id, lat, long, trip_time):
     channel = "{}{}".format(user_type, user_id)
-    msg = str({'type': user_type, 'user_id':user_id, 'lat':lat, 'long':long})
+    msg = str({'type': user_type, 'user_id': user_id, 'lat': lat, 'long': long})
     r.pubsub().publish(channel=channel, message=msg)
 
 
@@ -335,3 +314,7 @@ def get_global_channel():
     r.pubsub().subscribe(channel='global')
 
 
+def datetime_handler(x):
+    if isinstance(x, datetime):
+        return x.isoformat()
+    raise TypeError("Unknown type")
