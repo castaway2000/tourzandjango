@@ -21,7 +21,10 @@ def populate_uuids():
     #
     guides = GuideProfile.objects.all()
     for guide in guides.iterator():
-        guide.save(force_update=True)
+        try:
+            guide.save(force_update=True)
+        except:
+            pass
     #
     #
     # orders = Order.objects.all()
@@ -30,8 +33,10 @@ def populate_uuids():
 
     guide_answers = GuideAnswer.objects.all()
     for guide_answer in guide_answers.iterator():
-        guide_answer.save(force_update=True)
-
+        try:
+            guide_answer.save(force_update=True)
+        except:
+            pass
 
 if __name__ == "__main__":
     populate_uuids()
