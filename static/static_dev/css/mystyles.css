@@ -1130,9 +1130,11 @@ a{
 
 .profile-container .actions-panel{
     padding: 30px;
-    padding: 30px;
     margin-top: 50px;
     margin-bottom: 50px;
+}
+.testtt{
+    color: green;
 }
 
 @media (min-width: 768px) {
