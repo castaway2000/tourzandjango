@@ -7,6 +7,8 @@ urlpatterns = [
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/(?P<new_view>\w+)/$', views.guide, name='guide_new'),
 
     url(r'^profile_settings/guide/$', views.profile_settings_guide, name='profile_settings_guide'),
+    url(r'^profile_settings/guide-questions/$', views.profile_questions_guide, name='profile_questions_guide'),
+
     url(r'^search_guide/$', views.search_guide, name='search_guide'),
     url(r'^guide/registration/welcome/$', views.guide_registration_welcome, name='guide_registration_welcome'),
 

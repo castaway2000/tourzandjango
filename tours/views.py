@@ -389,6 +389,7 @@ def guide_settings_tour_edit_general(request, slug=None):
         if slug:
             messages.success(request, _('Tour details have been successfully updated!'))
         else:
+            tour = new_form
             messages.success(request, _('Tour details have been successfully created!'))
             return HttpResponseRedirect(reverse("tour_edit_general", kwargs={"slug": new_form.slug }))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -492,8 +493,15 @@ def tour_edit_price(request, slug):
     else:
         return HttpResponseRedirect(reverse("tour_edit_general"))
 
+    if tour.persons_nmb_for_min_price == 0:
+        tour.persons_nmb_for_min_price = 2
+        tour.save(force_update=True)
+    if tour.max_persons_nmb == 0:
+        tour.max_persons_nmb = 10
+        tour.save(force_update=True)
+
     form = PrivateTourPriceForm(request.POST or None, instance=tour)
-    if request.method == 'POST':
+    if request.method == 'POST' and form.is_valid():
         new_form = form.save(commit=False)
         new_form.save()
         messages.success(request, _("Successfully updated!"))
@@ -518,12 +526,13 @@ def available_tour_dates_template(request, slug):
     scheduled_template_item = ScheduleTemplateItem.objects.filter(tour=tour, is_general_template=True).last()
     print(scheduled_template_item)
     if scheduled_template_item:
-        form = TourWeeklyScheduleForm(request.POST or None, instance=scheduled_template_item)
+        form = TourWeeklyScheduleTemplateForm(request.POST or None, instance=scheduled_template_item)
     else:
-        form = TourWeeklyScheduleForm(request.POST or None)
+        form = TourWeeklyScheduleTemplateForm(request.POST or None)
     if request.method=="POST":
         data = request.POST.copy()
         print(data)
+        print(form.errors)
         if form.is_valid():
             new_form = form.save(commit=False)
             new_form.is_general_template = True
@@ -652,7 +661,10 @@ def guide_settings_tour_edit_price_and_schedule(request, slug):
 
     now = datetime.datetime.now()
     time_start = datetime.datetime.strptime("09:00", "%H:%M")
-    form = TourWeeklyScheduleForm(request.POST or None, initial={"dt": now, "time_start": time_start, "seats_total": 10, "price": "20"})
+    form = TourWeeklyScheduleForm(request.POST or None, initial={"dt": now,
+                                                                 "time_start": time_start,
+                                                                 "seats_total": 10,
+                                                                 "price": "20", "discount": 0})#AT: move this initials to form
     if request.method == 'POST' and form.is_valid():
         new_form = form.save(commit=False)
         new_form.tour = tour

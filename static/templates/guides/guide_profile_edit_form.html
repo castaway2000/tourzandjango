@@ -6,8 +6,8 @@
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
-                 {% blocktrans %}See Public Page{% endblocktrans %}
+             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid 'new' %}">
+                 {% blocktrans %}Go to Public Page{% endblocktrans %}
              </a>
         </div>
     {% endif %}
