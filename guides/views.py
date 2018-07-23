@@ -497,6 +497,7 @@ def profile_questions_guide(request):
         obj_dict["text"] = question.get_text_with_city(guide)
         if answers_dict.get(question.id):
             obj_dict.update(answers_dict.get(question.id))
+            questions_list.append(obj_dict)
         else:
             if question.is_active:
                 questions_list.append(obj_dict)
@@ -510,7 +511,7 @@ def profile_questions_guide(request):
             if "-" in k:
                 field, question_id = k.split("-")
                 print(field)
-                if field == "answer":
+                if field == "answer" and len(v)>0:
                     default_kwargs = {"text": v}
                     print(v)
                     file_name = "file-%s" % question_id
@@ -519,7 +520,6 @@ def profile_questions_guide(request):
                         default_kwargs["image"] = image
                     GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
 
-        print(data)
     return render(request, 'guides/profile_questions_guide.html', locals())
 
 
