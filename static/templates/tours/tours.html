@@ -243,6 +243,10 @@
                                             {% endif %}
                                         {% endif %}
                                         <br>
+                                        {% if tour.hours %}
+                                            <b>{% trans 'Duration' %}: </b> {{ tour.hours }}
+                                            <br>
+                                        {% endif %}
                                         {% if tour.min_hours %}
                                              <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}
                                         {% endif %}

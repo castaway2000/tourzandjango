@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 
-{% with tour.get_nearest_available_dates as available_dates %}
+{% with tour.get_nearest_available_dates_30_days as available_dates %}
         <div class="row">
             {% if available_dates %}
                 {% for item in available_dates %}

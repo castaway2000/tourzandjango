@@ -138,9 +138,7 @@ class SendingEmail(object):
         self.email_type_id = email_type.id
         subject = "Tourzan Verification Completed"
         message = "<p>Tourzan.com has completed your identity verification check. " \
-                  "You can now enter your <a href='https://www.tourzan.com/guide/payouts/'>payout preferences</a> " \
-                  "and set your <a href='https://www.tourzan.com/en/calendar/'>calendar</a> " \
-                  "so that tourists can hire you.\n\n" \
+                  "You can now enter your <a href='https://www.tourzan.com/guide/payouts/'>payout preferences</a> \n\n" \
                   "Have a great day.\n" \
                   "<br><br>The Tourzan Team</p>"
         to_user = User.objects.get(id=user_id)

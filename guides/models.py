@@ -11,11 +11,18 @@ from django.contrib.auth.models import User
 from locations.models import City, Currency
 from utils.uploadings import (upload_path_handler_guide_header_images,
                               upload_path_handler_guide_profile_image,
+                              upload_path_handler_guide_profile_image_large,
+                              upload_path_handler_guide_profile_image_medium,
+                              upload_path_handler_guide_profile_image_small,
                               upload_path_handler_guide_optional_image,
-                              upload_path_handler_guide_image,
+                              upload_path_handler_guide_answer_image,
+                              upload_path_handler_guide_answer_image_large,
+                              upload_path_handler_guide_answer_image_medium,
+                              upload_path_handler_guide_answer_image_small,
                               upload_path_handler_guide_license
                               )
 from django.core.validators import FileExtensionValidator
+from utils.images_resizing import optimize_size
 
 
 class GuideProfile(models.Model):
@@ -35,10 +42,17 @@ class GuideProfile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True, default=None)
     age = models.IntegerField(default=0)
 
-    header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default="guides/header_images/300x300.png")
-    profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True,
-                                      default="guides/profile_images/300x300.png", validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
-    optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default="guides/optional_images/300x300.png")
+    #not used. DELETE THEM?
+    header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default=None)
+    optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default=None)
+
+
+    profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default=None,
+                                      validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
+    profile_image_large = models.ImageField(upload_to=upload_path_handler_guide_profile_image_large, blank=True, null=True, default=None)
+    profile_image_medium = models.ImageField(upload_to=upload_path_handler_guide_profile_image_medium, blank=True, null=True, default=None)
+    profile_image_small = models.ImageField(upload_to=upload_path_handler_guide_profile_image_small, blank=True, null=True, default=None)
+
     license_image = models.ImageField(upload_to=upload_path_handler_guide_license, blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
     uuid = models.CharField(max_length=48, null=True)
@@ -51,16 +65,22 @@ class GuideProfile(models.Model):
     orders_completed_nmb = models.IntegerField(default=0)
     orders_with_review_nmb = models.IntegerField(default=0)
     orders_with_review_rate = models.DecimalField(max_digits=8, decimal_places=2, default=0)# from total orders_completed_nmb
-
     orders_reviewed_nmb = models.IntegerField(default=0)
-
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
 
     def __str__(self):
         return "%s" % self.user.username
 
+    def __init__(self, *args, **kwargs):
+        super(GuideProfile, self).__init__(*args, **kwargs)
+
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
 
     #add logic to perform calculations only if the value was changed
     def save(self, *args, **kwargs):
@@ -82,6 +102,13 @@ class GuideProfile(models.Model):
 
         if not self.pk and self.user.generalprofile.referred_by:
             self.add_statistics_for_referrer()
+
+
+        if self._original_fields["profile_image"] != self.profile_image or (self.profile_image and (not self.profile_image_large or not self.profile_image_medium or not self.profile_image_small)):
+            self.profile_image_small = optimize_size(self.profile_image, "small")
+            self.profile_image_medium = optimize_size(self.profile_image, "medium")
+            self.profile_image_large = optimize_size(self.profile_image, "large")
+
         super(GuideProfile, self).save(*args, **kwargs)
 
         try:
@@ -107,6 +134,9 @@ class GuideProfile(models.Model):
         if referred_by:
             referred_by.generalprofile.guides_referred_nmb += 1
             referred_by.generalprofile.save(force_update=True)
+
+    def get_tours(self):
+        return self.tour_set.filter(is_active=True, is_deleted=False)
 
 
 class Service(models.Model):
@@ -139,9 +169,19 @@ class GuideService(models.Model):
 
 class Question(models.Model):
     text = models.TextField()
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return "%s" % self.text
+
+    def get_text_with_city(self, guide):
+        if "{city}" in self.text:
+            if guide.city and guide.city.name:
+                return self.text.format(city=guide.city.name)
+            else:
+                return self.text.format(city="your city")
+        else:
+            return self.text
 
 
 class GuideAnswer(models.Model):
@@ -149,8 +189,35 @@ class GuideAnswer(models.Model):
     question = models.ForeignKey(Question)
     text = models.TextField()
     is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to=upload_path_handler_guide_image, blank=True, null=True)
+    image = models.ImageField(upload_to=upload_path_handler_guide_answer_image, blank=True, null=True, default=None)
+    image_large = models.ImageField(upload_to=upload_path_handler_guide_answer_image_large, blank=True, null=True, default=None)
+    image_medium = models.ImageField(upload_to=upload_path_handler_guide_answer_image_medium, blank=True, null=True, default=None)
+    image_small = models.ImageField(upload_to=upload_path_handler_guide_answer_image_small, blank=True, null=True, default=None)
+
     order_priority = models.IntegerField(default=0)
 
     def __str__(self):
         return "%s" % self.guide.user.generalprofile.first_name
+
+    def __init__(self, *args, **kwargs):
+        super(GuideAnswer, self).__init__(*args, **kwargs)
+
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
+    def save(self, *args, **kwargs):
+        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
+            try:
+                self.image_small = optimize_size(self.image, "small")
+                self.image_medium = optimize_size(self.image, "medium")
+                self.image_large = optimize_size(self.image, "large")
+            except:
+                pass
+        super(GuideAnswer, self).save(*args, **kwargs)
+
+    def get_question_text_with_city(self):
+        return self.question.get_text_with_city(self.guide)

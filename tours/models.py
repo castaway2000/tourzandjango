@@ -38,10 +38,10 @@ class Tour(models.Model):
     overview = models.TextField(blank=True, null=True, default=None)
     included = models.TextField(blank=True, null=True, default=None)
     excluded = models.TextField(blank=True, null=True, default=None)
-    image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default="/tours/images/default_tour_image.jpg")
-    image_large = models.ImageField(upload_to=upload_path_handler_tour_large, blank=True, null=True, default="/tours/images/default_tour_image_large.jpg")
-    image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default="/tours/images/default_tour_image_medium.jpg")
-    image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default="/tours/images/default_tour_image_small.jpg")
+    image = models.ImageField(upload_to=upload_path_handler_tour, blank=True, null=True, default=None)
+    image_large = models.ImageField(upload_to=upload_path_handler_tour_large, blank=True, null=True, default=None)
+    image_medium = models.ImageField(upload_to=upload_path_handler_tour_medium, blank=True, null=True, default=None)
+    image_small = models.ImageField(upload_to=upload_path_handler_tour_small, blank=True, null=True, default=None)
 
     guide = models.ForeignKey(GuideProfile)
     city = models.ForeignKey(City, blank=True, null=True, default=None)
@@ -56,8 +56,8 @@ class Tour(models.Model):
     hours = models.IntegerField(default=0)
 
     #for Private FIXED price tours
-    persons_nmb_for_min_price = models.IntegerField(default=0)
-    max_persons_nmb = models.IntegerField(default=0)
+    persons_nmb_for_min_price = models.IntegerField(default=2)
+    max_persons_nmb = models.IntegerField(default=10)
     additional_person_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     #for Private HOURLY tours
@@ -68,13 +68,19 @@ class Tour(models.Model):
     price_final = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     payment_type = models.ForeignKey(PaymentType, blank=True, null=True, default=None)#hourly or fixed price
-    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, default=random_string_creating)
+    slug = models.SlugField(max_length=200, blank=True, null=True, default=random_string_creating)
 
     is_free = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        if self.name:
+            return "%s %s" % (self.id, self.name)
+        else:
+            return "%s" % self.id
 
     def __init__(self, *args, **kwargs):
         super(Tour, self).__init__(*args, **kwargs)
@@ -86,11 +92,6 @@ class Tour(models.Model):
             except:
                 pass
 
-    def __str__(self):
-        if self.name:
-            return "%s %s" % (self.id, self.name)
-        else:
-            return "%s" % self.id
 
     def save(self, *args, **kwargs):
         if not self.payment_type:
@@ -170,6 +171,9 @@ class Tour(models.Model):
         else:
             scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now).order_by("dt")[:5]
         return scheduled_tours
+
+    def get_nearest_available_dates_30_days(self):
+        return  self.get_nearest_available_dates(30)
 
     def get_tours_images(self):
         return self.tourimage_set.filter(is_active=True).values()
