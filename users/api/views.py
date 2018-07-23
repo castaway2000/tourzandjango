@@ -20,6 +20,7 @@ import json
 from rest_framework import viewsets
 from ..models import *
 from orders.models import Review, Order
+from mobile.models import GeoTracker
 from .serializers import *
 from .permissions import IsUserOwnerOrReadOnly
 
@@ -225,7 +226,14 @@ def user_profile(request):
                         except Exception as e:
                             print(e)
                     return data
-
+                try:
+                    geotracker = GeoTracker.objects.get(user_id=user.id)
+                    lat = geotracker.latitude
+                    lon = geotracker.longitude
+                except Exception as err:
+                    print(err)
+                    lat = None
+                    lon = None
                 res = { 'id': user_id,
                         'profile_picture': None,
                         'username': user.username,
@@ -233,6 +241,8 @@ def user_profile(request):
                         'last_name': user.generalprofile.last_name,
                         'about_tourist': user.touristprofile.about,
                         'tourist_rating': user.touristprofile.rating,
+                        'latitude': lat,
+                        'longitude': lon,
                         'interests': [],
                         'tourist_reviews': get_tourist_representation_by_id(user),
                         'guide_data': if_guide()
