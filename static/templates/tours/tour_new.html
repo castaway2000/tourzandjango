@@ -136,8 +136,10 @@
                             (<a href="{% url 'guide_new' tour.guide.user.generalprfile.first_name tour.guide.user.generalprofile.uuid "new" %}" target="_blank">{% trans 'view profile' %}</a>)
                         </div>
                         <div class="text-center">
-                            {% if tour.guide.profile_image %}
-                                <img src="{{ tour.guide.profile_image.url }}" class="w300">
+                            {% if tour.guide.profile_image_medium %}
+                                <img src="{{ tour.guide.profile_image_medium.url }}" class="w300">
+                            {% elif tour.guide.profile_image %}
+                                <img src="{{ tour.guide.profile_image_medium.url }}" class="w300">
                             {% else %}
                                 <img src="{% static 'img/300x300.png' %}" class="w300">
                             {% endif %}

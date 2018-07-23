@@ -138,21 +138,25 @@ def making_booking(request):
         return HttpResponseRedirect(reverse("my_bookings"))
     else:
         order = Order.objects.create(**kwargs)
-        services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
-        # print ("services ids: %s" % services_ids)
-        guide_services = GuideService.objects.filter(id__in=services_ids)
 
-        services_in_order=[]
-        additional_services_price = float(0)
-        for guide_service in guide_services:
-            additional_services_price += float(guide_service.price)
-            service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
-                                              price=guide_service.price, price_after_discount=guide_service.price)
-            services_in_order.append(service_in_order)
+        try:#maybe to delete this at all
+            services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
+            # print ("services ids: %s" % services_ids)
+            guide_services = GuideService.objects.filter(id__in=services_ids)
 
-        ServiceInOrder.objects.bulk_create(services_in_order)
+            services_in_order=[]
+            additional_services_price = float(0)
+            for guide_service in guide_services:
+                additional_services_price += float(guide_service.price)
+                service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
+                                                  price=guide_service.price, price_after_discount=guide_service.price)
+                services_in_order.append(service_in_order)
 
-        order.additional_services_price = additional_services_price
+            ServiceInOrder.objects.bulk_create(services_in_order)
+            order.additional_services_price = additional_services_price
+        except:
+            pass
+
         order.save(force_update=True)
         print('SUCCESS!! >> ', order)
 

@@ -57,6 +57,7 @@ class TourGeneralForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TourGeneralForm, self).__init__(*args, **kwargs)
+        self.image_small_url = None
         if hasattr(self, 'instance'):
             if self.instance.image_small:
                 self.image_small_url = self.instance.image_small.url
@@ -74,9 +75,13 @@ class TourGeneralForm(forms.ModelForm):
             Field('included'),
             Field('excluded'),
             Field('image'),
+        )
+        if self.image_small_url:
+            self.helper.layout.append(
+                HTML("<img class='w300 mb10' src='%s'/>" % self.image_small_url),
+            )
 
-            HTML("<img class='w300 mb10' src='%s'/>" % self.image_small_url),
-
+        self.helper.layout.append(
                 HTML('<div class="btn-toolbar text-center">'
                     '<a href="%s" class="btn btn-default">%s</a>'
                     '<button class="btn btn-primary" type="submit">'
@@ -127,6 +132,17 @@ class TourProgramItemForm(forms.Form):
                 '</div>' % (reverse("guide_settings_tours"), _("Cancel"),  _('Save'))
             ),
         )
+
+
+class TourWeeklyScheduleTemplateForm(forms.ModelForm):
+    time_start = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), label=_("Typical start time"))
+    price = forms.DecimalField(required=True, min_value=0)
+    seats_total = forms.IntegerField(required=True, min_value=0)
+
+    class Meta:
+        model = ScheduleTemplateItem
+        fields = ("time_start", "price", "seats_total")
+
 
 
 class TourWeeklyScheduleForm(forms.ModelForm):
@@ -287,7 +303,7 @@ class BookingPrivateTourForm(forms.Form):
 class PrivateTourPriceForm(forms.ModelForm):
     price = forms.DecimalField(required=True, min_value=1)
     discount = forms.DecimalField(required=True, min_value=0)
-    persons_nmb_for_min_price = forms.IntegerField(required=True, min_value=1)
+    persons_nmb_for_min_price = forms.IntegerField(required=True, min_value=2)
     max_persons_nmb = forms.IntegerField(required=True, min_value=2)#1 person more than persons_nmb_for_min_price
     additional_person_price = forms.DecimalField(required=True, min_value=1)
 
@@ -308,3 +324,25 @@ class PrivateTourPriceForm(forms.ModelForm):
                 '</div>' % (_("Price final"), _('Apply'))
             ),
         )
+
+    def clean_persons_nmb_for_min_price(self):
+        persons_nmb_for_min_price = self.cleaned_data.get("persons_nmb_for_min_price")
+        if persons_nmb_for_min_price < 2:
+            raise forms.ValidationError(_("Persons number for minimum price can not be less than 2"))
+        return self.cleaned_data.get("persons_nmb_for_min_price")
+
+
+    def clean_max_persons_nmb(self):
+        persons_nmb_for_min_price = self.cleaned_data.get("persons_nmb_for_min_price")
+        max_persons_nmb = self.cleaned_data.get("max_persons_nmb")
+        if persons_nmb_for_min_price > max_persons_nmb:
+            raise forms.ValidationError(_("Persons number for minimum price can not be higher than maximum number of people in the tour"))
+        return self.cleaned_data.get("max_persons_nmb")
+
+
+    def clean_discount(self):
+        price = self.cleaned_data.get("price")
+        discount = self.cleaned_data.get("discount")
+        if price - discount < 0:
+            raise forms.ValidationError(_("Final price of the tour must be more than 0"))
+        return self.cleaned_data.get("discount")

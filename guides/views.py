@@ -475,6 +475,54 @@ def profile_settings_guide(request, guide_creation=True):
         return render(request, 'users/profile_settings_guide.html', locals())
 
 
+@login_required
+def profile_questions_guide(request):
+    user = request.user
+    guide = user.guideprofile
+    page = "profile_questions_guide"
+
+    answers = list(GuideAnswer.objects.filter(guide=guide).values())
+    answers_dict = dict()
+    for answer in answers:
+        obj_dict = dict()
+        obj_dict["answer"] = answer["text"]
+        obj_dict["image"] = answer["image_small"]
+        answers_dict[answer["question_id"]] = obj_dict
+
+    questions = Question.objects.filter(is_active=True)
+    questions_list = list()
+    for question in questions.iterator():
+        obj_dict = dict()
+        obj_dict["id"] = question.id
+        obj_dict["text"] = question.get_text_with_city(guide)
+        if answers_dict.get(question.id):
+            obj_dict.update(answers_dict.get(question.id))
+            questions_list.append(obj_dict)
+        else:
+            if question.is_active:
+                questions_list.append(obj_dict)
+            else:
+                continue #if there is no guide's answer for is_active=False question, it will not be displayed
+
+    if request.POST:
+        data = request.POST
+        files = request.FILES
+        for k, v in data.items():
+            if "-" in k:
+                field, question_id = k.split("-")
+                print(field)
+                if field == "answer" and len(v)>0:
+                    default_kwargs = {"text": v}
+                    print(v)
+                    file_name = "file-%s" % question_id
+                    if file_name in files:
+                        image = files.get(file_name)
+                        default_kwargs["image"] = image
+                    GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
+
+    return render(request, 'guides/profile_questions_guide.html', locals())
+
+
 def search_guide(request):
     response_data = dict()
     results = list()
