@@ -11,7 +11,7 @@
 
 
 {% block content %}
-    {% if guide.is_visible %}
+    {% if guide.is_active %}
         <div class="booking-proposal-container">
             <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
                 {% trans 'Click here to book a guide!' %}
@@ -107,7 +107,7 @@
                         {% endfor %}
                     </div>
 
-                    {% if guide.is_visible %}
+                    {% if guide.is_active %}
                         <div class="actions-panel">
                             <div class="text-center mb10">
                                 {% if guide != request.user.guideprofile or request.session.current_role != "guide" %}

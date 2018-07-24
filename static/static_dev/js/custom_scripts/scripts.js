@@ -48,6 +48,7 @@ $(document).ready(function(){
             }
         });
     }
+    console.log("test");
 
     $(".book-scheduled-tour, .book-private-tour").on("click", function(e){
         e.preventDefault();
