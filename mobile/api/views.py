@@ -90,6 +90,30 @@ def get_trip_status(request):
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
+
+@api_view(['POST'])
+def trip_status(request):
+    """
+    :param request: int tripid 
+    :return: 
+    """
+    try:
+        trip_id = int(request.POST['trip_id'])
+        trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
+        dataset = json.dumps(
+            {
+                'booked_time': trip_status.created.isoformat(),
+                'booking_type': trip_status.time_flag,
+                'time_limit': trip_status.time_remaining,
+                'guide_id': trip_status.guide.user_id,
+                'user_id': trip_status.user_id,
+            }
+        )
+        return HttpResponse(dataset)
+    except Exception as err:
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
+
+
 @api_view(['POST'])
 def extend_time(request):
     """
