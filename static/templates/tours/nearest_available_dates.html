@@ -4,7 +4,7 @@
 <div class="tour-section tour-available-dates">
     <div class="container">
         {% if tour.type == "2" %}
-            <div class="row">
+            <div class="row mt10">
                 <div class="col-lg-4 col-lg-offset-4 text-center">
                     <button class="btn btn-primary btn-lg book-private-tour">{% trans 'Book a tour for your date' %}</button>
                 </div>
@@ -18,9 +18,9 @@
                 </div>
             </div>
             {% include 'tours/available_tour_dates_template.html' %}
-            <div class="row">
+            <div class="row mt10">
                 <div class="col-lg-4 col-lg-offset-4 text-center">
-                    <button class="btn btn-primary btn-lg book-private-tour">
+                    <button class="btn btn-success btn-lg book-private-tour">
                         {% trans 'More dates' %}
                     </button>
                 </div>

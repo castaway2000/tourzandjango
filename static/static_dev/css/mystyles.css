@@ -44,10 +44,16 @@
     font-weight: 700;
 }
 
-.tour-price, .tour-rating, .guide-rate, .guide-rating{
+.tour-rating, .guide-rate, .guide-rating{
     font-size: 16px;
     margin-bottom: 5px;
 }
+
+.tour-details .tour-price {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
 
 .chat-container{
     margin: 10px 0;
@@ -868,7 +874,7 @@ a{
     margin-bottom: 20px;
 }
 
-.scheduled-tour{
+.scheduled-tour:not(:last-child){
     margin-bottom: 20px;
 }
 
@@ -899,18 +905,6 @@ a{
     font-weight: 700;
 }
 
-.scheduled-tour .tour-price{
-    background-color: #5a5853;
-    padding: 20px;
-    color: white;
-    font-size: 36px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0;
-}
-
 .row-eq-height {
   display: -webkit-box;
   display: -webkit-flex;
@@ -920,7 +914,7 @@ a{
 
 .tour-section.tour-pictures{
     background-color: #1ace84;
-    height: 700px;
+    height: auto;
 }
 
 .tour-section.tour-pictures .title{
@@ -1137,6 +1131,10 @@ a{
     color: green;
 }
 
+.owl-carousel {
+    margin: 0!important;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
@@ -1180,6 +1178,17 @@ a{
       left: 0;
       border-radius: 0;
   }
+
+    .tour-section.hero-section .title{
+        font-size: 50px!important;
+        line-height: 1!important;
+        margin-bottom: 0!important;
+    }
+
+    .tour-section.hero-section .tour-description {
+        font-size: 25px;
+    }
+
 }
 
 @media (max-width:768px) {
@@ -1202,4 +1211,40 @@ a{
     .seacrch-results-container{
         min-height: 800px;
     }
+
+    .tour-section.hero-section .title,
+    .tour-section .title{
+        font-size: 30px!important;
+        line-height: 1!important;
+        margin-bottom: 0!important;
+    }
+
+    .tour-section.hero-section .tour-description{
+        font-size: 18px;
+    }
+
+    .tour-section {
+        padding: 10px 0!important;
+        font-size: 16px!important;
+        font-weight: 400!important;
+    }
+
+    .scheduled-tour .info-title{
+        font-size: 16px!important;
+        margin-bottom: 10px;
+    }
+
+    .scheduled-tour .tour-date,
+    .scheduled-tour .available-seats{
+        font-size: 14px!important;
+    }
+
+    .scheduled-tour .tour-price{
+        font-size: 18px;
+    }
+
+    .tour-section.tour-reviews .owl-carousel {
+        padding: 0;
+    }
+
 }

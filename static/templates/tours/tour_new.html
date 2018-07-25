@@ -81,8 +81,8 @@
 
                                 </div>
                                 <div class="tour-included-item">
-                                        {{ tour.included|linebreaks }}
-                                    </div>
+                                    {{ tour.included|linebreaks }}
+                                </div>
 
 {#                                <div class="title">#}
 {#                                    {% trans 'What is included' %}#}
@@ -100,19 +100,15 @@
                     <div class="row">
                         <div class="col-lg-6 col-lg-offset-3">
                             <div class="tour-excluded-items-container">
+
                                 <div class="title">
                                     {% trans 'What is NOT included' %}
                                 </div>
 
-                                    {% for item in tour.excluded.splitlines %}
-                                        <div class ="tour-excluded-item">
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    {{ item }}
-                                                </div>
-                                            </div>
-                                         </div>
-                                    {% endfor %}
+                                <div class="tour-excluded-item">
+                                    {{ tour.excluded|linebreaks }}
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -161,7 +157,7 @@
                     </div>
                 </div>
                 {% for item in tour.get_tourprogram_items %}
-                    <div class="col-lg-5">
+                    <div class="col-lg-5 col-md-6 col-sm-6">
                         <div class="tour-program-item">
                             <div class="img-container" style="
                                 {% if item.image_medium %}
@@ -233,7 +229,7 @@
                                 {% trans 'Tourists Reviews' %}
                             </div>
                         </div>
-                        <div class="col-lg-8 col-lg-offset-2">
+                        <div class="col-lg-8 col-lg-offset-2 col-md-12 col-sm-12">
                              <div class="owl-carousel owl-theme">
                                  {% for review in reviews %}
                                       <div class="review-item">
@@ -280,7 +276,9 @@
                     <div class="title">
                         {% trans 'Booking form' %}
                     </div>
-                   {% crispy form %}
+                    <div class="mt10">
+                        {% crispy form %}
+                    </div>
                 </div>
             </div>
         </div>
