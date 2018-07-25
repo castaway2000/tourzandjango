@@ -128,7 +128,7 @@ def extend_time(request):
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         tdelta = trip_status.updated - trip_status.created
         tremaining = trip_status.time_remaining + time_extending
-        guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
+        guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
         if hasattr(guide_profile, 'guideprofile'):
             price = guide_profile.guideprofile.rate
             cost_update = round(float(tdelta.total_seconds() / 3600) * float(price), 2)
