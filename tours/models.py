@@ -172,6 +172,9 @@ class Tour(models.Model):
             scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now).order_by("dt")[:5]
         return scheduled_tours
 
+    def get_nearest_available_dates_1_item(self):
+        return self.get_nearest_available_dates(30)[:1]
+
     def get_nearest_available_dates_30_days(self):
         return  self.get_nearest_available_dates(30)
 
