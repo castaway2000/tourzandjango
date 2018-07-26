@@ -55,18 +55,19 @@
         </div>
     </div>
 
-     <div class="tour-section tour-program-description">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-lg-offset-3">
-                    <div>
-                        {{ tour.overview|safe|linebreaks }}
+    {% if tour.overview %}
+        <div class="tour-section tour-program-description">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <div>
+                            {{ tour.overview|safe|linebreaks }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    {% endif %}
 
     {% if tour.included or tour.excluded %}
         <div class="tour-section tour-included">

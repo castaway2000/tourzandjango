@@ -4,7 +4,7 @@
 
 {% with tour.get_nearest_available_dates_1_item as available_dates %}
     <div class="row">
-        {% if available_dates > 0 %}
+        {% if available_dates|length > 0 %}
             {% for item in available_dates %}
                 <div class="col-lg-12 scheduled-tour">
                     <div class="">
