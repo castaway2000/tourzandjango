@@ -305,7 +305,7 @@ class PrivateTourPriceForm(forms.ModelForm):
     discount = forms.DecimalField(required=True, min_value=0)
     persons_nmb_for_min_price = forms.IntegerField(required=True, min_value=2)
     max_persons_nmb = forms.IntegerField(required=True, min_value=2)#1 person more than persons_nmb_for_min_price
-    additional_person_price = forms.DecimalField(required=True, min_value=1)
+    additional_person_price = forms.DecimalField(required=True, min_value=0)
 
     class Meta:
         model = Tour

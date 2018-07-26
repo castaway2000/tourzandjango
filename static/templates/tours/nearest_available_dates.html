@@ -18,13 +18,15 @@
                 </div>
             </div>
             {% include 'tours/available_tour_dates_template.html' %}
-            <div class="row mt10">
-                <div class="col-lg-4 col-lg-offset-4 text-center">
-                    <button class="btn btn-success btn-lg book-private-tour">
-                        {% trans 'More dates' %}
-                    </button>
+            {% if tour.get_nearest_available_dates_1_item > 0 %}
+                <div class="row mt10">
+                    <div class="col-lg-4 col-lg-offset-4 text-center">
+                        <button class="btn btn-success btn-lg book-private-tour">
+                            {% trans 'More dates' %}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         {% endif %}
     </div>
 </div>

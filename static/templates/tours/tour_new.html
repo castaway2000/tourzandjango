@@ -33,7 +33,7 @@
                     <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
                     </li>
                     <li>
-                        <a href="{% url 'guide' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid %}">{{ tour.guide.user.generalprofile.first_name }}</a>
+                        <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}">{{ tour.guide.user.generalprofile.first_name }}</a>
                     </li>
                     <li class="active">{{ tour.name }}</li>
                 </ul>
@@ -269,20 +269,23 @@
         {% endif %}
     {% endwith %}
 
-    <div id="tour_booking_form" class="tour-section tour-booking-form">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-lg-offset-4">
-                    <div class="title">
-                        {% trans 'Booking form' %}
-                    </div>
-                    <div class="mt10">
-                        {% crispy form %}
+    {% if tour.type == "1" and tour.get_nearest_available_dates_1_item|length == 0 %}
+    {% else %}
+        <div id="tour_booking_form" class="tour-section tour-booking-form">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-lg-offset-4">
+                        <div class="title">
+                            {% trans 'Booking form' %}
+                        </div>
+                        <div class="mt10">
+                            {% crispy form %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
 {% endblock %}
 

@@ -164,7 +164,7 @@ class Tour(models.Model):
         return program_items
 
     def get_nearest_available_dates(self, days_nmb=None):
-        now = datetime.datetime.now()
+        now = datetime.datetime.now().date()
         if days_nmb:
             period_end = now + datetime.timedelta(days=days_nmb)
             scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now, dt__lte=period_end).order_by("dt")

@@ -671,13 +671,16 @@ a{
 }
 
 .guide-action-container .main-buttons{
-    max-width: 340px;
-    text-align: center;
+    width: 100%;
+    display: block;
+    text-align: left;
+    margin-left: 20px;
 }
 
 .guide-action-container .scroll-top-container{
     position: absolute;
     right: 20px;
+    top: 0;
 }
 
 .homepage-form .select2-container--default .select2-selection--multiple .select2-selection__rendered{

@@ -391,8 +391,8 @@ def guide_settings_tour_edit_general(request, slug=None):
         else:
             tour = new_form
             messages.success(request, _('Tour details have been successfully created!'))
-            return HttpResponseRedirect(reverse("tour_edit_general", kwargs={"slug": new_form.slug }))
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(reverse("tour_edit_general", kwargs={"slug": new_form.slug }))
+        # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request, 'tours/profile_settings_guide_tour_edit_general.html', locals())
 
@@ -625,9 +625,7 @@ def apply_week_template_to_dates(request, slug):
         existed_items_nmb = 0
         for date_item in rrule(DAILY, dtstart=date_from, until=date_to):
             weekday_index = date_item.weekday()
-            print(weekday_index)
             template_items_to_populate = template_items.get(weekday_index)
-            print(template_items_to_populate)
             if template_items_to_populate:
                 for item in template_items_to_populate:
                     date_item_with_time = datetime.datetime.combine(date_item, item.time_start)
