@@ -1,5 +1,5 @@
 if ($(".has-error").length>0){
-    console.log(5);
+    console.log(10);
      $('html, body').animate({scrollTop: ($(".has-error:last").parent("form").offset().top-100)}, 1);
 }
 

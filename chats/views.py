@@ -103,7 +103,7 @@ def chat_creation(request, tour_id=None, guide_uuid=None, order_uuid=None):
     elif guide_uuid:
         guide = GuideProfile.objects.get(uuid=guide_uuid)
         topic = "Chat with %s" % guide.user.generalprofile.first_name
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, defaults={"topic": topic})
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order__isnull=True)
 
     elif order_uuid:
         order = Order.objects.get(uuid=order_uuid)

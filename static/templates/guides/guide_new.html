@@ -4,6 +4,8 @@
 {% load stars_rating %}
 {% load crispy_forms_tags %}
 
+{% block og_info %}
+{% endblock og_info %}
 
 {% block header_stuff %}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
@@ -13,14 +15,37 @@
 {% block content %}
     {% if guide.is_active %}
         <div class="booking-proposal-container">
-            <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
-                {% trans 'Click here to book a guide!' %}
-            </a>
+            <div class="mb5">
+                <a class="btn btn-social btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
+                    &redirect_uri={{ request.build_absolute_uri }}
+                    &link={{ request.build_absolute_uri }}
+                    &display=popup&caption=An%20example%20caption">
+                    <i class="fa fa-facebook"></i>{% trans 'Share' %}
+                </a>
+            </div>
+            <div class="mb5">
+                <a class="btn btn-default" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                    {% trans 'Send message' %}
+                </a>
+            </div>
+            <div>
+                <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
+                    {% trans 'Book now' %}!
+                </a>
+            </div>
         </div>
 
         <div class="guide-action-container">
             <div class="main-buttons">
-                <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.uuid %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
+                <a class="btn btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
+                    &redirect_uri={{ request.build_absolute_uri }}
+                    &link={{ request.build_absolute_uri }}
+                    &display=popup&caption=An%20example%20caption">
+                    <i class="fa fa-facebook"></i> {% trans 'Share' %}
+                </a>
+                <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.uuid %}">
+                    {% trans 'Message' %}
+                </a>
                 <a href="#booking_area" class="btn btn-primary btn-booking-proposal">{%  trans 'Book' %}</a>
             </div>
             <div class="scroll-top-container">
@@ -216,6 +241,8 @@
             $("#id_hours").on("change", function(){
                 finalPriceCalculation();
             });
+
+
 
         })
     </script>
