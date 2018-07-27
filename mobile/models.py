@@ -13,11 +13,11 @@ point = Point(1, 1)
 
 
 class GeoTracker(models.Model):
-    user = models.OneToOneField(User)
+    user = models.ForeignKey(User)
     is_online = models.IntegerField(default=0, null=False, blank=False)
     geo_point = models.PointField(geography=True, default=point, blank=False)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
     trip_in_progress = models.BooleanField(default=False, null=False, blank=False)
 
 

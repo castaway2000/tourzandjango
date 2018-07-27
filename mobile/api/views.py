@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.http.response import HttpResponse
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Distance
 from mobile.models import GeoTracker, GeoTrip
 from users.models import GeneralProfile, GuideProfile, UserInterest, User
 # from tourzan.settings import REDIS_ROOT
@@ -89,6 +90,30 @@ def get_trip_status(request):
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
+
+@api_view(['POST'])
+def trip_status(request):
+    """
+    :param request: int tripid 
+    :return: 
+    """
+    try:
+        trip_id = int(request.POST['trip_id'])
+        trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
+        dataset = json.dumps(
+            {
+                'booked_time': trip_status.created.isoformat(),
+                'booking_type': trip_status.time_flag,
+                'time_limit': trip_status.time_remaining,
+                'guide_id': trip_status.guide.user_id,
+                'user_id': trip_status.user_id,
+            }
+        )
+        return HttpResponse(dataset)
+    except Exception as err:
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
+
+
 @api_view(['POST'])
 def extend_time(request):
     """
@@ -103,7 +128,7 @@ def extend_time(request):
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         tdelta = trip_status.updated - trip_status.created
         tremaining = trip_status.time_remaining + time_extending
-        guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
+        guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
         if hasattr(guide_profile, 'guideprofile'):
             price = guide_profile.guideprofile.rate
             cost_update = round(float(tdelta.total_seconds() / 3600) * float(price), 2)
@@ -126,7 +151,7 @@ def book_guide(request):
     try:
         token = request.POST['token']
         user_id = int(request.POST['user_id'])
-        list_of_guides = request.POST['guides']
+        list_of_guides = json.loads(request.POST['guides'])
         lat = float(request.POST['latitude'])
         long = float(request.POST['longitude'])
         time_limit = int(request.POST['time_limit'])
@@ -137,14 +162,18 @@ def book_guide(request):
         point = Point(long, lat)
         user_interests = user.user.userinterest_set.values()
         user_language = user.get_languages()
-        geotracker = GeoTracker.objects.filter(user__in=list_of_guides).distance(point).order_by('distance')
-        general_profile = GeneralProfile.objects.filter(user_id__in=geotracker.user).values()
+        geotracker = GeoTracker.objects.filter(user__in=list_of_guides)\
+            .filter(geo_point__dwithin=(point, D(km=50)))\
+            .annotate(distance=Distance('geo_point', point))\
+            .order_by('distance').values('user_id')
+        general_profile = GeneralProfile.objects.filter(user_id__in=geotracker).values()
         data_set = {'guide': None, 'interest': [], 'interest_size': 0, 'language': None, 'language_size': 0}
         guides = []
         for g in general_profile:
-            languages = [l for l in g.get_languages() if l in user_language]
-            interests = [i for i in g.user.userinterest_set.values() if i in user_interests]
-            data_set['guide'] = g.user_id
+            gdata = GeneralProfile.objects.get(user_id=g['user_id'])
+            languages = [l for l in gdata.get_languages() if l in user_language]
+            interests = [i for i in gdata.user.userinterest_set.values() if i in user_interests]
+            data_set['guide'] = g['user_id']
             data_set['interest'] = interests
             data_set['interest_size'] = len(interests)
             data_set['language'] = languages
@@ -152,20 +181,22 @@ def book_guide(request):
             guides.append(data_set)
         languages = sorted(guides, key=lambda k: k['language_size'], reverse=True)
         aggregate = languages[0]
+        print(aggregate)
         for l in languages:
             if l['interest_size'] > aggregate['interest_size'] and l['language_size'] > 0:
                 aggregate = l
                 break
-        guide = GuideProfile.objects.get(user_id=aggregate['user_id'])
-        location = GeoTracker.objects.get(user_id=aggregate['user_id'])
+        location = GeoTracker.objects.get(user_id=aggregate['guide'])
+        guide = GeneralProfile.objects.get(user_id=aggregate['guide']).user.guideprofile
+
         data = json.dumps({'name': guide.name,
-                           'picture': guide.profile_image,
-                           'interests': aggregate['interests'],
+                           'picture': guide.profile_image.url,
+                           'interests': aggregate['interest'],
                            'description': guide.overview,
-                           'rate': guide.rate,
-                           'rating': guide.rating,
-                           'latitude': location.latitude,
-                           'longitude': location.longitude
+                           'rate': float(guide.rate),
+                           'rating': float(guide.rating),
+                           'latitude': float(location.latitude),
+                           'longitude': float(location.longitude)
                            })
         return HttpResponse(data)
     except Exception as err:
@@ -202,7 +233,10 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             point = Point(long, lat)
-            GeoTracker.objects.get_or_create(user_id=user_id)
+            try:
+                GeoTracker.objects.get(user_id=user_id)
+            except:
+                GeoTracker.objects.create(user_id=user_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=True, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked in'}))
         elif status == 'clockout':
@@ -214,7 +248,6 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             point = Point(long, lat)
-            GeoTracker.objects.get(user_id=user_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=False, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked out'}))
         elif status == 'update_trip':
