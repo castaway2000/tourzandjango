@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from utils.uploadings import upload_path_handler_city
+from utils.uploadings import (upload_path_handler_city, upload_path_handler_city_large,
+                                upload_path_handler_city_medium, upload_path_handler_city_small,
+                                upload_path_handler_country, upload_path_handler_country_large,
+                                upload_path_handler_country_medium, upload_path_handler_country_small,)
 from django.utils.text import slugify
 from utils.images_resizing import optimize_size
 from utils.general import random_string_creating
@@ -34,12 +37,35 @@ class Location(models.Model):
 class Country(models.Model):
     #initial value is in English, all the translations for other languages can be done via django translation file
     name = models.CharField(max_length=256)
+    slug = models.SlugField(blank=True, null=True, default=random_string_creating)
     place_id = models.CharField(max_length=128)
     is_featured = models.BooleanField(default=False)#for showing on Homepage
     is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to=upload_path_handler_country, blank=True, null=True, default=None)
+    image_large = models.ImageField(upload_to=upload_path_handler_country_large, blank=True, null=True, default=None)
+    image_medium = models.ImageField(upload_to=upload_path_handler_country_medium, blank=True, null=True, default=None)
+    image_small = models.ImageField(upload_to=upload_path_handler_country_small, blank=True, null=True, default=None)
 
     def __str__(self):
         return "%s" % self.name
+
+    def __init__(self, *args, **kwargs):
+        super(Country, self).__init__(*args, **kwargs)
+
+        self._original_fields = {}
+        for field in self._meta.get_fields(include_hidden=True):
+            try:
+                self._original_fields[field.name] = getattr(self, field.name)
+            except:
+                pass
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or self.image_medium or self.image_small)):
+            self.image_large = optimize_size(self.image, "large")
+            self.image_medium = optimize_size(self.image, "medium")
+            self.image_small = optimize_size(self.image, "small")
+        super(Country, self).save(*args, **kwargs)
 
 
 class City(models.Model):
@@ -47,7 +73,9 @@ class City(models.Model):
     slug = models.SlugField(blank=True, null=True, default=random_string_creating)
     country = models.ForeignKey(Country, blank=True, null=True, default=None)
     image = models.ImageField(upload_to=upload_path_handler_city, blank=True, null=True, default=None)
-    image_medium = models.ImageField(upload_to=upload_path_handler_city, blank=True, null=True, default=None)
+    image_large = models.ImageField(upload_to=upload_path_handler_city_large, blank=True, null=True, default=None)
+    image_medium = models.ImageField(upload_to=upload_path_handler_city_medium, blank=True, null=True, default=None)
+    image_small = models.ImageField(upload_to=upload_path_handler_city_small, blank=True, null=True, default=None)
     is_featured = models.BooleanField(default=False)#for showing on Homepage
     is_active = models.BooleanField(default=True)
     place_id = models.CharField(max_length=128, blank=True, null=True)
@@ -71,10 +99,10 @@ class City(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-
-        if self._original_fields["image"] != self.image:
-            self.image = optimize_size(self.image, "large")
+        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or self.image_medium or self.image_small)):
+            self.image_large = optimize_size(self.image, "large")
             self.image_medium = optimize_size(self.image, "medium")
+            self.image_small = optimize_size(self.image, "small")
 
         if (self._original_fields["place_id"] != self.place_id) or (self.place_id and not self.country and not self._original_fields["country"]):
             google_maps_key = GOOGLE_MAPS_KEY
