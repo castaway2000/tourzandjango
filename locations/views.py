@@ -30,7 +30,7 @@ def search_city(request):
 
 def all_countries(request):
     current_page = "all_countries"
-    countries = Country.objects.filter(is_active=True)
+    countries = Country.objects.filter(is_active=True).order_by("name")
     return render(request, 'locations/all_countries.html', locals())
 
 
