@@ -49,18 +49,23 @@
                     </div>
                     {% for city in cities %}
                         <div class="col-lg-4">
-                            <a href="{% url 'city_guides' country_slug city.slug %}" target="_blank">
-                                <div class="panel panel-default">
-                                    <div class="panel-body">
-                                        <div><img src="{% get_sized_image city "medium" %}"></div>
-                                        <div class="mt10">
-                                            <h4 class="text-center">
-                                                {{ city.name }}
-                                            </h4>
-                                        </div>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div><img src="{% get_sized_image city "medium" %}"></div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ city.name }}
+                                        </h4>
                                     </div>
                                 </div>
-                            </a>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'city_guides' country_slug city.slug %}" target="_blank"
+                                    >
+                                        {% trans 'View details' %}
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                         {% if forloop.counter|divisibleby:3 %}
                             </div>
@@ -113,7 +118,6 @@
                                                 {% endif %}
                                                 <br>
                                                 <li> {{ tour.overview_short|safe|linebreaks|truncatewords_html:20 }}</li>
-
                                             </ul>
                                         </div>
                                     </div>
