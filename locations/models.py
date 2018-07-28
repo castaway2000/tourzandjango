@@ -146,7 +146,7 @@ class City(models.Model):
 
 
     def get_tours_12(self):
-        tours = self.tour_set.filter(is_active=True)[:12]
+        tours = self.tour_set.filter(is_active=True).order_by("name")[:12]
         return tours
 
     def get_guides_12(self):

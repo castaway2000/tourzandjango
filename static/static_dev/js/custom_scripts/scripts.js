@@ -375,7 +375,7 @@ $(window).scroll(function () {
     elementsResizing();
 
     if($(".guide-location .bg-mask")!=undefined){
-        console.log(scroll);
+        //console.log(scroll);
         if(scroll > 70){
             $(".guide-location").addClass("show-only-image");
         }else{

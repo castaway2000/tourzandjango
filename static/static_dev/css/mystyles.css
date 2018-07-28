@@ -1181,7 +1181,11 @@ from {
 }
 
 .container-equal-items .panel{
-    min-height: 380px;
+    height: 500px;
+}
+
+.container-equal-items .panen img{
+    max-height: 211px;
 }
 
 .container-equal-items .panel{

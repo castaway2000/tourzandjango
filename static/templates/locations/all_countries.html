@@ -13,21 +13,26 @@
                 </div>
                 {% for country in countries %}
                     <div class="col-md-4">
-                        <a href="{% url 'country_guides' country.slug %}" target="_blank">
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    <div><img src="{% get_sized_image country "medium" %}"></div>
-                                    <div class="mt10">
-                                        <h4 class="text-center">
-                                            {{ country.name }}
-                                        </h4>
-                                        <div>
-                                            {{ country.description|safe|linebreaks|truncatewords_html:20 }}
-                                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div><img src="{% get_sized_image country "medium" %}"></div>
+                                <div class="mt10">
+                                    <h4 class="text-center">
+                                        {{ country.name }}
+                                    </h4>
+                                    <div>
+                                        {{ country.description|safe|linebreaks|truncatewords_html:20 }}
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                             <div class="text-center panel-button">
+                                <a class="btn btn-default"
+                                    href="{% url 'country_guides' country.slug %}" target="_blank"
+                                >
+                                    {% trans 'View details' %}
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     {% if forloop.counter|divisibleby:3 %}
                         </div>
