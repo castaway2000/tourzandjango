@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+
+{% block content %}
+    {% if countries|length > 0 %}
+        <div class="container container-equal-items mt20">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>{% trans 'Select a country of your destination' %}</h3>
+                </div>
+                {% for country in countries %}
+                    <div class="col-md-4">
+                        <a href="{% url 'country_guides' country.slug %}" target="_blank">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div><img src="{% get_sized_image country "medium" %}"></div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ country.name }}
+                                        </h4>
+                                        <div>
+                                            {{ country.description|safe|linebreaks|truncatewords_html:20 }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% if forloop.counter|divisibleby:3 %}
+                        </div>
+                        <div class="row">
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock content %}

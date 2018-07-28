@@ -102,7 +102,8 @@ def home(request):
     hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
     fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
     free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
-    cities = City.objects.filter(is_active=True, is_featured=True).values("original_name", "image", "image_medium", "name")[:5]
+    cities = City.objects.filter(is_active=True, is_featured=True)\
+                 .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
     return render(request, 'users/home.html', locals())
 
 

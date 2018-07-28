@@ -13,8 +13,9 @@
 {#                        <div class="owl-cap-price"><small>from</small>#}
 {#                            <h5>$2700</h5>#}
 {#                        </div>#}
-                        <a class="btn btn-white btn-ghost" href="{% url 'guides' %}?city_input={{ city.original_name }}">
-                            <i class="fa fa-angle-right"></i>{% blocktrans %}Explore Guides{% endblocktrans %}</a>
+                        <a class="btn btn-white btn-ghost" href="{% url 'city_guides' city.country__slug city.slug %}" target="_blank">
+                            {% blocktrans %}Explore Guides{% endblocktrans %} <i class="fa fa-angle-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>

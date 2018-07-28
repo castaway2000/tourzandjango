@@ -123,7 +123,7 @@ class GeneralProfile(models.Model):
     profession = models.CharField(max_length=256, blank=True, null=True)
 
     referred_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name="referred_by")
-    referral_code = models.CharField(max_length=8, null=True, blank=True)
+    referral_code = models.CharField(max_length=64, null=True, blank=True)
     tourists_referred_nmb = models.IntegerField(default=0)
     tourists_with_purchases_referred_nmb = models.IntegerField(default=0)
     guides_referred_nmb = models.IntegerField(default=0)

@@ -12,25 +12,25 @@
 
 
 {% block content %}
-    <div class="container">
-
-    </div>
 
     <div class="tour-section hero-section" style="
         {% if tour.image %}
-            background: url('{{ tour.image_large.url }}')
+            background: url({{ tour.image_large.url }}) no-repeat center center fixed; background-size: cover;
         {% else %}
-            background: url('{% static "img/1280x848.png" %}')
+            background: url({% static "img/1280x848.png" %}) no-repeat center center fixed; background-size: cover;
         {% endif %}
     ">
         <div class="section-mask"></div>
         <div class="container">
             <div>
                 <ul class="breadcrumb">
-                    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a>
+                    <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
+                    <li>
+                        <a href="{% url 'country_guides' tour.city.country.slug %}">{{ tour.city.country.name }}</a>
                     </li>
-        {#            <li><a href="/">Some country</a>#}
-                    <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
+{#                    <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a></li>#}
+                    <li>
+                        <a href="{% url 'city_guides' tour.city.country.slug tour.city.slug %}">{{ tour.city.name }}</a>
                     </li>
                     <li>
                         <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}">{{ tour.guide.user.generalprofile.first_name }}</a>
