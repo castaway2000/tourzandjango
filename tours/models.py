@@ -127,7 +127,7 @@ class Tour(models.Model):
             self.price_hourly = 0
             self.min_hours = 0
 
-        if self._original_fields["image"] != self.image or (self.image and (not self.image_medium or not self.image_small)):
+        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
             self.image_small = optimize_size(self.image, "small")
             self.image_medium = optimize_size(self.image, "medium")
             self.image_large = optimize_size(self.image, "large")

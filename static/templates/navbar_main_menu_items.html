@@ -7,6 +7,8 @@
 
 
 {% if request.session.current_role != "guide"  %}
+    <li class="{% if current_page == "all_countries" %}active{% endif %}"><a href="{% url 'all_countries' %}">{% blocktrans %}FIND A GUIDE{% endblocktrans %}</a>
+
     <li class="{% if current_page == "guides" %}active{% endif %}">
         <a href="{% url 'guides' %}">{% blocktrans %}GUIDES{% endblocktrans %}</a>
     </li>

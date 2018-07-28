@@ -5,4 +5,7 @@ urlpatterns = [
 
     url(r'^search_city/$', views.search_city, name='search_city'),
 
+    url(r'^all_countries/$', views.all_countries, name='all_countries'),
+    url(r'^guides/in/(?P<country_slug>\S+)/(?P<city_slug>\S+)/$', views.location_guides, name='city_guides'),
+    url(r'^guides/in/(?P<country_slug>\S+)/$', views.location_guides, name='country_guides'),
 ]

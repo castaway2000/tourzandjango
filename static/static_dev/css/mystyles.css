@@ -621,9 +621,10 @@ a{
 .navbar{
     padding-top: 15px;
     /*border-bottom: 1px solid #31dc72;*/
-    padding-bottom: 7px;
-    border-radius: 0;
     border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid #e3e3e3;
+    padding-bottom: 7px;
     background-color: white;
     margin-bottom: 0;
 }
@@ -1138,6 +1139,68 @@ a{
     margin: 0!important;
 }
 
+.owl-cap-title{
+    border-top: none;
+    border-bottom: none;
+}
+
+.top-area .text{
+    font-size: 3em;
+}
+
+.guide-location.show-only-image .bg-mask{
+    -webkit-animation: ani 0.7s steps(70) forwards;
+   animation: ani 0.7s steps(70) forwards;
+}
+
+.guide-location.show-only-image .text, .guide-location.show-only-image .owl-cap-title{
+    display: none;
+}
+
+
+@-webkit-keyframes ani {
+from {
+  opacity: 0.5;
+    background-position: 0 -700px;
+  }
+  to {
+  opacity: 0;
+    background-position: 0 0px;
+  }
+}
+
+@keyframes ani {
+from {
+  opacity: 0.5;
+    background-position: 0 -700px;
+  }
+  to {
+  opacity: 0;
+    background-position: 0 0px;
+  }
+}
+
+.container-equal-items .panel{
+    min-height: 380px;
+}
+
+.container-equal-items .panel{
+    position: relative;
+    padding-bottom: 50px;
+}
+
+.container-equal-items .panel .panel-button{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 15px;
+    height: 30px;
+}
+
+a .panel-default, a .panel-default:hover, a .panel-default:focus{
+    color: #565656;;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
@@ -1175,12 +1238,17 @@ a{
 }
 
 @media (max-width:992px) {
-  .booking-filters-container{
-      z-index: 100;
-      top: 240px;
-      left: 0;
-      border-radius: 0;
-  }
+
+    .top-area.show-onload{
+        height: 700px;
+    }
+
+    .booking-filters-container{
+        z-index: 100;
+        top: 240px;
+        left: 0;
+        border-radius: 0;
+    }
 
     .tour-section.hero-section .title{
         font-size: 50px!important;

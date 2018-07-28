@@ -338,6 +338,10 @@ window.setTimeout(function() {
   });
 }, 2500);
 
+$(document).on('click', '.alert', function(){
+    $(this).addClass('hidden');
+});
+
 
 $(document).ready(function(){
     $(document).on('click', '#toggle_left_menu', function(e) {
@@ -368,7 +372,16 @@ hidingLeftMenu();
 $(window).scroll(function () {
     var scroll = $(window).scrollTop();
     var width = $(window).width();
-    elementsResizing()
+    elementsResizing();
+
+    if($(".guide-location .bg-mask")!=undefined){
+        console.log(scroll);
+        if(scroll > 70){
+            $(".guide-location").addClass("show-only-image");
+        }else{
+            $(".guide-location").removeClass("show-only-image");
+        }
+    }
 });
 
 function elementsResizing(){
