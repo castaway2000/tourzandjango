@@ -7,12 +7,14 @@
         <div class="col-lg-6">
             <div class="discount-box">
                 <ul class="list-unstyled">
-                    <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
-                    <li class="tour-name">{{ tour.name }} {% trans 'only for' %} 1.99 USD!</li>
-
                     {% if tour.type == "1" %}
-                        <li class="normal-price"><span class="item-title">{% trans 'Normal price' %}:</span> 25 USD {% trans 'per person' %}</li>
-                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span> 1.99 USD {% trans 'per person' %}</li>
+                        <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
+                        <li class="tour-name">{{ tour.name }} {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}!</li>
+
+                        <li class="normal-price"><span class="item-title">{% trans 'Average price' %}:</span> {{ tour.get_average_scheduled_tour_prices }} {{ tour.currency }} {% trans 'per person' %}</li>
+                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span>
+                            {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}
+                        </li>
                         <li class="dates-available">
                             <span class="item-title">{% trans 'Dates' %}: </span>
                             {% for item in tour.available_discount_tours %}
@@ -26,11 +28,17 @@
                             {% endfor %}
                         </li>
                     {% else %}
+                        <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
+                        <li class="tour-name">{{ tour.name }} {% trans 'only for' %} {{ tour.price_final }} {{ tour.currency.name }}!</li>
+
                         <li class="normal-price">
-                            <span class="item-title">{% trans 'Normal price' %}:</span> {{ tour.price }} {{ tour.currency.name }} {% trans 'per person' %}
+                            <span class="item-title">{% trans 'Normal price' %}:</span> {{ tour.price }} {{ tour.currency.name }} {% trans 'for' %} 1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}
                         </li>
-                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span> {{ tour.price_final }} {{ tour.currency.name }} {% trans 'per person' %}</li>
-                        <li class="additional-description"></li>
+                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span> {{ tour.price_final }} {{ tour.currency.name }} {% trans 'for' %} 1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}</li>
+                        <li class="additional-description">
+                            {% trans 'Additional person' %}: {{ tour.price }} {{ tour.currency.name }}<br>
+                            {% trans 'Maximum participants' %}: {{ tour.max_persons_nmb }}
+                        </li>
                         <li class="dates-available">
                             <span class="item-title">{% trans 'Dates' %}: </span>
                             {{ tour.available_discount_tours.0 }}

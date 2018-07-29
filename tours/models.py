@@ -12,7 +12,7 @@ from utils.images_resizing import optimize_size
 import datetime
 from utils.general import uuid_creating
 from django.utils.translation import ugettext as _
-from django.db.models import Sum, Min
+from django.db.models import Sum, Min, Avg
 
 
 class PaymentType(models.Model):
@@ -176,7 +176,7 @@ class Tour(models.Model):
         return self.get_nearest_available_dates(30)[:1]
 
     def get_nearest_available_dates_30_days(self):
-        return  self.get_nearest_available_dates(30)
+        return self.get_nearest_available_dates(30)
 
     def get_tours_images(self):
         return self.tourimage_set.filter(is_active=True).values()
@@ -200,13 +200,22 @@ class Tour(models.Model):
                 template_items_dict[day].append(template_item)
         return template_items_dict
 
-    def get_lowest_scheduled_tour_prices(self):
+    def get_lowest_scheduled_tour_price(self):
         nearest_tours = self.get_nearest_available_dates(20)
         if nearest_tours:
             price_final_item = nearest_tours.aggregate(min_price_final=Min('price_final'))
             return price_final_item["min_price_final"]
         else:
             return 0
+
+    def get_average_scheduled_tour_price(self):#without a discount
+        nearest_tours = self.get_nearest_available_dates(20)
+        if nearest_tours:
+            price_final_item = nearest_tours.aggregate(avg_price_final=Avg('price'))
+            return price_final_item["avg_price_final"]
+        else:
+            return 0
+
 
     @property
     def available_discount_tours(self):
@@ -216,7 +225,7 @@ class Tour(models.Model):
             if self.discount:
                 now = datetime.datetime.now().date()
                 limit_date = now + datetime.timedelta(days=30)
-                text = _("available for any date till")
+                text = _("promotion is available on request for dates till")
                 available_text = "%s %s" % (text, limit_date.strftime('%m/%d/%Y'))
                 return [available_text]
             else:

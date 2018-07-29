@@ -52,7 +52,7 @@
                                 <div class="panel-body">
                                     <div>
                                         <a href="{% url 'city_guides' country_slug city.slug %}" target="_blank">
-                                            <img src="{% get_sized_image city "medium" %}">
+                                            <img src="{% get_sized_image city "small" %}">
                                         </a>
                                     </div>
                                     <div class="mt10">
@@ -98,13 +98,20 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h3>{% trans 'Tours in' %} {{ obj.name }}</h3>
+                        {% with obj.get_average_tour_rate as average_tour_rate %}
+                        {% if average_tour_rate %}
+                            <div class="mt10 mb10">
+                                <b>{% trans 'Average rate' %}: </b> {{ average_tour_rate }} {{ obj.currency }}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
                         {% for tour in tours %}
                             <div class="col-lg-4">
                                 <div class="panel panel-default">
                                     <div class="panel-body">
                                         <div>
                                             <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
-                                                <img src="{% get_sized_image tour default_size="medium" %}">
+                                                <img src="{% get_sized_image tour default_size="small" %}">
                                             </a>
                                         </div>
                                         <div class="mt10">
@@ -116,7 +123,7 @@
                                             <ul class="list-unstyled">
                                                 {% if tour.type == "1" %}
                                                     <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
-                                                    <li><b>{% trans 'Price' %}:</b> {{ tour.get_lowest_scheduled_tour_prices }} USD</li>
+                                                    <li><b>{% trans 'Price' %}:</b> {{ tour.get_lowest_scheduled_tour_price }} USD</li>
                                                     <li><b>{% trans 'Closest date' %}:</b> </li>
                                                 {% else %}
                                                     <li><b>{% trans 'Hours' %}: </b> {{ tour.hours }}</li>
@@ -158,6 +165,13 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h3>{% trans 'Guides in' %} {{ obj.name }}</h3>
+                        {% with obj.get_average_guide_rate as average_guide_rate %}
+                        {% if average_guide_rate %}
+                            <div class="mt10 mb10">
+                                <b>{% trans 'Average price per person' %}: </b> {{ average_guide_rate }} {{ obj.currency }}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
                         {% for guide in guides %}
                             <div class="col-lg-4">
                                 <div class="panel panel-default">
@@ -165,7 +179,7 @@
                                         <div>
                                             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
                                             target="_blank">
-                                                <img src="{% get_sized_image guide default_size="medium" image_base_field_name="profile_image" %}">
+                                                <img src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}">
                                             </a>
                                         </div>
                                         <div class="mt10">
