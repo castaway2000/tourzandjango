@@ -168,11 +168,19 @@ class City(models.Model):
 
     def get_average_guide_rate(self):
         data = self.guideprofile_set.filter(is_active=True).aggregate(Avg('rate'))
-        return data.get("rate__avg")
+        avg = data.get("rate__avg")
+        if avg:
+            return float(avg)
+        else:
+            return None
 
     def get_average_tour_rate(self):
         data = self.tour_set.filter(is_active=True, type="1").aggregate(Avg('price'))
-        return data.get("price__avg")
+        avg = data.get("price__avg")
+        if avg:
+            return float(avg)
+        else:
+            return None
 
 
 #cities, countries currencies are needed to be remade for using external packages later
