@@ -47,25 +47,39 @@
             <div class="container container-equal-items">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h3 class="mb30">{% trans 'Find tours and private guides in the following cities' %}</h3>
+                        <h3 class="mb30">{% trans 'Find tours and private guides in the following countries' %}</h3>
                     </div>
-                    {% for city in cities %}
+                    {% for country in countries %}
                         <div class="col-lg-4">
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                    <div><img src="{% get_sized_image city "medium" %}"></div>
+                                    <div>
+                                        <a href="{% url 'country_guides' country.slug %}" target="_blank"
+                                        ><img src="{% get_sized_image country "medium" %}"></a>
+                                    </div>
                                     <div class="mt10">
                                         <h4 class="text-center">
-                                            {{ city.name }}, {{ city.country.name }}
+                                            {{ country.name }}
                                         </h4>
                                         <div>
-                                            {{ city.description|safe|linebreaks|truncatewords_html:30 }}
+                                            {% with country.get_cities as cities %}
+                                            {% if cities %}
+                                                <b>{% trans 'Available cities' %}: </b>
+                                                {% for city in country.get_cities %}
+                                                    <a href="{% url 'city_guides' city.country.slug city.slug %}" target="_blank">
+                                                        {{ city.name }}{% if not forloop.last %}, {% endif %}
+                                                    </a>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% trans 'We are looking for guides in' %} {{ country.name }}
+                                            {% endif %}
+                                            {% endwith %}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="text-center panel-button">
                                     <a class="btn btn-default"
-                                        href="{% url 'city_guides' city.country.slug city.slug %}" target="_blank"
+                                        href="{% url 'country_guides' country.slug %}" target="_blank"
                                     >
                                         {% trans 'View details' %}
                                     </a>
@@ -77,6 +91,15 @@
                             <div class="row">
                         {% endif %}
                     {% endfor %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center">
+                                <a class="btn btn-primary btn-lg" href="{% url 'all_countries' %}" target="_blank">
+                                    {% trans 'View all available countries' %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -86,22 +109,8 @@
                     <div class="col-lg-12">
                         <h3 class="mb30">{% trans 'Special offers' %}</h3>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="discount-box">
-                            <div class="location">Barcelona, Spain</div>
-                            <div class="tour-name">Tour "Great tour" only for 1.99 USD!</div>
-                            <div class="normal-price">Normal price: 25 USD per person</div>
-                            <div class="discount-price">Normal price: 25 USD per person</div>
-                            <div class="dates-available">
-                                Dates: 12/12/2018 (2 spots available),
-                                12/15/2018 (3 spots available)
-                            </div>
-                            <div class="text-center mt10">
-                                <a href="/" class="btn btn-primary">{% trans 'Get the deal' %}</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+                {% include "tours/special_offers_section.html" %}
             </div>
         </section>
     </div>

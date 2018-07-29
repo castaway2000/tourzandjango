@@ -20,7 +20,6 @@
             </div>
         </div>
     </div>
-
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -51,7 +50,11 @@
                         <div class="col-lg-4">
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                    <div><img src="{% get_sized_image city "medium" %}"></div>
+                                    <div>
+                                        <a href="{% url 'city_guides' country_slug city.slug %}" target="_blank">
+                                            <img src="{% get_sized_image city "medium" %}">
+                                        </a>
+                                    </div>
                                     <div class="mt10">
                                         <h4 class="text-center">
                                             {{ city.name }}
@@ -99,7 +102,11 @@
                             <div class="col-lg-4">
                                 <div class="panel panel-default">
                                     <div class="panel-body">
-                                        <div><img src="{% get_sized_image tour default_size="medium" %}"></div>
+                                        <div>
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
+                                                <img src="{% get_sized_image tour default_size="medium" %}">
+                                            </a>
+                                        </div>
                                         <div class="mt10">
                                             <h4 class="text-center">
                                                 {{ tour.name }}
@@ -155,7 +162,12 @@
                             <div class="col-lg-4">
                                 <div class="panel panel-default">
                                     <div class="panel-body">
-                                        <div><img src="{% get_sized_image guide default_size="medium" image_base_field_name="profile_image" %}"></div>
+                                        <div>
+                                            <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
+                                            target="_blank">
+                                                <img src="{% get_sized_image guide default_size="medium" image_base_field_name="profile_image" %}">
+                                            </a>
+                                        </div>
                                         <div class="mt10">
                                             <h4 class="text-center">
                                                 {{ guide.user.generalprofile.first_name }}
@@ -187,6 +199,19 @@
                         {% endfor %}
                     </div>
                 </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with obj.get_special_offer_tours as special_offer_tours %}
+        {% if special_offer_tours %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Special offers' %}</h3>
+                    </div>
+                </div>
+                {% include "tours/special_offers_section.html" %}
             </div>
         {% endif %}
         {% endwith %}

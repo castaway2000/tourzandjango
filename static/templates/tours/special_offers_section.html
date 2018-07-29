@@ -1,0 +1,50 @@
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+<div class="row">
+    {% for tour in special_offer_tours %}
+        <div class="col-lg-6">
+            <div class="discount-box">
+                <ul class="list-unstyled">
+                    <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
+                    <li class="tour-name">{{ tour.name }} {% trans 'only for' %} 1.99 USD!</li>
+
+                    {% if tour.type == "1" %}
+                        <li class="normal-price"><span class="item-title">{% trans 'Normal price' %}:</span> 25 USD {% trans 'per person' %}</li>
+                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span> 1.99 USD {% trans 'per person' %}</li>
+                        <li class="dates-available">
+                            <span class="item-title">{% trans 'Dates' %}: </span>
+                            {% for item in tour.available_discount_tours %}
+                                {{ item.dt|date:"m/d/Y" }} (item.seats_available
+                                {% if item.seats_available == 1 %}
+                                    {% trans 'spot' %}{% else %}{% trans 'spots' %}
+                                {% endif %}
+                                {% trans 'available' %}
+                                )
+                                {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </li>
+                    {% else %}
+                        <li class="normal-price">
+                            <span class="item-title">{% trans 'Normal price' %}:</span> {{ tour.price }} {{ tour.currency.name }} {% trans 'per person' %}
+                        </li>
+                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span> {{ tour.price_final }} {{ tour.currency.name }} {% trans 'per person' %}</li>
+                        <li class="additional-description"></li>
+                        <li class="dates-available">
+                            <span class="item-title">{% trans 'Dates' %}: </span>
+                            {{ tour.available_discount_tours.0 }}
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="text-center mt10">
+                    <a href="{% url 'tour_new' tour.slug tour.uuid 'new' %}" class="btn btn-primary">{% trans 'Details' %}</a>
+                </div>
+            </div>
+        </div>
+        {% if forloop.counter|divisibleby:2 %}
+            </div>
+            <div class="row">
+        {% endif %}
+    {% endfor %}
+</div>

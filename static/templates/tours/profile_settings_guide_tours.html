@@ -96,12 +96,14 @@
                                     <div class="col-md-3 col-sm-3">
                                         <div>
                                             <p>
-                                                <a class="btn btn-primary" href="{% url 'tour_new' tour.slug tour.uuid 'new' %}">
+                                                <a class="btn btn-primary"
+                                                   href="{% url 'tour_new' tour.slug tour.uuid 'new' %}" target="_blank">
                                                     {% blocktrans %}Tour Page{% endblocktrans %}
                                                 </a>
                                             </p>
                                             <p>
-                                                <a class="btn btn-success" href="{% url 'tour_edit_general' tour.slug %}">
+                                                <a class="btn btn-success"
+                                                   href="{% url 'tour_edit_general' tour.slug %}" target="_blank">
                                                     {% blocktrans %}Tour Editing{% endblocktrans %}
                                                 </a>
                                             </p>
