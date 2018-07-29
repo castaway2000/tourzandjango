@@ -202,6 +202,19 @@
             </div>
         {% endif %}
         {% endwith %}
+
+        {% with obj.get_special_offer_tours as special_offer_tours %}
+        {% if special_offer_tours %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Special offers' %}</h3>
+                    </div>
+                </div>
+                {% include "tours/special_offers_section.html" %}
+            </div>
+        {% endif %}
+        {% endwith %}
     {% endif %}
 
     {% if obj.description %}

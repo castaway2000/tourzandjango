@@ -145,7 +145,6 @@ class City(models.Model):
 
         super(City, self).save(*args, **kwargs)
 
-
     def get_tours_12(self):
         tours = self.tour_set.filter(is_active=True).order_by("name")[:12]
         return tours
@@ -153,6 +152,18 @@ class City(models.Model):
     def get_guides_12(self):
         guides = self.guideprofile_set.filter(is_active=True)[:12]
         return guides
+
+    def get_special_offer_tours(self):
+        special_offers_items = self.tour_set.filter(is_active=True)
+        special_offer_tours = list()
+        count = 0
+        for special_offers_item in special_offers_items:
+            if len(special_offers_item.available_discount_tours) > 0:
+                special_offer_tours.append(special_offers_item)
+                if count == 4:
+                    break
+                count += 1
+        return special_offer_tours
 
 
 #cities, countries currencies are needed to be remade for using external packages later
