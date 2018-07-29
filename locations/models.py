@@ -174,7 +174,7 @@ class City(models.Model):
         else:
             return None
 
-    def get_average_tour_rate(self):
+    def get_average_tour_price(self):
         data = self.tour_set.filter(is_active=True, type="1").aggregate(Avg('price'))
         avg = data.get("price__avg")
         if avg:
