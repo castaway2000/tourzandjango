@@ -1185,7 +1185,7 @@ from {
 }
 
 .container-equal-items .panel img{
-    max-height: 211px;
+    height: 211px;
 }
 
 .container-equal-items .panel{
@@ -1236,13 +1236,20 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 }
 
 .discount-box{
-    background: #a3cfa3;
-    color: white;
+    /*background: #a3cfa3;*/
+    /*color: white;*/
+    background: #f5f5f5;
+    color: black;
     padding: 20px 30px 30px 30px;
     border-radius: 15px;
     min-height: 190px;
     font-size: 16px;
     line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.discount-box .item-title{
+    color: #559b6f;
 }
 
 .discount-box .location{
@@ -1252,6 +1259,12 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 .discount-box .tour-name{
     font-size: 25px;
     margin-bottom: 10px;
+}
+
+.discount-box .normal-price,
+.discount-box .promotion-price,
+.discount-box .dates-available{
+    line-height: 2;
 }
 
 @media (min-width: 768px) {

@@ -208,6 +208,20 @@ class Tour(models.Model):
         else:
             return 0
 
+    @property
+    def available_discount_tours(self):
+        if self.type == "1":#scheduled
+            return self.scheduledtour_set.filter(is_active=True, seats_available__gt=0)[:5]
+        else:#private
+            if self.discount:
+                now = datetime.datetime.now().date()
+                limit_date = now + datetime.timedelta(days=30)
+                text = _("available for any date till")
+                available_text = "%s %s" % (text, limit_date.strftime('%m/%d/%Y'))
+                return [available_text]
+            else:
+                return []
+
 
 class TourIncludedItem(models.Model):
     tour = models.ForeignKey(Tour)

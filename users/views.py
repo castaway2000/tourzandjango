@@ -35,6 +35,7 @@ from allauth.account import app_settings
 from allauth.exceptions import ImmediateHttpResponse
 import time
 from website_management.models import HomePageContent
+from locations.models import Country
 
 
 def login_view(request):
@@ -106,8 +107,20 @@ def home(request):
     # cities = City.objects.filter(is_active=True, is_featured=True)\
     #              .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
 
-    obj = HomePageContent.objects.last()
-    cities = City.objects.filter(is_active=True).order_by("name")
+    try:
+        obj = HomePageContent.objects.last()
+    except:
+        pass
+    countries = Country.objects.filter(is_active=True).order_by("position_index", "name")[:6]
+    special_offers_items = Tour.objects.filter(is_active=True)
+    special_offer_tours = list()
+    count = 0
+    for special_offers_item in special_offers_items:
+        if len(special_offers_item.available_discount_tours) > 0:
+            special_offer_tours.append(special_offers_item)
+            if count == 4:
+                break
+            count += 1
     return render(request, 'users/home.html', locals())
 
 

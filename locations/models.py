@@ -40,6 +40,7 @@ class Country(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(blank=True, null=True, default=random_string_creating)
     description = models.TextField(blank=True, null=True)
+    position_index = models.IntegerField(default=0)
     place_id = models.CharField(max_length=128)
     is_featured = models.BooleanField(default=False)#for showing on Homepage
     is_active = models.BooleanField(default=True)
@@ -70,7 +71,7 @@ class Country(models.Model):
         super(Country, self).save(*args, **kwargs)
 
     def get_cities(self):
-        cities = self.city_set.filter(is_active=True)
+        cities = self.city_set.filter(is_active=True).order_by("name")
         return cities
 
 
