@@ -315,7 +315,7 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     #         for interest_name in interests_list:
     #             Interest.objects.get_or_create(name=interest_name)
     #
-    #     messages.success(request, 'New artist was successfully created!')
+    #     messages.success(request, 'New interest was successfully created!')
     #
     # # for pictures: http://ashleydw.github.io/lightbox/
     # context = {
@@ -632,8 +632,6 @@ def tours_for_clients(request):
 
 def get_average_rate(request):
     loc = request.GET.get('location')
-    print(loc)
-    print(request)
     rates = None
     if request.is_ajax():
         try:

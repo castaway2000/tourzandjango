@@ -15,7 +15,6 @@ function initialize(){
         };
     }
 
-
     var autocomplete = new google.maps.places.Autocomplete(input, options);
     google.maps.event.addListener(autocomplete, 'place_changed', function(){
         place = autocomplete.getPlace();
@@ -26,7 +25,6 @@ function initialize(){
         name_original = location_input.split(",")[0];
         console.log("name_original: "+name_original);
         console.log(place);
-        console.log('yahoo motherfuckers!');
          if (name_original){
                 $.ajax({
                     url: "/en/ajax/rate_agregate/",
@@ -57,6 +55,8 @@ function initialize(){
             $("#is_country").prop("checked", false);
         }
         search_input.focus();
+        console.log("finish");
+        $("#search_form").submit();
     })
 }
 google.maps.event.addDomListener(window, 'load', initialize);

@@ -225,7 +225,7 @@
                                     <p class="tour-price">
                                         <b>{% blocktrans %}Price:{% endblocktrans %}</b>
                                         {% if tour.type == "1" %}
-                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_prices }} {{ tour.currency.name }}
+                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
                                         {% else %}
                                             {% if tour.payment_type_id == 1 %}
                                                 {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour

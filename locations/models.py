@@ -11,6 +11,7 @@ from utils.general import random_string_creating
 from tourzan.settings import GOOGLE_MAPS_KEY
 import requests
 import time
+from django.db.models import Avg
 
 
 class LocationType(models.Model):
@@ -164,6 +165,14 @@ class City(models.Model):
                     break
                 count += 1
         return special_offer_tours
+
+    def get_average_guide_rate(self):
+        data = self.guideprofile_set.filter(is_active=True).aggregate(Avg('rate'))
+        return data.get("rate__avg")
+
+    def get_average_tour_rate(self):
+        data = self.tour_set.filter(is_active=True, type="1").aggregate(Avg('price'))
+        return data.get("price__avg")
 
 
 #cities, countries currencies are needed to be remade for using external packages later
