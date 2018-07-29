@@ -131,3 +131,17 @@ def upload_path_handler_tourist_travel_pictures(instance, filename):
     return "users/%s/tourist/travel_pictures/%s" % (instance.user.id, filename)
 
 
+def upload_path_handler_homepage(instance, filename):
+    return "homepage/%s" % (filename)
+
+
+def upload_path_handler_homepage_large(instance, filename):
+    return "homepage/large/%s" % (filename)
+
+
+def upload_path_handler_homepage_medium(instance, filename):
+    return "homepage/medium/%s" % (filename)
+
+
+def upload_path_handler_homepage_small(instance, filename):
+    return "homepage/small/%s" % (filename)

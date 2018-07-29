@@ -5,6 +5,14 @@ from django_summernote.admin import SummernoteModelAdmin
 from .models import *
 
 
+class HomePageContentAdmin(SummernoteModelAdmin):
+
+    class Meta:
+            model = HomePageContent
+
+admin.site.register(HomePageContent, HomePageContentAdmin)
+
+
 class PageContentAdmin(SummernoteModelAdmin):
 
     class Meta:

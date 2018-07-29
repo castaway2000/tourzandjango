@@ -374,12 +374,12 @@ $(window).scroll(function () {
     var width = $(window).width();
     elementsResizing();
 
-    if($(".guide-location .bg-mask")!=undefined){
+    if($(".mask-wrapper .bg-mask")!=undefined){
         //console.log(scroll);
         if(scroll > 70){
-            $(".guide-location").addClass("show-only-image");
+            $(".mask-wrapper").addClass("show-only-image");
         }else{
-            $(".guide-location").removeClass("show-only-image");
+            $(".mask-wrapper").removeClass("show-only-image");
         }
     }
 });
