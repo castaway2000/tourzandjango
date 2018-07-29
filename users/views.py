@@ -34,6 +34,7 @@ from allauth.account.utils import complete_signup
 from allauth.account import app_settings
 from allauth.exceptions import ImmediateHttpResponse
 import time
+from website_management.models import HomePageContent
 
 
 def login_view(request):
@@ -94,16 +95,19 @@ def after_login_router(request):
 
 def home(request):
     current_page = "home"
-    guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
+    # guides = GuideProfile.objects.filter(is_active=True)\
+    #     .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
+    #
+    # tours = Tour.objects.filter(is_active=True).order_by("-rating")
+    # all_tours = tours.order_by("-rating")[:4]
+    # hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
+    # fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
+    # free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
+    # cities = City.objects.filter(is_active=True, is_featured=True)\
+    #              .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
 
-    tours = Tour.objects.filter(is_active=True).order_by("-rating")
-    all_tours = tours.order_by("-rating")[:4]
-    hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
-    fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
-    free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
-    cities = City.objects.filter(is_active=True, is_featured=True)\
-                 .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
+    obj = HomePageContent.objects.last()
+    cities = City.objects.filter(is_active=True).order_by("name")
     return render(request, 'users/home.html', locals())
 
 

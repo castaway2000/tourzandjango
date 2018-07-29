@@ -35,8 +35,6 @@ def all_countries(request):
 
 
 def location_guides(request, country_slug, city_slug=None):
-    print(country_slug)
-    print(city_slug)
     kwargs = dict()
     if city_slug:
         kwargs["slug"] = city_slug
@@ -44,6 +42,5 @@ def location_guides(request, country_slug, city_slug=None):
         obj = get_object_or_404(City, **kwargs)
     else:
         kwargs["slug"] = country_slug
-        print(kwargs)
         obj = get_object_or_404(Country, **kwargs)
     return render(request, 'locations/location_guides.html', locals())
