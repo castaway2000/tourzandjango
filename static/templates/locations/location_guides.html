@@ -98,10 +98,10 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h3>{% trans 'Tours in' %} {{ obj.name }}</h3>
-                        {% with obj.get_average_tour_rate as average_tour_rate %}
-                        {% if average_tour_rate %}
+                        {% with obj.get_average_tour_price as average_tour_price %}
+                        {% if average_tour_price %}
                             <div class="mt10 mb10">
-                                <b>{% trans 'Average price per person' %}: </b> {{ average_tour_rate.normalize }} USD
+                                <b>{% trans 'Average price per person' %}: </b> {{ average_tour_price }} USD
                             </div>
                         {% endif %}
                         {% endwith %}
@@ -168,7 +168,7 @@
                         {% with obj.get_average_guide_rate as average_guide_rate %}
                         {% if average_guide_rate %}
                             <div class="mt10 mb10">
-                                <b>{% trans 'Average price' %}: </b> {{ average_guide_rate.normalize }} USD
+                                <b>{% trans 'Average hourly rate' %}: </b> {{ average_guide_rate }} USD
                             </div>
                         {% endif %}
                         {% endwith %}
