@@ -19,15 +19,14 @@
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand navbar-logo" href="/">
+                    <a class="navbar-brand navbar-logo" href="/" rel="nofollow">
                         <span>
                             <img src="{% static 'img/Tourzan-transparant.png' %}" class="navbar-logo"
                              alt="Tourzan logo" title="Tourzan logo" />
                         </span>
                     </a>
-                    <a class="navbar-brand" href="/">Tourzan</a>
+                    <a class="navbar-brand" href="/" rel="nofollow">Tourzan</a>
                   </div>
-
 
         {#        <div class="collapse navbar-collapse navbar-right">#}
         {#          <!--                      pull-right keeps the drop-down in line -->#}
@@ -67,7 +66,8 @@
                                 {% for language in languages %}
                                     {% if language.code != LANGUAGE_CODE %}
                                         <li>
-                                            <a href="{% url 'set_language' language.code %}" class="change-language-link">
+                                            <a href="{% url 'set_language' language.code %}" hreflang="{{ language.code }}"
+                                               class="change-language-link" rel="alternate">
                                                 {{ language.code }}
                                             </a>
                                         </li>

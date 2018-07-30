@@ -10,7 +10,7 @@
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
+            <li><a href="/" rel="nofollow">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
                 <a href="{% url 'my_bookings' %}">
@@ -151,30 +151,30 @@
                         {% with request.GET.order_results as order_results %}
                             <h5 class="booking-sort-title">
                                 {% if not order_results or order_results == "price" %}
-                                    <a href="#">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-price" %}
-                                    <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "rating" %}
-                                    <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-rating" %}
-                                    <a href="#">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
                                 {% endif %}
                             </h5>
                             <ul class="nav-drop-menu" id="sorting_area">
                                 {% if order_results and order_results != "price" %}
-                                    <li><a href="#" data-order_value="price">{% blocktrans %}Price (low to high){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="price">{% blocktrans %}Price (low to high){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-price" %}
-                                    <li><a href="#" data-order_value="-price">{% blocktrans %}Price (high to low){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="-price">{% blocktrans %}Price (high to low){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "rating" %}
-                                    <li><a href="#" data-order_value="rating">{% blocktrans %}Rating (low to high){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="rating">{% blocktrans %}Rating (low to high){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-rating" %}
-                                    <li><a href="#" data-order_value="-rating">{% blocktrans %}Rating (high to low){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="-rating">{% blocktrans %}Rating (high to low){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
 
@@ -278,7 +278,7 @@
                         {% if tours.has_other_pages %}
                             <ul class="pagination">
                                 {% if tours.has_previous %}
-                                    <li class="next"><a href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>
+                                    <li class="next"><a rel="prev" href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
                                 {% for i in page_range %}
@@ -289,7 +289,7 @@
                                       {% endif %}
                                 {% endfor %}
                                 {% if tours.has_next %}
-                                    <li class="next"><a href="?{% url_replace page=tours.next_page_number %}">{% trans 'Next Page' %}</a></li>
+                                    <li class="next"><a rel="next" href="?{% url_replace page=tours.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
                                 <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>

@@ -12,7 +12,7 @@
 
     <div class="container"> {# seacrch-results-container"> #}
         <ul class="breadcrumb">
-            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
+            <li><a href="/" rel="nofollow">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
                 <a href="{% url 'guides' %}">
@@ -332,7 +332,7 @@
                         {% if guides.has_other_pages %}
                             <ul class="pagination">
                                 {% if guides.has_previous %}
-                                    <li class="next"><a
+                                    <li class="next"><a rel="prev"
                                             href="?{% url_replace page=guides.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
@@ -345,7 +345,7 @@
                                 {% endfor %}
                                 {% if guides.has_next %}
                                     <li class="next">
-                                        <a href="?{% url_replace page=guides.next_page_number %}">
+                                        <a rel="next" href="?{% url_replace page=guides.next_page_number %}">
                                             {% trans 'Next Page of' %} {{ paginator.num_pages }}
                                         </a>
                                     </li>
