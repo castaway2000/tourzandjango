@@ -10,8 +10,9 @@
                     {% if tour.type == "1" %}
                         <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
                         <li class="tour-name">{{ tour.name }} {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}!</li>
+                        <li class="mb10">{% trans 'by' %} {{ tour.guide.user.generalprofile.first_name }}</li>
 
-                        <li class="normal-price"><span class="item-title">{% trans 'Average price' %}:</span> {{ tour.get_average_scheduled_tour_prices }} {{ tour.currency }} {% trans 'per person' %}</li>
+                        <li class="normal-price"><span class="item-title">{% trans 'Average price' %}:</span> {{ tour.get_average_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}</li>
                         <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span>
                             {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}
                         </li>
@@ -30,6 +31,7 @@
                     {% else %}
                         <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
                         <li class="tour-name">{{ tour.name }} {% trans 'only for' %} {{ tour.price_final }} {{ tour.currency.name }}!</li>
+                        <li class="mb10">{% trans 'by' %} {{ tour.guide.user.generalprofile.first_name }}</li>
 
                         <li class="normal-price">
                             <span class="item-title">{% trans 'Normal price' %}:</span> {{ tour.price }} {{ tour.currency.name }} {% trans 'for' %} 1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}

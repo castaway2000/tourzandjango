@@ -1258,12 +1258,12 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 
 .discount-box .tour-name{
     font-size: 25px;
-    margin-bottom: 10px;
 }
 
 .discount-box .normal-price,
 .discount-box .promotion-price,
-.discount-box .dates-available{
+.discount-box .dates-available,
+.discount-box .additional-description{
     line-height: 2;
 }
 
