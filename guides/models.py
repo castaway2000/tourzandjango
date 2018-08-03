@@ -55,7 +55,7 @@ class GuideProfile(models.Model):
 
     license_image = models.ImageField(upload_to=upload_path_handler_guide_license, blank=True, null=True, default="guides/optional_images/300x300.png")
     slug = models.SlugField(max_length=200, unique=True, default=random_string_creating)
-    uuid = models.CharField(max_length=48, null=True)
+    uuid = models.CharField(max_length=48, blank=True, null=True)
     is_use_calendar = models.BooleanField(default=False)
 
     #statistic data

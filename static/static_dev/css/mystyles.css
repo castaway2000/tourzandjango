@@ -1290,6 +1290,15 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
   text-decoration: none;
 }
 
+.img-initial img{
+    width: auto!important;
+}
+
+.general-info{
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;

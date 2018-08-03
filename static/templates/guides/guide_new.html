@@ -16,17 +16,17 @@
     {% if guide.is_active %}
         <div class="booking-proposal-container">
             <div class="mb5">
-                <a class="btn btn-social btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
-                    &redirect_uri={{ request.build_absolute_uri }}
-                    &link={{ request.build_absolute_uri }}
-                    &display=popup&caption=An%20example%20caption">
-                    <i class="fa fa-facebook"></i>{% trans 'Share' %}
-                </a>
+                {% if app_id %}
+                    <a class="btn btn-social btn-facebook" href="https://www.facebook.com/dialog/feed?app_id={{ app_id }}&redirect_uri={{ request.build_absolute_uri }}
+                        &link={{ request.build_absolute_uri }}
+                        &display=popup&caption=An%20example%20caption">
+                        <i class="fa fa-facebook"></i>{% trans 'Share' %}
+                    </a>
+                {% endif %}
             </div>
             <div class="mb5">
                 <a class="btn btn-default" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                    {% trans 'Send message' %}
-                </a>
+                    {% trans 'Chat with' %} {{ guide.user.generalprofile.first_name }}</a>
             </div>
             <div>
                 <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
@@ -92,14 +92,14 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="location">
-                        {% if guide.city.name %}
-                            {{ guide.city.name }}
-                        {% elif guide.city.original_name %}
-                            {{ guide.city.original_name }}
-                        {% endif %}
-                    </div>
-                    <div class="general-info" id="guide_general_info">
+{#                    <div class="location">#}
+{#                        {% if guide.city.name %}#}
+{#                            {{ guide.city.name }}#}
+{#                        {% elif guide.city.original_name %}#}
+{#                            {{ guide.city.original_name }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+                    <div class="general-info mt30" id="guide_general_info">
                         <span class="name">{{ guide.user.generalprofile.first_name }}</span>
                         {% if guide.user.generalprofile.age > 0 %}
                             , <span>{{ guide.user.generalprofile.age }} {% trans 'years old' %}</span>
@@ -122,23 +122,32 @@
                             </div>
                         {% endif %}
 
-                        {% for guide_answer in guide_answers %}
-                            <div class="answer-container">
-                                <p class="question">
-                                    <b>{{ guide_answer.get_question_text_with_city|safe }}</b>
-                                </p>
-                                <p class="answer">{{ guide_answer.text|safe }}</p>
-                                {% if guide_answer.image_medium %}
-                                    <div class="answer-image">
-                                        <img src="{{ guide_answer.image_medium.url }}" class="img-responsive">
-                                    </div>
-                                {% elif guide_answer.image %}
-                                    <div class="answer-image">
-                                        <img src="{{ guide_answer.image.url }}" class="img-responsive">
-                                    </div>
-                                {% endif %}
+                        {% if not guide_answers %}
+                            <div class="img-initial mt20 mb20">
+                                <img src="{{  guide.profile_image_small.url }}">
                             </div>
-                        {% endfor %}
+                            <div>
+                                {{ guide.overview|safe|linebreaks }}
+                            </div>
+                        {% else %}
+                            {% for guide_answer in guide_answers %}
+                                <div class="answer-container">
+                                    <p class="question">
+                                        <b>{{ guide_answer.get_question_text_with_city|safe }}</b>
+                                    </p>
+                                    <p class="answer">{{ guide_answer.text|safe }}</p>
+                                    {% if guide_answer.image_medium %}
+                                        <div class="answer-image">
+                                            <img src="{{ guide_answer.image_medium.url }}" class="img-responsive">
+                                        </div>
+                                    {% elif guide_answer.image %}
+                                        <div class="answer-image">
+                                            <img src="{{ guide_answer.image.url }}" class="img-responsive">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
 
                     {% if guide.is_active %}
@@ -153,7 +162,9 @@
     {#                                {% endif %}#}
                                     <h4 class="text-center">{% trans 'Do you have any questions?' %}</h4>
                                     <a class="btn btn-primary btn-lg"
-                                       href="{% url 'chat_creation_guide' guide.uuid %}">{% trans 'Chat With' %}{{ guide_answer.guide.user.generalprofile.first_name }}</a>
+                                       href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                                        {% trans 'Chat with' %} {{ guide.user.generalprofile.first_name }}
+                                    </a>
                                 {% endif %}
                             </div>
                         </div>
@@ -167,9 +178,9 @@
 
                 </div>
                 <div class="mb20">
-                    <h4 class="text-center">{% trans 'My tours' %}</h4>
                     {% with guide.get_tours as guide_tours %}
                         {% if guide_tours %}
+                            <h4 class="text-center">{% trans 'My tours' %}</h4>
                             {% for tour in guide.get_tours %}
                                 <div class="col-lg-4">
                                     <div class="mb10">
@@ -214,8 +225,6 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                        {% else %}
-                            {% trans 'There is no tours so far' %}
                         {% endif %}
                     {% endwith %}
                 </div>
