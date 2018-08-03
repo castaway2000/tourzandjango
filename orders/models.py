@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
-from tours.models import Tour
+from tours.models import Tour, ScheduledTour
 from django.utils.text import slugify
 from guides.models import GuideProfile, Service
 from tourists.models import TouristProfile
@@ -17,7 +17,8 @@ from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY, BRAINT
 import braintree
 from partners.models import Partner
 from coupons.models import CouponUser, Coupon, Campaign, CouponType
-
+from utils.general import uuid_creating
+import datetime
 
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
@@ -66,6 +67,7 @@ class PaymentStatus(models.Model):
 
 
 class Order(models.Model):
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1) #pending (initiated, but not paid)
 
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
@@ -73,6 +75,7 @@ class Order(models.Model):
     partner = models.ForeignKey(Partner, blank=True, null=True, default=None)
 
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
+    tour_scheduled = models.ForeignKey(ScheduledTour, blank=True, null=True, default=None)
 
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -81,6 +84,7 @@ class Order(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     number_persons = models.IntegerField(default=1)
+    number_additional_persons = models.IntegerField(default=0)
     price_per_additional_person = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_person_total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     additional_services_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -110,12 +114,13 @@ class Order(models.Model):
     date_ordered = models.DateTimeField(auto_now_add=True, auto_now=False)
 
     date_booked_for = models.DateTimeField(blank=True, null=True, default=None)
-    date_toured = models.DateField(blank=True, null=True, default=None)
+    date_toured = models.DateTimeField(blank=True, null=True, default=None)
 
     guide_compensation = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     tourist_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     guide_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_discount_on_tourzan_side = models.BooleanField(default=False)
+    is_approved_by_guide = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
@@ -136,10 +141,81 @@ class Order(models.Model):
         #preventing creating of the order if guide and tourist is the same user
         # if not self.pk and self.guide.user == self.tourist.user:
         #     return False
+
+
+        """
+        the following code is transfered here from making_booking view
+        """
+        if not self.uuid:
+            self.uuid = uuid_creating()
+
+        if not self.pk:
+            if not self.guide:
+                guide = self.tour.guide
+                self.guide = guide
+            else:
+                guide = self.guide
+
+            tour = self.tour
+            number_people = self.number_persons
+            if tour:
+                if tour.payment_type.id == 1:#hourly
+                    self.price_hourly = tour.price_hourly
+                    #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
+
+                elif tour.payment_type.id == 2:#fixed
+                    if self.tour_scheduled:
+                        self.discount = self.tour_scheduled.discount*number_people
+                        self.price = self.tour_scheduled.price*number_people
+                    else:
+                        self.discount = tour.discount
+
+                        #preventing overlimiting for API
+                        if number_people > tour.max_persons_nmb:
+                            target_people_nmb = tour.max_persons_nmb
+                        else:
+                            target_people_nmb = number_people
+
+                        persons_nmb_for_min_price_overlimit = target_people_nmb - tour.persons_nmb_for_min_price
+                        if persons_nmb_for_min_price_overlimit > 0:
+                            self.number_additional_persons = persons_nmb_for_min_price_overlimit
+
+                            self.price_per_additional_person = tour.additional_person_price
+                            self.additional_person_total = tour.additional_person_price*persons_nmb_for_min_price_overlimit
+
+                        self.price = tour.price #price final means price after discount
+                else:#free tours
+                    pass
+
+            else:#guide
+
+                #only for guides, not for tours
+                if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
+                    guide_additional_person_cost = guide.additional_person_cost
+                    self.number_additional_persons = (number_people-1)
+                    additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
+                    self.price_per_additional_person = guide.additional_person_cost
+                    self.additional_person_total = additional_person_total
+
+
+                self.price_hourly = guide.rate
+                #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
+
+            #getting ref_id from the session
+            current_request = CrequestMiddleware.get_request()
+            if current_request.session.get("ref_id"):
+                ref_id = current_request.session["ref_id"]
+                try:
+                    partner = Partner.objects.get(uuid=ref_id)
+                    kwargs["partner"] = partner
+                except:
+                    pass
+
+
         if self.hours_nmb and self.price_hourly:
             self.price = int(self.hours_nmb) * float(self.price_hourly)
 
-        self.total_price_initial = self.price + float(self.additional_services_price) + float(self.additional_person_total)
+        self.total_price_initial = float(self.price) + float(self.additional_services_price) + float(self.additional_person_total)
 
 
         #getting discount if there is a coupon
@@ -193,7 +269,11 @@ class Order(models.Model):
         referred_by = self.tourist.user.generalprofile.referred_by
         if referred_by:
             self.add_statistics_for_referrer()
-            self.add_coupon_for_referrer()
+            self.add_coupon_for_referrer()#checking conditions for possible adding any coupons to referrer
+
+        if self.get_is_full_payment_processed() and self.tour_scheduled:
+            self.tour_scheduled.seats_booked += 1
+            self.tour_scheduled.save(force_update=True)
         super(Order, self).save(*args, **kwargs)
 
 
@@ -222,6 +302,11 @@ class Order(models.Model):
             order.status_id = 5 # payment reserved
             order.payment_status_id = 2 #full payment reserverd
             order.save(force_update=True)
+
+            if order.is_approved_by_guide:#order details can be approved from chat window by a guide
+                order.status_id = 2
+                order.save(force_update=True)
+
             return {"result": True}
         else:
             return {"result": False}
@@ -251,11 +336,18 @@ class Order(models.Model):
                     coupon = Coupon.objects.create(campaign=campaign, value=20, type=coupon_type, user_limit=1)
                     CouponUser.objects.create(user=referred_by, coupon=coupon)
 
+    def get_is_full_payment_processed(self):
+        if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
+            and self.payment_status.id == 4:
+            #full payment processed
+            return True
+        else:
+            return False
+
     def add_statistics_for_referrer(self):
         #Increase or decrease tourist with purchasing
         referred_by = self.tourist.user.generalprofile.referred_by
-        if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
-            and self.payment_status.id == 4:#full payment processed
+        if self.get_is_full_payment_processed():
             #increase only if there is no current success payments for this user
             if Order.objects.filter(tourist=self.tourist, payment_status_id=4).count() == 0:
                 referred_by.generalprofile.tourists_with_purchases_referred_nmb += 1
@@ -271,6 +363,16 @@ class Order(models.Model):
             return self.total_price + self.discount
         else:
             return self.total_price
+
+    def get_order_end(self):
+        print("get_order_end")
+        tour_hours = self.tour.hours if self.tour else self.hours_nmb
+        print(tour_hours)
+        if self.date_booked_for:
+            tour_ends_time = self.date_booked_for + datetime.timedelta(hours=tour_hours)
+            return tour_ends_time.time()
+        else:
+            return None
 
 
 """
@@ -290,13 +392,24 @@ def order_post_save(sender, instance, created, **kwargs):
 
     #sening email according to orders changing
     current_request = CrequestMiddleware.get_request()
-    user = current_request.user
-    is_guide_saving = True if instance.guide.user == user else False
+    if current_request:
+        user = current_request.user
+        is_guide_saving = True if instance.guide.user == user else False
+    else:
+        is_guide_saving = False
 
     if instance._original_fields["status"] and int(instance.status_id) != instance._original_fields["status"].id and int(instance.status_id) != 1:#exclude pending status
         # print ("pre sending")
         data = {"order": instance, "is_guide_saving": is_guide_saving}
         SendingEmail(data).email_for_order()
+
+        if int(instance.status_id) == 2 and instance.tour_scheduled:#agreed
+            instance.tour_scheduled.seats_booked += instance.number_persons
+            instance.tour_scheduled.save(force_update=True)
+        if instance._original_fields["status"].id == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
+            instance.tour_scheduled.seats_booked -= instance.number_persons
+            instance.tour_scheduled.save(force_update=True)
+
 
 post_save.connect(order_post_save, sender=Order)
 

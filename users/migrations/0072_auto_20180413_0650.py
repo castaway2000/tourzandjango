@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='generalprofile',
             name='referral_code',
-            field=models.CharField(default='c91c4ab6787f47f0b68b15d1e3b42aff', max_length=8),
+            field=models.CharField(default='c91c4ab6787f47f0b68b15d1e3b42aff', max_length=64),
         ),
         migrations.AddField(
             model_name='generalprofile',

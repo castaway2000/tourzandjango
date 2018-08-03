@@ -1,4 +1,61 @@
+if ($(".has-error").length>0){
+    console.log(10);
+     $('html, body').animate({scrollTop: ($(".has-error:last").parent("form").offset().top-100)}, 1);
+}
+
 $(document).ready(function(){
+
+    function finalPriceCalculation(){
+        if ($("#id_price")){
+            price = $("#id_price").val();
+            discount = $("#id_discount").val();
+            final_price = price-discount;
+            $("#price_final").text(final_price);
+        }
+    }
+    finalPriceCalculation();
+    $("#id_price, #id_discount").on("change", function(){
+        finalPriceCalculation();
+    });
+
+
+    if($('.owl-carousel').length>0){
+        $('.owl-carousel').owlCarousel({
+            dots: false,
+            autoplay: true,
+            autoplayTimeout: 7000,
+            nav: true,
+            smartSpeed :900,
+            navText : ["<i class='fa fa-2x fa-chevron-left'></i>","<i class='fa fa-2x fa-chevron-right'></i>"],
+            center: true,
+            items:1,
+            loop:true,
+            margin:10,
+            responsive:{
+                    1200:{items:1},
+                    0: {
+                        items: 1,
+                        autoHeight: true,
+                        mouseDrag: false,
+                        touchDrag: true
+                      },
+                      768: {
+                        items: 1,
+                        autoHeight: true,
+                        mouseDrag: false,
+                        touchDrag: true
+                      }
+            }
+        });
+    }
+    console.log("test");
+
+    $(".book-scheduled-tour, .book-private-tour").on("click", function(e){
+        e.preventDefault();
+        scheduled_tour = $(this).data("scheduled_tour");
+        $("#id_tour_scheduled").val(scheduled_tour);
+        $("html, body").animate({ scrollTop: $("#tour_booking_form").offset().top }, 300);
+    });
 
     //function showBookingButton(){
     //    var scroll = $(window).scrollTop();
@@ -281,6 +338,10 @@ window.setTimeout(function() {
   });
 }, 2500);
 
+$(document).on('click', '.alert', function(){
+    $(this).addClass('hidden');
+});
+
 
 $(document).ready(function(){
     $(document).on('click', '#toggle_left_menu', function(e) {
@@ -311,7 +372,16 @@ hidingLeftMenu();
 $(window).scroll(function () {
     var scroll = $(window).scrollTop();
     var width = $(window).width();
-    elementsResizing()
+    elementsResizing();
+
+    if($(".mask-wrapper .bg-mask")!=undefined){
+        //console.log(scroll);
+        if(scroll > 70){
+            $(".mask-wrapper").addClass("show-only-image");
+        }else{
+            $(".mask-wrapper").removeClass("show-only-image");
+        }
+    }
 });
 
 function elementsResizing(){

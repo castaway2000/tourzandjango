@@ -12,21 +12,23 @@ from rest_framework.response import Response
 from ..models import *
 from .serializers import *
 from .permissions import IsGuideOwnerOrReadOnly, IsTourGuideOwnerOrReadOnly
+from utils.api_helpers import FilterViewSet
 
 
-class PaymentTypeViewSet(viewsets.ModelViewSet):
+class PaymentTypeViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = PaymentType.objects.all()
     serializer_class = PaymentTypeSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('get',)
 
 
-class TourViewSet(viewsets.ModelViewSet):
+class TourViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True)
     serializer_class = TourSerializer
     permission_classes = (IsGuideOwnerOrReadOnly,)
 
     def get_queryset(self):
+        print(self.kwargs)
         user = self.request.user
         qs = Tour.objects.filter(is_active=True, is_deleted=False, guide__is_active=True)
         return qs
@@ -45,7 +47,7 @@ class TourViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class TourImageViewSet(viewsets.ModelViewSet):
+class TourImageViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = TourImage.objects.all()
     serializer_class = TourImageSerializer
     permission_classes = (IsTourGuideOwnerOrReadOnly,)

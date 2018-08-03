@@ -59,7 +59,7 @@
                                         {{ payment.created|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
-                                        <a href="{% url 'order_payment_checkout' payment.order.id %}">
+                                        <a href="{% url 'order_payment_checkout' payment.order.uuid %}">
                                             {{ payment.uuid }}
                                         </a>
                                     </td>

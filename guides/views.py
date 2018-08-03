@@ -18,6 +18,8 @@ from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
 import time
+import json
+from orders.views import making_booking
 
 
 @xframe_options_exempt
@@ -229,12 +231,17 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
-    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
-    for i in ILLEGAL_COUNTRIES:
-        if i == country:
-            illegal_country = True
-            break
+    countries = City.objects.filter(id=guide.city_id).values()
+    if countries:
+        try:
+            country = countries[0]['full_location'].split(',')[-1].strip()
+            for i in ILLEGAL_COUNTRIES:
+                if i == country:
+                    illegal_country = True
+                    break
+        except:
+            pass
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
@@ -245,23 +252,26 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
     guide_services = GuideService.objects.filter(guide=guide)
 
-    if request.POST:
-        data = request.POST
-        if data.get("text") and user:
-            kwargs = dict()
-            kwargs["text"] = data.get("text")
-            if data.get("name"):
-                kwargs["name"] = data.get("name")
-
-            kwargs["rating"] = 5
-
-            review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
-
-            if created:
-                #add messages here
-                pass
-
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    now = datetime.datetime.now().date()
+    form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id, "date": now})
+    if request.POST and form.is_valid():
+        return making_booking(request)
+        # data = request.POST
+        # if data.get("text") and user:
+        #     kwargs = dict()
+        #     kwargs["text"] = data.get("text")
+        #     if data.get("name"):
+        #         kwargs["name"] = data.get("name")
+        #
+        #     kwargs["rating"] = 5
+        #
+        #     review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
+        #
+        #     if created:
+        #         #add messages here
+        #         pass
+        #
+        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
     page = request.GET.get('page', 1)
@@ -305,7 +315,7 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     #         for interest_name in interests_list:
     #             Interest.objects.get_or_create(name=interest_name)
     #
-    #     messages.success(request, 'New artist was successfully created!')
+    #     messages.success(request, 'New interest was successfully created!')
     #
     # # for pictures: http://ashleydw.github.io/lightbox/
     # context = {
@@ -465,6 +475,54 @@ def profile_settings_guide(request, guide_creation=True):
         return render(request, 'users/profile_settings_guide.html', locals())
 
 
+@login_required
+def profile_questions_guide(request):
+    user = request.user
+    guide = user.guideprofile
+    page = "profile_questions_guide"
+
+    answers = list(GuideAnswer.objects.filter(guide=guide).values())
+    answers_dict = dict()
+    for answer in answers:
+        obj_dict = dict()
+        obj_dict["answer"] = answer["text"]
+        obj_dict["image"] = answer["image_small"]
+        answers_dict[answer["question_id"]] = obj_dict
+
+    questions = Question.objects.filter(is_active=True)
+    questions_list = list()
+    for question in questions.iterator():
+        obj_dict = dict()
+        obj_dict["id"] = question.id
+        obj_dict["text"] = question.get_text_with_city(guide)
+        if answers_dict.get(question.id):
+            obj_dict.update(answers_dict.get(question.id))
+            questions_list.append(obj_dict)
+        else:
+            if question.is_active:
+                questions_list.append(obj_dict)
+            else:
+                continue #if there is no guide's answer for is_active=False question, it will not be displayed
+
+    if request.POST:
+        data = request.POST
+        files = request.FILES
+        for k, v in data.items():
+            if "-" in k:
+                field, question_id = k.split("-")
+                print(field)
+                if field == "answer" and len(v)>0:
+                    default_kwargs = {"text": v}
+                    print(v)
+                    file_name = "file-%s" % question_id
+                    if file_name in files:
+                        image = files.get(file_name)
+                        default_kwargs["image"] = image
+                    GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
+
+    return render(request, 'guides/profile_questions_guide.html', locals())
+
+
 def search_guide(request):
     response_data = dict()
     results = list()
@@ -570,3 +628,16 @@ def guides_for_clients(request):
 
 def tours_for_clients(request):
     return render(request, 'guides/tours_for_clients.html', locals())
+
+
+def get_average_rate(request):
+    loc = request.GET.get('location')
+    rates = None
+    if request.is_ajax():
+        try:
+            rates = GuideProfile.objects.filter(city__original_name=loc).aggregate(Avg('rate'))
+            print(rates)
+        except Exception as err:
+            print(err)
+    rate = {"rates": rates}
+    return JsonResponse(rate)

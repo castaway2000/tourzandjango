@@ -7,93 +7,110 @@
         <div class="row">
             <div class="col-md-12">
             <h4>{% blocktrans %}Reminder:{% endblocktrans %}</h4>
-            <p>{% blocktrans %}Your schedule must be set in order for tourists to book you out. Make sure it reflects
-                your current availability.{% endblocktrans %}</p>
+            <p>{% blocktrans %}Your schedule for a tour must be set in order for tourists to book it out. Make sure it reflects
+                current availability of your tour.{% endblocktrans %}</p>
              <strong>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
-                also might charge a processing fee. Please charge for services accordingly
+                also might charge a processing fee. Please charge for services accordingly.
              {% endblocktrans %}</strong>
-                <div class="text-left mb10">
+
+                <div class="mt20">
+                    <h4>{% trans 'Attention! We are swithcing to a new style of tour page.' %}</h4>
+                    <div>
+                        {% trans 'It represents your tour in the most optimum way.' %}
+                        {% blocktrans %}
+                            You may see the example of a new style tour page by <a href="/" target="_blank">
+                                this link
+                            </a>
+                        {% endblocktrans %}
+                    </div>
+
+                </div>
+                <div class="text-left mt20 mb20">
                     <a href="{% url 'guide_settings_tour_create' %}" class="btn btn-primary">
-                        {% blocktrans %}Create Tour{% endblocktrans %}
+                        {% trans 'Create new tour' %}
                     </a>
                 </div>
 
                 <ul class="booking-list">
                     {% for tour in tours %}
                         <li>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-3">
-                                    <div class="booking-item-img">
-                                        <a href="{% url 'guide_settings_tour_edit' tour.slug tour.id %}">
-                                            {% if tour.image %}
-                                                <img src="{% get_media_prefix %}{{ tour.image }}"/>
-                                            {% else %}
-                                                <img src="{% static 'img/default_tour_image.jpg' %}">
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                    <br>
-                                </div>
-                                <div class="col-md-6 col-sm-6">
-                                    <div>
-                                        <span class="tour-rating pull-right">
-                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
-                                        </span>
-                                    </div>
-                                    <div class="tour-name">
-                                        {{ tour.name }}
-                                        {% if tour.is_active %}
-                                            <span class="label label-primary label-sm">{% blocktrans %}Active{% endblocktrans %}</span>
-                                        {% else %}
-                                            <span class="label label-danger label-sm">{% blocktrans %}Not Active{% endblocktrans %}</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="tour-guide-name">
-                                        by {{ tour.guide.user.generalprofile.first_name }}
-                                    </div>
-                                    <div>
-                                        <span class="tour-price">
-                                            <b>{% blocktrans %}Price: {% endblocktrans %}</b>
-                                            {% if tour.payment_type_id == 1 %}
-                                                {{ tour.price_hourly }} {{ tour.currency.name }} / hour
-                                            {% elif tour.payment_type_id == 2 %}
-                                                {{ tour.price }} {{ tour.currency.name }}
-                                            {% elif tour.payment_type_id == 3 %}
-                                                {% blocktrans %}Free!{% endblocktrans %}
-                                            {% endif %}
-
-                                            {% if tour.min_hours %}
-                                                 - min {{ tour.min_hours }}
-                                                {% if tour.min_hours == 1 %}
-                                                    {% blocktrans %}hour{% endblocktrans %}
+                            <div class="tour-item">
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-3">
+                                        <div class="booking-item-img">
+                                            <a href="{% url 'tour_edit_general' tour.slug %}">
+                                                {% if tour.image %}
+                                                    <img src="{% get_media_prefix %}{{ tour.image_small }}"/>
                                                 {% else %}
-                                                    {% blocktrans %}hours{% endblocktrans %}
+                                                    <img src="{% static 'img/default_tour_image.jpg' %}">
                                                 {% endif %}
-                                            {% endif %}
-
-                                        </span>
+                                            </a>
+                                        </div>
+                                        <br>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            {{ tour.overview|linebreaks|truncatewords_html:30 }}
+                                    <div class="col-md-6 col-sm-6">
+    {#                                    <div>#}
+    {#                                        <span class="tour-rating pull-right">#}
+    {#                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}#}
+    {#                                        </span>#}
+    {#                                    </div>#}
+                                        <div class="tour-name">
+                                            {{ tour.name }}
+                                            {% if tour.is_active %}
+                                                <span class="label label-primary label-sm">{% blocktrans %}Active{% endblocktrans %}</span>
+                                            {% else %}
+                                                <span class="label label-danger label-sm">{% blocktrans %}Not Active{% endblocktrans %}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="tour-guide-name">
+                                            by {{ tour.guide.user.generalprofile.first_name }}
+                                        </div>
+                                        <div>
+                                            <span class="tour-price">
+                                                <b>{% blocktrans %}Price: {% endblocktrans %}</b>
+                                                {% if tour.payment_type_id == 1 %}
+                                                    {{ tour.price_hourly }} {{ tour.currency.name }} / hour
+                                                {% elif tour.payment_type_id == 2 %}
+                                                    {{ tour.price }} {{ tour.currency.name }}
+                                                {% elif tour.payment_type_id == 3 %}
+                                                    {% blocktrans %}Free!{% endblocktrans %}
+                                                {% endif %}
+
+                                                {% if tour.min_hours %}
+                                                     - min {{ tour.min_hours }}
+                                                    {% if tour.min_hours == 1 %}
+                                                        {% blocktrans %}hour{% endblocktrans %}
+                                                    {% else %}
+                                                        {% blocktrans %}hours{% endblocktrans %}
+                                                    {% endif %}
+                                                {% endif %}
+
+                                            </span>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                {{ tour.overview|safe|linebreaks|truncatewords_html:30 }}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3 col-sm-3">
-                                    <div>
-                                        <p>
-                                            <a class="btn btn-primary" href="{% url 'tour' tour.slug tour.id %}">
-                                                {% blocktrans %}Tour Page{% endblocktrans %}
-                                            </a>
-                                        </p>
-                                        <p>
-                                            <a class="btn btn-success" href="{% url 'guide_settings_tour_edit' tour.slug tour.id %}">
-                                                {% blocktrans %}Tour Editing{% endblocktrans %}
-                                            </a>
-                                        </p>
-                                        <p>
-                                            <a class="btn btn-danger" href="{% url 'tour_deleting' tour.id %}">{% blocktrans %}Delete Tour{% endblocktrans %}</a>
-                                        </p>
+                                    <div class="col-md-3 col-sm-3">
+                                        <div>
+                                            <p>
+                                                <a class="btn btn-primary"
+                                                   href="{% url 'tour_new' tour.slug tour.uuid 'new' %}" target="_blank">
+                                                    {% blocktrans %}Tour Page{% endblocktrans %}
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a class="btn btn-success"
+                                                   href="{% url 'tour_edit_general' tour.slug %}" target="_blank">
+                                                    {% blocktrans %}Tour Editing{% endblocktrans %}
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a class="btn btn-danger" href="{% url 'tour_deleting' tour.id %}">{% blocktrans %}Delete Tour{% endblocktrans %}</a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

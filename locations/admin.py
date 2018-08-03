@@ -4,6 +4,7 @@ from .models import *
 
 class CountryAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Country._meta.fields]
+    readonly_fields = ["slug", "image_large", "image_medium", "image_small"]
 
     class Meta:
         model = Country
@@ -13,6 +14,7 @@ admin.site.register(Country, CountryAdmin)
 
 class CityAdmin(admin.ModelAdmin):
     list_display = [field.name for field in City._meta.fields]
+    readonly_fields = ["slug", "image_large", "image_medium", "image_small"]
 
     class Meta:
         model = City

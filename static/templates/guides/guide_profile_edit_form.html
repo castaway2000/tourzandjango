@@ -1,15 +1,13 @@
 {% load static %}
 {% load i18n %}
-
-
 <div class="row">
     <div class="col-lg-4">
         <h4>{% blocktrans %}Guide Profile{% endblocktrans %}</h4>
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
-                 {% blocktrans %}See Public Page{% endblocktrans %}
+             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid 'new' %}">
+                 {% blocktrans %}Go to Public Page{% endblocktrans %}
              </a>
         </div>
     {% endif %}
@@ -108,6 +106,7 @@
 
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %} *:
+                    <p id="average-rate"></p>
                     <span class="text-error">{{ form.rate.errors }}</span>
                 </label>
                 <div class="div-input-icon">
@@ -163,7 +162,7 @@
                 <span class="text-error">{{ form.date_of_birth.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control datepicker-date_test" data-date-format="mm/dd/yyyy"
+                    <input required class="form-control datepicker-date" data-date-format="mm/dd/yyyy"
                            id="date_of_birth"
                            name="date_of_birth"
                            {% if request.POST.date_of_birth %}

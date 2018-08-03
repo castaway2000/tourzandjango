@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 
     'locations',
     'tours',
@@ -64,6 +65,7 @@ INSTALLED_APPS = [
     'user_verification',
     'utils',
     'coupons',
+    'mobile',
 
     #external packages
     'allauth',
@@ -81,6 +83,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework.schemas',
     'rest_framework.documentation',
+    'rest_auth',
     'storages',
     'axes',
     'phonenumber_field',
@@ -94,7 +97,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -117,7 +120,7 @@ MIDDLEWARE = [
     'users.middleware.TrackingActiveUserMiddleware',
     'users.middleware.ReferralCodesGettingMiddleware',
 
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 
 ]
 
@@ -258,11 +261,21 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+}
+
+LOGOUT_ON_PASSWORD_CHANGE = False
+REST_SESSION_LOGIN = False
+REST_USE_JWT = True
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.api.serializers.UserDetailsSerializerCustom',
+    'PASSWORD_RESET_SERIALIZER': 'users.api.serializers.PasswordResetSerializerCustom',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'users.api.serializers.PasswordResetConfirmSerializerCustom',
 }
 
 
@@ -378,11 +391,11 @@ except:
 try:
     #local settings, specific for your machine
     from .local_settings import *
-
-    #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
-    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
-        .remove("django.middleware.cache.FetchFromCacheMiddleware")
 except Exception as e:
     print(e)
     pass
+
+# #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+# MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
+#     .remove("django.middleware.cache.FetchFromCacheMiddleware")
 
