@@ -1019,6 +1019,18 @@ a{
     margin-right: 2px!important;
 }
 
+.page-tabs > li > a.is-disabled{
+
+}
+
+.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: none;
+    pointer-events: none;
+}
+
+
 .w100{
     width: 100px;
 }
@@ -1258,13 +1270,24 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 
 .discount-box .tour-name{
     font-size: 25px;
-    margin-bottom: 10px;
 }
 
 .discount-box .normal-price,
 .discount-box .promotion-price,
-.discount-box .dates-available{
+.discount-box .dates-available,
+.discount-box .additional-description{
     line-height: 2;
+}
+
+.isDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.isDisabled > a {
+  color: currentColor;
+  display: inline-block;  /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
 }
 
 @media (min-width: 768px) {

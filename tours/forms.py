@@ -11,6 +11,7 @@ from django.utils.safestring import mark_safe
 import datetime
 from dateutil.relativedelta import relativedelta
 from utils.general import remove_zeros_from_float
+import string
 
 
 class PictureWidget(forms.widgets.Widget):
@@ -91,15 +92,22 @@ class TourGeneralForm(forms.ModelForm):
         )
 
     def clean_name(self):
-        if not self.cleaned_data.get("name"):
+        name = self.cleaned_data.get("name")
+
+        #cheking if name text is in English
+        try:
+            name.encode(encoding='utf-8').decode('ascii')
+        except UnicodeDecodeError:
+            raise forms.ValidationError(_('This field should contain only latin symbols'))
+
+        if not name:
             raise forms.ValidationError(_('This field is required'))
         else:
-            name = self.cleaned_data.get("name")
             tour_exist = Tour.objects.filter(name=name).exclude(id=self.instance.pk).exists()
             if tour_exist:
                 raise forms.ValidationError(_('This tour name is already in use'))
 
-        return self.cleaned_data.get('name')
+        return name
 
 
 class TourProgramItemForm(forms.Form):
