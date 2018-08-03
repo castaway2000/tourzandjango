@@ -19,7 +19,7 @@
                         <li class="dates-available">
                             <span class="item-title">{% trans 'Dates' %}: </span>
                             {% for item in tour.available_discount_tours %}
-                                {{ item.dt|date:"m/d/Y" }} (item.seats_available
+                                {{ item.dt|date:"m/d/Y" }} ({{ item.seats_available }}
                                 {% if item.seats_available == 1 %}
                                     {% trans 'spot' %}{% else %}{% trans 'spots' %}
                                 {% endif %}
