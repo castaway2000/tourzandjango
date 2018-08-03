@@ -16,6 +16,14 @@
     <div class="row">
         <div class="col-lg-7">
             {% if guide %}
+                <div class="mt20">
+                    <h4>{% trans 'Attention! We are swithcing to a new style of profile page.' %}</h4>
+                    <div>
+                        {% trans 'It represents you in a more personal way.' %}
+                        {% trans 'check out and answer a few' %} <a rel=nofollow href="{% url 'profile_questions_guide' %}" target="_blank">{% trans 'guide profile questions.' %}</a>
+                    </div>
+                </div>
+                <br><br>
                <div class="form-group">
                     <div class="checkbox">
                         <label>
