@@ -7,6 +7,8 @@ urlpatterns = [
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/(?P<new_view>\w+)/$', views.guide, name='guide_new'),
 
     url(r'^profile_settings/guide/$', views.profile_settings_guide, name='profile_settings_guide'),
+    url(r'^profile_settings/guide-questions/$', views.profile_questions_guide, name='profile_questions_guide'),
+
     url(r'^search_guide/$', views.search_guide, name='search_guide'),
     url(r'^guide/registration/welcome/$', views.guide_registration_welcome, name='guide_registration_welcome'),
 
@@ -22,5 +24,6 @@ urlpatterns = [
 
     url(r'^guides_for_clients/$', views.guides_for_clients, name='guides_for_clients'),
     url(r'^tours_for_clients/$', views.tours_for_clients, name='tours_for_clients'),
+    url(r'^ajax/rate_agregate/$', views.get_average_rate, name='get_average_rate'),
 
 ]

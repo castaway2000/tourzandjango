@@ -1,5 +1,15 @@
 from django import forms
 from .models import *
+from django.core.exceptions import ValidationError
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, Field, Submit, HTML, Div
+from crispy_forms.bootstrap import FormActions
+from django.urls import reverse
+from django.utils.translation import ugettext as _
+from string import Template
+from django.utils.safestring import mark_safe
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 class GuideProfileForm(forms.ModelForm):
@@ -13,3 +23,45 @@ class GuideProfileForm(forms.ModelForm):
         #city is added on form save in view
         fields = ("overview", "profile_image", "license_image", "rate", "is_active", "is_default_guide", "min_hours",
                   "additional_person_cost")
+
+
+class BookingGuideForm(forms.Form):
+    # , widget=forms.HiddenInput()
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'))
+    guide_id = forms.ChoiceField(required=True)
+    hours = forms.IntegerField(required=True, initial=1, min_value=1)
+    number_people = forms.IntegerField(required=True, min_value=2)
+    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}))
+
+    def __init__(self, *args, **kwargs):
+        self.max_persons_nmb = 3
+        guide = kwargs.pop("guide")
+        self.guide = guide
+
+        super(BookingGuideForm, self).__init__(*args, **kwargs)
+        self.fields['guide_id'] = forms.ChoiceField(
+            choices=[(guide.id, guide.id)]
+        )
+        self.fields['guide_id'].widget = forms.HiddenInput()
+        self.fields['hours'] = forms.IntegerField(required=True, initial=guide.min_hours, min_value=guide.min_hours, max_value=8)
+        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.max_persons_nmb,
+                                                          label=_("Number people (max: %s)" % self.max_persons_nmb))
+        self.helper = FormHelper(self)
+        self.helper.form_tag = True
+        self.helper.layout.append(
+            HTML(
+                '<div class="mb10"><b>{}: </b>{}</div>'
+                '<div><b>{}: </b>{} USD</div>'
+                '<div><b>{}: </b><span id="price_total">{}</span> USD</div>'
+                '<div class="text-center">'
+                '<button name="action" class="btn btn-primary" type="submit">'
+                '{}</button>'
+                '</div>'.format(_("Min hours"), guide.min_hours, _("Rate per hour"), guide.rate,  _("Total price"), guide.rate, _('Submit'))
+            ),
+        )
+
+    def clean_number_people(self):
+        number_people = self.cleaned_data.get("number_people")
+        if number_people > self.max_persons_nmb:
+            raise forms.ValidationError(_("Maximum number of tour participants is: %s") % self.max_persons_nmb)
+        return self.cleaned_data.get("number_people")

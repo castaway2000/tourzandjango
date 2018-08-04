@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .forms import *
 from .models import *
 from tours.models import Tour
-from orders.models import Review
+
 from locations.models import City
 from django.contrib.auth.models import User
 from django.utils.translation import activate, get_language
@@ -34,6 +34,8 @@ from allauth.account.utils import complete_signup
 from allauth.account import app_settings
 from allauth.exceptions import ImmediateHttpResponse
 import time
+from website_management.models import HomePageContent
+from locations.models import Country
 
 
 def login_view(request):
@@ -80,8 +82,6 @@ def logout_view(request):
 @login_required()
 def after_login_router(request):
     user = request.user
-    print("after_login_router")
-    print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))
@@ -96,15 +96,31 @@ def after_login_router(request):
 
 def home(request):
     current_page = "home"
-    guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
+    # guides = GuideProfile.objects.filter(is_active=True)\
+    #     .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
+    #
+    # tours = Tour.objects.filter(is_active=True).order_by("-rating")
+    # all_tours = tours.order_by("-rating")[:4]
+    # hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
+    # fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
+    # free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
+    # cities = City.objects.filter(is_active=True, is_featured=True)\
+    #              .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
 
-    tours = Tour.objects.filter(is_active=True).order_by("-rating")
-    all_tours = tours.order_by("-rating")[:4]
-    hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
-    fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
-    free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
-    cities = City.objects.filter(is_active=True, is_featured=True).values("original_name", "image", "image_medium", "name")[:5]
+    try:
+        obj = HomePageContent.objects.last()
+    except:
+        pass
+    countries = Country.objects.filter(is_active=True).order_by("position_index", "name")[:6]
+    special_offers_items = Tour.objects.filter(is_active=True)
+    special_offer_tours = list()
+    count = 0
+    for special_offers_item in special_offers_items:
+        if len(special_offers_item.available_discount_tours) > 0:
+            special_offer_tours.append(special_offers_item)
+            if count == 4:
+                break
+            count += 1
     return render(request, 'users/home.html', locals())
 
 

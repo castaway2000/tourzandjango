@@ -1,30 +1,41 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load crispy_forms_tags %}
 
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-lg-7 col-lg-offset-2">
 
                 <div class="box bg-gray chat-item single-chat">
                     <div>
-{#                        <h3>{{ chat.topic }}</h3>#}
                         <h3>
-                            {% blocktrans %}Chat {% endblocktrans %}
-                            {% blocktrans %}with {% endblocktrans %}
+                            {% trans 'Chat with' %}
                             {% if request.user != chat.guide %}
-                                <a href="{% url 'guide' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid %}">
+                                <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
                                     {% if chat.guide.generalprofile.first_name %}
                                         {{ chat.guide.generalprofile.first_name }}
                                     {% else %}
                                         {{ chat.guide.username }}
                                     {% endif %}
-                                a {{ chat }}
                                 </a>
-                                {% blocktrans %}(guide){% endblocktrans %}
-                            {% else %}
+                                ({% trans 'guide' %})
+                            {% elif request.user == chat.tourist and request.session.current_role != "guide" %}
+                                <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
+                                    {% if chat.guide.generalprofile.first_name %}
+                                        {{ chat.guide.generalprofile.first_name }}
+                                    {% else %}
+                                        {{ chat.guide.username }}
+                                    {% endif %}
+                                </a>
+                                ({% trans 'guide' %})
+                            {% elif request.user == chat.guide %}
                                  <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
                                     {% if chat.tourist.generalprofile.first_name %}
                                         {{ chat.tourist.generalprofile.first_name }}
@@ -32,13 +43,9 @@
                                         {{ chat.tourist.username }}
                                     {% endif %}
                                 </a>
-                                {% blocktrans %}(tourist){% endblocktrans %}
+                                ({% trans 'tourist' %})
                             {% endif %}
                         </h3>
-                    </div>
-                    <div>
-{#                        <b>{% blocktrans %}with {% endblocktrans %}</b>#}
-                         <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
                     </div>
 
                     <div id="messages_area">
@@ -54,7 +61,7 @@
                                             {% else %}
                                                 {{ message.user__username }}
                                             {% endif %}
-                                        {% endif %}, {{ message.created|date:"m.d.Y H:i:s" }}
+                                        {% endif %}, {{ message.created|date:"m/d/Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
                                         {{ message.message|linebreaks }}
@@ -77,11 +84,167 @@
 
                 </div>
             </div>
+
+            <div class="col-lg-3 col-lg-offset-0">
+                {% if form %}
+                    <h3 class="text-center">
+                        {% trans 'Order details' %}
+                    </h3>
+                    <div>
+                        {% if order %}
+                            {% if request.session.current_role == "guide" %}
+                                {% with order.tour as tour %}
+                                    {% if tour %}
+                                        <div>
+                                            <p>
+                                                <b>{% trans "Tour" %}: </b>
+                                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
+                                                                              target="_blank">{{ tour.name }}
+                                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
+                                                </a>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                                <div>
+                                    <p>
+                                        <b>{% trans "Status" %}: </b>{{ order.status.name }}
+                                    </p>
+                                </div>
+                                {% if not order.is_approved_by_guide %}
+                                    {% crispy form %}
+                                {% else %}
+                                    <p>
+                                        <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
+                                    </p>
+                                    <p>
+                                        <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
+                                    </p>
+                                    {% if order.status.id == 1 %}
+                                        <div class="mt20">
+                                            <b>{% trans 'Waiting for tourist confirmation and payment reservation' %}</b>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                {% with order.tour as tour %}
+                                    {% if tour %}
+                                        <div>
+                                            <p>
+                                                <b>{% trans "Tour" %}: </b>
+                                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
+                                                                              target="_blank">{{ tour.name }}
+                                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
+                                                </a>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <p>
+                                            <b>{% trans "Status" %}: </b>{{ order.status.name }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        {% if not tour %}
+                                            <p>
+                                                <b>{% trans "Hours" %}: </b>{{ order.hours_nmb }}
+                                            </p>
+                                        {% endif %}
+                                        <p>
+                                            <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
+                                        </p>
+                                        <p>
+                                            <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
+                                        </p>
+                                        {% if order.status.id == 1 %}
+                                            {% if order.is_approved_by_guide  %}
+                                                <div class="text-left">
+                                                    <form method="post">{% csrf_token %}
+                                                        <div class="form-group">
+                                                            {% if request.session.current_role != "guide" %}
+                                                                <p>
+                                                                    {% trans 'Your guide has approved booking conditions.' %}
+                                                                    {% trans 'Click the button below to go to checkout page.' %}
+                                                                </p>
+                                                                <div class="form-group">
+                                                                    <input class="btn btn-success" type="submit" name="approve"
+                                                                        value="{% trans 'Approve and checkout' %}">
+                                                                </div>
+                                                                {% trans 'or' %}
+                                                                <div class="form-group mt10">
+                                                                    <a href="{% url 'cancel_order' order.uuid %}"
+                                                                        class="btn btn-danger">
+                                                                        {% trans 'Cancel booking' %}
+                                                                    </a>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            {% elif order.status.id == 1 %}
+                                                <div class="mt20">
+                                                    <b>{% trans 'Waiting for guide confirmation' %}</b>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endwith %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% elif order %}
+                    {% with order.tour as tour %}
+                        {% if tour %}
+                            <p>
+                                <b>{% trans "Tour" %}: </b>
+                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
+                                                              target="_blank">{{ tour.name }}
+                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
+                                </a>
+                            </p>
+                        {% endif %}
+
+                        <p>
+                            <b>{% trans "Status" %}: </b>{{ order.status.name }}
+                        </p>
+                        {% if not tour %}
+                            <p>
+                                <b>{% trans "Hours" %}: </b>{{ order.hours_nmb }}
+                            </p>
+                        {% endif %}
+                        <p>
+                            <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
+                        </p>
+                        <p>
+                            <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
+                        </p>
+                        {% if request.session.current_role == "guide" %}
+                            {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
+                                <p>
+                                    <a href="{% url 'cancel_order' order.uuid %}"
+                                        class="btn btn-danger btn-sm">
+                                        {% trans 'Cancel' %}
+                                    </a>
+                                </p>
+                            {% endif %}
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </div>
+
         </div>
     </div>
 {% endblock content %}
 
 
 {% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $('#id_date_booked_for').datetimepicker({
+            minDate: new Date(),
+            format: 'MM/DD/YYYY HH:mm',
+        });
+    </script>
     <script src="{% static 'js/custom_scripts/chat_on_sockets.js' %}"></script>
 {% endblock js_stuff %}

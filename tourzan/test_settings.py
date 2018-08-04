@@ -5,7 +5,7 @@ ALLOWED_HOSTS = ['*']
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'realtestingdb',
         'USER': 'testingdb',
         'PASSWORD': 'TourzanTesting12#$',
@@ -28,7 +28,7 @@ AWS_S3_ENCRYPTION = True
 # AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 # AWS_PRIVATE_MEDIA_LOCATION = "media/private"
 
-MEDIA_URL = 'https://tourzan-testing.s3.amazonaws.com/'
+MEDIA_URL = 'https://d3lcm1fnjqs9jv.cloudfront.net/'
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }

@@ -1,0 +1,107 @@
+{% extends 'tours/profile_settings_guide_tour_edit.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block tour_edit_content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <a href="{% url 'tour_edit_price_and_schedule' slug %}" class="btn btn-default">
+                {% trans 'Back' %}
+            </a>
+        </div>
+        <div class="col-lg-4">
+            {% if form %}
+                {% crispy form %}
+            {% else %}
+                <h4>{% trans 'Tour Details' %}</h4>
+                <ul class="list-unstyled">
+                    <li>{% trans 'Date' %}: {{ scheduled_tour.dt|date:"m/d/Y" }}</li>
+                    <li>{% trans 'Time' %}: {{ scheduled_tour.dt|date:"H:i" }}</li>
+                    <li>{% trans 'Price' %}: {{ scheduled_tour.price }}</li>
+                    <li>{% trans 'Discount' %}: {{ scheduled_tour.discount }}</li>
+                    <li>{% trans 'Price final' %}: {{ scheduled_tour.price_final}}</li>
+                    <li>{% trans 'Seats total' %}: {{ scheduled_tour.seats_total}}</li>
+                    <li>{% trans 'Seats booked' %}: {{ scheduled_tour.seats_booked}}</li>
+                    <li>{% trans 'Seats avaialble' %}: {{ scheduled_tour.seats_available}}</li>
+                    {% with scheduled_tour.get_pending_reserved_seats as pending_reserved_seats %}
+                        <li><b>{% trans 'Pending bookings' %}:</b> {{ pending_reserved_seats }}
+                            {% if pending_reserved_seats > 0 %}
+                                <br>
+                                {% trans 'Go to ' %}<a href="{% url 'orders' %}">{% trans 'orders page' %} </a>
+                                {% trans 'to confirm pending bookings' %}
+                            {% endif %}
+                        </li>
+                    {% endwith %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="col-lg-8">
+            <div class="mt20 text-center">
+                <h4>{% trans 'Orders list' %}</h4>
+                {% with scheduled_tour.get_all_orders as orders %}
+                    {% if orders %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        {% trans 'Persons nmb' %}
+                                    </th>
+                                    <th>
+                                        {% trans 'Paid date' %}
+                                    </th>
+                                    <th>
+                                        {% trans 'Paid amount' %}, USD
+                                    </th>
+                                    <th>
+                                        {% trans 'Fees' %}, USD
+                                    </th>
+                                    <th>
+                                        {% trans 'You receive' %}, USD
+                                    </th>
+                                    <th>
+                                        {% trans 'Status' %}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                    <tr>
+                                        <td>{{ order.number_persons }}</td>
+                                        <td>{{ order.number_persons }}</td>
+                                        <td>{{ order.total_price_before_fees }}</td>
+                                        <td>{{ order.fees_guide }}</td>
+                                        <td>{{ order.guide_payment }}</td>
+                                        <td>
+                                            {% if order.status.id == 5 or order.status.id == 9 %}
+                                                <a href="{% url 'change_order_status' order.id 2 %}"
+                                                    class="btn btn-success btn-sm">
+                                                    {% trans 'Confirm' %}
+                                                </a>
+                                            {% elif order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
+                                                <p>
+                                                    <a href="{% url 'cancel_order' order.id %}"
+                                                        class="btn btn-danger btn-sm">
+                                                        {% trans 'Cancel' %}
+                                                    </a>
+                                                </p>
+                                            {% else %}
+                                                {{ order.status.name }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h5>{% trans 'There are no orders for this date' %}</h5>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+{% endblock tour_edit_content %}
+
+{% block js_stuff %}
+{% endblock js_stuff %}

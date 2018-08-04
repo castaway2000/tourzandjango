@@ -1,15 +1,13 @@
 {% load static %}
 {% load i18n %}
-
-
 <div class="row">
     <div class="col-lg-4">
         <h4>{% blocktrans %}Guide Profile{% endblocktrans %}</h4>
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
-                 {% blocktrans %}See Public Page{% endblocktrans %}
+             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid 'new' %}">
+                 {% blocktrans %}Go to Public Page{% endblocktrans %}
              </a>
         </div>
     {% endif %}
@@ -18,6 +16,14 @@
     <div class="row">
         <div class="col-lg-7">
             {% if guide %}
+                <div class="mt20">
+                    <h4>{% trans 'Attention! We are swithcing to a new style of profile page.' %}</h4>
+                    <div>
+                        {% trans 'It represents you in a more personal way.' %}
+                        {% trans 'check out and answer a few' %} <a rel=nofollow href="{% url 'profile_questions_guide' %}" target="_blank">{% trans 'guide profile questions.' %}</a>
+                    </div>
+                </div>
+                <br><br>
                <div class="form-group">
                     <div class="checkbox">
                         <label>
@@ -108,6 +114,7 @@
 
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %} *:
+                    <p id="average-rate"></p>
                     <span class="text-error">{{ form.rate.errors }}</span>
                 </label>
                 <div class="div-input-icon">

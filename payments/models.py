@@ -69,7 +69,7 @@ class PaymentMethod(models.Model):
             if not other_payment_methods:
                 self.is_default = True
 
-        #aset utomatically set the default payment method if current default is being deleted
+        #automatically set the default payment method if current default is being deleted
         if self.pk and self.is_active != self._original_fields["is_active"] and self.is_active == False:
             other_payment_methods_default = PaymentMethod.objects.filter(user=self.user, is_active=True, is_default=True)\
                 .exclude(id=self.id)

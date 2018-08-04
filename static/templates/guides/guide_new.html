@@ -2,38 +2,72 @@
 {% load static %}
 {% load i18n %}
 {% load stars_rating %}
+{% load crispy_forms_tags %}
 
+{% block og_info %}
+{% endblock og_info %}
 
 {% block header_stuff %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
 {% endblock %}
 
 
 {% block content %}
-    <div class="booking-proposal-container">
-        <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
-            Click here to book a guide!
-        </a>
-    </div>
+    {% if guide.is_active %}
+        <div class="booking-proposal-container">
+            <div class="mb5">
+                {% if app_id %}
+                    <a class="btn btn-social btn-facebook" href="https://www.facebook.com/dialog/feed?app_id={{ app_id }}&redirect_uri={{ request.build_absolute_uri }}
+                        &link={{ request.build_absolute_uri }}
+                        &display=popup&caption=An%20example%20caption">
+                        <i class="fa fa-facebook"></i>{% trans 'Share' %}
+                    </a>
+                {% endif %}
+            </div>
+            <div class="mb5">
+                <a class="btn btn-default" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                    {% trans 'Chat with' %} {{ guide.user.generalprofile.first_name }}</a>
+            </div>
+            <div>
+                <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
+                    {% trans 'Book now' %}!
+                </a>
+            </div>
+        </div>
 
-    <div class="guide-action-container">
-        <div class="main-buttons">
-            <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.id %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
-            <a href="#booking_area" class="btn btn-primary btn-booking-proposal">{%  trans 'Book' %}</a>
+        <div class="guide-action-container">
+            <div class="main-buttons">
+                <a class="btn btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
+                    &redirect_uri={{ request.build_absolute_uri }}
+                    &link={{ request.build_absolute_uri }}
+                    &display=popup&caption=An%20example%20caption">
+                    <i class="fa fa-facebook"></i> {% trans 'Share' %}
+                </a>
+                <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.uuid %}">
+                    {% trans 'Message' %}
+                </a>
+                <a href="#booking_area" class="btn btn-primary btn-booking-proposal">{%  trans 'Book' %}</a>
+            </div>
+            <div class="scroll-top-container">
+                <a href="#profile_container" class="btn btn-primary" id="scroll_top">
+                    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
-        <div class="scroll-top-container">
-            <a href="#profile_container" class="btn btn-primary" id="scroll_top">
-                <i class="fa fa-chevron-up" aria-hidden="true"></i>
-            </a>
-        </div>
-    </div>
+
+    {% endif %}
 
     <div class="container">
         <div class="breadcrumb-guide-container text-center">
             <ul class="breadcrumb">
-                <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
+                <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
+                <li>
+                    <a href="{% url 'country_guides' guide.city.country.slug %}">{{ guide.city.country.name }}</a>
                 </li>
-                <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>
+{#                <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>#}
+                <li>
+                    <a href="{% url 'city_guides' guide.city.country.slug guide.city.slug %}">{{ guide.city.name }}</a>
+                </li>
                 <li class="active">{{ guide.user.generalprofile.first_name }}</li>
             </ul>
         </div>
@@ -44,214 +78,155 @@
                     <div class="images">
                         <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                             {% for guide_answer in guide_answers %}
-                                <img src="{% get_media_prefix %}{{ guide_answer.image }}"
-                                     alt="Image for {{ guide_answer.guide.user.generalprofile.first_name }}"
-                                     class="img-responsive"
-                                     title="Image for {{ guide_answer.guide.user.generalprofile.first_name }}" />
+                                {% if guide_answer.image_medium %}
+                                    <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
+                                         alt="Image for {{ guide_answer.guide.user.generalprofile.first_name }}"
+                                         class="img-responsive"
+                                         title="Image for {{ guide_answer.guide.user.generalprofile.first_name }}" />
+                                {% elif guide_answer.image %}
+                                    <img src="{% get_media_prefix %}{{ guide_answer.image }}"
+                                         alt="Image for {{ guide_answer.guide.user.generalprofile.first_name }}"
+                                         class="img-responsive"
+                                         title="Image for {{ guide_answer.guide.user.generalprofile.first_name }}" />
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="location">
-                        {{ guide.city.full_location }}
-                    </div>
-                    <div class="general-info" id="guide_general_info">
-                        <span class="name">{{ guide.user.generalprofile.first_name }}</span>, <span>{{ guide.user.generalprofile.age }}</span><br>
+{#                    <div class="location">#}
+{#                        {% if guide.city.name %}#}
+{#                            {{ guide.city.name }}#}
+{#                        {% elif guide.city.original_name %}#}
+{#                            {{ guide.city.original_name }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+                    <div class="general-info mt30" id="guide_general_info">
+                        <span class="name">{{ guide.user.generalprofile.first_name }}</span>
+                        {% if guide.user.generalprofile.age > 0 %}
+                            , <span>{{ guide.user.generalprofile.age }} {% trans 'years old' %}</span>
+                        {% endif %}
+                        <br>
                         <span class="profession">{{ guide.user.generalprofile.profession|default_if_none:"" }}</span>
                     </div>
 
                     <div class="answers">
                         {% if guide.user.userinterest_set.all %}
-                            <div class="answer-container">
-                                <p class="question">{% trans 'ASK' %} <b>{{ guide.user.generalprofile.first_name }}</b> {% trans 'ABOUT' %}</p>
-                                <p class="answer">
+                            <div class="mt10 mb50">
+                                <div>{% trans 'Interests' %}: </div>
+                                <div>
                                     {% for item in guide.user.userinterest_set.all %}
                                         <span class="label label-default label-tag">
                                             {{ item.interest.name }}
                                         </span>
                                     {% endfor %}
-                                </p>
+                                </div>
                             </div>
                         {% endif %}
 
-
-                        {% for guide_answer in guide_answers %}
-                            <div class="answer-container">
-                                <p class="question">
-                                    <b>{{ guide_answer.question.text|safe }}</b>
-                                </p>
-                                <p class="answer">{{ guide_answer.text|safe }}</p>
-                                {% if guide_answer.image %}
-                                    <div class="answer-image">
-                                        <img src="{{ guide_answer.image.url }}" class="img-responsive">
-                                    </div>
-                                {% endif %}
+                        {% if not guide_answers %}
+                            <div class="img-initial mt20 mb20">
+                                <img src="{{  guide.profile_image_small.url }}">
                             </div>
-                        {% endfor %}
+                            <div>
+                                {{ guide.overview|safe|linebreaks }}
+                            </div>
+                        {% else %}
+                            {% for guide_answer in guide_answers %}
+                                <div class="answer-container">
+                                    <p class="question">
+                                        <b>{{ guide_answer.get_question_text_with_city|safe }}</b>
+                                    </p>
+                                    <p class="answer">{{ guide_answer.text|safe }}</p>
+                                    {% if guide_answer.image_medium %}
+                                        <div class="answer-image">
+                                            <img src="{{ guide_answer.image_medium.url }}" class="img-responsive">
+                                        </div>
+                                    {% elif guide_answer.image %}
+                                        <div class="answer-image">
+                                            <img src="{{ guide_answer.image.url }}" class="img-responsive">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
 
-                    <div class="social-networks text-center">
-                        {% if guide.user.generalprofile.twitter %}
-                            <a href="https://twitter.com/intent/user?user_id={{ guide.user.generalprofile.twitter }}"
-                               target="_blank"
-                               class="btn btn-social-icon btn-twitter btn-lg"><span class="fa fa-twitter"></span></a>
-                        {% endif %}
-                        {% if guide.user.generalprofile.facebook %}
-                            <a href="https://facebook.com/{{ guide.user.generalprofile.facebook }}"
-                                target="_blank"
-                                class="btn btn-social-icon btn-facebook btn-lg"><span class="fa fa-facebook"></span></a>
-                        {% endif %}
-                        {% if guide.user.generalprofile.instagram %}
-                            <a href="https://instagram.com/{{ guide.user.generalprofile.instagram }}"
-                                target="_blank"
-                                class="btn btn-social-icon btn-instagram btn-lg"><span class="fa fa-instagram"></span></a>
-                        {% endif %}
-                    </div>
-
-                    <div class="actions-panel">
-
-                        <div class="text-center mb10">
-                            {% if guide != request.user.guideprofile %}
-                                {% if current_order.status.id == 5 %}
-                                    <a class="btn btn-primary btn-lg popup-text btn-order-review" href="#writing_feedback_modal"
-                                    data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">
-                                        {% blocktrans %}Write Review{% endblocktrans %}
+                    {% if guide.is_active %}
+                        <div class="actions-panel">
+                            <div class="text-center mb10">
+                                {% if guide != request.user.guideprofile or request.session.current_role != "guide" %}
+    {#                                {% if current_order.status.id == 5 %}#}
+    {#                                    <a class="btn btn-primary btn-lg popup-text btn-order-review" href="#writing_feedback_modal"#}
+    {#                                    data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">#}
+    {#                                        {% blocktrans %}Write Review{% endblocktrans %}#}
+    {#                                    </a>#}
+    {#                                {% endif %}#}
+                                    <h4 class="text-center">{% trans 'Do you have any questions?' %}</h4>
+                                    <a class="btn btn-primary btn-lg"
+                                       href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                                        {% trans 'Chat with' %} {{ guide.user.generalprofile.first_name }}
                                     </a>
                                 {% endif %}
-                                <a class="btn btn-default btn-lg" href="{% url 'chat_creation_guide' guide.id %}">{% blocktrans %}Send Message{% endblocktrans %}</a>
-                            {% endif %}
-                        </div>
-                    </div>
-
-
-                    <div class="booking-item-dates-change" id="booking_area">
-                        <h3 class="text-center">{% trans 'Booking area' %}</h3>
-                        {% if current_order %}
-                            <div class="text-center">
-                                <h4 class="text-center">
-                                    {% blocktrans %}You have already booked this guide{% endblocktrans %}
-                                </h4>
-                                <a href="" id="book_more">{% blocktrans %}book more{% endblocktrans %}</a>
-                                or
-                                <a href="{% url 'my_bookings' %}?guide={{ guide.user.username}}">{% blocktrans %}Edit{% endblocktrans %}</a>
                             </div>
-                        {% endif %}
-
-                        <div id="booking_form_area" class="text-center {% if current_order %}hidden{% endif %}">
-                            <form method="post" id="form_guide_scheduling"
-                                class="form-horizontal schedule-form"
-                                action="{% url 'making_booking' %}"
-                            >{% csrf_token %}
-                                <input class="hidden" value="{{ guide.id }}" name="guide_id" id="guide_id">
-                                <input class="hidden" id="time_slots_chosen" name="time_slots_chosen">
-                                <input class="hidden" id="booking_hours" name="booking_hours">
-                                <input class="hidden" id="minimum_hours" name="minimum_hours" value="{{ guide.min_hours }}">
-
-                                {% if guide_services %}
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label>Select additional services</label>
-                                                <select multiple class="form-control"
-                                                    id="additional_services_select"
-                                                    name="additional_services_select"
-                                                >
-                                                    {% for guide_service in guide_services %}
-                                                        <option value="{{ guide_service.id }}">
-                                                            {{ guide_service.service.name }} -
-                                                            {% if guide_service.price == 0 %}
-                                                                free
-                                                            {% else %}
-                                                                {{ guide_service.price }}USD
-                                                            {% endif %}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                                <div class="row">
-                                    <div class="col-lg-4 col-lg-offset-4">
-                                        <div class="input-daterange" id="listing-calendar" data-date-format="mm.dd.yyyy">
-                                            <div class="form-group form-group-icon-left">
-                                                <i class="fa fa-calendar input-icon"></i>
-                                                <label>{% blocktrans %}Booking a tour date:{% endblocktrans %}</label>
-                                                <input id="booking_date" class="form-control d_picker"
-                                                       name="start" required value="{% now "mm.dd.yyyy" %}"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 text-center">
-                                        <p>Time slots:</p>
-                                        <div id="booking_form_error_container"></div>
-                                        <div id="time_slots" class="time-slots-container"
-                                             data-link="{% url 'available_date_timeslots' %}"></div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-4 col-lg-offset-4">
-                                        <div class="form-group form-group- form-group-select-plus">
-                                            <label>{% blocktrans %}Number of people:{% endblocktrans %}</label>
-                                            <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                <label class="btn btn-primary active">
-                                                    <input type="radio" name="options" />1</label>
-                                                <label class="btn btn-primary">
-                                                    <input type="radio" name="options" />2</label>
-                                                <label class="btn btn-primary">
-                                                    <input type="radio" name="options" />3</label>
-                                                <label class="btn btn-primary">
-                                                    <input type="radio" name="options" />4</label>
-                                                <label class="btn btn-primary">
-                                                    <input type="radio" name="options" />5+</label>
-                                            </div>
-                                            <select class="form-control hidden">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option selected="selected">5</option>
-                                                <option>6</option>
-                                                <option>7</option>
-                                                <option>8</option>
-                                                <option>9</option>
-                                                <option>10</option>
-                                                <option>11</option>
-                                                <option>12</option>
-                                                <option>13</option>
-                                                <option>14</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12 text-center">
-                                        <div class="form-group text-center">
-                                             <button type="submit"
-                                                 class="btn btn-primary btn-lg submit-button">
-                                                    {% blocktrans %}Book Now{% endblocktrans %}
-                                             </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12 text-center">
-                                        <p id="amount_container" class="lead hidden">
-                                            {% blocktrans %}Rate{% endblocktrans %}:
-                                            <b><span id="amount">{{ guide.rate|safe }}</span>
-                                            {{ guide.currency.name }} {% blocktrans %}per hour{% endblocktrans %}
-                                            </b>
-                                        </p>
-                                        <p>
-                                            {% blocktrans %}Minimum{% endblocktrans %}
-                                            {% blocktrans %}hours{% endblocktrans %}: {{ guide.min_hours }}
-
-                                        </p>
-                                    </div>
-                                </div>
-                            </form>
                         </div>
-                    </div>
+
+                        <div class="booking-item-dates-change" id="booking_area">
+                            <h3 class="text-center">{% trans 'Booking area' %}</h3>
+                            {% crispy form %}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+                <div class="mb20">
+                    {% with guide.get_tours as guide_tours %}
+                        {% if guide_tours %}
+                            <h4 class="text-center">{% trans 'My tours' %}</h4>
+                            {% for tour in guide.get_tours %}
+                                <div class="col-lg-4">
+                                    <div class="mb10">
+                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
+                                            <img {% if tour.image_small %}
+                                                src="{% get_media_prefix %}{{ tour.image_small }}"
+                                             {% else %}
+                                                src="{% static 'img/300x300.png' %}"
+                                             {% endif %}
+                                             alt="{{ tour.name }}" title="{{ tour.name }}" />
+                                        </a>
+                                        <h5 class="text-center">
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">{{ tour.name }}</a>
+                                        </h5>
+                                        <p>{% trans 'Duration' %}: {{ tour.hours }}
+                                            {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %}</p>
+                                        <p>{% trans 'Price' %}:
+                                            {% if tour.type == "1" %}
+                                                {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
+                                            {% else %}
+                                                {% if tour.payment_type_id == 1 %}
+                                                    {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
+                                                {% elif tour.payment_type_id == 2 %}
+                                                    {% if not tour.discount %}
+                                                        {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                    {% else %}
+                                                        <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
+                                                        <span class="text-with-discount">{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                    {% endif %}
+                                                {% elif tour.payment_type_id == 3 %}
+                                                    {% blocktrans %}Free!{% endblocktrans %}
+                                                {% else  %}
+                                                    {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </p>
+                                        <div class="text-center">
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary" target="_blank">
+                                                {% trans 'View Details' %}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                 </div>
             </div>
         </div>
@@ -260,65 +235,33 @@
 {% endblock %}
 
 {% block js_stuff %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-    <script>
-        $('#additional_services_select').select2({
-            placeholder: 'Select additional services'
-        });
-    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
 
     <script>
         $(document).ready(function(){
+            if ($("#id_date") !== undefined){
+                $("#id_date").datetimepicker({
+                     minDate: new Date(),
+                     format: 'MM/DD/YYYY HH:mm'
+                });
+            };
 
-            function gettingTimeSlotsForDate(){
-                data = {};
-                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
-                data["csrfmiddlewaretoken"] = csrf_token;
-                data["booking_date"] = $('#booking_date').val();
-                data["guide_id"] = $('#guide_id').val();
-                var url = $('#time_slots').data('link');
-                $.ajax({
-                     url: url,
-                     type: 'POST',
-                     data: data,
-                     cache: true,
-                     success: function(data){
-                         available_time_slots = data.available_time_slots;
-
-                         $('#booking_form_error_container').html("");
-                         time_slots_container = $('#time_slots');
-                         time_slots_container.html("");
-
-                         if (available_time_slots.length > 0){
-                            $.each(available_time_slots, function(index, el){
-                                slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
-                                slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
-                                time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
-                             })
-                         }else{
-                             console.log("else");
-                             $('#booking_form_error_container').html("<div class='text-center text-error'>" +
-                                     "There are no available time slots for this date. <br>" +
-                                     "Please select another date.</div>")
-                         }
-                     }
-                })
+            function finalPriceCalculation(){
+                if ($("#price_total")){
+                    price = {{ guide.rate }};
+                    nmb_people = $("#id_hours").val();
+                    final_price = price*nmb_people;
+                    $("#price_total").text(final_price);
+                }
             }
-
-            $('.d_picker').datepicker({
-                todayHighlight: true,
-                format: "mm.dd.yyyy",
-                weekStart: 1
-            }).datepicker("setDate", new Date()).on("changeDate", function(e) {
-                // `e` here contains the extra attributes
-                gettingTimeSlotsForDate();
+            finalPriceCalculation();
+            $("#id_hours").on("change", function(){
+                finalPriceCalculation();
             });
 
-            gettingTimeSlotsForDate();
 
-            $(document).on("click", '.time-slots-container .time-slot', function(){
-                $(this).toggleClass("chosen");
-            })
+
         })
     </script>
 {% endblock js_stuff %}

@@ -4,11 +4,14 @@
 <html>
 
 <head>
-    <title>Tourzan</title>
+    <title>Tourzan.com | Experiences with locals for the most memorable vacation</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta name="keywords" content="Travel, tourism, guide services, local guides, tour guide" />
-    <meta name="description" content="Tourzan.com - Your source for local guides">
+    <meta name="description" content="The best showaround service online and only the best tours by locals,
+     search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block og_info %}
+    {% endblock og_info %}
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
@@ -24,7 +27,7 @@
         twq('track','PageView');
     </script>
     <!-- End Twitter universal website tag code -->
-    
+
         <!-- linkedin Pixel Code -->
     <script type="text/javascript">
         _linkedin_data_partner_id = "320916";
@@ -63,7 +66,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
+
       gtag('config', 'UA-110088140-1');
     </script>
 
@@ -73,14 +76,19 @@
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
 
     <!-- /GOOGLE FONTS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
-    <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/icomoon.css">
 
-    <link rel="stylesheet" href="{% static 'css/theme_reapply.css' %}">
-    <link rel="stylesheet" href="{% static 'css/social_buttons_styles.css' %}">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css">
+
+    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/styles.css">
+
+    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css">
+    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css">
+{#    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/mystyles.css">#}
     <link rel="stylesheet" href="{% static 'css/mystyles.css' %}">
     <script src='https://www.google.com/recaptcha/api.js'></script>
     {% block header_stuff %}
@@ -112,33 +120,30 @@
         {% include 'orders/modals/writing_feedback_modal.html' %}
 
 
-{#        <script src="{% static 'js/jquery.js' %}"></script>#}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
-        <script src="{% static 'js/modernizr.js' %}"></script>
-        <script src="{% static 'js/bootstrap.js' %}"></script>
-        <script src="{% static 'js/slimmenu.js' %}"></script>
-{#        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>#}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
-        <script src="{% static 'js/bootstrap-timepicker.js' %}"></script>
-        <script src="{% static 'js/nicescroll.js' %}"></script>
-        <script src="{% static 'js/dropit.js' %}"></script>
-        <script src="{% static 'js/ionrangeslider.js' %}"></script>
-{#        <script src="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.2.0/js/ion.rangeSlider.min.js"></script>#}
 
-        <script src="{% static 'js/icheck.js' %}"></script>
-        <script src="{% static 'js/fotorama.js' %}"></script>
-{#        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>#}
-        <script src="{% static 'js/typeahead.js' %}"></script>
-        <script src="{% static 'js/card-payment.js' %}"></script>
-        <script src="{% static 'js/magnific.js' %}"></script>
-        <script src="{% static 'js/owl-carousel.js' %}"></script>
-        <script src="{% static 'js/fitvids.js' %}"></script>
-        <script src="{% static 'js/tweet.js' %}"></script>
-{#        <script src="{% static 'js/countdown.js' %}"></script>#}
-        <script src="{% static 'js/gridrotator.js' %}"></script>
-        <script src="{% static 'js/custom.js' %}"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/modernizr.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/bootstrap.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/slimmenu.js"></script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/nicescroll.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/dropit.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/ionrangeslider.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/icheck.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/fotorama.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/typeahead.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/card-payment.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/magnific.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/owl-carousel.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/fitvids.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/tweet.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/gridrotator.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/custom.js"></script>
 
         <script src="{% static 'js/custom_scripts/scripts.js' %}"></script>
 
@@ -148,5 +153,4 @@
 </body>
 
 </html>
-
 

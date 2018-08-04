@@ -4,6 +4,9 @@
 {% load utils_tags %}
 
 {% block header_stuff %}
+    <title>Tourzan.com | Only local guides can give you the best experience</title>
+    <meta name="description" content="Travel with a professional local guide who know the best sites
+    for your vacation. Avoid the tourist traps with us">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 {% endblock %}
 
@@ -12,7 +15,7 @@
 
     <div class="container"> {# seacrch-results-container"> #}
         <ul class="breadcrumb">
-            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
+            <li><a href="/" rel="nofollow">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
                 <a href="{% url 'guides' %}">
@@ -218,7 +221,7 @@
                                 <div class="row">
                                     <div class="col-md-3 col-sm-6 col-xs-6">
                                         <div class="booking-item-img">
-                                            <a href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
+                                            <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}">
                                                 {% if guide.profile_image %}
                                                     <img src="{% get_media_prefix %}{{ guide.profile_image }}"/>
                                                 {% else %}
@@ -296,7 +299,7 @@
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-6 pull-left">
                                         {% if 'optional_images/300x300.png' not in guide.license_image.url %}
-                                            <h5>Licensed</h5>
+                                            <h5>{% trans 'Licensed' %}</h5>
                                         {% endif %}
                                         <div class="guide-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
@@ -306,7 +309,7 @@
                                             {{ guide.rate }} {{ guide.currency.name }}
                                         </span>
                                         <p>
-                                            <a class="btn btn-primary" href="{% url 'guide' guide.user.generalprofile.first_name guide.user.generalprofile.uuid %}">
+                                            <a class="btn btn-primary" href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}">
                                                 {% blocktrans %}View profile{% endblocktrans %}
                                             </a>
                                         </p>
@@ -332,7 +335,7 @@
                         {% if guides.has_other_pages %}
                             <ul class="pagination">
                                 {% if guides.has_previous %}
-                                    <li class="next"><a
+                                    <li class="next"><a rel="prev"
                                             href="?{% url_replace page=guides.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
@@ -344,10 +347,12 @@
                                     {% endif %}
                                 {% endfor %}
                                 {% if guides.has_next %}
-                                    <li class="next"><a
-                                            href="?{% url_replace page=guides.next_page_number %}">{% trans 'Next Page' %}</a></li>
+                                    <li class="next">
+                                        <a rel="next" href="?{% url_replace page=guides.next_page_number %}">
+                                            {% trans 'Next Page of' %} {{ paginator.num_pages }}
+                                        </a>
+                                    </li>
                                 {% endif %}
-                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>

@@ -1,436 +1,132 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
+
 
 {% block header_stuff %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
 {% endblock %}
 
 {% block content %}
-
-    <!-- TOP AREA -->
-    {% include 'top_slider.html' %}
-    <!-- END TOP AREA  -->
-
-    <div class="container">
-        <div class="search-tabs search-tabs-bg search-tabs-to-top">
-            <div class="tabbable">
-                <ul class="nav nav-tabs" id="myTab">
-                    <li class="active"><a href="#tab-1" data-toggle="tab"><i class="fa fa-building-o"></i><span >{% blocktrans %} Guides {% endblocktrans %}</span></a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane fade in active" id="tab-1">
-                        <h2>{% blocktrans %}Search Local Guides{% endblocktrans %}</h2>
-                        <form method="get" action="{% url 'guides' %}" class="homepage-form">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group form-group-lg">
-{#                                        <i class="fa fa-globe input-icon"></i>#}
-                                         <label>{% blocktrans %}Where are you going?{% endblocktrans %}</label>
-{#                                         <select class="form-control select2" id="city_input" name="city_input"#}
-{#                                             data-search_url="{% url 'search_city' %}"#}
-{#                                             placeholder="City"#}
-{#                                         >#}
-{#                                        </select>#}
-                                        <input class="typeahead form-control"  id="city_search_input">
-                                        <input id="place_id" name="place_id" class="hidden">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group form-group-lg">
-{#                                                <i class="fa fa-book input-icon input-icon-highlight"></i>#}
-                                        <label>{% blocktrans %} Which of your interests should the guide meet? {% endblocktrans %}</label>
-                                        <select multiple class="form-control select2" id="interest_input" name="interest_input"
-                                            data-search_url="{% url 'search_interest' %}"
-                                            data-placeholder="Interests, hobbies"
-                                        ></select>
-                                    </div>
-                                </div>
+    <div class="homepage">
+        <div class="top-area homepage-hero">
+            <div class="bg-holder full text-center text-white">
+                <div class="bg-mask"></div>
+                <div class="bg-img"
+                     style="background:url({% get_sized_image obj %}) no-repeat center center fixed; background-size: cover;"></div>
+                <div class="bg-front">
+                    <div class="row">
+                        <img style="display: block; width: 120px; margin-left: auto; margin-right: auto; class="center" src="{% static 'img/Tourzan-transparant.png' %}">
+                        <div class="col-lg-8 col-lg-offset-2">
+                            <div class="text text-center">
+                                Tourzan.com
+                                <br><br>
+                                {{ obj.motto|safe|linebreaks }}
                             </div>
-                            <button class="btn btn-primary btn-lg" type="submit">{% blocktrans %}Search for Guides{% endblocktrans %}</button>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="tab-2">
-                        <h2>Search for Cheap Flights</h2>
-                        <form>
-                            <div class="tabbable">
-                                <ul class="nav nav-pills nav-sm nav-no-br mb10" id="flightChooseTab">
-                                    <li class="active"><a href="#flight-search-1" data-toggle="tab">Round Trip</a>
-                                    </li>
-                                    <li><a href="#flight-search-2" data-toggle="tab">One Way</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade in active" id="flight-search-1">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                                            <label>From</label>
-                                                            <input class="typeahead form-control" placeholder="City, Airport, U.S. Zip" type="text" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                                            <label>To</label>
-                                                            <input class="typeahead form-control" placeholder="City, Airport, U.S. Zip" type="text" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="input-daterange" data-date-format="M d, D">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                                <label>Departing</label>
-                                                                <input class="form-control" name="start" type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                                <label>Returning</label>
-                                                                <input class="form-control" name="end" type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group form-group-lg form-group-select-plus">
-                                                                <label>Passngers</label>
-                                                                <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                                    <label class="btn btn-primary active">
-                                                                        <input type="radio" name="options" />1</label>
-                                                                    <label class="btn btn-primary">
-                                                                        <input type="radio" name="options" />2</label>
-                                                                    <label class="btn btn-primary">
-                                                                        <input type="radio" name="options" />3</label>
-                                                                    <label class="btn btn-primary">
-                                                                        <input type="radio" name="options" />3+</label>
-                                                                </div>
-                                                                <select class="form-control hidden">
-                                                                    <option>1</option>
-                                                                    <option>2</option>
-                                                                    <option>3</option>
-                                                                    <option selected="selected">4</option>
-                                                                    <option>5</option>
-                                                                    <option>6</option>
-                                                                    <option>7</option>
-                                                                    <option>8</option>
-                                                                    <option>9</option>
-                                                                    <option>10</option>
-                                                                    <option>11</option>
-                                                                    <option>12</option>
-                                                                    <option>13</option>
-                                                                    <option>14</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            <br><br>
+                                <div class="col-lg-6 col-lg-offset-3">
+                                    <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
+                                        <div class="form-group form-group-lg">
+                                            <label>{% trans 'Type your destination to find tours and local guides' %}</label>
+                                             <input class="typeahead form-control"  id="city_search_input">
+                                                <input id="place_id" name="place_id" class="hidden">
                                         </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="flight-search-2">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                                            <label>From</label>
-                                                            <input class="typeahead form-control" placeholder="City, Airport, U.S. Zip" type="text" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                                            <label>To</label>
-                                                            <input class="typeahead form-control" placeholder="City, Airport, U.S. Zip" type="text" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="input-daterange" data-date-format="M d, D">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                                <label>Departing</label>
-                                                                <input class="date-pick form-control" data-date-format="M d, D" type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group form-group-lg form-group-select-plus">
-                                                                <label>Passngers</label>
-                                                                <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                                    <label class="btn btn-primary active">
-                                                                        <input type="radio" name="options" />1</label>
-                                                                    <label class="btn btn-primary">
-                                                                        <input type="radio" name="options" />2</label>
-                                                                    <label class="btn btn-primary">
-                                                                        <input type="radio" name="options" />3</label>
-                                                                    <label class="btn btn-primary">
-                                                                        <input type="radio" name="options" />3+</label>
-                                                                </div>
-                                                                <select class="form-control hidden">
-                                                                    <option>1</option>
-                                                                    <option>2</option>
-                                                                    <option>3</option>
-                                                                    <option selected="selected">4</option>
-                                                                    <option>5</option>
-                                                                    <option>6</option>
-                                                                    <option>7</option>
-                                                                    <option>8</option>
-                                                                    <option>9</option>
-                                                                    <option>10</option>
-                                                                    <option>11</option>
-                                                                    <option>12</option>
-                                                                    <option>13</option>
-                                                                    <option>14</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </form>
                                 </div>
-                            </div>
-                            <button class="btn btn-primary btn-lg" type="submit">Search for Flights</button>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="tab-3">
-                        <h2>Find Your Perfect Home</h2>
-                        <form>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                        <label>{% blocktrans %}Where are you going{% endblocktrans %}?</label>
-{#                                        <input class="typeahead form-control" placeholder="City, Airport, Point of Interest or U.S. Zip Code" type="text" />#}
-{#                                        #}
-{#                                        <input class="typeahead form-control"  id="city_search_input" name="city_search_input">#}
-{#                                        <input class="hidden" id="hidden_search_city_place_id">#}
-{#                                        <input class="hidden" id="hidden_search_city_place_name">#}
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="input-daterange" data-date-format="M d, D">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                    <label>Check-in</label>
-                                                    <input class="form-control" name="start" type="text" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                    <label>Check-out</label>
-                                                    <input class="form-control" name="end" type="text" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group form-group-lg form-group-select-plus">
-                                                    <label>Rooms</label>
-                                                    <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                        <label class="btn btn-primary active">
-                                                            <input type="radio" name="options" />1</label>
-                                                        <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />2</label>
-                                                        <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />3</label>
-                                                        <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />3+</label>
-                                                    </div>
-                                                    <select class="form-control hidden">
-                                                        <option>1</option>
-                                                        <option>2</option>
-                                                        <option>3</option>
-                                                        <option selected="selected">4</option>
-                                                        <option>5</option>
-                                                        <option>6</option>
-                                                        <option>7</option>
-                                                        <option>8</option>
-                                                        <option>9</option>
-                                                        <option>10</option>
-                                                        <option>11</option>
-                                                        <option>12</option>
-                                                        <option>13</option>
-                                                        <option>14</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group form-group-lg form-group-select-plus">
-                                                    <label>Guests</label>
-                                                    <div class="btn-group btn-group-select-num" data-toggle="buttons">
-                                                        <label class="btn btn-primary active">
-                                                            <input type="radio" name="options" />1</label>
-                                                        <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />2</label>
-                                                        <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />3</label>
-                                                        <label class="btn btn-primary">
-                                                            <input type="radio" name="options" />3+</label>
-                                                    </div>
-                                                    <select class="form-control hidden">
-                                                        <option>1</option>
-                                                        <option>2</option>
-                                                        <option>3</option>
-                                                        <option selected="selected">4</option>
-                                                        <option>5</option>
-                                                        <option>6</option>
-                                                        <option>7</option>
-                                                        <option>8</option>
-                                                        <option>9</option>
-                                                        <option>10</option>
-                                                        <option>11</option>
-                                                        <option>12</option>
-                                                        <option>13</option>
-                                                        <option>14</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-lg" type="submit">Search for Vacation Rentals</button>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="tab-4">
-                        <h2>Search for Cheap Rental Cars</h2>
-                        <form>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                                <label>Pick-up Location</label>
-                                                <input class="typeahead form-control" placeholder="City, Airport, U.S. Zip" type="text" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                                <label>Drop-off Location</label>
-                                                <input class="typeahead form-control" placeholder="City, Airport, U.S. Zip" type="text" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-daterange" data-date-format="M d, D">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                    <label>Pick-up Date</label>
-                                                    <input class="form-control" name="start" type="text" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                    <label>Drop-ff Date</label>
-                                                    <input class="form-control" name="end" type="text" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-lg" type="submit">Search for Rental Cars</button>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="tab-5">
-                        <h2>Search for Activities</h2>
-                        <form>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-map-marker input-icon"></i>
-                                        <label>Where are you going?</label>
-                                        <input class="typeahead form-control" placeholder="City, Airport, Point of Interest or U.S. Zip Code" type="text" />
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-daterange" data-date-format="M d, D">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                    <label>From</label>
-                                                    <input class="form-control" name="start" type="text" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-lg form-group-icon-left"><i class="fa fa-calendar input-icon input-icon-highlight"></i>
-                                                    <label>To</label>
-                                                    <input class="form-control" name="end" type="text" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-lg" type="submit">Search for Activities</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-{#        <div class="gap"></div>#}
-{#        <div class="row">#}
-{#            <div class="col-md-4">#}
-{#                <h3> {% trans "Best Free Tours" %} <small ><a href="{% url 'tours' %}?is_free_offers_included=on">{% trans "view all" %}</a></small></h3>#}
-{#                <ul class="booking-list">#}
-{#                    {% for tour in free_tours %}#}
-{#                        {% include 'users/tour_items_representation.html' %}#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#            </div>#}
-{#            <div class="col-md-4">#}
-{#                <h3>Best hourly rates <small ><a href="{% url 'tours' %}?is_hourly_price_included=on&hourly_price=0%3B50&fixed_price=0%3B300">view all</a></small></h3>#}
-{#                <ul class="booking-list">#}
-{#                    {% for tour in hourly_tours %}#}
-{#                        {% include 'users/tour_items_representation.html' %}#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#            </div>#}
-{#            <div class="col-md-4">#}
-{#                <h3>Best fixed rates tours <small ><a href="{% url 'tours' %}?is_fixed_price_included=on&fixed_price=0%3B300">view all</a></small></h3>#}
-{#                <ul class="booking-list">#}
-{#                    {% for tour in fixed_payment_tours %}#}
-{#                        {% include 'users/tour_items_representation.html' %}#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-        <div class="gap gap-small"></div>
-
-        <h2 class="mb20">
-            {% blocktrans %}Explore Our Top Guides{% endblocktrans %}
-            <small ><a href="{% url 'guides' %}">{% blocktrans %}view all{% endblocktrans %}</a></small>
-        </h2>
-        <div class="row row-wrap">
-            {% for guide in guides %}
-                {% include 'users/homepage_top_guides_representation.html' %}
-            {% endfor %}
-        </div>
-        <div class="gap gap-small"></div>
-
-        <h2 class="mb20">
-           {% blocktrans %} Explore Our Top Tours{% endblocktrans %}
-            <small ><a href="{% url 'tours' %}">{% blocktrans %}view all{% endblocktrans %}</a></small>
-        </h2>
-        <div class="row row-wrap">
-            {% for tour in all_tours %}
-                {% include 'users/homepage_top_tours_representation.html' %}
-            {% endfor %}
-        </div>
-        <div class="gap gap-small"></div>
+        <section class="platform-description">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        {{ obj.description|safe|linebreaks }}
+                        <div>
+                            <a rel='nofollow' href="{% url 'guide_registration_welcome' %}">
+                                {% trans 'WANT TO BE A GUIDE?' %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="cities-homepage">
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Available countries' %}</h3>
+                    </div>
+                    {% for country in countries %}
+                        <div class="col-lg-4">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div>
+                                        <a href="{% url 'country_guides' country.slug %}" target="_blank"
+                                        ><img src="{% get_sized_image country "small" %}"></a>
+                                    </div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ country.name }}
+                                        </h4>
+                                        <div>
+                                            {% with country.get_cities as cities %}
+                                            {% if cities %}
+                                                <b>{% trans 'Available cities' %}: </b>
+                                                {% for city in country.get_cities %}
+                                                    <a href="{% url 'city_guides' city.country.slug city.slug %}" target="_blank">
+                                                        {{ city.name }}{% if not forloop.last %}, {% endif %}
+                                                    </a>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% trans 'We are looking for guides in' %} {{ country.name }}
+                                            {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'country_guides' country.slug %}" target="_blank"
+                                    >
+                                        {% trans 'View details' %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div>
+                            <div class="row">
+                        {% endif %}
+                    {% endfor %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center">
+                                <a class="btn btn-primary btn-lg" href="{% url 'all_countries' %}" target="_blank">
+                                    {% trans 'View all available countries' %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="special-offers">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Special offers' %}</h3>
+                    </div>
+                </div>
+                {% include "tours/special_offers_section.html" %}
+            </div>
+        </section>
     </div>
-{% endblock %}
+{% endblock content %}
+
 
 {% block js_stuff %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
-    <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
-
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
     </script>
