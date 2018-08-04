@@ -20,6 +20,7 @@ from users.models import GeneralProfile
 import time
 import json
 from orders.views import making_booking
+from allauth.socialaccount.models import SocialApp
 
 
 @xframe_options_exempt
@@ -291,8 +292,10 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     }
 
     guide_answers = GuideAnswer.objects.filter(guide=guide).order_by("order_priority", "id")
-
-    if new_view=="new":
+    social_app = SocialApp.objects.filter(provider="facebook").last()
+    if social_app:
+        app_id = social_app.client_id
+    if new_view == "new":
         return render(request, 'guides/guide_new.html', locals())
     else:
         return render(request, 'guides/guide.html', locals())

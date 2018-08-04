@@ -15,6 +15,10 @@
                  </a>
             </div>
             <div class="col-lg-8 col-lg-offset-2">
+                <h4>{% blocktrans %}Guide Profile Questionaire{% endblocktrans %}</h4>
+                <p>
+                    {% blocktrans %}For the best performance we recommend answering 4-6 questions{% endblocktrans %}
+                </p>
                 <form method="post" enctype="multipart/form-data">{% csrf_token %}
                     {% for question in questions_list %}
                         <div class="form-group">
