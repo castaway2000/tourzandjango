@@ -8,7 +8,6 @@
 <head>
     <title>Tourzan</title>
 
-
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta name="keywords" content="Template, html, premium, themeforest"/>
     <meta name="description" content="Traveler - Premium template for travel companies">
@@ -237,14 +236,8 @@
                                 <div class="row">
                                     <div class="col-md-3 col-sm-3 col-xs-3">
                                         <div class="booking-item-img">
-                                            <a href="{% url 'tour' tour.slug tour.id %}?ref_id={{ request.GET.ref_id }}">
-                                                {% if tour.image_small %}
-                                                    <img src="{{ tour.image_small.url }}"/>
-                                                {% elif tour.image %}
-                                                    <img src="{{ tour.image.url }}"/>
-                                                {% else %}
-                                                    <img src="{% static 'img/default_tour_image.jpg' %}">
-                                                {% endif %}
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}?ref_id={{ request.GET.ref_id }}">
+                                                <img src="{% get_sized_image tour default_size="small" %}">
                                             </a>
                                         </div>
                                         <br>
@@ -282,9 +275,9 @@
                                             {% endif %}
                                         </p>
                                         <p>
-                                            <a href="{% url 'tour' tour.slug tour.id %}?ref_id={{ request.GET.ref_id }}"
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}?ref_id={{ request.GET.ref_id }}"
                                                class="btn btn-primary">
-                                                {% blocktrans %}Go to Tour{% endblocktrans %}
+                                                {% blocktrans %}View Details{% endblocktrans %}
                                             </a>
                                         </p>
                                         {% if tour.guide.user.generalprofile.is_verified %}

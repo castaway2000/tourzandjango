@@ -524,7 +524,6 @@ def available_tour_dates_template(request, slug):
         return HttpResponseRedirect(reverse("tour_edit_general"))
 
     scheduled_template_item = ScheduleTemplateItem.objects.filter(tour=tour, is_general_template=True).last()
-    print(scheduled_template_item)
     if scheduled_template_item:
         form = TourWeeklyScheduleTemplateForm(request.POST or None, instance=scheduled_template_item)
     else:
@@ -654,6 +653,7 @@ def guide_settings_tour_edit_price_and_schedule(request, slug):
     if slug:
         guide = user.guideprofile
         tour = get_object_or_404(Tour, slug=slug, guide=guide)
+        scheduled_template_item = ScheduleTemplateItem.objects.filter(tour=tour, is_general_template=True).last()
     else:
         return HttpResponseRedirect(reverse("tour_edit_general"))
 

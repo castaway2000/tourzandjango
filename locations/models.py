@@ -116,8 +116,6 @@ class City(models.Model):
             self.image_small = optimize_size(self.image, "small")
 
         if not self.country or (self._original_fields["place_id"] != self.place_id) or (self.place_id and not self.country and not self._original_fields["country"]):
-            print("updating country")
-            time.sleep(3)
             google_maps_key = GOOGLE_MAPS_KEY
             url_place_info = "https://maps.googleapis.com/maps/api/geocode/json?place_id=%s&key=%s" % (self.place_id, google_maps_key)
             r = requests.get(url_place_info)
