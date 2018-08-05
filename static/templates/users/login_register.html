@@ -93,7 +93,7 @@
                         <input class="form-control" type="text" placeholder="code" name="referral_code"
                         {% if request.session.referral_code %}value="{{ request.session.referral_code }}"{% else %}value=""{% endif %}>
                     </div>
-                    <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
+                    <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="{{ recaptcha_site_key }}">
                     </div>
                     <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
                 </form>
