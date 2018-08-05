@@ -16,9 +16,11 @@
                 <a class="btn btn-default" href="{% url 'tour_edit_price_and_schedule' slug %}">
                     {% trans 'Nearest tours list' %}
                 </a>
-                <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-default">
-                    {% trans 'Create tours from weekly schedule template' %}
-                </a>
+                {% if scheduled_template_item %}
+                    <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-default">
+                        {% trans 'Create tours from weekly schedule template' %}
+                    </a>
+                {% endif %}
             </div>
             <form method="post" class="mt20">{% csrf_token %}
                 <div class="row">
@@ -27,9 +29,9 @@
                             {% trans 'Quick day tour template' %}
                         </h4>
 
-                        {% trans 'Apply it to all days of the week.' %}<br>
+                        {% trans 'Apply this template to all days of the week.' %}<br>
                         {% trans 'Afterwards you can edit every weekday below.' %}<br>
-                        {% trans 'If you already have week tour template, submit of this form will schedule additional tours to the existing ones.' %}<br>
+                        {% trans 'If you you want to apply this weekly template to calendar click "Create tours from weekly schedule template" button at the top of the page' %}<br>
                     </div>
                 </div>
 
@@ -63,24 +65,13 @@
                 </div>
             </form>
 
-            <div class="row">
-                <div class="form-group col-lg-12">
-                    <h4>
-                        {% trans 'Apply week template below to the period of dates' %}
-                    </h4>
-                    <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-warning">
-                        {% trans 'Go to applying form' %}
-                    </a>
-                </div>
-            </div>
-
             {% if weekly_template_items %}
                 <form method="post">{% csrf_token %}
                     <input class="hidden" id="weekly_template_item_adding_url" value="{% url 'manage_weekly_template_item' %}">
                     <input class="hidden" id="tour_id" value="{{ tour.id }}">
                     <div class="row">
                         <div class="form-group col-lg-12 mt20">
-                            <h4>{% trans 'Weekly schedule by weekdays.' %}</h4>
+                            <h4>{% trans 'Weekly schedule by weekdays' %}</h4>
                         </div>
                     </div>
                     <div class="row">

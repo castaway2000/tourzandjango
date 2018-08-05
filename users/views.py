@@ -36,6 +36,7 @@ from allauth.exceptions import ImmediateHttpResponse
 import time
 from website_management.models import HomePageContent
 from locations.models import Country
+import urllib.parse as urlparse
 
 
 def login_view(request):
@@ -44,7 +45,12 @@ def login_view(request):
     Login redirects are handled here
     """
     form = LoginForm(request.POST or None)
-    if not "next" in request.GET:
+
+    url = request.META.get('HTTP_REFERER')
+    parsed = urlparse.urlparse(url)
+    get_parameters = urlparse.parse_qs(parsed.query)
+
+    if not "next" in get_parameters:
         request.GET.next = reverse("home")
     if request.method == 'POST' and form.is_valid():
         username = request.POST.get('username')
@@ -64,6 +70,9 @@ def login_view(request):
                     messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (reverse("guide_registration_welcome"), _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
                 if request.session.get("pending_order_creation"):
                     return HttpResponseRedirect(reverse("making_booking"))
+                next_url = get_parameters.get("next")
+                if next_url:
+                    return HttpResponseRedirect(next_url[0])
                 return HttpResponseRedirect(reverse("home"))
             else:
                 return HttpResponse("Your account is disabled.")

@@ -329,9 +329,7 @@ USER_SMS_NMB_LIMIT = 3
 PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
-
 AXES_COOLOFF_TIME = 3
-
 
 # Number of seconds of inactivity before a user is marked offline
 USER_ONLINE_TIMEOUT = 5*60
@@ -339,7 +337,6 @@ USER_ONLINE_TIMEOUT = 5*60
 # Number of seconds that we will keep track of inactive users for before
 # their last seen is removed from the cache
 USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
