@@ -7,29 +7,33 @@
 
         <h4>{% blocktrans %}{{ page_title }}{% endblocktrans %}</h4>
 
-        <ul class="nav nav-tabs page-tabs" role="tablist">
-            <li class="{% if page == "tour_edit_general" %}active{% endif %}">
-                <a href="{% url 'tour_edit_general' slug %}">{% trans 'General' %}</a>
-            </li>
-            <li class="{% if page == "tour_edit_program" %}active{% endif %}">
-                <a href="{% url 'tour_edit_program' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Program' %}</a>
-            </li>
-            <li class="{% if page == "tour_edit_images" %}active{% endif %}">
-                <a href="{% url 'tour_edit_images' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Images' %}</a>
-            </li>
-            {% if not tour or tour.type == "1" %}
-                <li class="{% if page == "tour_edit_price_and_schedule" %}active{% endif %}">
-                    <a href="{% url 'tour_edit_price_and_schedule' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Tours Schedule' %}</a>
+        <div class="menu-navigation">
+            <ul class="nav nav-tabs page-tabs" role="tablist">
+                <li class="{% if page == "tour_edit_general" %}active{% endif %}">
+                    <a href="{% url 'tour_edit_general' slug %}">{% trans 'General' %}</a>
                 </li>
-            {% else %}
-                <li class="{% if page == "tour_edit_price" %}active{% endif %}">
-                    <a href="{% url 'tour_edit_price' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Price' %}</a>
+                <li class="{% if page == "tour_edit_program" %}active{% endif %}">
+                    <a href="{% url 'tour_edit_program' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Program' %}</a>
                 </li>
-            {% endif %}
-            <li class="">
-                <a href="{% url 'guide_settings_tours' %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Back to tours list' %}</a>
-            </li>
-      </ul>
+                <li class="{% if page == "tour_edit_images" %}active{% endif %}">
+                    <a href="{% url 'tour_edit_images' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Images' %}</a>
+                </li>
+                {% if not tour or tour.type == "1" %}
+                    <li class="{% if page == "tour_edit_price_and_schedule" %}active{% endif %}">
+                        <a href="{% url 'tour_edit_price_and_schedule' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Tours Schedule' %}</a>
+                    </li>
+                {% else %}
+                    <li class="{% if page == "tour_edit_price" %}active{% endif %}">
+                        <a href="{% url 'tour_edit_price' slug %}" class="{% if page == "tour_edit_general" and not tour %}is-disabled{% endif %}">{% trans 'Price' %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="nav nav-tabs pull-right">
+                  <li class="">
+                    <a href="{% url 'guide_settings_tours' %}" class="pull-right">{% trans 'Back to tours list' %}</a>
+                </li>
+            </ul>
+        </div>
 
       <!-- Tab panes -->
       <div class="tab-content tour-edit">

@@ -14,9 +14,11 @@
             <a href="{% url 'available_tour_dates_template' slug %}" class="btn btn-default">
                 {% trans 'Edit weekly schedule template' %}
             </a>
-            <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-default">
-                {% trans 'Create tours from schedule template' %}
-            </a>
+{#            {% if scheduled_template_item %}#}
+{#                <a href="{% url 'apply_week_template_to_dates' slug %}" class="btn btn-default">#}
+{#                    {% trans 'Create tours from schedule template' %}#}
+{#                </a>#}
+{#            {% endif %}#}
         </div>
     </div>
     <div class="row">

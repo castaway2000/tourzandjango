@@ -145,7 +145,7 @@ class TourProgramItemForm(forms.Form):
 class TourWeeklyScheduleTemplateForm(forms.ModelForm):
     time_start = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), label=_("Typical start time"))
     price = forms.DecimalField(required=True, min_value=0)
-    seats_total = forms.IntegerField(required=True, min_value=0)
+    seats_total = forms.IntegerField(required=True, min_value=1)
 
     class Meta:
         model = ScheduleTemplateItem
@@ -222,6 +222,9 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
         month_limit = 3
         if date_to > (today + relativedelta(months =+ month_limit)).date():
             raise forms.ValidationError(_("Maximum period to choose is %s month." % month_limit))
+        date_from = self.cleaned_data.get('date_from')
+        if date_to < date_from:
+            raise forms.ValidationError(_('"Date to" should be equal or bigger than "date from"'))
         return self.cleaned_data.get('date_to')
 
 

@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
 
 
 <div class="payment-summary">
@@ -18,14 +19,9 @@
         {% endif %}
 
         <div class="text-center">
-            {% if order.guide.profile_image %}
-                <img class="img-circle avatar-image-x-small"
-                     src="{{ order.guide.profile_image.url }}"
-                     alt="" title="" />
-            {% else %}
-                <img class="img-circle avatar-image-x-small"
-                     src="{% static 'img/300x300.png' %}" alt="" title="">
-            {% endif %}
+            <img class="img-circle avatar-image-x-small"
+                 src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}"
+                 alt="" title="" />
         </div>
 
         <h3 class="text-center">
@@ -53,7 +49,7 @@
                             {% if order.tour %}
                                 <b>
                                     {% trans 'A tour' %} "{{ order.tour.name }}" {% trans 'with' %}
-                                    <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
+                                    <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid "new" %}" target="_blank">
                                         {{ order.guide.user.generalprofile.first_name }}
                                     </a>
                                     {% trans 'at' %} {{ order.date_booked_for|date:"m/d/Y H:i" }}
@@ -71,7 +67,7 @@
                             {% else %}
                                 <b>
                                     {% trans 'A tour with' %}
-                                    <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}">
+                                    <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid "new" %}" target="_blank">
                                         {{ order.guide.user.generalprofile.first_name }}
                                     </a>
                                     {% trans 'at' %} {{ order.date_booked_for|date:"m/d/Y H:i" }}:
