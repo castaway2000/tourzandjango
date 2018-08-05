@@ -14,19 +14,19 @@ import datetime
 
 class GuideOrderAdjustForm(forms.ModelForm):
     # number_persons = forms.IntegerField(required=True, min_value=1)
-    hours = forms.IntegerField(required=True, min_value=0)
+    hours_nmb = forms.IntegerField(required=True, min_value=0, label=_("Hours"))
     date_booked_for = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'),
                                           label=_("Modify requested tour date and time (if needed) or approve the current one"))
 
     class Meta:
         model = Order
-        fields = ["hours", "date_booked_for"]
+        fields = ["hours_nmb", "date_booked_for"]
 
     def __init__(self, *args, **kwargs):
         super(GuideOrderAdjustForm, self).__init__(*args, **kwargs)
         tour = kwargs["instance"].tour if kwargs.get("instance") else None
         if tour:#hide hours for tours and let them be shown only for hourly guide bookings
-            self.fields.pop("hours")
+            self.fields.pop("hours_nmb")
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True

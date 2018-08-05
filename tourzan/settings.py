@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'utils',
     'coupons',
     'mobile',
+    'notifications',
 
     #external packages
     'allauth',
@@ -329,9 +330,7 @@ USER_SMS_NMB_LIMIT = 3
 PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
-
 AXES_COOLOFF_TIME = 3
-
 
 # Number of seconds of inactivity before a user is marked offline
 USER_ONLINE_TIMEOUT = 5*60
@@ -339,7 +338,6 @@ USER_ONLINE_TIMEOUT = 5*60
 # Number of seconds that we will keep track of inactive users for before
 # their last seen is removed from the cache
 USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
@@ -356,6 +354,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
+FCM_API_KEY = 'AIzaSyA3YF3ebcy2OclVoH1lcwK-P9c_t_37j0g'
+
 
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'

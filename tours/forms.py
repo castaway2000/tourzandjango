@@ -145,7 +145,7 @@ class TourProgramItemForm(forms.Form):
 class TourWeeklyScheduleTemplateForm(forms.ModelForm):
     time_start = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), label=_("Typical start time"))
     price = forms.DecimalField(required=True, min_value=0)
-    seats_total = forms.IntegerField(required=True, min_value=0)
+    seats_total = forms.IntegerField(required=True, min_value=1)
 
     class Meta:
         model = ScheduleTemplateItem
@@ -222,6 +222,9 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
         month_limit = 3
         if date_to > (today + relativedelta(months =+ month_limit)).date():
             raise forms.ValidationError(_("Maximum period to choose is %s month." % month_limit))
+        date_from = self.cleaned_data.get('date_from')
+        if date_to < date_from:
+            raise forms.ValidationError(_('"Date to" should be equal or bigger than "date from"'))
         return self.cleaned_data.get('date_to')
 
 
@@ -270,6 +273,8 @@ class BookingPrivateTourForm(forms.Form):
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
         self.tour = tour
+        self.persons_nmb_for_min_price = tour.persons_nmb_for_min_price if tour.persons_nmb_for_min_price > 0 else 3
+        self.additional_person_price = tour.additional_person_price if tour.additional_person_price > 0 else int(tour.price_final/self.persons_nmb_for_min_price)
 
         super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
         self.fields['tour_id'] = forms.ChoiceField(
@@ -292,8 +297,8 @@ class BookingPrivateTourForm(forms.Form):
                 '<div class="text-center">'
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '{}</button>'
-                '</div>'.format(tour.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
-                                _("Additional people"), remove_zeros_from_float(tour.additional_person_price), _("for each person"),
+                '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
+                                _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
                                 _("Maximum participants"), tour.max_persons_nmb,
                                 _("Total price") if not tour.discount else _("Total price with discount"),
                             tour.price_final, _('Submit'))

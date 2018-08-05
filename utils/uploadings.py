@@ -1,55 +1,55 @@
 def upload_path_handler_city(instance, filename):
     if instance.name:
-        return "locations/cities/%s_%s" % (instance.name, filename)
+        return "locations/cities/%s/%s" % (instance.name, filename)
     else:
         return "locations/cities/%s" % (filename)
 
 
 def upload_path_handler_city_large(instance, filename):
     if instance.name:
-        return "locations/cities/large/%s_%s" % (instance.name, filename)
+        return "locations/cities/large/%s/%s" % (instance.name, filename)
     else:
         return "locations/cities/large/%s" % (filename)
 
 
 def upload_path_handler_city_medium(instance, filename):
     if instance.name:
-        return "locations/cities/medium/%s_%s" % (instance.name, filename)
+        return "locations/cities/medium/%s/%s" % (instance.name, filename)
     else:
         return "locations/cities/medium/%s" % (filename)
 
 
 def upload_path_handler_city_small(instance, filename):
     if instance.name:
-        return "locations/cities/small/%s_%s" % (instance.name, filename)
+        return "locations/cities/small/%s/%s" % (instance.name, filename)
     else:
         return "locations/cities/small/%s" % (filename)
 
 
 def upload_path_handler_country(instance, filename):
     if instance.name:
-        return "locations/countries/%s_%s" % (instance.name, filename)
+        return "locations/countries/%s/%s" % (instance.name, filename)
     else:
         return "locations/countries/%s" % (filename)
 
 
 def upload_path_handler_country_large(instance, filename):
     if instance.name:
-        return "locations/countries/large/%s_%s" % (instance.name, filename)
+        return "locations/countries/large/%s/%s" % (instance.name, filename)
     else:
         return "locations/countries/large/%s" % (filename)
 
 
 def upload_path_handler_country_medium(instance, filename):
     if instance.name:
-        return "locations/countries/medium/%s_%s" % (instance.name, filename)
+        return "locations/countries/medium/%s/%s" % (instance.name, filename)
     else:
         return "locations/countries/medium/%s" % (filename)
 
 
 def upload_path_handler_country_small(instance, filename):
     if instance.name:
-        return "locations/countries/small/%s_%s" % (instance.name, filename)
+        return "locations/countries/small/%s/%s" % (instance.name, filename)
     else:
         return "locations/countries/small/%s" % (filename)
 

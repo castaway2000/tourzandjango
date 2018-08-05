@@ -167,9 +167,9 @@ class Tour(models.Model):
         now = datetime.datetime.now().date()
         if days_nmb:
             period_end = now + datetime.timedelta(days=days_nmb)
-            scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now, dt__lte=period_end).order_by("dt")
+            scheduled_tours = self.scheduledtour_set.filter(is_active=True, seats_available__gt=0, dt__gte=now, dt__lte=period_end).order_by("dt")
         else:
-            scheduled_tours = self.scheduledtour_set.filter(is_active=True, dt__gte=now).order_by("dt")[:5]
+            scheduled_tours = self.scheduledtour_set.filter(is_active=True, seats_available__gt=0, dt__gte=now).order_by("dt")[:5]
         return scheduled_tours
 
     def get_nearest_available_dates_1_item(self):
@@ -212,7 +212,7 @@ class Tour(models.Model):
         nearest_tours = self.get_nearest_available_dates(20)
         if nearest_tours:
             price_final_item = nearest_tours.aggregate(avg_price_final=Avg('price'))
-            return price_final_item["avg_price_final"]
+            return "%.2f" % float(price_final_item["avg_price_final"])
         else:
             return 0
 

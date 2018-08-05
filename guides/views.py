@@ -51,12 +51,8 @@ def guides(request):
     print(request.GET)
     location_input = request.GET.get("location_search_input")
     is_country = request.GET.get("is_country")
-    print(11111)
-    print(location_input)
-    print(filtered_cities)
 
     place_id = request.GET.get("place_id")
-    print(place_id)
 
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
@@ -85,8 +81,6 @@ def guides(request):
             hourly_price_kwargs["rate__lte"] = hourly_price_max
 
     #filtering by location
-    print(location_input)
-    print(is_country)
     if location_input and is_country:
         # base_kwargs["city__original_name__in"] = city_input
         try:
@@ -150,15 +144,12 @@ def guides(request):
 
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
     # print("base kwargs")
-    print (base_kwargs)
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
     elif place_id or location_input or guide_input:
-        print(base_kwargs)
-        time.sleep(10)
         guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
     elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
