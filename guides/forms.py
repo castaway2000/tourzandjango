@@ -21,8 +21,7 @@ class GuideProfileForm(forms.ModelForm):
     class Meta:
         model = GuideProfile
         #city is added on form save in view
-        fields = ("overview", "profile_image", "license_image", "rate", "is_active", "is_default_guide", "min_hours",
-                  "additional_person_cost")
+        fields = ("overview", "profile_image", "license_image", "rate", "is_active", "is_default_guide", "min_hours",)
 
 
 class BookingGuideForm(forms.Form):

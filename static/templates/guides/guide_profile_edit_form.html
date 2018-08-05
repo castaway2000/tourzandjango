@@ -143,20 +143,6 @@
                         >
                     </div>
                 </div>
-                <label>{% blocktrans %}Cost per additional person, USD{% endblocktrans %}:
-                    <span class="text-error">{{ form.additional_person_cost.errors }}</span>
-                </label>
-                <div class="div-input-icon">
-                    <i class="fa fa-money input-icon"></i>
-                    <input type="number" min="0" step="1" name="{{ form.additional_person_cost.html_name }}"
-                           class="form-control w100"
-                        {% if request.POST.rate %}
-                           value="{{ request.POST.additional_person_cost|safe }}"
-                        {% elif guide %}
-                           value="{{ guide.additional_person_cost|safe }}"
-                        {% endif %}
-                    >
-                </div>
 
                 <div class="gap gap-small"></div>
 
