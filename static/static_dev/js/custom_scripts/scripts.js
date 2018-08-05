@@ -400,3 +400,5 @@ function elementsResizing(){
 $(window).resize(function () {
     elementsResizing();
 });
+
+console.log(1);
