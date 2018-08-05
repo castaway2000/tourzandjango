@@ -5,6 +5,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 import urllib.parse as urlparse
 import datetime
+import time
 
 
 def get_image(search_term, image_name, unsplash_key=None):
@@ -64,9 +65,14 @@ def get_image(search_term, image_name, unsplash_key=None):
             return (None, None)
     else:
         try:
+            print(unsplash_key)
             current_index = unsplash_keys.index(unsplash_key)
             next_index = current_index+1
             unsplash_key = unsplash_keys[next_index]
+            print(unsplash_key)
+            time.sleep(5)
             return get_image(search_term, image_name, unsplash_key)
-        except:
+        except Exception as e:
+            print(e)
+            time.sleep(10)
             return (None, None)
