@@ -135,7 +135,7 @@
                                                                         {{ nearest_available_date.dt|date:"m/d/Y h:i" }}
                                                                         ({{ nearest_available_date.seats_available }}
                                                                         {% if nearest_available_date.seats_available == 1 %}
-                                                                            {% trans 'free seat' %}{% else %}{% trans 'free seats' %}
+                                                                            {% trans 'available spot' %}{% else %}{% trans 'available spots' %}
                                                                         {% endif %})
                                                                     </span>
                                                                 {% endfor %}
@@ -152,11 +152,11 @@
                                                         1-{{ tour.get_persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
                                                     </li>
                                                     <li><b>{% trans 'Additional people' %}: </b> {{ tour.get_additional_person_price }} USD {% trans 'for each person' %}</li>
-                                                    <li><b>{% trans 'Maximum participants' %}: </b> {{ tour.max_persons_nmb }}</li>
+                                                    <li><b>{% trans 'Maximum participants' %}: </b> {{ tour.get_max_persons_nmb }}</li>
                                                     <li class="mt10">{% trans 'Contact guide directly to book a tour' %}</li>
                                                 {% endif %}
                                                 <br>
-                                                <li>{{ tour.overview_short|safe|linebreaks|truncatewords_html:20 }}</li>
+                                                <li>{{ tour.overview_short|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -215,7 +215,7 @@
                                                 <li><b>{% trans 'Rate' %}:</b> {{ guide.rate }} USD/{% trans 'hour' %}</li>
                                                 <li><b>{% trans 'Min hours' %}:</b> {{ guide.min_hours }}</li>
                                                 <br>
-                                                <li>{{ guide.overview|safe|linebreaks|truncatewords_html:20 }}</li>
+                                                <li>{{ guide.overview|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
                                             </ul>
                                         </div>
                                     </div>
