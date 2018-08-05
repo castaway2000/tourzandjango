@@ -22,7 +22,7 @@ def get_image(search_term, image_name, unsplash_key=None):
     url = "https://api.unsplash.com/photos/search/"
     values["query"] = search_term
     r = requests.get(url, values)
-    if r.status_code == requests.codes.ok:
+    if r.status_code == 200:
         images_data = r.json()
         results = dict()
         results_check_list = list()
