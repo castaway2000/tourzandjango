@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
+{% load utils_tags %}
 
         <div class="container">
 {#            <h1 class="page-title">{% blocktrans %}Account Settings{% endblocktrans %}</h1>#}
@@ -15,30 +16,18 @@
                     <aside class="user-profile-sidebar">
                         <div class="user-profile-avatar text-center">
                             {% if request.session.current_role == "guide" %}
-                                {% if user.guideprofile.profile_image_small %}
-                                    <img class=""
-                                         src="{{ user.guideprofile.profile_image_small.url }}"
-                                         alt="" title="" />
-                                {% elif user.guideprofile.profile_image %}
-                                    <img class=""
-                                         src="{{ user.guideprofile.profile_image.url }}"
-                                         alt="" title="" />
-                                {% else %}
-                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
-                                {% endif %}
+                                <img class=""
+                                 src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}"
+                                 alt="" title="" />
                             {% else %}
-                                {% if user.touristprofile.image %}
-                                    <img class=""
-                                         src="{{ user.touristprofile.image.url }}"
-                                         alt="" title="" />
-                                {% else %}
-                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
-                                {% endif %}
+                                <img class=""
+                                 src="{% get_sized_image user.touristprofile default_size="small" %}"
+                                 alt="" title="" />
                             {% endif %}
 
                             <h5>{{ user.username }}</h5>
 
-                            <p>Member Since {{ user.date_joined|date:"M Y"}}</p>
+                            <p>{% trans 'Member Since' %} {{ user.date_joined|date:"M Y"}}</p>
 
                             {% if request.session.current_role == "tourist" and request.user.guideprofile %}
                                 <a href="{% url 'change_role_settings' 'guide' %}">{% blocktrans %}Switch to Guide Profile{% endblocktrans %}</a>

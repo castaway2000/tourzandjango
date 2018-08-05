@@ -12,6 +12,9 @@ from tourzan.settings import GOOGLE_MAPS_KEY
 import requests
 import time
 from django.db.models import Avg
+import time
+from django.core.files.uploadedfile import SimpleUploadedFile
+from utils.unsplash import get_image
 
 
 class LocationType(models.Model):
@@ -65,10 +68,23 @@ class Country(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
-            self.image_large = optimize_size(self.image, "large")
-            self.image_medium = optimize_size(self.image, "medium")
-            self.image_small = optimize_size(self.image, "small")
+
+        if not self.image:
+            #But so far we get a default image from unsplash here
+            search_term = self.name
+            content, file_name = get_image(search_term=search_term, image_name=self.slug)
+            if file_name:
+                self.image = SimpleUploadedFile(file_name, content)
+
+        if self.image:
+            if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
+                self.image_large = optimize_size(self.image, "large")
+                self.image_medium = optimize_size(self.image, "medium")
+                self.image_small = optimize_size(self.image, "small")
+        else:
+            pass
+            #maybe to put here a code to remove related sized images, if a main image is removed
+
         super(Country, self).save(*args, **kwargs)
 
     def get_cities(self):
@@ -110,14 +126,23 @@ class City(models.Model):
         if not self.name:
             self.name = self.original_name
         self.slug = slugify(self.name)
-        if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
-            self.image_large = optimize_size(self.image, "large")
-            self.image_medium = optimize_size(self.image, "medium")
-            self.image_small = optimize_size(self.image, "small")
+
+        if not self.image:
+            #But so far we get a default image from unsplash here
+            search_term = "%s cityscape" % self.name
+            content, file_name = get_image(search_term=search_term, image_name=self.slug)
+            if file_name:
+                self.image = SimpleUploadedFile(file_name, content)
+
+        if self.image:
+            if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
+                self.image_large = optimize_size(self.image, "large")
+                self.image_medium = optimize_size(self.image, "medium")
+                self.image_small = optimize_size(self.image, "small")
+        else:
+            pass
 
         if not self.country or (self._original_fields["place_id"] != self.place_id) or (self.place_id and not self.country and not self._original_fields["country"]):
-            print("updating country")
-            time.sleep(3)
             google_maps_key = GOOGLE_MAPS_KEY
             url_place_info = "https://maps.googleapis.com/maps/api/geocode/json?place_id=%s&key=%s" % (self.place_id, google_maps_key)
             r = requests.get(url_place_info)

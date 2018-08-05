@@ -1030,6 +1030,14 @@ a{
     pointer-events: none;
 }
 
+.menu-navigation {
+    border-bottom: 1px solid #dddddd;
+}
+.menu-navigation ul{
+    display: inline-block;
+    border-bottom: none!important;
+}
+
 
 .w100{
     width: 100px;
@@ -1312,12 +1320,16 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 }
 
 @media (max-width:1260px) {
-  .booking-filters-container{
+    .booking-filters-container{
       z-index: 100;
       top: 182px;
       left: 1%;
       padding-left: 0;
-  }
+    }
+
+    .container-equal-items .panel {
+        min-height: 550px;
+    }
 }
 
 @media (max-width: 1200px){
@@ -1337,8 +1349,12 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 
 @media (max-width:992px) {
 
-    .top-area.show-onload{
+    .top-area{
         height: 700px;
+    }
+
+    .top-area p{
+        font-size: 0.7em;
     }
 
     .booking-filters-container{
@@ -1361,21 +1377,24 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 }
 
 @media (max-width:768px) {
+    .top-area p{
+        font-size: 0.55em;
+    }
+
     .btn-inlineform{
         margin-top: 0;
     }
-
 
     .tour-program-item .img-container{
         min-height: 180px;
     }
 
-  .booking-filters-container{
+   .booking-filters-container{
       top: 0;
       left: 0;
       border-radius: 0;
       visibility: visible;
-  }
+   }
 
     .seacrch-results-container{
         min-height: 800px;
