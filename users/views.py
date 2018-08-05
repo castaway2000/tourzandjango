@@ -386,7 +386,7 @@ class SignupViewCustom(SignupView):
         context = super(SignupViewCustom, self).get_context_data(**kwargs)
         context["recaptcha_site_key"] = GOOGLE_RECAPTCHA_SITE_KEY
         return context
-    
+
     def form_valid(self, form):
         # By assigning the User to a property on the view, we allow subclasses
         # of SignupView to access the newly created User instance
