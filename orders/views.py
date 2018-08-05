@@ -193,16 +193,16 @@ def making_booking(request):
 
         #message about creation of the order
         if order.tour:
-            message = _("Tour: {tour_name}. \n"
-                        "Persons number: {persons_nmb}.\n"
-                        "Date: {tour_date}.".format(tour_name=tour.name,
+            message = _("Tour: {tour_name} \n"
+                        "Persons number: {persons_nmb}\n"
+                        "Date: {tour_date}".format(tour_name=tour.name,
                                                      persons_nmb=order.number_persons,
                                                      tour_date=order.date_booked_for
                                                      ))
         else:
-             message = _("Guide booking request.\n"
-                        "Persons number: {persons_nmb}.\n"
-                        "Date: {tour_date}.".format(persons_nmb=order.number_persons,
+             message = _("Guide booking request\n"
+                        "Persons number: {persons_nmb}\n"
+                        "Date: {tour_date}".format(persons_nmb=order.number_persons,
                                                      tour_date=order.date_booked_for
                                                      ))
         chat.create_message(user, message)
