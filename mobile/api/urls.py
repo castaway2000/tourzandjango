@@ -9,5 +9,5 @@ urlpatterns = [url(r'^', include(router.urls)),
                url(r'^update_trip/', views.update_trip),
                url(r'^extend_time/', views.extend_time),
                url(r'^book_guide/', views.book_guide),
-               url(r'^trip_status', views.trip_status),
+               url(r'^trip_status/', views.trip_status),
                ]

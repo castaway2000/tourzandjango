@@ -14,7 +14,6 @@ import urllib.parse as urlparse
 from io import BytesIO
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-
 """
 This script populates countries for the existing cities with no value in country field.
 All the new cities will be populated with countries values automatically using a login in save method of City model
@@ -80,8 +79,6 @@ def populate_countries():
     for country in countries.iterator():
         country.save(force_update=True)
 
-
-
     countries_wo_image = Country.objects.filter(image__exact="")
     if countries_wo_image:
         for country_wo_image in countries_wo_image.iterator():
@@ -99,7 +96,6 @@ def populate_countries():
             if file_name:
                 city_wo_image.image = SimpleUploadedFile(file_name, content)
                 city_wo_image.save(force_update=True)
-
 
 if __name__ == "__main__":
     populate_countries()
