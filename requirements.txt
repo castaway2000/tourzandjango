@@ -48,5 +48,7 @@ channels_redis==2.2.1
 daphne==2.1.2
 django-rest-auth==0.9.3
 pyfcm==1.4.5
+txfcm==0.0.1
+baseapi==0.1.1
 requests-toolbelt==0.8.0
 redis==2.10.6

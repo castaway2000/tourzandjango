@@ -84,6 +84,7 @@ urlpatterns = i18n_patterns(
                 url(r'^api/v1/login_client/$', login_api_view, name='login_client'),
                 url(r'^api/v1/signup_user/$', signup_api_view, name='signup_client'),
                 url(r'^api/v1/mobile/', include('mobile.api.urls')),
+                url(r'^api/v1/notifications/', include('notifications.api.urls')),
                 url(r'^api/v1/', include('chats.api.urls')),
                 url(r'^api/v1/', include('tourists.api.urls')),
                 url(r'^api/v1/', include('guides.api.urls')),
