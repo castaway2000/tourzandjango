@@ -12,6 +12,7 @@ from tourzan.settings import GOOGLE_MAPS_KEY
 import requests
 import time
 from django.db.models import Avg
+import time
 
 
 class LocationType(models.Model):
@@ -64,6 +65,9 @@ class Country(models.Model):
                 pass
 
     def save(self, *args, **kwargs):
+        print(self.name)
+        print(self._original_fields["image"] != self.image)
+        time.sleep(3)
         self.slug = slugify(self.name)
         if self._original_fields["image"] != self.image or (self.image and (not self.image_large or not self.image_medium or not self.image_small)):
             self.image_large = optimize_size(self.image, "large")
@@ -107,6 +111,10 @@ class City(models.Model):
                 pass
 
     def save(self, *args, **kwargs):
+        print(self.name)
+        print(self._original_fields["image"] != self.image)
+        time.sleep(3)
+
         if not self.name:
             self.name = self.original_name
         self.slug = slugify(self.name)

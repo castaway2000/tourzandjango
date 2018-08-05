@@ -35,30 +35,39 @@ def get_image(search_term, image_name, unsplash_key=None):
     url = "https://api.unsplash.com/photos/search/"
     values["query"] = search_term
     r = requests.get(url, values)
-    images_data = r.json()
-    for photo in images_data:
-        image_url = photo["urls"]["full"]
-        parsed = urlparse.urlparse(image_url)
-        get_parameters = urlparse.parse_qs(parsed.query)
-        r = requests.get(image_url)
-        if r.status_code == requests.codes.ok:
-            if get_parameters.get("fm"):
-                extension = get_parameters.get("fm")[0]
-                img_filename = "%s.%s" % (image_name, extension)
-                # country_wo_image.image.save(img_filename, File(img_temp), save = True)
+    import time
+    if r.status_code == requests.codes.ok:
+        images_data = r.json()
+        results = dict()
+        for photo in images_data:
+            likes = photo["likes"]
+            if len(results) == 0 or likes > results["likes"]:
+                image_url = photo["urls"]["full"]
+                parsed = urlparse.urlparse(image_url)
+                get_parameters = urlparse.parse_qs(parsed.query)
+                r = requests.get(image_url)
+                if r.status_code == requests.codes.ok:
+                    if get_parameters.get("fm"):
+                        extension = get_parameters.get("fm")[0]
+                        img_filename = "%s.%s" % (image_name, extension)
+                        # country_wo_image.image.save(img_filename, File(img_temp), save = True)
 
-                # io = BytesIO(r.content)
-                return (r.content, img_filename)
-            else:
-                return (None, None)
+                        # io = BytesIO(r.content)
+                        results["likes"] = likes
+                        results["data"] = (r.content, img_filename)
+
+        if len(results) > 0:
+            return results["data"]
         else:
-            try:
-                current_index = unsplash_keys.index("bar")
-                next_index = current_index+1
-                unsplash_key = unsplash_keys[next_index]
-                get_image(search_term, image_name, unsplash_key)
-            except:
-                return (None, None)
+            return (None, None)
+    else:
+        try:
+            current_index = unsplash_keys.index("bar")
+            next_index = current_index+1
+            unsplash_key = unsplash_keys[next_index]
+            get_image(search_term, image_name, unsplash_key)
+        except:
+            return (None, None)
 
 
 
@@ -88,7 +97,6 @@ def populate_countries():
         for city_wo_image in cities_wo_image.iterator():
             content, file_name = get_image(search_term=city_wo_image.name, image_name=city_wo_image.slug)
             if file_name:
-                # country_wo_image.image.save(file_name, File(io), save=True)
                 city_wo_image.image = SimpleUploadedFile(file_name, content)
                 city_wo_image.save(force_update=True)
 
