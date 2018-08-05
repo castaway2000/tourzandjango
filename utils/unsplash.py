@@ -64,7 +64,7 @@ def get_image(search_term, image_name, unsplash_key=None):
             return (None, None)
     else:
         try:
-            current_index = unsplash_keys.index("bar")
+            current_index = unsplash_keys.index(unsplash_key)
             next_index = current_index+1
             unsplash_key = unsplash_keys[next_index]
             get_image(search_term, image_name, unsplash_key)
