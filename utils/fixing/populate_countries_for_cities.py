@@ -82,7 +82,7 @@ def populate_countries():
 
 
 
-    countries_wo_image = Country.objects.filter(image__isnull=True)
+    countries_wo_image = Country.objects.filter(image__exact="")
     if countries_wo_image:
         for country_wo_image in countries_wo_image.iterator():
             content, file_name = get_image(search_term=country_wo_image.name, image_name=country_wo_image.slug)
@@ -92,7 +92,7 @@ def populate_countries():
                 country_wo_image.save(force_update=True)
 
 
-    cities_wo_image = City.objects.filter(image__isnull=True)
+    cities_wo_image = City.objects.filter(image__exact="")
     if cities_wo_image:
         for city_wo_image in cities_wo_image.iterator():
             content, file_name = get_image(search_term=city_wo_image.name, image_name=city_wo_image.slug)
