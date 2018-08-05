@@ -22,7 +22,7 @@ from guides.models import GuideProfile
 from django.http import JsonResponse
 from utils.internalization_wrapper import languages_english
 from allauth.account.views import SignupView, _ajax_response
-from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
+from tourzan.settings import GOOGLE_RECAPTCHA_SITE_KEY, GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
 import datetime
@@ -45,6 +45,7 @@ def login_view(request):
     Login redirects are handled here
     """
     form = LoginForm(request.POST or None)
+    recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY
 
     url = request.META.get('HTTP_REFERER')
     parsed = urlparse.urlparse(url)
