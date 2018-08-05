@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'utils',
     'coupons',
     'mobile',
+    'notifications',
 
     #external packages
     'allauth',
@@ -356,6 +357,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
+FCM_API_KEY = 'AIzaSyA3YF3ebcy2OclVoH1lcwK-P9c_t_37j0g'
+
 
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'

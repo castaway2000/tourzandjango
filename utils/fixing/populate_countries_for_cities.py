@@ -4,7 +4,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'tourzan.settings'
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"../..")))
 import django
 django.setup()
-from locations.models import City
+from locations.models import City, Country
 
 
 """
@@ -16,6 +16,13 @@ def populate_countries():
     cities = City.objects.filter(place_id__isnull=False)
     for city in cities.iterator():
         city.save(force_update=True)
+
+    countrys = Country.objects.all()
+    for c in countrys:
+        slug = str(c.name).replace(' ', '-').lower()
+        c.slug = slug
+        c.save(force_update=True)
+        print(c.slug)
 
 if __name__ == "__main__":
     populate_countries()

@@ -15,17 +15,18 @@ All the new cities will be populated with countries values automatically using a
 """
 
 def populate_uuids():
-    # tours = Tour.objects.all()
-    # for tour in tours.iterator():
-    #     tour.save(force_update=True)
-    #
+    tours = Tour.objects.all()
+    for tour in tours.iterator():
+        tour.save(force_update=True)
+
+
     guides = GuideProfile.objects.all()
     for guide in guides.iterator():
         try:
             guide.save(force_update=True)
         except:
             pass
-    #
+
     #
     # orders = Order.objects.all()
     # for order in orders.iterator():
