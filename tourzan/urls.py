@@ -47,7 +47,7 @@ sitemaps = {'static': StaticSitemap, 'guides': GuideSitemap, 'tours': TourSitema
 #added here i18n_patterns for localization
 urlpatterns = i18n_patterns(
 
-    url(r'^admin/', admin.site.urls),
+    url(r'^adminissomewherethere/', admin.site.urls),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     url(r'^', include('chats.urls')),
     url(r'^', include('locations.urls')),

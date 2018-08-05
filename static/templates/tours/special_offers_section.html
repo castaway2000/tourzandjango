@@ -9,12 +9,12 @@
                 <ul class="list-unstyled">
                     {% if tour.type == "1" %}
                         <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
-                        <li class="tour-name">{{ tour.name }} {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}!</li>
+                        <li class="tour-name">{{ tour.name }} {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price.normalize }} {{ tour.currency }} {% trans 'per person' %}!</li>
                         <li class="mb10">{% trans 'by' %} {{ tour.guide.user.generalprofile.first_name }}</li>
 
                         <li class="normal-price"><span class="item-title">{% trans 'Average price' %}:</span> {{ tour.get_average_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}</li>
                         <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span>
-                            {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}
+                            {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price.normalize }} {{ tour.currency }} {% trans 'per person' %}
                         </li>
                         <li class="dates-available">
                             <span class="item-title">{% trans 'Dates' %}: </span>

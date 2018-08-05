@@ -9,7 +9,7 @@
         <div class="bg-holder full text-center text-white">
             <div class="bg-mask"></div>
             <div class="bg-img"
-                 style="background:url({% get_sized_image obj %}) no-repeat center center fixed; background-size: cover;"></div>
+                 style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;"></div>
             <div class="bg-front full-center">
                 <div class="owl-cap">
                     <div class="text">{% trans 'Welcome to' %}</div>
@@ -123,16 +123,31 @@
                                         <div>
                                             <ul class="list-unstyled">
                                                 {% if tour.type == "1" %}
+                                                    <li><b>{% trans 'Type' %}:</b> {% trans 'scheduled tour' %}</li>
                                                     <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
                                                     <li><b>{% trans 'Price' %}:</b> {{ tour.get_lowest_scheduled_tour_price }} USD</li>
-                                                    <li><b>{% trans 'Closest date' %}:</b> </li>
+                                                    <li>
+                                                        <b>{% trans 'Closest date' %}:</b>
+                                                        {% with  tour.get_nearest_available_dates as nearest_available_dates %}
+                                                            {% if nearest_available_dates %}
+                                                                {% for nearest_available_date in nearest_available_dates %}
+                                                                    <span class="label label-success label-tag">{{ nearest_available_date.dt|date:"m/d/Y h:i" }}</span>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                {% trans 'No dates for the nearest 30 days' %}
+                                                            {% endif %}
+                                                        {% endwith %}
+
+                                                    </li>
                                                 {% else %}
+                                                    <li><b>{% trans 'Type' %}:</b> {% trans 'private tour' %}</li>
                                                     <li><b>{% trans 'Hours' %}: </b> {{ tour.hours }}</li>
                                                     <li><b>{% trans 'Price' %}: </b>
                                                         1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
                                                     </li>
                                                     <li><b>{% trans 'Additional people' %}: </b> {{ tour.additional_person_price }} USD {% trans 'for each person' %}</li>
                                                     <li><b>{% trans 'Maximum participants' %}: </b> {{ tour.max_persons_nmb }}</li>
+                                                    <li class="mt10">{% trans 'Contact a guide to book a tour' %}</li>
                                                 {% endif %}
                                                 <br>
                                                 <li> {{ tour.overview_short|safe|linebreaks|truncatewords_html:20 }}</li>
