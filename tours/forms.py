@@ -275,6 +275,7 @@ class BookingPrivateTourForm(forms.Form):
         self.tour = tour
         self.persons_nmb_for_min_price = tour.get_persons_nmb_for_min_price()
         self.additional_person_price = tour.get_additional_person_price()
+        self.max_persons_nmb = tour.get_max_persons_nmb()
 
         super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
         self.fields['tour_id'] = forms.ChoiceField(
@@ -299,12 +300,11 @@ class BookingPrivateTourForm(forms.Form):
                 '{}</button>'
                 '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
                                 _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
-                                _("Maximum participants"), tour.max_persons_nmb,
+                                _("Maximum participants"), self.max_persons_nmb,
                                 _("Total price") if not tour.discount else _("Total price with discount"),
                             tour.price_final, _('Submit'))
             ),
         )
-
 
     def clean_number_people(self):
         number_people = self.cleaned_data.get("number_people")

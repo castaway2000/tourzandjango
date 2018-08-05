@@ -236,6 +236,8 @@ class Tour(models.Model):
     def get_additional_person_price(self):
         return self.additional_person_price if self.additional_person_price > 0 else int(self.price_final/self.get_persons_nmb_for_min_price())
 
+    def get_max_persons_nmb(self):
+        return self.max_persons_nmb if self.max_persons_nmb > 0 else 5
 
 class TourIncludedItem(models.Model):
     tour = models.ForeignKey(Tour)
