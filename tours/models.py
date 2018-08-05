@@ -216,7 +216,6 @@ class Tour(models.Model):
         else:
             return 0
 
-
     @property
     def available_discount_tours(self):
         if self.type == "1":#scheduled
@@ -230,6 +229,12 @@ class Tour(models.Model):
                 return [available_text]
             else:
                 return []
+
+    def get_persons_nmb_for_min_price(self):
+        return self.persons_nmb_for_min_price if self.persons_nmb_for_min_price > 0 else 3
+
+    def get_additional_person_price(self):
+        return self.additional_person_price if self.additional_person_price > 0 else int(self.price_final/self.get_persons_nmb_for_min_price())
 
 
 class TourIncludedItem(models.Model):

@@ -273,8 +273,8 @@ class BookingPrivateTourForm(forms.Form):
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
         self.tour = tour
-        self.persons_nmb_for_min_price = tour.persons_nmb_for_min_price if tour.persons_nmb_for_min_price > 0 else 3
-        self.additional_person_price = tour.additional_person_price if tour.additional_person_price > 0 else int(tour.price_final/self.persons_nmb_for_min_price)
+        self.persons_nmb_for_min_price = tour.get_persons_nmb_for_min_price()
+        self.additional_person_price = tour.get_additional_person_price()
 
         super(BookingPrivateTourForm, self).__init__(*args, **kwargs)
         self.fields['tour_id'] = forms.ChoiceField(
