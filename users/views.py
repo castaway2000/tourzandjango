@@ -22,7 +22,7 @@ from guides.models import GuideProfile
 from django.http import JsonResponse
 from utils.internalization_wrapper import languages_english
 from allauth.account.views import SignupView, _ajax_response
-from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
+from tourzan.settings import GOOGLE_RECAPTCHA_SITE_KEY, GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
 import datetime
@@ -45,6 +45,7 @@ def login_view(request):
     Login redirects are handled here
     """
     form = LoginForm(request.POST or None)
+    recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY
 
     url = request.META.get('HTTP_REFERER')
     parsed = urlparse.urlparse(url)
@@ -78,7 +79,7 @@ def login_view(request):
                 return HttpResponse("Your account is disabled.")
         else:
             messages.error(request, 'Login credentials are incorrect!')
-    return render(request, 'users/login_register.html', {"form": form})
+    return render(request, 'users/login_register.html', {"form": form, "recaptcha_site_key": recaptcha_site_key})
 
 
 def logout_view(request):
@@ -380,6 +381,11 @@ def search_language(request):
 
 #redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
 class SignupViewCustom(SignupView):
+
+    def get_context_data(self, **kwargs):
+        context = super(SignupViewCustom, self).get_context_data(**kwargs)
+        context["recaptcha_site_key"] = GOOGLE_RECAPTCHA_SITE_KEY
+        return context
 
     def form_valid(self, form):
         # By assigning the User to a property on the view, we allow subclasses
