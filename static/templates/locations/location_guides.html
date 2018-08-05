@@ -131,26 +131,32 @@
                                                         {% with  tour.get_nearest_available_dates as nearest_available_dates %}
                                                             {% if nearest_available_dates %}
                                                                 {% for nearest_available_date in nearest_available_dates %}
-                                                                    <span class="label label-success label-tag">{{ nearest_available_date.dt|date:"m/d/Y h:i" }}</span>
+                                                                    <span class="label label-success label-tag">
+                                                                        {{ nearest_available_date.dt|date:"m/d/Y h:i" }}
+                                                                        ({{ nearest_available_date.seats_available }}
+                                                                        {% if nearest_available_date.seats_available == 1 %}
+                                                                            {% trans 'free seat' %}{% else %}{% trans 'free seats' %}
+                                                                        {% endif %})
+                                                                    </span>
                                                                 {% endfor %}
                                                             {% else %}
-                                                                {% trans 'No dates for the nearest 30 days' %}
+                                                                {% trans 'No free dates for the nearest 30 days' %}
                                                             {% endif %}
                                                         {% endwith %}
 
                                                     </li>
                                                 {% else %}
                                                     <li><b>{% trans 'Type' %}:</b> {% trans 'private tour' %}</li>
-                                                    <li><b>{% trans 'Hours' %}: </b> {{ tour.hours }}</li>
-                                                    <li><b>{% trans 'Price' %}: </b>
-                                                        1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
+                                                    <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
+                                                    <li><b>{% trans 'Price' %}:</b>
+                                                        1-{{ tour.get_persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
                                                     </li>
-                                                    <li><b>{% trans 'Additional people' %}: </b> {{ tour.additional_person_price }} USD {% trans 'for each person' %}</li>
+                                                    <li><b>{% trans 'Additional people' %}: </b> {{ tour.get_additional_person_price }} USD {% trans 'for each person' %}</li>
                                                     <li><b>{% trans 'Maximum participants' %}: </b> {{ tour.max_persons_nmb }}</li>
-                                                    <li class="mt10">{% trans 'Contact a guide to book a tour' %}</li>
+                                                    <li class="mt10">{% trans 'Contact guide directly to book a tour' %}</li>
                                                 {% endif %}
                                                 <br>
-                                                <li> {{ tour.overview_short|safe|linebreaks|truncatewords_html:20 }}</li>
+                                                <li>{{ tour.overview_short|safe|linebreaks|truncatewords_html:20 }}</li>
                                             </ul>
                                         </div>
                                     </div>
