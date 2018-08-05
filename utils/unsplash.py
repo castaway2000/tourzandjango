@@ -17,7 +17,8 @@ def get_image(search_term, image_name, unsplash_key=None):
                      "71f7daecc23f75f0cf8fff3488a2cafe0040437d3240d8214e00379e6c337c0e",
                      "b036ac885ede0b5e6c803b97c770de3872b9fde6848adf4a359639d6a7612e95"]
     values = dict()
-    values["client_id"] = unsplash_keys[0] if not unsplash_key else unsplash_key
+    unsplash_key = unsplash_keys[0] if not unsplash_key else unsplash_key
+    values["client_id"] = unsplash_key
     values["page"] = 1
     values["orientation"] = "landscape"
     url = "https://api.unsplash.com/photos/search/"
