@@ -79,7 +79,7 @@ def login_view(request):
                 return HttpResponse("Your account is disabled.")
         else:
             messages.error(request, 'Login credentials are incorrect!')
-    return render(request, 'users/login_register.html', {"form": form})
+    return render(request, 'users/login_register.html', {"form": form, "recaptcha_site_key": recaptcha_site_key})
 
 
 def logout_view(request):
