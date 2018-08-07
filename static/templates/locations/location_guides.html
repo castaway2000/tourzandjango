@@ -4,12 +4,28 @@
 {% load utils_tags %}
 
 
+{% block seo_stuff %}
+    <title>{% trans 'Find guides in' %} {{ obj.name }}</title>
+    <meta name="description" content="Tourzan is the best showaround service online and only the best tours by locals,
+         search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
+    <meta property="og:description" content="Tourzan is the best showaround service online and only the best tours by locals,
+         search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
+
+    <meta property="og:title" content="{% trans 'Find guides in' %} {{ obj.name }}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:image" content="{% get_sized_image obj %}" />
+    <meta property="og:image:height" content="640" />
+{#    <meta property="og:image:width" content="1200" />#}
+{% endblock seo_stuff %}
+
+
 {% block content %}
     <div class="top-area show-onload mask-wrapper">
         <div class="bg-holder full text-center text-white">
             <div class="bg-mask"></div>
             <div class="bg-img"
-                 style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;"></div>
+                 style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;">
+            </div>
             <div class="bg-front full-center">
                 <div class="owl-cap">
                     <div class="text">{% trans 'Welcome to' %}</div>
@@ -133,10 +149,10 @@
                                                                 {% for nearest_available_date in nearest_available_dates %}
                                                                     <span class="label label-success label-tag">
                                                                         {{ nearest_available_date.dt|date:"m/d/Y h:i" }}
-                                                                        ({{ nearest_available_date.seats_available }}
+                                                                         - {{ nearest_available_date.seats_available }}
                                                                         {% if nearest_available_date.seats_available == 1 %}
                                                                             {% trans 'available spot' %}{% else %}{% trans 'available spots' %}
-                                                                        {% endif %})
+                                                                        {% endif %}
                                                                     </span>
                                                                 {% endfor %}
                                                             {% else %}

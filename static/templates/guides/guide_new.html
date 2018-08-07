@@ -3,9 +3,21 @@
 {% load i18n %}
 {% load stars_rating %}
 {% load crispy_forms_tags %}
+{% load utils_tags %}
 
-{% block og_info %}
-{% endblock og_info %}
+
+{% block seo_stuff %}
+    <title>{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}</title>
+
+    <meta name="description" content="{{ guide.overview|remove_newlines }}"/>
+    <meta property="og:description" content="{{ guide.overview|remove_newlines }}" />
+
+    <meta property="og:title" content="{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:image" content="{{ guide.profile_image_medium.url }}" />
+    <meta property="og:image:height" content="640" />
+{#    <meta property="og:image:width" content="1200" />#}
+{% endblock seo_stuff %}
 
 {% block header_stuff %}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
@@ -109,18 +121,35 @@
                     </div>
 
                     <div class="answers">
-                        {% if guide.user.userinterest_set.all %}
-                            <div class="mt10 mb50">
-                                <div>{% trans 'Interests' %}: </div>
-                                <div>
-                                    {% for item in guide.user.userinterest_set.all %}
-                                        <span class="label label-default label-tag">
-                                            {{ item.interest.name }}
-                                        </span>
-                                    {% endfor %}
+                        {% with guide.user.userlanguage_set.all as user_languages %}
+                            {% if user_languages %}
+                                <div class="mt10 mb50">
+                                    <div>{% trans 'Languages' %}: </div>
+                                    <div>
+                                        {% for item in user_languages %}
+                                            <span class="label label-default label-tag">
+                                                {{ item.language.name }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
-                        {% endif %}
+                            {% endif %}
+                        {% endwith %}
+
+                        {% with guide.user.userinterest_set.all as user_interests %}
+                            {% if user_interests %}
+                                <div class="mt10 mb50">
+                                    <div>{% trans 'Interests' %}: </div>
+                                    <div>
+                                        {% for item in user_interests %}
+                                            <span class="label label-default label-tag">
+                                                {{ item.interest.name }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
 
                         {% if not guide_answers %}
                             <div class="img-initial mt20 mb20">

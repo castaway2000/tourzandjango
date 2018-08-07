@@ -92,7 +92,7 @@
                     </h3>
                     <div>
                         {% if order %}
-                            {% if request.session.current_role == "guide" %}
+                            {% if request.session.current_role == "guide" and request.user == tour.guide.user %}
                                 {% with order.tour as tour %}
                                     {% if tour %}
                                         <div>
@@ -158,10 +158,10 @@
                                         </p>
                                         {% if order.status.id == 1 %}
                                             {% if order.is_approved_by_guide  %}
-                                                <div class="text-left">
-                                                    <form method="post">{% csrf_token %}
-                                                        <div class="form-group">
-                                                            {% if request.session.current_role != "guide" %}
+                                                {% if request.session.current_role != "guide" and request.user == order.tourist.user %}
+                                                    <div class="text-left">
+                                                        <form method="post">{% csrf_token %}
+                                                            <div class="form-group">
                                                                 <p>
                                                                     {% trans 'Your guide has approved booking conditions.' %}
                                                                     {% trans 'Click the button below to go to checkout page.' %}
@@ -177,10 +177,10 @@
                                                                         {% trans 'Cancel booking' %}
                                                                     </a>
                                                                 </div>
-                                                            {% endif %}
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                {% endif %}
                                             {% elif order.status.id == 1 %}
                                                 <div class="mt20">
                                                     <b>{% trans 'Waiting for guide confirmation' %}</b>
@@ -218,7 +218,7 @@
                         <p>
                             <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
                         </p>
-                        {% if request.session.current_role == "guide" %}
+                        {% if request.session.current_role == "guide" and request.user == order.guide.user %}
                             {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
                                 <p>
                                     <a href="{% url 'cancel_order' order.uuid %}"
