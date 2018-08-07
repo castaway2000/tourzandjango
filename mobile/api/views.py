@@ -313,6 +313,7 @@ def update_trip(request):
                     .update(duration=tdelta.total_seconds(), cost=cost_update)
                 trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
                 GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
+                GeoTracker.objects.filter(user_id__in=[trip_status.guide_id, trip_status.user_id]).update(trip_in_progress=False)
                 # TODO: make the trip register in the database and process payments from phone.
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
