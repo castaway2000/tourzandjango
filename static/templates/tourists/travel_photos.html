@@ -14,7 +14,6 @@
         <div id="popup-gallery">
             <div class="row row-col-gap">
                 {% if travel_photos %}
-
                     {% for travel_photo in travel_photos %}
                         <div class="col-md-3">
                             <a class="hover-img popup-gallery-image" href="{% get_media_prefix %}{{ travel_photo.image }}"
@@ -40,11 +39,6 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-                {% else %}
-                    <a class="btn btn-primary popup-text" href="#managing_photo_modal"
-                        data-effect="mfp-zoom-out">
-                        Add Your First Photo
-                    </a>
                 {% endif %}
             </div>
         </div>

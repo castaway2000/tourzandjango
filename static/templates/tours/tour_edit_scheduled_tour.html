@@ -75,13 +75,13 @@
                                         <td>{{ order.guide_payment }}</td>
                                         <td>
                                             {% if order.status.id == 5 or order.status.id == 9 %}
-                                                <a href="{% url 'change_order_status' order.id 2 %}"
+                                                <a href="{% url 'change_order_status' order.uuid 2 %}"
                                                     class="btn btn-success btn-sm">
                                                     {% trans 'Confirm' %}
                                                 </a>
                                             {% elif order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
                                                 <p>
-                                                    <a href="{% url 'cancel_order' order.id %}"
+                                                    <a href="{% url 'cancel_order' order.uuid %}"
                                                         class="btn btn-danger btn-sm">
                                                         {% trans 'Cancel' %}
                                                     </a>

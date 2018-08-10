@@ -138,6 +138,13 @@ class GuideProfile(models.Model):
     def get_tours(self):
         return self.tour_set.filter(is_active=True, is_deleted=False)
 
+    @property
+    def first_name(self):
+        if self.user and self.user.generalprofile:
+            return self.user.generalprofile.first_name
+        else:
+            return None
+
 
 class Service(models.Model):
     name = models.CharField(max_length=256)
