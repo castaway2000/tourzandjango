@@ -179,7 +179,7 @@
 
                 {% if order.status.id == 2 or order.status.id == 4 %}
                     <p>
-                        <a href="{% url 'order_completing' order.id %}"
+                        <a href="{% url 'order_completing' order.uuid %}"
                             class="btn btn-primary btn-sm">
                             {% if order.payment_status.id != 4 %}
                                 {% blocktrans %}

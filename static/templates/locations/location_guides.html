@@ -139,7 +139,23 @@
                                         <div>
                                             <ul class="list-unstyled">
                                                 {% if tour.type == "1" %}
-                                                    <li><b>{% trans 'Type' %}:</b> {% trans 'scheduled tour' %}</li>
+                                                    <li><b>{% trans 'Type' %}:</b> {{ tour.type_name }} {% trans ' tour' %}</li>
+                                                    <li>
+                                                        <b>{% trans 'Languages' %}</b>:
+                                                        {% with tour.get_languages as tour_languages %}
+                                                        {% if not tour_languages %}
+                                                            <span class="label label-success label-tag">
+                                                                English
+                                                            </span>
+                                                        {% else %}
+                                                            {% for tour_language in tour_languages %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ tour_language.name }}
+                                                                </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        {% endwith %}
+                                                    </li>
                                                     <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
                                                     <li><b>{% trans 'Price' %}:</b> {{ tour.get_lowest_scheduled_tour_price }} USD</li>
                                                     <li>
@@ -162,7 +178,23 @@
 
                                                     </li>
                                                 {% else %}
-                                                    <li><b>{% trans 'Type' %}:</b> {% trans 'private tour' %}</li>
+                                                    <li><b>{% trans 'Type' %}:</b> {{ tour.type_name }} {% trans 'tour' %}</li>
+                                                    <li>
+                                                        <b>{% trans 'Languages' %}</b>:
+                                                        {% with tour.get_languages as tour_languages %}
+                                                        {% if not tour_languages %}
+                                                            <span class="label label-success label-tag">
+                                                                English
+                                                            </span>
+                                                        {% else %}
+                                                            {% for tour_language in tour_languages %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ tour_language.name }}
+                                                                </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        {% endwith %}
+                                                    </li>
                                                     <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
                                                     <li><b>{% trans 'Price' %}:</b>
                                                         1-{{ tour.get_persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
@@ -230,6 +262,22 @@
                                             <ul class="list-unstyled">
                                                 <li><b>{% trans 'Rate' %}:</b> {{ guide.rate }} USD/{% trans 'hour' %}</li>
                                                 <li><b>{% trans 'Min hours' %}:</b> {{ guide.min_hours }}</li>
+                                                <li>
+                                                    <b>{% trans 'Languages' %}</b>:
+                                                    {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
+                                                    {% if not user_languages %}
+                                                        <span class="label label-success label-tag">
+                                                            English
+                                                        </span>
+                                                    {% else %}
+                                                        {% for user_language in user_languages %}
+                                                            <span class="label label-success label-tag">
+                                                                {{ user_language.get_language_display }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    {% endwith %}
+                                                </li>
                                                 <br>
                                                 <li>{{ guide.overview|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
                                             </ul>

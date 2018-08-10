@@ -194,6 +194,9 @@
                     </div>
                 {% elif order %}
                     {% with order.tour as tour %}
+                        <h3 class="text-center">
+                            {% trans 'Order details' %}
+                        </h3>
                         {% if tour %}
                             <p>
                                 <b>{% trans "Tour" %}: </b>
@@ -201,6 +204,9 @@
                                                               target="_blank">{{ tour.name }}
                                     ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
                                 </a>
+                            </p>
+                            <p>
+                                <b>{% trans 'Type' %}: </b>{{ tour.type_name }}
                             </p>
                         {% endif %}
 
@@ -218,16 +224,11 @@
                         <p>
                             <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
                         </p>
+
                         {% if request.session.current_role == "guide" and request.user == order.guide.user %}
-                            {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
-                                <p>
-                                    <a href="{% url 'cancel_order' order.uuid %}"
-                                        class="btn btn-danger btn-sm">
-                                        {% trans 'Cancel' %}
-                                    </a>
-                                </p>
-                            {% endif %}
+                            {% include 'orders/guide_orders_actions.html' %}
                         {% endif %}
+
                     {% endwith %}
                 {% endif %}
             </div>

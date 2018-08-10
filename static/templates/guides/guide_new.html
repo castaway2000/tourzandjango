@@ -237,7 +237,7 @@
                                                         {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
                                                     {% else %}
                                                         <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
-                                                        <span class="text-with-discount">{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                        <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
                                                     {% endif %}
                                                 {% elif tour.payment_type_id == 3 %}
                                                     {% blocktrans %}Free!{% endblocktrans %}

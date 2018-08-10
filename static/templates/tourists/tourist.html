@@ -27,6 +27,8 @@
                         <div class="col-md-4">
                             {% if tourist.image %}
                                 <img src="{{ tourist.image.url }}" class="img-responsive">
+                            {% else %}
+                                <img src="{% static 'img/300x300.png' %}" class="img-responsive">
                             {% endif %}
 
                             <div class="gap gap-small"></div>
