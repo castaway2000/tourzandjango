@@ -10,9 +10,8 @@ from chats.models import Chat, ChatMessage
 from locations.models import City
 from coupons.models import Coupon, CouponUser
 from django.utils.translation import ugettext as _
-
+from django.db.models import Sum
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
-
 import braintree
 
 
@@ -171,6 +170,8 @@ def payments(request):
     page = "payments"
     user = request.user
     payments = Payment.objects.filter(order__tourist__user=user).order_by("-id")
+    payments_aggr = payments.aggregate(amount=Sum("amount"))
+    payments_total_amount = payments_aggr.get("amount") if payments_aggr.get("amount") else 0
     return render(request, 'payments/payments.html', locals())
 
 

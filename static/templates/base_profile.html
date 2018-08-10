@@ -20,9 +20,13 @@
                                  src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}"
                                  alt="" title="" />
                             {% else %}
-                                <img class=""
-                                 src="{% get_sized_image user.touristprofile default_size="small" %}"
-                                 alt="" title="" />
+                                {% if user.touristprofile.image %}
+                                    <img class=""
+                                     src="{{ user.touristprofile.image.url }}"
+                                     alt="" title="" />
+                                {% else %}
+                                    <img src="">
+                                {% endif %}
                             {% endif %}
 
                             <h5>{{ user.username }}</h5>

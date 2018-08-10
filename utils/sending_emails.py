@@ -89,14 +89,14 @@ class SendingEmail(object):
                     message_tourist = 'Tour %s was completed!' % (order_naming)
                 else:
                     message_tourist = 'Tour %s was completed! Please review your experience ' \
-                        '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order_naming, order.id)
+                        '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order_naming, order.uuid)
 
-                subject_guide = 'Order #%s was completed!' % order.id
+                subject_guide = 'Order #%s was completed!' % order.uuid
                 if self.is_guide_saving:
-                    message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was completed!' % (order.id, order.id)
+                    message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?uuid=%s" target="_blank">#%s</a> was completed!' % (order.uuid, order.uuid)
                 else:
-                    message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?id=%s" target="_blank">#%s</a> was completed! Please review your experience ' \
-                       '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order.id, order.id, order.id)
+                    message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?uuid=%s" target="_blank">#%s</a> was completed! Please review your experience ' \
+                       '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order.uuid, order.uuid, order.uuid)
 
             elif order.status_id == 5: # payment reserved
                 subject_tourist = 'A payment for your tour %s was reserved!' % (order_naming)

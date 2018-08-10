@@ -375,7 +375,7 @@ $(window).scroll(function () {
     elementsResizing();
 
     if($(".mask-wrapper .bg-mask")!=undefined){
-        //console.log(scroll);
+        console.log(scroll);
         if(scroll > 70){
             $(".mask-wrapper").addClass("show-only-image");
         }else{
