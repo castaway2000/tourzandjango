@@ -191,12 +191,14 @@
                         <div class="tour-item">
                             <div class="row">
                                 <div class="col-md-3 col-sm-3 col-xs-3">
-                                    <div class="booking-item-img">
+                                    <div class="booking-item-img mb10">
                                         <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
                                             <img src="{% get_sized_image tour default_size="small" %}">
                                         </a>
                                     </div>
-                                    <br>
+                                    <div class="mb10">
+                                        {{ tour.city.country.name }}/{{ tour.city.name }}
+                                    </div>
                                 </div>
                                 <div class="col-md-6 col-sm-6 col-xs-5">
                                     <div class="tour-name">
@@ -205,10 +207,27 @@
                                     <div class="tour-guide-name">
                                         by {{ tour.guide.user.generalprofile.first_name }}
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            {{ tour.overview|linebreaks|truncatewords_html:30 }}
-                                        </div>
+                                    <div>
+                                        <b>{% trans 'Type' %}: </b>{{ tour.type_name }} {% trans 'tour' %}
+                                    </div>
+                                    <div>
+                                        <b>{% trans 'Languages' %}</b>:
+                                        {% with tour.get_languages as tour_languages %}
+                                        {% if not tour_languages %}
+                                            <span class="label label-success label-tag">
+                                                English
+                                            </span>
+                                        {% else %}
+                                            {% for tour_language in tour_languages %}
+                                                <span class="label label-success label-tag">
+                                                    {{ tour_language.name }}
+                                                </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div>
+                                        {{ tour.overview|linebreaks|truncatewords_html:30 }}
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-3 col-xs-4">
@@ -228,10 +247,10 @@
                                                 {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
                                             {% elif tour.payment_type_id == 2 %}
                                                 {% if not tour.discount %}
-                                                    {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                    {{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}
                                                 {% else %}
                                                     <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
-                                                    <span class="text-with-discount">{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                    <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
                                                 {% endif %}
                                             {% elif tour.payment_type_id == 3 %}
                                                 {% blocktrans %}Free!{% endblocktrans %}

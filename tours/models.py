@@ -97,6 +97,13 @@ class Tour(models.Model):
         if not self.payment_type:
             self.payment_type_id = 2#fixed price
 
+        if not self.currency:
+            if self.guide.currency:
+                self.currency = self.guide.currency
+            else:
+                currency = Currency.objects.get(name__iexact="USD")
+                self.currency = currency
+
         self.price_final = self.price - self.discount
 
         if not self.city and self.guide.city:
@@ -137,6 +144,13 @@ class Tour(models.Model):
             ping_google()
         except Exception:
             pass
+
+    @property
+    def type_name(self):
+        if self.type == "1":
+            return _("scheduled")
+        else:
+            return _("private")
 
     def get_hours_nmb_range(self):
         min_hours_nmb = self.min_hours
@@ -216,7 +230,6 @@ class Tour(models.Model):
         else:
             return 0
 
-
     @property
     def available_discount_tours(self):
         if self.type == "1":#scheduled
@@ -231,6 +244,14 @@ class Tour(models.Model):
             else:
                 return []
 
+    def get_persons_nmb_for_min_price(self):
+        return self.persons_nmb_for_min_price if self.persons_nmb_for_min_price > 0 else 3
+
+    def get_additional_person_price(self):
+        return self.additional_person_price if self.additional_person_price > 0 else int(self.price_final/self.get_persons_nmb_for_min_price())
+
+    def get_max_persons_nmb(self):
+        return self.max_persons_nmb if self.max_persons_nmb > 0 else 5
 
 class TourIncludedItem(models.Model):
     tour = models.ForeignKey(Tour)
@@ -309,7 +330,7 @@ class ScheduledTour(models.Model):
     def __str__(self):
         if self.dt and self.tour:
             dt = self.dt.strftime('%m/%d/%Y %I:%M')
-            return "%s -- %s USD -- %s" % (dt, self.price_final, self.tour.name)
+            return "%s -- %s USD" % (dt, self.price_final)
         elif self.tour:
             return "%s" % (self.tour.name)
         else:
@@ -347,7 +368,7 @@ class ScheduledTour(models.Model):
 
     def get_name(self):
         dt = self.dt.strftime('%m/%d/%Y %I:%M')
-        return "%s -- %s USD -- %s" % (dt, self.price_final, self.tour.name)
+        return "%s - %s USD" % (dt, self.price_final)
 
     def get_tour_end(self):
         tour_hours = self.tour.hours

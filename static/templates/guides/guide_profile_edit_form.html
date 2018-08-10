@@ -1,5 +1,8 @@
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
+
+
 <div class="row">
     <div class="col-lg-4">
         <h4>{% blocktrans %}Guide Profile{% endblocktrans %}</h4>
@@ -143,20 +146,6 @@
                         >
                     </div>
                 </div>
-                <label>{% blocktrans %}Cost per additional person, USD{% endblocktrans %}:
-                    <span class="text-error">{{ form.additional_person_cost.errors }}</span>
-                </label>
-                <div class="div-input-icon">
-                    <i class="fa fa-money input-icon"></i>
-                    <input type="number" min="0" step="1" name="{{ form.additional_person_cost.html_name }}"
-                           class="form-control w100"
-                        {% if request.POST.rate %}
-                           value="{{ request.POST.additional_person_cost|safe }}"
-                        {% elif guide %}
-                           value="{{ guide.additional_person_cost|safe }}"
-                        {% endif %}
-                    >
-                </div>
 
                 <div class="gap gap-small"></div>
 
@@ -267,7 +256,7 @@
             <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
             {% if user.guideprofile and user.guideprofile.profile_image %}
                 <div>
-                    <img src="{{ user.guideprofile.profile_image.url }}" class="img-responsive img-rounded">
+                    <img src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}" class="img-responsive img-rounded">
                 </div>
                 <div class="form-group">
                     <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
@@ -292,6 +281,7 @@
                 your current availability.{% endblocktrans %}</strong>
             <br><br>
             <h4>{% blocktrans %}Guide License{% endblocktrans %}</h4>
+
             {% if user.guideprofile and user.guideprofile.license_image %}
                 <div>
                     <img src="{{ user.guideprofile.license_image.url }}" class="img-responsive img-rounded">

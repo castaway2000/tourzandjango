@@ -291,6 +291,9 @@ class GeneralProfile(models.Model):
             coupons = None
         return coupons
 
+    def get_user_proficient_languages(self):
+        return self.user.userlanguage_set.filter(level_id__in=[1, 2]).order_by("language")#native, advances - maybe to change their titles or add upper intermediate?
+
 def general_profile_post_save(sender, instance, **kwargs):
     if hasattr(instance.user, "guideprofile"):
         guide = instance.user.guideprofile

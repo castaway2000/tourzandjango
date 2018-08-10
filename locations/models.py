@@ -195,7 +195,7 @@ class City(models.Model):
         data = self.guideprofile_set.filter(is_active=True).aggregate(Avg('rate'))
         avg = data.get("rate__avg")
         if avg:
-            return float(avg)
+            return "%.2f" % float(avg)
         else:
             return None
 
@@ -203,7 +203,7 @@ class City(models.Model):
         data = self.tour_set.filter(is_active=True, type="1").aggregate(Avg('price'))
         avg = data.get("price__avg")
         if avg:
-            return float(avg)
+            return "%.2f" % float(avg)
         else:
             return None
 

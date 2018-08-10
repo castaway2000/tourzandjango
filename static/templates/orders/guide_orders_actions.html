@@ -1,0 +1,33 @@
+{% load i18n %}
+
+<div>
+    {% if order.status.id == 5 or order.status.id == 9 %}
+         <p>
+            <a href="{% url 'change_order_status' order.uuid 2 %}"
+                class="btn btn-success btn-sm">
+                {% trans 'Confirm' %}
+            </a>
+        </p>
+    {% endif %}
+    {% if order.status.id == 2 or order.status.id == 4 %}
+        <p>
+            <a href="{% url 'order_completing' order.uuid %}"
+                class="btn btn-primary btn-sm">
+                {% if not order.review.is_guide_feedback %}
+                    {% trans 'Mark as completed and write a review' %}
+                {% else %}
+                    {% trans 'View final details' %}
+                {% endif %}
+            </a>
+        </p>
+    {% endif %}
+
+    {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5  or order.status.id == 9 %}
+        <p>
+            <a href="{% url 'cancel_order' order.uuid %}"
+                class="btn btn-danger btn-sm">
+                {% trans 'Cancel' %}
+            </a>
+        </p>
+    {% endif %}
+</div>

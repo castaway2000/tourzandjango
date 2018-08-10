@@ -193,16 +193,16 @@ def making_booking(request):
 
         #message about creation of the order
         if order.tour:
-            message = _("Tour: {tour_name}. \n"
-                        "Persons number: {persons_nmb}.\n"
-                        "Date: {tour_date}.".format(tour_name=tour.name,
+            message = _("Tour: {tour_name} \n"
+                        "Persons number: {persons_nmb}\n"
+                        "Date: {tour_date}".format(tour_name=tour.name,
                                                      persons_nmb=order.number_persons,
                                                      tour_date=order.date_booked_for
                                                      ))
         else:
-             message = _("Guide booking request.\n"
-                        "Persons number: {persons_nmb}.\n"
-                        "Date: {tour_date}.".format(persons_nmb=order.number_persons,
+             message = _("Guide booking request\n"
+                        "Persons number: {persons_nmb}\n"
+                        "Date: {tour_date}".format(persons_nmb=order.number_persons,
                                                      tour_date=order.date_booked_for
                                                      ))
         chat.create_message(user, message)
@@ -325,8 +325,8 @@ def orders(request, status=None):
 
         kwargs = dict()
 
-        if data.get("id"):
-            kwargs["id"] = data.get("id")
+        if data.get("uuid"):
+            kwargs["uuid"] = data.get("uuid")
 
         if filtered_statuses:
             kwargs["status__name__in"] = filtered_statuses
@@ -346,7 +346,6 @@ def orders(request, status=None):
             kwargs["guide"] = guide
             kwargs["status__slug"] = status
             orders = Order.objects.filter(**kwargs).exclude(id__in=orders_to_exclude_ids).order_by('-id')#exclude pending status
-
         orders_nmb = orders.count()
 
 
@@ -429,7 +428,7 @@ def cancel_order(request, order_uuid):
 
 
 @login_required()
-def change_order_status(request, order_id, status_id):
+def change_order_status(request, order_uuid, status_id):
     print("change order status")
     user = request.user
 
@@ -439,7 +438,7 @@ def change_order_status(request, order_id, status_id):
         #check if a user is a tourist in an order
         try:
             tourist = user.touristprofile
-            order = Order.objects.get(id=order_id, tourist=tourist)
+            order = Order.objects.get(uuid=order_uuid, tourist=tourist)
 
             # checking status transition consistancy for preventing hacking
             checking = checking_statuses(current_status_id=order.status.id, new_status_id=status_id)
@@ -467,7 +466,7 @@ def change_order_status(request, order_id, status_id):
         try:
             print('TRY GUIDE')
             guide = user.guideprofile
-            order = Order.objects.get(id=order_id, guide=guide)
+            order = Order.objects.get(uuid=order_uuid, guide=guide)
             print('ORDER STATUS: ', order.status.id)
             print('NEW STATUS: ', status_id)
 
@@ -541,9 +540,9 @@ def saving_review(request):
 
 
 @login_required()
-def order_completing(request, order_id):
+def order_completing(request, order_uuid):
     user = request.user
-    order = Order.objects.get(id=order_id)
+    order = Order.objects.get(uuid=order_uuid)
     services_in_order = order.serviceinorder_set.filter()
 
     if order.guide.user == user:
@@ -615,6 +614,7 @@ def order_completing(request, order_id):
                         order.save(force_update=True)
                         Review.objects.update_or_create(order=order, defaults=kwargs)
                         messages.success(request, 'Review has been successfully created!')
+                        order = Order.objects.get(uuid=order_uuid)
                     else:
                         messages.error(request, payments_errors)
 

@@ -121,6 +121,7 @@ class Order(models.Model):
     guide_fees_diff = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_discount_on_tourzan_side = models.BooleanField(default=False)
     is_approved_by_guide = models.BooleanField(default=False)
+    guide_payout_date = models.DateTimeField(blank=True, null=True, default=None)
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
@@ -274,6 +275,10 @@ class Order(models.Model):
         if self.get_is_full_payment_processed() and self.tour_scheduled:
             self.tour_scheduled.seats_booked += 1
             self.tour_scheduled.save(force_update=True)
+
+        if (self.status.id == 4 or (self.status.id == "4")) and not self._original_fields["status"] in [4, "4"]:
+            now = datetime.datetime.now()
+            self.date_toured = now
         super(Order, self).save(*args, **kwargs)
 
 

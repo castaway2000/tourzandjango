@@ -1,4 +1,6 @@
 {% load static %}
+{% load static %}
+{% load stars_rating %}
 
 <li>
     <div class="booking-item booking-item-small">
@@ -37,19 +39,19 @@
                     {% if order.price_hourly %}
                         {{ order.price_hourly }} {{ order.guide.currency.name }} / hour
                     {% elif order.price > 0 %}
-                        {{ order.price }} {{ order.price }}
+                        {{ order.price }} {{ order.guide.currency.name }}
                     {% else %}
-                        free!
+                        {% trans 'free' %}!
                     {% endif %}
                 </p>
                 <p>
                     {% if order.tour %}
                         <a href="{% url 'tour' order.tour.slug order.tour.id %}" class="btn btn-primary btn-xs">
-                            Go to Tour
+                            {% trans 'Go to Tour' %}
                         </a>
                     {% elif order.guide %}
                         <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}" class="btn btn-primary btn-xs">
-                            Go to Guide
+                            {% trans 'Go to Guide' %}
                         </a>
                     {% endif %}
                 </p>

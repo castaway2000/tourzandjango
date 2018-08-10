@@ -5,6 +5,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 import urllib.parse as urlparse
 import datetime
+import time
 
 
 def get_image(search_term, image_name, unsplash_key=None):
@@ -16,13 +17,14 @@ def get_image(search_term, image_name, unsplash_key=None):
                      "71f7daecc23f75f0cf8fff3488a2cafe0040437d3240d8214e00379e6c337c0e",
                      "b036ac885ede0b5e6c803b97c770de3872b9fde6848adf4a359639d6a7612e95"]
     values = dict()
-    values["client_id"] = unsplash_keys[0] if not unsplash_key else unsplash_key
+    unsplash_key = unsplash_keys[0] if not unsplash_key else unsplash_key
+    values["client_id"] = unsplash_key
     values["page"] = 1
     values["orientation"] = "landscape"
     url = "https://api.unsplash.com/photos/search/"
     values["query"] = search_term
     r = requests.get(url, values)
-    if r.status_code == requests.codes.ok:
+    if r.status_code == 200:
         images_data = r.json()
         results = dict()
         results_check_list = list()
@@ -64,9 +66,14 @@ def get_image(search_term, image_name, unsplash_key=None):
             return (None, None)
     else:
         try:
-            current_index = unsplash_keys.index("bar")
+            print(unsplash_key)
+            current_index = unsplash_keys.index(unsplash_key)
             next_index = current_index+1
             unsplash_key = unsplash_keys[next_index]
-            get_image(search_term, image_name, unsplash_key)
-        except:
+            print(unsplash_key)
+            time.sleep(5)
+            return get_image(search_term, image_name, unsplash_key)
+        except Exception as e:
+            print(e)
+            time.sleep(10)
             return (None, None)

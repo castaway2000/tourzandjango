@@ -21,6 +21,8 @@ import time
 import json
 from orders.views import making_booking
 from allauth.socialaccount.models import SocialApp
+from payments.models import Payment
+from orders.models import Order
 
 
 @xframe_options_exempt
@@ -550,27 +552,35 @@ def guide_registration_welcome_confirmation(request):
 
 def earnings(request):
     user = request.user
-    try:
-        guide = user.guideprofile
 
-        if request.session.get("current_role") != "guide":
-            return HttpResponseRedirect(reverse("home"))
+    guide = user.guideprofile
 
-        kwargs = dict()
-        kwargs["payment_status_id"] = 4
-
-        if request.GET:
-            data = request.GET
-            date_start = data.get("date_start")
-            date_end = data.get("date_end")
-            if date_start:
-                kwargs["dt_paid__gte"] = date_start
-            if date_end:
-                kwargs["dt_paid__lte"] = date_end
-
-        orders = guide.order_set.filter(**kwargs).order_by("-id")
-    except:
+    if request.session.get("current_role") != "guide":
         return HttpResponseRedirect(reverse("home"))
+
+    kwargs = dict()
+    kwargs["payment_status_id"] = 4
+
+    if request.GET:
+        data = request.GET
+        date_start = data.get("date_start")
+        date_end = data.get("date_end")
+        if date_start:
+            kwargs["dt_paid__gte"] = date_start
+        if date_end:
+            kwargs["dt_paid__lte"] = date_end
+
+    orders = guide.order_set.filter(**kwargs).order_by("-id")
+    orders_completed = Order.objects.filter(status_id=4)
+
+
+    orders_completed_aggr = orders_completed.aggregate(amount=Sum("guide_payment"))
+    orders_completed_amount = orders_completed_aggr.get("amount") if orders_completed_aggr.get("amount") else 0
+
+    orders_paid_aggr = orders_completed.filter(guide_payout_date__isnull=False).aggregate(amount=Sum("guide_payment"))
+    orders_paid_amount = orders_paid_aggr.get("amount") if orders_paid_aggr.get("amount") else 0
+    orders_pending_amount = orders_completed_amount - orders_paid_amount
+
     return render(request, 'guides/earnings.html', locals())
 
 
