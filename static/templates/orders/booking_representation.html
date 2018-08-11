@@ -182,13 +182,9 @@
                         <a href="{% url 'order_completing' order.uuid %}"
                             class="btn btn-primary btn-sm">
                             {% if order.payment_status.id != 4 %}
-                                {% blocktrans %}
-                                    Write a Review and Pay
-                                {% endblocktrans %}
+                                {% trans 'Mark as completed' %}
                             {% else %}
-                                {% blocktrans %}
-                                    View final details
-                                {% endblocktrans %}
+                                {% trans 'View final details' %}
                             {% endif %}
                         </a>
                     </p>

@@ -19,6 +19,12 @@ from partners.models import Partner
 from coupons.models import CouponUser, Coupon, Campaign, CouponType
 from utils.general import uuid_creating
 import datetime
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+from guides.models import GuideService
+from locations.models import City
+from tourzan.settings import ILLEGAL_COUNTRIES
+
 
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
@@ -80,6 +86,7 @@ class Order(models.Model):
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     hours_nmb = models.IntegerField(default=0)#if an hourly tour was specified
+    duration_seconds = models.IntegerField(default=0)
     #if a fixed-price tour is ordered, its price goes here
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
@@ -212,12 +219,14 @@ class Order(models.Model):
                 except:
                     pass
 
-
-        if self.hours_nmb and self.price_hourly:
-            self.price = int(self.hours_nmb) * float(self.price_hourly)
+        if self.price_hourly:
+            if self.duration_seconds:
+                price_per_second = float(self.price_hourly)/3600
+                self.price = int(self.duration_seconds) * price_per_second
+            elif self.hours_nmb:
+                self.price = int(self.hours_nmb) * float(self.price_hourly)
 
         self.total_price_initial = float(self.price) + float(self.additional_services_price) + float(self.additional_person_total)
-
 
         #getting discount if there is a coupon
         if (not self._original_fields["coupon"] and self.coupon) or (self._original_fields["coupon"] and self.coupon and self._original_fields["coupon"].id != self.coupon.id):
@@ -281,46 +290,426 @@ class Order(models.Model):
             self.date_toured = now
         super(Order, self).save(*args, **kwargs)
 
+    @property
+    def is_canceled(self):
+        return True if self.status and self.status.id in [3, 6] else False
 
-    def making_order_payment(self):
-        order = self
-        payment_method = PaymentMethod.objects.filter(is_active=True).order_by('is_default', '-id').first()
-        amount = "%s" % float(self.total_price)
-        result = braintree.Transaction.sale({
-            "amount": amount,
-            "payment_method_token": payment_method.token,
-            "options": {
-                "submit_for_settlement": False
-            }
-        })
+    def create_order(self, *args, **data):
+        """
+        Params for guide hourly booking:
+            user_id,
+            guide_id,
+            start - datetime object or '%m/%d/%Y %H:%M',
+            hours,
+            number_people
 
-        # print (result)
+        Params for private tour booking:
+            user_id,
+            tour_id,
+            start - datetime object or '%m/%d/%Y %H:%M',
+            hours,
+            number_people
 
-        if result.is_success:
-            data = result.transaction
-            payment_uuid = data.id
-            amount = data.amount
-            currency = data.currency_iso_code
-            currency, created = Currency.objects.get_or_create(name=currency)
-            Payment.objects.get_or_create(order=order, payment_method=payment_method,
-                                   uuid=payment_uuid, amount=amount, currency=currency)
-            order.status_id = 5 # payment reserved
-            order.payment_status_id = 2 #full payment reserverd
+        Params for scheduled tour booking:
+            user_id,
+            tour_scheduled_id,
+            start - datetime object or '%m/%d/%Y %H:%M',
+            number_people
+
+
+        Response has the following format:
+            status,
+            redirect,
+            message
+        """
+        from guides_calendar.models import CalendarItemGuide
+        from chats.models import Chat
+
+        kwargs = dict()
+        user_id = data.get("user_id")
+        tour_id = data.get("tour_id")
+        guide_id = data.get("guide_id")
+        tour_scheduled_id = data.get("tour_scheduled_id")
+
+        user = User.objects.get(id=user_id)
+
+        #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
+        tour = None
+        if tour_id:
+            tour = Tour.objects.get(id=tour_id)
+            guide = tour.guide
+            kwargs["tour"] = tour
+            kwargs["guide"] = guide
+            if data.get("start"):
+                date_booked_for = data.get("start")
+            else:
+                date_booked_for = data.get("date")
+        elif tour_scheduled_id:
+            tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
+            tour = tour_scheduled.tour
+            guide = tour.guide
+            kwargs["tour_scheduled"] = tour_scheduled
+            kwargs["tour"] = tour
+            kwargs["guide"] = guide
+            date_booked_for = tour_scheduled.dt
+        else:
+            guide = GuideProfile.objects.get(id=guide_id)
+            if data.get("start"):
+                date_booked_for = data.get("start")
+            else:
+                date_booked_for = data.get("date")
+            kwargs["guide"] = guide
+
+        #creating booked time slots in guide's schedule
+        #if some of selected time slots is already booked or unavailable - return an error
+        time_slots_chosen = None
+        if not tour and guide.is_use_calendar and data.get("time_slots_chosen"):
+            time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
+            is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
+            if is_unavailable_or_booked_timeslot == True:
+                return {
+                    "status": "error",
+                    "redirect": "current_page",
+                    "message": _('Some selected time slots are not available anymore!')
+                }
+
+        if not isinstance(date_booked_for, datetime.datetime):
+            try:
+                date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A')
+            except:
+                try:
+                    date_booked_for = datetime.datetime.strptime(date_booked_for, '%m.%d.%Y')
+                except:
+                    try:
+                        date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y')
+                    except:
+                        date_booked_for = datetime.datetime.strptime(date_booked_for, '%m/%d/%Y %H:%M')
+        kwargs["date_booked_for"] = date_booked_for
+
+        # hours_nmb = data.get("booking_hours", 0)
+        hours_nmb = data.get("hours", 0)
+        kwargs["hours_nmb"] = hours_nmb
+
+        number_people = int(data.get("number_people", 0))
+        kwargs["number_persons"] = number_people
+
+        tourist = TouristProfile.objects.get(user=user)
+        kwargs["tourist"] = tourist
+
+        if user.is_anonymous():
+            pass
+        else:
+            order = Order.objects.create(**kwargs)
+
+            try:#maybe to delete this at all
+                services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
+                # print ("services ids: %s" % services_ids)
+                guide_services = GuideService.objects.filter(id__in=services_ids)
+
+                services_in_order=[]
+                additional_services_price = float(0)
+                for guide_service in guide_services:
+                    additional_services_price += float(guide_service.price)
+                    service_in_order = ServiceInOrder(order_id=order.id, service=guide_service.service,
+                                                      price=guide_service.price, price_after_discount=guide_service.price)
+                    services_in_order.append(service_in_order)
+
+                ServiceInOrder.objects.bulk_create(services_in_order)
+                order.additional_services_price = additional_services_price
+            except:
+                pass
             order.save(force_update=True)
+            print('SUCCESS!! >> ', order)
 
-            if order.is_approved_by_guide:#order details can be approved from chat window by a guide
-                order.status_id = 2
+        if time_slots_chosen:#no time slots for tours with fixed price
+            for time_slot_chosen in time_slots_chosen:
+                #get or update functionality, but without applying for booked items
+                # print ("try")
+                # print(time_slot_chosen)
+                calendar_item_guide = CalendarItemGuide.objects.get(id=time_slot_chosen, guide=guide)
+                # print(calendar_item_guide.id)
+                # print(calendar_item_guide.calendar_item)
+                if calendar_item_guide.status_id == 2: #available
+                    calendar_item_guide.status_id = 1 #booked
+                    calendar_item_guide.order = order
+                    calendar_item_guide.save(force_update=True)
+
+        country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+        illegal_country = False
+        for i in ILLEGAL_COUNTRIES:
+            if i == country:
+                illegal_country = True
+                break
+        #got rid of returning data for ajax calls
+
+        if (order.tour and order.tour.type == "2") or not order.tour:#private tours and guide booking leads to chat page
+            print(11)
+            topic = "Chat with %s" % guide.user.generalprofile.first_name
+            chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
+                                                       defaults={"topic": topic})
+            initial_message = data.get("message")
+
+            #message about creation of the order
+            if order.tour:
+                message = _("Tour: {tour_name} \n"
+                            "Persons number: {persons_nmb}\n"
+                            "Date: {tour_date}".format(tour_name=tour.name,
+                                                         persons_nmb=order.number_persons,
+                                                         tour_date=order.date_booked_for
+                                                         ))
+            else:
+                 message = _("Guide booking request\n"
+                            "Persons number: {persons_nmb}\n"
+                            "Date: {tour_date}".format(persons_nmb=order.number_persons,
+                                                         tour_date=order.date_booked_for
+                                                         ))
+            chat.create_message(user, message)
+
+            #initial message of the user
+            if initial_message:
+                chat.create_message(user, initial_message)
+
+            return {
+                "order_id": order.id,
+                "status": "success",
+                "redirect": reverse("livechat_room", kwargs={"chat_uuid": chat.uuid}),
+                "message": _("We have successfully sent your request to a guide.")
+            }
+
+        else:
+            return {
+                "order_id": order.id,
+                "status": "success",
+                "redirect": reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}),
+                "message": _("We have successfully sent your request to a guide. ")
+            }
+
+    def checking_statuses(self, current_status_id, new_status_id, current_role):
+        current_status_id = int(current_status_id)
+        new_status_id = int(new_status_id)
+
+        status = "success"
+        message = _('Order has been updated!')
+
+        if new_status_id == 1:
+            status = "error"
+            message = _('Order status can not be changed!')
+        elif new_status_id == 2:
+            if current_status_id not in [5, 9]:
+                status = "error"
+                message = _('Order status can not be changed!')
+        elif new_status_id in [3, 6]:
+            if not current_status_id in [1, 2, 5]:
+                status = "error"
+                message = _('Order status can not be changed!')
+            elif (current_role == "tourist" or not current_role) and new_status_id == 6:
+                status = "error"
+                message = _('You do not have permissions for this action!')
+            elif current_role == "guide" and new_status_id == 3:
+                status = "error"
+                message = _('You do not have permissions for this action!')
+            else:
+                message = _('Order has been successfully cancelled!')
+        elif new_status_id == 4:
+            if current_status_id != 2:
+                status = "error"
+                message = _('Order status can not be changed!')
+        elif new_status_id == 5:
+            if current_status_id != 4:
+                status = "error"
+                message = _('Order status can not be changed!')
+        return (status, message)
+
+    def change_status(self, user_id, current_role, status_id):
+        """
+        Params:
+            user_id,
+            current_role ("tourist" or "guide"),
+            status_id
+
+        Response:
+            message
+            status ("success" or "error")
+        """
+        user = User.objects.get(id=user_id)
+        response_dict = dict()
+        if current_role == "tourist" or not current_role:
+            #check if a user is a tourist in the order
+            if hasattr(user, "touristprofile"):
+                tourist = user.touristprofile
+                if self.tourist != tourist:
+                    response_dict["message"] = _('You do not have permissions for this action!')
+                    response_dict["status"] = "success"
+                    return response_dict
+            else:
+                response_dict["message"] = _('You do not have permissions for this action!')
+                response_dict["status"] = "error"
+                return response_dict
+        else:
+            #check if a user is a guide in the order
+            if hasattr(user, "guideprofile"):
+                guide = user.guideprofile
+                if self.guide != guide:
+                    response_dict["message"] = _('You do not have permissions for this action!')
+                    response_dict["status"] = "success"
+                    return response_dict
+            else:
+                response_dict["message"] = _('You do not have permissions for this action!')
+                response_dict["status"] = "error"
+                return response_dict
+
+        checking_status, message = self.checking_statuses(current_status_id=self.status.id, new_status_id=status_id,
+                                                                      current_role=current_role)
+        print("checking: %s" % checking_status)
+        if checking_status == "error":
+            print("False")
+            response_dict["message"] = message if message else _('Order status can not be changed!')
+            response_dict["status"] = checking_status
+        elif status_id == "4":
+            print("four")
+            self.status_id = status_id
+            self.save(force_update=True)
+            response_dict["message"] = _('Order has been successfully marked as completed!')
+            response_dict["status"] = "success"
+        else:
+            print("else")
+            self.status_id = status_id
+            self.save(force_update=True)
+            response_dict["message"] = message
+            response_dict["status"] = "success"
+        return response_dict
+
+    def reserve_payment(self, user_id):
+        """
+        Params:
+            user_id,
+
+        Response:
+            message
+            status ("success" or "error")
+        """
+        order = self
+        if int(user_id) != self.tourist.user_id:
+            message = _("User, who has initialized payment is not a tourist in the selected order")
+            return {"status": "error", "message": message}
+        else:
+            payment_method = self.tourist.user.generalprofile.get_default_payment_method()
+            amount = "%s" % float(self.total_price)
+            result = braintree.Transaction.sale({
+                "amount": amount,
+                "payment_method_token": payment_method.token,
+                "options": {
+                    "submit_for_settlement": False
+                }
+            })
+
+            # print (result)
+
+            if result.is_success:
+                data = result.transaction
+                payment_uuid = data.id
+                amount = data.amount
+                currency = data.currency_iso_code
+                currency, created = Currency.objects.get_or_create(name=currency)
+                Payment.objects.get_or_create(order=order, payment_method=payment_method,
+                                       uuid=payment_uuid, amount=amount, currency=currency)
+                order.status_id = 5 # payment reserved
+                order.payment_status_id = 2 #full payment reserverd
                 order.save(force_update=True)
 
-            return {"result": True}
-        else:
-            return {"result": False}
+                #put status "agreed" if order details were approved from chat window by a guide
+                if order.is_approved_by_guide:
+                    order.status_id = 2
+                    order.save(force_update=True)
+
+                message = _("Payment was reserved successfully")
+                return {"status": "success", "message": message}
+            else:
+                return {"status": "error", "message": result.errors}
 
     def making_mutual_agreement(self):
         order = self
         order.status_id = 9 # mutual agreemnt type
         order.save(force_update=True)
         return {"result": True}
+
+    def make_payment(self, user_id, pay_without_pre_reservation=False):
+        """
+        Params:
+            user_id,
+
+        Response:
+            message
+            status ("success" or "error")
+        """
+        if int(user_id) != self.tourist.user.id and int(user_id) != self.guide.user.id:
+            message = _("User, who has initialized payment is not a tourist in the selected order")
+            return {"status": "error", "message": message}
+
+        dt_now = datetime.datetime.now()
+        if self.status.id in [2]:#only agreed status can proceed with payment
+            if pay_without_pre_reservation == True:
+                payment_method = self.tourist.user.generalprofile.get_default_payment_method()
+                if payment_method:
+                    amount = "%s" % float(self.total_price)
+                    result = braintree.Transaction.sale({
+                        "amount": amount,
+                        "payment_method_token": payment_method.token,
+                        "options": {
+                            "submit_for_settlement": True
+                        }
+                    })
+                    if result.is_success:
+                        data = result.transaction
+                        payment_uuid = data.id
+                        amount = data.amount
+                        currency = data.currency_iso_code
+                        currency, created = Currency.objects.get_or_create(name=currency)
+                        Payment.objects.get_or_create(order=self, payment_method=payment_method,
+                                               uuid=payment_uuid, amount=amount, currency=currency)
+
+                        self.status_id = 4 #completed
+                        payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                        self.payment_status = payment_status
+                        self.save(force_update=True)
+                        message = _("Review has been successfully created!")
+                        return {"status": "success", "message": message}
+                    else:
+                        message = _("We have not processed full amount! Please check you card balance")
+                        return {"status": "error", "message": message}
+                else:
+                    message = _("Payment method is not specified")
+                    return {"status": "error", "message": message}
+
+            elif self.payment_status.id in [2, 3]:
+                payments = self.payment_set.all()
+                all_payment_successful = True
+                payments_errors = str()
+                for payment in payments.iterator():
+                    transaction_id = payment.uuid
+                    result = braintree.Transaction.submit_for_settlement(transaction_id)
+                    if not result.is_success:
+                        all_payment_successful = False
+                        payments_errors += '%s ' % result.errors
+                        # print(result.errors)
+                    else:
+                        self.status_id = 3 #partial payment reserved
+                        payment.dt_paid = dt_now
+                        payment.save(force_update=True)
+                if all_payment_successful:
+                    self.status_id = 4 #completed
+                    payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                    self.payment_status = payment_status
+                    self.save(force_update=True)
+                    message = _("Review has been successfully created!")
+                    return {"status": "success", "message": message}
+                else:
+                    #this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
+                    message = _("We have not processed full amount! Please check you card balance")
+                    return {"status": "error", "message": message}
+        else:
+            message = _("Current statuses of the order and payment are not suitable to finalize payment!")
+            return {"status": "error", "message": message}
 
     # tourists_with_purchases_referred_nmb
     def add_coupon_for_referrer(self):

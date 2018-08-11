@@ -7,6 +7,7 @@ from django.contrib.gis.db.models.functions import Distance
 from mobile.models import GeoTracker, GeoTrip
 from orders.models import Order, PaymentStatus
 from users.models import GeneralProfile, User
+from guides.models import GuideProfile
 # from tourzan.settings import REDIS_ROOT
 
 import redis as rs
@@ -280,7 +281,7 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
-            trip_status.save(force_update=True)
+            trip_status.save(force_update=True)#AT: it saves nothing
             tdelta = trip_status.updated - trip_status.created
             guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
             if hasattr(guide_profile, 'guideprofile'):
@@ -306,18 +307,23 @@ def update_trip(request):
             kwargs = dict()
             guide = GeneralProfile.objects.get(id=guide_id).user.guideprofile.user_id
             tourist = GeneralProfile.objects.get(id=user_id).user.touristprofile.user_id
-            kwargs['guide'] = guide
-            kwargs['tourist'] = tourist
+
+            kwargs['guide_id'] = guide_id
+            kwargs['user_id'] = user_id
             kwargs['date_booked_for'] = datetime.strptime(datetime.now().isoformat(), '%Y, %B %d, %A')
             kwargs['number_persons'] = 2
-            new_order = Order.objects.create(**kwargs)
-            new_order.save(force_update=True)
+
+            response = Order().create_order(**kwargs)
+            order_id = response["order_id"]
+            order = Order.objects.get(id=order_id)
+            order.change_status(user_id=user_id, current_role="guide", status_id=2)#set agreed status to the order
+
             GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=True)
             GeoTracker.objects.filter(user_id=guide_id).update(trip_in_progress=True)
             trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
-                                                    order=new_order)
-            return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': new_order.id}))
+                                                    order_id=order_id)
+            return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
         elif status == 'isCancelled' or status == 'isDeclined':
             """
             token
@@ -327,12 +333,13 @@ def update_trip(request):
             user_type = request.POST['type']
             user_id = int(request.POST['user_id'])
             trip_id = int(request.POST['trip_id'])
+            current_role = "tourist" #AT: put here dynamic role ("guide" or "tourist")
             if status == 'isCancelled':
                 trip = GeoTrip.objects.get(id=trip_id)
                 order = Order.objects.get(id=trip.order.id)
-                order.status = 2  # Cancelled
-                order.save(force_update=True)
-                GeoTracker.objects.filter(user_id=trip.user_id).update(trip_in_progress=False)
+                response_data = order.change_status(user_id, current_role, status_id=2) # Cancelled
+                if response_data["status"] == "success":
+                    GeoTracker.objects.filter(user_id=trip.user_id).update(trip_in_progress=False)
             return HttpResponse(json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type}))
         elif status == 'ended':
             """
@@ -345,18 +352,20 @@ def update_trip(request):
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save()  # this is to update the 'updated' timestamp
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
-            if hasattr(guide_profile, 'guideprofile'):
+            order = trip_status.order
+            order.duration_seconds = tdelta.total_seconds()
+            order.save(force_update=True)
+
+            guide_id = trip_status.guide_id
+            guide_profile = GuideProfile.objects.filter(id=guide_id).last()
+            if guide_profile:
                 price = float(guide_profile.guideprofile.rate)
                 cost_update = round((tdelta.total_seconds() / 3600) * price, 2)
                 GeoTrip.objects.filter(id=trip_id, in_progress=True)\
                     .update(duration=tdelta.total_seconds(), cost=cost_update)
                 trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
                 GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
-            order = Order.objects.get(id=trip_status.order.id)
-            kwargs = dict()
-            kwargs['']
-                # TODO: make the trip register in the database and process payments from phone.
+                order.make_payment(guide_profile.user.id)
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
             return HttpResponse(json.dumps({'trip_id': trip_status.id, 'price': trip_status.cost, 'isEnded': True}))

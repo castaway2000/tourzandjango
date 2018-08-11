@@ -32,7 +32,7 @@ class GeoTrip(models.Model):
     cost = models.FloatField()
     time_remaining = models.IntegerField()
     time_flag = models.CharField(max_length=64)
-    order = models.ForeignKey(Order)
+    order = models.OneToOneField(Order, blank=True, null=True, default=None)
 
     def save(self, *args, **kwargs):
         print('save() is called.')
