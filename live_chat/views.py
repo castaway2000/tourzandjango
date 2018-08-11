@@ -36,7 +36,6 @@ def livechat_room(request, chat_uuid):
                 if order.guide.user == user and request.session.get("current_role") == "guide":
                     order.is_approved_by_guide = True
                     order.save(force_update=True)
-
             elif order.tourist.user == user and request.session.get("current_role") != "guide":
                 if "approve" in request.POST:
                     return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}))

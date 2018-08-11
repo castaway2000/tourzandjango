@@ -24,6 +24,7 @@ class GuideOrderAdjustForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(GuideOrderAdjustForm, self).__init__(*args, **kwargs)
+        self.order = kwargs["instance"]
         tour = kwargs["instance"].tour if kwargs.get("instance") else None
         if tour:#hide hours for tours and let them be shown only for hourly guide bookings
             self.fields.pop("hours_nmb")
@@ -34,8 +35,10 @@ class GuideOrderAdjustForm(forms.ModelForm):
         self.helper.layout.append(
             HTML(
                 '<div class="text-center">'
+                '<a class="btn btn-default" href="%s">%s</a> '
                 '<button name="action" class="btn btn-primary" type="submit">'
-                '%s</button>'
-                '</div>' % _('Approve order')
+                '%s</button> '
+                '</div>' % (reverse("cancel_order", kwargs={"order_uuid": self.order.uuid}), _("Cancel"), _('Approve order'))
             ),
+
         )

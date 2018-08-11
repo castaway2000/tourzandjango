@@ -14,7 +14,7 @@
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary btn-sm">
                 {% if not order.review.is_guide_feedback %}
-                    {% trans 'Mark as completed and write a review' %}
+                    {% trans 'Mark as completed' %}
                 {% else %}
                     {% trans 'View final details' %}
                 {% endif %}
