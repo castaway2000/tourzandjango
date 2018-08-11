@@ -121,14 +121,14 @@
                     </div>
 
                     <div class="answers">
-                        {% with guide.user.userlanguage_set.all as user_languages %}
+                        {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
                             {% if user_languages %}
                                 <div class="mt10 mb50">
                                     <div>{% trans 'Languages' %}: </div>
                                     <div>
-                                        {% for item in user_languages %}
+                                        {% for user_language in user_languages %}
                                             <span class="label label-default label-tag">
-                                                {{ item.language.name }}
+                                                {{ user_language.get_language_display }}
                                             </span>
                                         {% endfor %}
                                     </div>
@@ -272,7 +272,8 @@
             if ($("#id_date") !== undefined){
                 $("#id_date").datetimepicker({
                      minDate: new Date(),
-                     format: 'MM/DD/YYYY HH:mm'
+                     format: 'MM/DD/YYYY HH:mm',
+                     stepping: 15,
                 });
             };
 

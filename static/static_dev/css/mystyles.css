@@ -1312,6 +1312,10 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     font-weight: 700;
 }
 
+.panel img{
+    width: auto;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
