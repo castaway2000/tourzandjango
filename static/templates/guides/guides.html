@@ -242,7 +242,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            {% with guide.user.userlanguage_set.all as user_languages %}
+                                            {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
                                                 {% if user_languages %}
                                                     <div class="col-md-12 mb10">
                                                         <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
