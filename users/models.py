@@ -226,6 +226,9 @@ class GeneralProfile(models.Model):
         super(GeneralProfile, self).save(*args, **kwargs)
 
 
+    def get_default_payment_method(self):
+        return PaymentMethod.objects.filter(user=self.user, is_active=True).order_by('is_default', '-id').first()
+
     def create_referral_code(self):
         referral_code = uuid_size_6_creating()
         if GeneralProfile.objects.filter(referral_code__iexact=referral_code).exists():

@@ -229,7 +229,7 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
 
 
 class BookingScheduledTourForm(forms.Form):
-    tour_scheduled = forms.ChoiceField(required=True, label=_("Selected tour date"))
+    tour_scheduled_id = forms.ChoiceField(required=True, label=_("Selected tour date"))
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
 
     def __init__(self, *args, **kwargs):
@@ -237,7 +237,7 @@ class BookingScheduledTourForm(forms.Form):
         self.tour = tour
         super(BookingScheduledTourForm, self).__init__(*args, **kwargs)
         # self.fields['seats'].widget.attrs['min'] = 0
-        self.fields['tour_scheduled'] = forms.ChoiceField(required=True, label=_("Select tour date"),
+        self.fields['tour_scheduled_id'] = forms.ChoiceField(required=True, label=_("Select tour date"),
             choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates(14)]
         )
 

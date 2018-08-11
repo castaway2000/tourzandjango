@@ -1,9 +1,8 @@
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
+from django.http import HttpResponse
 from pyfcm import FCMNotification
 from txfcm import TXFCMNotification
 from twisted.internet import reactor
-
 import json
 
 from tourzan.settings import FCM_API_KEY
@@ -18,9 +17,10 @@ def push_notify_one(request):
         fcm_push_service = FCMNotification(api_key=FCM_API_KEY)
         result = fcm_push_service.notify_single_device(registration_id=device_id, message_title=msg_title,
                                                        message_body=msg_body)
-        return JsonResponse(json.dumps({'status': 200, 'detail': str(result)}))
+        print(result)
+        return HttpResponse(json.dumps({'status': 200, 'detail': str(result)}))
     except Exception as err:
-        return JsonResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
 @api_view(['POST'])

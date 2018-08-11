@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from guides.models import GuideProfile
+from orders.models import Order, Review
 from django.db.models.signals import post_save
 
 from guides.models import GuideProfile
@@ -31,6 +32,7 @@ class GeoTrip(models.Model):
     cost = models.FloatField()
     time_remaining = models.IntegerField()
     time_flag = models.CharField(max_length=64)
+    order = models.OneToOneField(Order, blank=True, null=True, default=None)
 
     def save(self, *args, **kwargs):
         print('save() is called.')
