@@ -5,7 +5,9 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from mobile.models import GeoTracker, GeoTrip
-from users.models import GeneralProfile, GuideProfile, UserInterest, User
+from orders.models import Order, PaymentStatus
+from users.models import GeneralProfile, User
+from guides.models import GuideProfile
 # from tourzan.settings import REDIS_ROOT
 
 import redis as rs
@@ -73,43 +75,26 @@ def get_trip_status(request):
     try:
         trip_id = int(request.POST['trip_id'])
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
+        user = GeoTracker.objects.get(user_id=trip_status.user_id)
+        guide_profile = GeoTracker.objects.get(user_id=trip_status.guide_id)
         tdelta = trip_status.updated - trip_status.created
-        guide_profile = GeneralProfile.objects.filter(id=trip_status.guide_id).get().user
-        if hasattr(guide_profile, 'guideprofile'):
-            price = guide_profile.guideprofile.rate
+        if hasattr(guide_profile.user, 'guideprofile'):
+            price = guide_profile.user.guideprofile.rate
             cost_update = round(float(tdelta.total_seconds() / 3600) * float(price), 2)
         else:
             return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'trip_status.guide_id has no guide profile'}]}))
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(), cost=cost_update)
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
-        print('owo')
-        data = {'guide_id': trip_status.guide_id, 'total_time': trip_status.duration,
-                'remianing_time': trip_status.time_remaining, 'flag': trip_status.time_flag,
-                'booking_created': trip_status.created.date().isoformat()}
+        data = {
+            'guide_id': trip_status.guide_id,
+            'total_time': trip_status.duration,
+            'remianing_time': trip_status.time_remaining,
+            'flag': trip_status.time_flag,
+            'booking_created': trip_status.created.date().isoformat(),
+            'guide_location': {'lat': guide_profile.latitude, 'lon': guide_profile.longitude},
+            'user_location': {'lat': user.latitude, 'lon': user.longitude}
+        }
         return HttpResponse(json.dumps(data))
-    except Exception as err:
-        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
-
-
-@api_view(['POST'])
-def trip_status(request):
-    """
-    :param request: int tripid 
-    :return: 
-    """
-    try:
-        trip_id = int(request.POST['trip_id'])
-        trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
-        dataset = json.dumps(
-            {
-                'booked_time': trip_status.created.isoformat(),
-                'booking_type': trip_status.time_flag,
-                'time_limit': trip_status.time_remaining,
-                'guide_id': trip_status.guide.user_id,
-                'user_id': trip_status.user_id,
-            }
-        )
-        return HttpResponse(dataset)
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
@@ -123,6 +108,7 @@ def extend_time(request):
     Remaining Time limit in minutes(Signed integer number example 90 minutes)
     """
     try:
+        req_id = int(request.POST['requester_id'])  # TODO: send notification to otehr user to accept of reject time.
         trip_id = int(request.POST['trip_id'])
         time_extending = int(request.POST['add_time'])
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
@@ -141,6 +127,7 @@ def extend_time(request):
         return HttpResponse(data)
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
+
 
 @api_view(['POST'])
 def book_guide(request):
@@ -204,8 +191,50 @@ def book_guide(request):
 
 
 @api_view(['POST'])
-def update_trip(request):
+def create_review(request):
     try:
+        user_id = int(request.POST['user_id'])
+        order_id = int(request.POST['order_id'])
+        rating = float(request.POST['rating'])
+        title = request.POST['title']
+        feedback = request.POST['feedback']
+
+        order = Order.objects.get(id=order_id)
+        if order.guide_id == user_id:
+            reviewed_user = order.tourist_id
+            order.review.tourist_feedback_name = title
+            order.review.tourist_feedback_text = feedback
+            order.review.tourist_rating = rating
+            order.review.is_guide_feedback = True
+            if order.review.tourist_review_created:
+                order.review.tourist_review_updated = datetime.now()
+            else:
+                order.review.tourist_review_created = datetime.now()
+        else:
+            reviewed_user = order.guide_id
+            order.review.guide_feedback_name = title
+            order.review.guide_feedback_text = feedback
+            order.review.guide_rating = rating
+            order.review.is_tourist_feedback = True
+            if order.review.guide_review_created:
+                order.review.guide_review_updated = datetime.now()
+            else:
+                order.review.guide_review_created = datetime.now()
+        order.review.save()
+
+        data = json.dumps({'detail': 'data is created'})
+        return HttpResponse(data)
+    except Exception as err:
+        return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
+
+
+
+@api_view(['POST'])
+def update_trip(request):
+    print("update trip")
+    try:
+        print(1234)
+        print(request.POST)
         status = request.POST['status']
         if status == 'login' or status == 'update':
             """
@@ -251,7 +280,7 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
-            trip_status.save(force_update=True)
+            trip_status.save(force_update=True)#AT: it saves nothing
             tdelta = trip_status.updated - trip_status.created
             guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
             if hasattr(guide_profile, 'guideprofile'):
@@ -267,18 +296,37 @@ def update_trip(request):
             """
             if accepted subscribe to other users channel
             """
+            #TODO: create order
             flag = request.POST['type']
             user_id = int(request.POST['user_id'])
             guide_id = int(request.POST['guide_id'])
             tdelta = 0
             if hasattr(request.POST, 'time') and flag == 'manual':
                 tdelta = request.POST['time']
+            kwargs = dict()
+            guide = GeneralProfile.objects.get(id=guide_id).user.guideprofile.user_id
+            tourist = GeneralProfile.objects.get(id=user_id).user.touristprofile.user_id
+
+            kwargs['guide_id'] = guide_id
+            kwargs['user_id'] = user_id
+            kwargs['start'] = datetime.now()
+            kwargs['number_persons'] = 2
+            response = Order().create_order(**kwargs)
+            order_id = response["order_id"]
+            print (order_id)
+            order = Order.objects.get(id=order_id)
+
+            #setting agreed status to the order, skipping check for status flows inconsistancy.
+            #In this case "pending" status will be changed to "agreed" status, which can not be true in existing order, because a tour should be approved
+            #by guide as well
+            order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
+
             GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=True)
             GeoTracker.objects.filter(user_id=guide_id).update(trip_in_progress=True)
             trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
-                                                    duration=0, cost=0, time_flag=flag, time_remaining=tdelta)
-            return HttpResponse(json.dumps({'trip_id': trip[0].id}))
-            #TODO: create trip orders
+                                                    duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
+                                                    order_id=order_id)
+            return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
         elif status == 'isCancelled' or status == 'isDeclined':
             """
             token
@@ -286,9 +334,16 @@ def update_trip(request):
             id
             """
             user_type = request.POST['type']
-            user_id = request.POST['user_id']
-            trip_id = request.POST['trip_id']
-            GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=False)
+            user_id = int(request.POST['user_id'])
+            trip_id = int(request.POST['trip_id'])
+            current_role = "guide" #AT: put here dynamic role ("guide" or "tourist")
+            if status == 'isCancelled':
+                trip = GeoTrip.objects.get(id=trip_id)
+                order = Order.objects.get(id=trip.order.id)
+                response_data = order.change_status(user_id, current_role, status_id=6, skip_status_flow_checking=True) # Cancelled by guide
+                print(response_data)
+                if response_data["status"] == "success":
+                    GeoTracker.objects.filter(user_id=trip.user_id).update(trip_in_progress=False)
             return HttpResponse(json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type}))
         elif status == 'ended':
             """
@@ -301,9 +356,14 @@ def update_trip(request):
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save()  # this is to update the 'updated' timestamp
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
-            if hasattr(guide_profile, 'guideprofile'):
-                price = float(guide_profile.guideprofile.rate)
+            order = trip_status.order
+            order.duration_seconds = tdelta.total_seconds()
+            order.save(force_update=True)
+
+            guide_id = trip_status.guide_id
+            guide_profile = GuideProfile.objects.filter(id=guide_id).last()
+            if guide_profile:
+                price = float(guide_profile.rate)
                 cost_update = round((tdelta.total_seconds() / 3600) * price, 2)
                 GeoTrip.objects.filter(id=trip_id, in_progress=True)\
                     .update(duration=tdelta.total_seconds(), cost=cost_update)
@@ -311,37 +371,18 @@ def update_trip(request):
                 GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
                 GeoTracker.objects.filter(user_id__in=[trip_status.guide_id, trip_status.user_id])\
                     .update(trip_in_progress=False)
-                # TODO: make the trip register in the database and process payments from phone.
+                order.make_payment(guide_profile.user.id)
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
             return HttpResponse(json.dumps({'trip_id': trip_status.id, 'price': trip_status.cost, 'isEnded': True}))
         return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'incorrect status value'}]}))
     except Exception as err:
+        print(err)
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
 def no_geo_point_fields(model):
     return [f.name for f in model._meta.get_fields() if f.name != 'geo_point']
-
-
-def set_user_location(channel, user_type, user_id, lat, long):
-    msg = str({'type': user_type, 'user_id': user_id, 'lat': lat, 'long':long})
-    r.publish(channel=channel, message=msg)
-
-
-def get_private_channel(user_type, user_id):
-    channel = "{}{}".format(user_type, user_id)
-    r.pubsub().subscribe(channel=channel)
-
-
-def post_private_channel(user_type, user_id, lat, long, trip_time):
-    channel = "{}{}".format(user_type, user_id)
-    msg = str({'type': user_type, 'user_id': user_id, 'lat': lat, 'long': long})
-    r.pubsub().publish(channel=channel, message=msg)
-
-
-def get_global_channel():
-    r.pubsub().subscribe(channel='global')
 
 
 def datetime_handler(x):

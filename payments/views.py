@@ -209,7 +209,7 @@ def order_payment_checkout(request, order_uuid):
         if message:
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
         if not illegal_country:
-            payment_processed = order.making_order_payment()
+            payment_processed = order.reserve_payment(user.id)
             if not payment_processed:
                 messages.error(request, 'Failure during processing a payment. Check the balance of your card!')
             else:
