@@ -372,7 +372,7 @@ class Order(models.Model):
                     "redirect": "current_page",
                     "message": _('Some selected time slots are not available anymore!')
                 }
-
+        print(date_booked_for)
         if not isinstance(date_booked_for, datetime.datetime):
             try:
                 date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A')
@@ -520,7 +520,7 @@ class Order(models.Model):
                 message = _('Order status can not be changed!')
         return (status, message)
 
-    def change_status(self, user_id, current_role, status_id):
+    def change_status(self, user_id, current_role, status_id, skip_status_flow_checking=False):
         """
         Params:
             user_id,
@@ -539,7 +539,7 @@ class Order(models.Model):
                 tourist = user.touristprofile
                 if self.tourist != tourist:
                     response_dict["message"] = _('You do not have permissions for this action!')
-                    response_dict["status"] = "success"
+                    response_dict["status"] = "error"
                     return response_dict
             else:
                 response_dict["message"] = _('You do not have permissions for this action!')
@@ -561,7 +561,12 @@ class Order(models.Model):
         checking_status, message = self.checking_statuses(current_status_id=self.status.id, new_status_id=status_id,
                                                                       current_role=current_role)
         print("checking: %s" % checking_status)
-        if checking_status == "error":
+        if skip_status_flow_checking == True:
+            response_dict["message"] = message if message else _('Order status has been updated!')
+            response_dict["status"] = "success"
+            self.status_id = status_id
+            self.save(force_update=True)
+        elif checking_status == "error":
             print("False")
             response_dict["message"] = message if message else _('Order status can not be changed!')
             response_dict["status"] = checking_status
