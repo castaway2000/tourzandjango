@@ -1,3 +1,6 @@
+from django.utils.safestring import mark_safe
+from django.template.defaultfilters import stringfilter
+from django.utils.text import normalize_newlines
 from urllib.parse import urlencode
 from django import template
 register = template.Library()
@@ -24,9 +27,14 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
 
     image_base_field_name - name of the field for image without _size tag
     """
+    request = context["request"]
     if hasattr(obj, image_base_field_name):
-        request = context["request"]
         img = getattr(obj, image_base_field_name)
+        print(str(img))
+        if len(str(img)) == 0 or str(img)[0] == '/':  # error with old default image and a leading /
+            page = request.path.split('/')[2]
+            default_media = '%s/small_size/default_tour_image.jpg' % page
+            return "%s%s" % (MEDIA_URL, default_media)
         if request and request.user_agent.is_mobile:
             image_field_name = "%s_%s" % (image_base_field_name, "medium")
             if hasattr(obj, image_field_name):
@@ -37,13 +45,11 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
                 img = getattr(obj, image_field_name)
         return "%s%s" % (MEDIA_URL, img)
     else:
-        return None
+        page = request.path.split('/')[2]
+        default_media = '%s/small_size/default_tour_image.jpg' % page
+        media = "%s%s" % (MEDIA_URL, default_media)
+        return media
 
-
-
-from django.utils.safestring import mark_safe
-from django.template.defaultfilters import stringfilter
-from django.utils.text import normalize_newlines
 
 @register.filter
 def remove_newlines(text):
