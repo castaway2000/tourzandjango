@@ -236,7 +236,6 @@ def update_trip(request):
         print(1234)
         print(request.POST)
         status = request.POST['status']
-        print(status)
         if status == 'login' or status == 'update':
             """
             user_id
@@ -248,8 +247,8 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             point = Point(long, lat)
-            GeoTracker.objects.update_or_create(user_id=user_id, latitude=lat, longitude=long)
-            GeoTracker.objects.filter(user_id=user_id).update(geo_point=point)
+            GeoTracker.objects.get_or_create(user_id=user_id)
+            GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
             return HttpResponse(json.dumps(list(user)))
@@ -262,10 +261,7 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             point = Point(long, lat)
-            try:
-                GeoTracker.objects.get(user_id=user_id)
-            except:
-                GeoTracker.objects.create(user_id=user_id)
+            GeoTracker.objects.get_or_create(user_id=user_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=True, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked in'}))
         elif status == 'clockout':
@@ -373,6 +369,8 @@ def update_trip(request):
                     .update(duration=tdelta.total_seconds(), cost=cost_update)
                 trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
                 GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
+                GeoTracker.objects.filter(user_id__in=[trip_status.guide_id, trip_status.user_id])\
+                    .update(trip_in_progress=False)
                 order.make_payment(guide_profile.user.id)
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
