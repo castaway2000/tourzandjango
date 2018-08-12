@@ -11,8 +11,8 @@
         <title>Tourzan.com | Experiences with locals for the most memorable vacation</title>
         <meta name="description" content="The best showaround service online and only the best tours by locals,
          search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
-
-
+    <meta property="og:description" content="The best showaround service online and only the best tours by locals,
+         search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
     <meta property="og:title" content="Tourzan.com | Experiences with locals for the most memorable vacation" />
     {% if request.user.generalprofile.referral_code %}
         <meta property="og:url" content="{{ request.build_absolute_uri }}?ref={{ request.user.generalprofile.referral_code }}" />
@@ -22,6 +22,7 @@
     <meta property="og:image" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% static 'img/tourzan_main_image.jpg' %}" />
     <meta property="og:image:height" content="640" />
 {#    <meta property="og:image:width" content="1200" />#}
+    <meta property="og:type" content="website" />
 
     {% endblock seo_stuff %}
 
