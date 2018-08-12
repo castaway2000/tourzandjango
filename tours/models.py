@@ -230,7 +230,6 @@ class Tour(models.Model):
         else:
             return 0
 
-    @property
     def available_discount_tours(self):
         if self.type == "1":#scheduled
             return self.scheduledtour_set.filter(is_active=True, seats_available__gt=0)[:5]
