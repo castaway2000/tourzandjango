@@ -112,16 +112,18 @@
                 </div>
             </div>
         </section>
-        <section class="special-offers">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h3 class="mb30">{% trans 'Special offers' %}</h3>
+        {% if special_offer_tours %}
+            <section class="special-offers">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="mb30">{% trans 'Special offers' %}</h3>
+                        </div>
                     </div>
+                    {% include "tours/special_offers_section.html" %}
                 </div>
-                {% include "tours/special_offers_section.html" %}
-            </div>
-        </section>
+            </section>
+        {% endif %}
     </div>
 {% endblock content %}
 
