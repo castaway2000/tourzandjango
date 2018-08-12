@@ -23,6 +23,7 @@ from utils.uploadings import (upload_path_handler_guide_header_images,
                               )
 from django.core.validators import FileExtensionValidator
 from utils.images_resizing import optimize_size
+from django.utils.translation import ugettext as _
 
 
 class GuideProfile(models.Model):
@@ -137,6 +138,13 @@ class GuideProfile(models.Model):
 
     def get_tours(self):
         return self.tour_set.filter(is_active=True, is_deleted=False)
+
+    @property
+    def guide_rate(self):
+        if self.rate > 0:
+            return "%s %s/%s" % (self.rate, self.currency.name, _("hour"))
+        else:
+            return _("free tours!")
 
     @property
     def first_name(self):

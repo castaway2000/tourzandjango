@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import *
 from .models import *
-from tours.models import Tour
+from tours.models import Tour, ScheduledTour
 
 from locations.models import City
 from django.contrib.auth.models import User
@@ -120,18 +120,34 @@ def home(request):
     try:
         obj = HomePageContent.objects.last()
     except:
-        pass
-    countries = Country.objects.filter(is_active=True).order_by("position_index", "name")[:6]
-    special_offers_items = Tour.objects.filter(is_active=True)
+        obj = None
+    countries = Country.objects.filter(is_active=True).order_by("position_index")[:6]
+    # special_offers_items = Tour.objects.filter(is_active=True)
+    # special_offer_tours = list()
+    # count = 0
+    # for special_offers_item in special_offers_items.iterator():
+    #     if len(special_offers_item.available_discount_tours()) > 0:
+    #         special_offer_tours.append(special_offers_item)
+    #         if count == 4:
+    #             break
+    #         count += 1
+
+    now = datetime.datetime.now().date()
+    limit_days = now + datetime.timedelta(days=30)
+    discount_scheduled_tours = ScheduledTour.objects.filter(is_active=True, seats_available__gt=0, discount__gt=0)
     special_offer_tours = list()
-    count = 0
-    for special_offers_item in special_offers_items:
-        if len(special_offers_item.available_discount_tours) > 0:
-            special_offer_tours.append(special_offers_item)
-            if count == 4:
-                break
-            count += 1
-    return render(request, 'users/home.html', locals())
+    for discount_scheduled_tour in discount_scheduled_tours.iterator():
+        tour = discount_scheduled_tour.tour
+        if not tour in special_offer_tours:
+            special_offer_tours.append(tour)
+
+    context = {
+        "obj": obj,
+        "current_page": current_page,
+        "countries": countries,
+        "special_offer_tours": special_offer_tours,
+    }
+    return render(request, 'users/home.html', context)
 
 
 @login_required()

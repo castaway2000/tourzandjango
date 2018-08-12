@@ -1313,8 +1313,13 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 }
 
 .panel img{
+    width: 100%
+}
+
+.panel-guide img{
     width: auto;
 }
+
 
 @media (min-width: 768px) {
     .navbar .navbar-nav {
