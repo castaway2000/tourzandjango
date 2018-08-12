@@ -16,6 +16,7 @@
     <meta property="og:image" content="{% get_sized_image obj %}" />
     <meta property="og:image:height" content="640" />
 {#    <meta property="og:image:width" content="1200" />#}
+    <meta property="og:type" content="website" />
 {% endblock seo_stuff %}
 
 
@@ -245,7 +246,7 @@
                     </div>
                         {% for guide in guides %}
                             <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                                <div class="panel panel-default">
+                                <div class="panel panel-default panel-guide">
                                     <div class="panel-body">
                                         <div class="text-center">
                                             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
@@ -260,7 +261,7 @@
                                         </div>
                                         <div>
                                             <ul class="list-unstyled">
-                                                <li><b>{% trans 'Rate' %}:</b> {{ guide.rate }} USD/{% trans 'hour' %}</li>
+                                                <li><b>{% trans 'Rate' %}:</b> {{ guide.guide_rate }}</li>
                                                 <li><b>{% trans 'Min hours' %}:</b> {{ guide.min_hours }}</li>
                                                 <li>
                                                     <b>{% trans 'Languages' %}</b>:
