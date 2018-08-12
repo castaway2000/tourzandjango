@@ -137,7 +137,7 @@ def home(request):
         "countries": countries,
         "special_offer_tours": special_offer_tours
     }
-    return render(request, 'users/home.html', locals())
+    return render(request, 'users/home.html', context)
 
 
 @login_required()
