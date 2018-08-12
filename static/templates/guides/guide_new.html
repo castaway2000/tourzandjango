@@ -29,9 +29,10 @@
         <div class="booking-proposal-container">
             <div class="mb5">
                 {% if app_id %}
-                    <a class="btn btn-social btn-facebook" href="https://www.facebook.com/dialog/feed?app_id={{ app_id }}&redirect_uri={{ request.build_absolute_uri }}
+                    <a class="btn btn-social btn-facebook"
+                       href="https://www.facebook.com/dialog/feed?app_id={{ app_id }}&redirect_uri={{ request.build_absolute_uri }}{% if request.user.generalprofile.referral_code %}?ref={{ request.user.generalprofile.referral_code }}{% endif %}
                         &link={{ request.build_absolute_uri }}
-                        &display=popup&caption=An%20example%20caption">
+                        &display=popup">
                         <i class="fa fa-facebook"></i>{% trans 'Share' %}
                     </a>
                 {% endif %}
@@ -50,9 +51,9 @@
         <div class="guide-action-container">
             <div class="main-buttons">
                 <a class="btn btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
-                    &redirect_uri={{ request.build_absolute_uri }}
+                    &redirect_uri={{ request.build_absolute_uri }}{% if request.user.generalprofile.referral_code %}?ref={{ request.user.generalprofile.referral_code }}{% endif %}
                     &link={{ request.build_absolute_uri }}
-                    &display=popup&caption=An%20example%20caption">
+                    &display=popup">
                     <i class="fa fa-facebook"></i> {% trans 'Share' %}
                 </a>
                 <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.uuid %}">
