@@ -307,13 +307,15 @@
                                         {% endwith %}
                                     </div>
                                     <div class="col-md-3 col-sm-3 col-xs-4">
-                                        <div class="guide-rating">
-                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
-                                        </div>
+                                        {% if guide.rating > 0 %}
+                                            <div class="guide-rating">
+                                                <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
+                                            </div>
+                                        {% endif %}
                                         <span class="guide-rate">
-                                                <b>{% blocktrans %}Hourly rate: {% endblocktrans %}</b>
-                                                {{ guide.rate }} {{ guide.currency.name }}
-                                            </span>
+                                            <b>{% blocktrans %}Rate: {% endblocktrans %}</b>
+                                            {{ guide.guide_rate }}
+                                        </span>
                                         <p>
                                             <a class="btn btn-primary"
                                                href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}?ref_id={{ request.GET.ref_id }}"
