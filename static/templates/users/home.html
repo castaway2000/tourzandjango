@@ -70,20 +70,20 @@
                                         <h4 class="text-center">
                                             {{ country.name }}
                                         </h4>
-                                        <div>
-                                            {% with country.get_cities as cities %}
-                                            {% if cities %}
-                                                <b>{% trans 'Available cities' %}: </b>
-                                                {% for city in country.get_cities %}
-                                                    <a href="{% url 'city_guides' city.country.slug city.slug %}" target="_blank">
-                                                        {{ city.name }}{% if not forloop.last %}, {% endif %}
-                                                    </a>
-                                                {% endfor %}
-                                            {% else %}
-                                                {% trans 'We are looking for guides in' %} {{ country.name }}
-                                            {% endif %}
-                                            {% endwith %}
-                                        </div>
+{#                                        <div>#}
+{#                                            {% with country.get_cities as cities %}#}
+{#                                            {% if cities %}#}
+{#                                                <b>{% trans 'Available cities' %}: </b>#}
+{#                                                {% for city in country.get_cities %}#}
+{#                                                    <a href="{% url 'city_guides' city.country.slug city.slug %}" target="_blank">#}
+{#                                                        {{ city.name }}{% if not forloop.last %}, {% endif %}#}
+{#                                                    </a>#}
+{#                                                {% endfor %}#}
+{#                                            {% else %}#}
+{#                                                {% trans 'We are looking for guides in' %} {{ country.name }}#}
+{#                                            {% endif %}#}
+{#                                            {% endwith %}#}
+{#                                        </div>#}
                                     </div>
                                 </div>
                                 <div class="text-center panel-button">
