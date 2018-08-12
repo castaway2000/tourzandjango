@@ -120,17 +120,23 @@ def home(request):
     try:
         obj = HomePageContent.objects.last()
     except:
-        pass
+        obj = None
     countries = Country.objects.filter(is_active=True).order_by("position_index", "name")[:6]
     special_offers_items = Tour.objects.filter(is_active=True)
     special_offer_tours = list()
     count = 0
-    for special_offers_item in special_offers_items:
+    for special_offers_item in special_offers_items.iterator():
         if len(special_offers_item.available_discount_tours) > 0:
             special_offer_tours.append(special_offers_item)
             if count == 4:
                 break
             count += 1
+    context = {
+        "obj": obj,
+        "current_page": current_page,
+        "countries": countries,
+        "special_offer_tours": special_offer_tours
+    }
     return render(request, 'users/home.html', locals())
 
 
