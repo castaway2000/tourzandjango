@@ -652,7 +652,8 @@ class Order(models.Model):
             return {"status": "error", "message": message}
 
         dt_now = datetime.datetime.now()
-        if self.status.id in [2]:#only agreed status can proceed with payment
+        #only agreed status can proceed with payment or "completed" status if a guide marked the order as completed before a tourist
+        if self.status.id in [2, 4]:
             if pay_without_pre_reservation == True:
                 payment_method = self.tourist.user.generalprofile.get_default_payment_method()
                 if payment_method:
