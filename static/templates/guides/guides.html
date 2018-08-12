@@ -228,23 +228,49 @@
                                                 {% endif %}
                                             </a>
                                         </div>
-                                        <div class="mb10">
-                                            {{ guide.city.country.name }}/{{ guide.city.name }}
+                                        <div>
+                                            {% if 'optional_images/300x300.png' not in guide.license_image.url %}
+                                                <div>
+                                                    <span class="label label-info label-tag">{% trans 'Licensed' %}</span>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                {% if guide.user.generalprofile.is_verified %}
+                                                    <span class="label label-success label-tag">
+                                                        <b>{% trans 'Verified' %}</b>
+                                                    </span>
+                                                {% endif %}
+                                                {% if guide.user.generalprofile.is_trusted %}
+                                                    <span class="label label-success label-tag">
+                                                        <b>{% trans 'Trusted' %}</b>
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+
+                                            {% if guide.rating > 0 %}
+                                                <div class="guide-rating">
+                                                    <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-sm-6 col-xs-6 pull-right">
+                                    <div class="col-md-3 col-sm-6 col-xs-6">
                                         <div class="item-name">
                                             {{ guide.user.generalprofile.first_name }}
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                {{ guide.overview|safe|linebreaks|truncatewords_html:30 }}
-                                            </div>
+                                        <div class="mb10">
+                                            <a href="{% url 'country_guides' guide.city.country.slug %}" target="_blank">{{ guide.city.country.name }}</a>,
+                                            <a href="{% url 'city_guides' guide.city.country.slug guide.city.slug %}" target="_blank">{{ guide.city.name }}</a>
                                         </div>
-                                        <div class="row">
-                                            {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
+                                        <div>
+                                            <span class="guide-rate">
+                                                <b>{% blocktrans %}Rate: {% endblocktrans %}</b>
+                                                {{ guide.guide_rate }}
+                                            </span>
+                                        </div>
+                                        {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
                                                 {% if user_languages %}
-                                                    <div class="col-md-12 mb10">
+                                                    <div class="mb10">
                                                         <div><b>{% blocktrans %}Languages:{% endblocktrans %}</b></div>
                                                         {% for user_language in user_languages %}
                                                             {% if user_language.language in language_input %}
@@ -259,31 +285,30 @@
                                                         {% endfor %}
                                                     </div>
                                                 {% endif %}
+                                        {% endwith %}
+                                        <div class="mb10">
+                                            <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
+                                            {% with guide.user.userinterest_set.all as user_interests %}
+                                            {% if user_interests %}
+                                                {% for user_interest in user_interests %}
+                                                    {% if user_interest.interest.name in interest_input %}
+                                                        <span class="label label-success label-tag">
+                                                            {{ user_interest.interest.name }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="label label-default label-tag">
+                                                            {{ user_interest.interest.name }}
+                                                        </span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {% trans 'No selected interests' %}
+                                            {% endif %}
                                             {% endwith %}
-                                            <div class="col-md-12 mb10">
-                                                <div><b>{% blocktrans %}Interests:{% endblocktrans %}</b></div>
-                                                {% with guide.user.userinterest_set.all as user_interests %}
-                                                {% if user_interests %}
-                                                    {% for user_interest in user_interests %}
-                                                        {% if user_interest.interest.name in interest_input %}
-                                                            <span class="label label-success label-tag">
-                                                                {{ user_interest.interest.name }}
-                                                            </span>
-                                                        {% else %}
-                                                            <span class="label label-default label-tag">
-                                                                {{ user_interest.interest.name }}
-                                                            </span>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% else %}
-                                                    {% trans 'No selected interests' %}
-                                                {% endif %}
-                                                {% endwith %}
-                                            </div>
                                         </div>
                                         {% with guide.guideservice_set.all as guide_services %}
                                             {% if guide_services %}
-                                                <div class="col-md-12 mb10">
+                                                <div class="mb10">
                                                     <div><b>{% blocktrans %}Services:{% endblocktrans %}</b></div>
                                                     {% for guide_service in guide.guideservice_set.all %}
                                                         {% if guide_service.service.name in service_input %}
@@ -300,34 +325,19 @@
                                             {% endif %}
                                         {% endwith %}
                                     </div>
-                                    <div class="col-md-3 col-sm-6 col-xs-6 pull-left">
-                                        {% if 'optional_images/300x300.png' not in guide.license_image.url %}
-                                            <h5>{% trans 'Licensed' %}</h5>
-                                        {% endif %}
-                                        {% if guide.rating > 0 %}
-                                            <div class="guide-rating">
-                                                <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ guide.rating }}
-                                            </div>
-                                        {% endif %}
-                                        <span class="guide-rate">
-                                            <b>{% blocktrans %}Rate: {% endblocktrans %}</b>
-                                            {{ guide.guide_rate }}
-                                        </span>
-                                        <p>
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <div class="">
+                                            {{ guide.overview|safe|linebreaks|truncatewords_html:80 }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="text-right">
                                             <a class="btn btn-primary" href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}">
                                                 {% blocktrans %}View profile{% endblocktrans %}
                                             </a>
-                                        </p>
-                                        {% if guide.user.generalprofile.is_verified %}
-                                            <p>
-                                                <b>{% trans 'Verified' %}</b>
-                                            </p>
-                                        {% endif %}
-                                        {% if guide.user.generalprofile.is_trusted %}
-                                            <p>
-                                                <b>{% trans 'Trusted' %}</b>
-                                            </p>
-                                        {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -168,7 +168,7 @@ def password_changing(request):
 @login_required()
 def general_settings(request):
     page = "general_settings"
-    user = request.usercurrent_role
+    user = request.user
 
     countries = [country.name for country in pycountry.countries]
 
