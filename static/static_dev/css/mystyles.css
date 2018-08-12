@@ -1312,7 +1312,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     font-weight: 700;
 }
 
-.panel img{
+.panel-guide img{
     width: auto;
 }
 
