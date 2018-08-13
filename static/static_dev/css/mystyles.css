@@ -1320,7 +1320,6 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     width: auto;
 }
 
-
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
