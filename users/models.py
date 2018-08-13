@@ -141,6 +141,7 @@ class GeneralProfile(models.Model):
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
+    device_id = models.CharField(null=True, default=None, max_length=240)
 
     registration_country = models.CharField(max_length=256, blank=True, null=True, choices=COUNTRY_CHOICES)
     registration_country_ISO_3_digits = models.CharField(max_length=8, blank=True, null=True)
