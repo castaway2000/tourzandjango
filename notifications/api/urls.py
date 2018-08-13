@@ -6,6 +6,5 @@ from tourzan.api_router import SharedAPIRootRouter
 router = SharedAPIRootRouter()
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^push_notify_many/', views.push_notify_many),
     url(r'^push_notify/', views.push_notify_one),
 ]
