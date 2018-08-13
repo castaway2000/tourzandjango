@@ -55,14 +55,15 @@ def making_booking(request):
 
     return_dict = dict()
     if request.session.get("pending_order_creation"):
-        data = request.session.get("pending_order_creation")
+        data_mod = request.session.get("pending_order_creation")
         del request.session["pending_order_creation"]
     elif request.POST:
         data = request.POST
+        data_mod = data.dict()
     else:
         data = request.GET
+        data_mod = data.dict()
 
-    data_mod = data.dict()
     response_obj = Order().create_order(user_id=user.id, **data_mod)
     status = response_obj["status"]
     redirect = response_obj["redirect"]

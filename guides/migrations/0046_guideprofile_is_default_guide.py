@@ -8,8 +8,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     pass
 
-    ##AT: commented out 27.07.2018 due to issue with migrations merging. The same operations is in the migration guides 0045
-    #
+    #AT: commented out 27.07.2018 due to issue with migrations merging. The same operations is in the migration guides 0045
+
     # dependencies = [
     #     ('guides', '0045_guideprofile_license_image'),
     # ]
