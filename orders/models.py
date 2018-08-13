@@ -652,7 +652,8 @@ class Order(models.Model):
             return {"status": "error", "message": message}
 
         dt_now = datetime.datetime.now()
-        if self.status.id in [2]:#only agreed status can proceed with payment
+        #only agreed status can proceed with payment or "completed" status if a guide marked the order as completed before a tourist
+        if self.status.id in [2, 4]:
             if pay_without_pre_reservation == True:
                 payment_method = self.tourist.user.generalprofile.get_default_payment_method()
                 if payment_method:
@@ -779,15 +780,29 @@ saving ratings from review to Order object
 """
 @disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
-    guide = instance.guide
 
-    statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
-        .aggregate(rating=Avg("rating_guide"), reviews_nmb=Count("id"))
+    if instance.status.id in [4, "4"]: #completed
 
-    if statistic_info["rating"] and statistic_info["reviews_nmb"]:
-        guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
-        guide.rating = statistic_info["rating"]
-        guide.save(force_update=True)
+        #saving info for a guide
+        guide = instance.guide
+        statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
+            .aggregate(rating=Avg("review__tourist_rating"), reviews_nmb=Count("id"))
+
+        if statistic_info["rating"] and statistic_info["reviews_nmb"]:
+            guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
+            guide.rating = statistic_info["rating"]
+            guide.save(force_update=True)
+
+
+        #saving info for a tourist
+        tourist = instance.tourist
+        statistic_info = tourist.order_set.filter(review__is_guide_feedback=True)\
+            .aggregate(rating=Avg("review__guide_rating"), reviews_nmb=Count("id"))
+
+        if statistic_info["rating"] and statistic_info["reviews_nmb"]:
+            # tourist.orders_with_review_nmb = statistic_info["reviews_nmb"]#tourist instance does not have this field
+            tourist.rating = statistic_info["rating"]
+            tourist.save(force_update=True)
 
     #sening email according to orders changing
     current_request = CrequestMiddleware.get_request()
@@ -881,14 +896,15 @@ class Review(models.Model):
         super(Review, self).save(*args, **kwargs)
 
 
-"""
-saving ratings from review to Order object
-"""
-@disable_for_loaddata
-def review_post_save(sender, instance, created, **kwargs):
-    order = instance.order
-    order.rating_tourist = instance.guide_rating
-    order.rating_guide = instance.tourist_rating
-    order.save(force_update=True)
-
-post_save.connect(review_post_save, sender=Review)
+##AT 13082018: Comment out this, because Reviews has OneToOne relation with orders, so this code is unnecessary
+# """
+# saving ratings from review to Order object
+# """
+# @disable_for_loaddata
+# def review_post_save(sender, instance, created, **kwargs):
+#     order = instance.order
+#     order.rating_tourist = instance.guide_rating
+#     order.rating_guide = instance.tourist_rating
+#     order.save(force_update=True)
+#
+# post_save.connect(review_post_save, sender=Review)
