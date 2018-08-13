@@ -184,7 +184,8 @@ class City(models.Model):
         special_offer_tours = list()
         count = 0
         for special_offers_item in special_offers_items:
-            if len(special_offers_item.available_discount_tours) > 0:
+            dtour = special_offers_item.available_discount_tours()
+            if len(dtour) > 0:
                 special_offer_tours.append(special_offers_item)
                 if count == 4:
                     break
