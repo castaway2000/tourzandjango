@@ -254,11 +254,12 @@ def update_trip(request):
             device_id = str(request.POST['device_token'])
             point = Point(long, lat)
             GeoTracker.objects.get_or_create(user_id=user_id)
-            GeneralProfile.objects.filter(user_id=user_id).update(device_id=device_id)
+            general_profile = GeneralProfile.objects.get(user_id=user_id)
+            general_profile.update(device_id=device_id)
+            general_profile.save(force_update=True)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
-            GeneralProfile.objects.filter(user_id=user_id).update(device_id=device_id)
             return HttpResponse(json.dumps(list(user)))
         elif status == 'clockin':
             """
