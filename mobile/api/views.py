@@ -254,9 +254,7 @@ def update_trip(request):
             device_id = str(request.POST['device_token'])
             point = Point(long, lat)
             GeoTracker.objects.get_or_create(user_id=user_id)
-            general_profile = GeneralProfile.objects.get(user_id=user_id)
-            general_profile.update(device_id=device_id)
-            general_profile.save(force_update=True)
+            GeneralProfile.objects.filter(user_id=user_id).update(device_id=device_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
@@ -289,7 +287,7 @@ def update_trip(request):
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
-            trip_status.save(force_update=True)#AT: it saves nothing
+            trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
             guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
             if hasattr(guide_profile, 'guideprofile'):
@@ -315,27 +313,25 @@ def update_trip(request):
             guide = GeneralProfile.objects.get(id=guide_id).user.guideprofile.user_id
             tourist = GeneralProfile.objects.get(id=user_id).user.touristprofile.user_id
 
-            kwargs['guide_id'] = guide_id
-            kwargs['user_id'] = user_id
+            kwargs['guide_id'] = guide
+            kwargs['user_id'] = tourist
             kwargs['start'] = datetime.now()
             kwargs['number_persons'] = 2
             response = Order().create_order(**kwargs)
             order_id = response["order_id"]
-            print(order_id)
+            print('ORDER_ID: ', order_id)
             order = Order.objects.get(id=order_id)
-
+            print(order)
             #setting agreed status to the order, skipping check for status flows inconsistancy.
             #In this case "pending" status will be changed to "agreed" status, which can not be true in existing order, because a tour should be approved
             #by guide as well
             order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
 
-            GeoTracker.objects.filter(user_id=user_id).update(trip_in_progress=True)
-            GeoTracker.objects.filter(user_id=guide_id).update(trip_in_progress=True)
+            GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
             trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                     order_id=order_id)
-
-            device_tokens = [trip.user.generalprofile.device_id, trip.guide.user.generalprofile.device_id]
+            device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.user.generalprofile.device_id]
             payload = json.dumps({'trip_id': trip[0].id, 'type': 2, 'body': 'Get ready for an adventure!'})
             push_notify('Trip Accepted', payload, device_id=device_tokens)
             return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
@@ -348,14 +344,16 @@ def update_trip(request):
             user_type = request.POST['type']
             user_id = int(request.POST['user_id'])
             trip_id = int(request.POST['trip_id'])
-            current_role = "guide" #AT: put here dynamic role ("guide" or "tourist")
             if status == 'isCancelled':
                 trip = GeoTrip.objects.get(id=trip_id)
+                current_role = "guide"
+                if trip.user_id == user_id:
+                    current_role = 'tourist'
                 order = Order.objects.get(id=trip.order.id)
                 response_data = order.change_status(user_id, current_role, status_id=6, skip_status_flow_checking=True) # Cancelled by guide
                 print(response_data)
                 if response_data["status"] == "success":
-                    GeoTracker.objects.filter(user_id=trip.user_id).update(trip_in_progress=False)
+                    GeoTracker.objects.filter(user_id__in=[trip.user_id, trip.guide_id]).update(trip_in_progress=False)
             return HttpResponse(json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type}))
         elif status == 'ended':
             """
@@ -373,7 +371,7 @@ def update_trip(request):
             order.save(force_update=True)
 
             guide_id = trip_status.guide_id
-            guide_profile = GuideProfile.objects.filter(id=guide_id).last()
+            guide_profile = GeneralProfile.objects.get(id=guide_id).user.guideprofile
             if guide_profile:
                 price = float(guide_profile.rate)
                 cost_update = round((tdelta.total_seconds() / 3600) * price, 2)
