@@ -260,3 +260,25 @@ def user_profile(request):
             return Response(HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
+def user_mixins(request):
+    try:
+        id = int(request.POST['id'])
+        user_type = request.POST['user_type']
+        print(1)
+        if user_type == 'guide':
+            data = GuideProfile.objects.get(id=id)
+            username = data.user.username
+            firstname = data.user.first_name
+            lastname = data.user.last_name
+            pic = data.profile_image.url
+        else:
+            data = GeneralProfile.objects.get(user=id)
+            username = data.username
+            firstname = data.first_name
+            lastname = data.last_name
+            pic = data.user.touristprofile.image.url
+        return HttpResponse(json.dumps({'id': id, 'username': username, 'first_name': firstname,
+                                        'last_name': lastname, 'pic': pic}))
+    except Exception as err:
+        return HttpResponse(json.dumps({'status': 400, 'detail': str(err)}))
