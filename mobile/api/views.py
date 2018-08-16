@@ -186,7 +186,7 @@ def book_guide(request):
                            'latitude': float(location.latitude),
                            'longitude': float(location.longitude)
                            })
-        device_tokens = [guide.user.generalprofile.user_id]
+        device_tokens = [guide.user.generalprofile.device_id]
         payload = json.dumps({'user_id': user.user_id, 'latitude': lat, 'longitude': long, 'time_limit': time_limit,
                               'type': 1, 'body': 'You have received a booking offer!'})
         push_notify('Trip Accepted', payload, device_id=device_tokens)
