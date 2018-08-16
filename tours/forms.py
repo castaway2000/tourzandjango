@@ -44,9 +44,9 @@ class TourGeneralForm(forms.ModelForm):
     name = forms.CharField()
     overview_short = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 2}))
     overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
-    image = forms.ImageField(label=_('Tour main image'),required=False, \
-                                    error_messages ={'invalid':_("Image files only")},\
-                                    widget=forms.FileInput)
+    image = forms.ImageField(label=_('Tour main image'), required=True,
+                             error_messages ={'invalid':_("Image files only")},
+                             widget=forms.FileInput)
     hours = forms.DecimalField(required=True, min_value=1)
     included = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is included?"))
     excluded = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is excluded?"))
