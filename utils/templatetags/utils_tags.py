@@ -32,8 +32,7 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
         img = getattr(obj, image_base_field_name)
         print(str(img))
         if len(str(img)) == 0 or str(img)[0] == '/':  # error with old default image and a leading /
-            page = request.path.split('/')[2]
-            default_media = '%s/small_size/default_tour_image.jpg' % page
+            default_media = 'tours/small_size/default_tour_image.jpg'
             return "%s%s" % (MEDIA_URL, default_media)
         if request and request.user_agent.is_mobile:
             image_field_name = "%s_%s" % (image_base_field_name, "medium")
@@ -46,7 +45,7 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
         return "%s%s" % (MEDIA_URL, img)
     else:
         page = request.path.split('/')[2]
-        default_media = '%s/small_size/default_tour_image.jpg' % page
+        default_media = 'tours/small_size/default_tour_image.jpg'
         media = "%s%s" % (MEDIA_URL, default_media)
         return media
 
