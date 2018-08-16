@@ -20,4 +20,5 @@ router.register(r'user_languages', views.UserLanguageViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^user_profile/', views.user_profile, name='user_profile'),
+    url(r'^user_mixins/', views.user_mixins, name='user_mixins')
 ]
