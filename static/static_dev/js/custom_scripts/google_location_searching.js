@@ -1,4 +1,4 @@
-if ($("#city_search_input").length > 0) {
+if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
     function initialize() {
         var input = document.getElementById('city_search_input');
         var options = {
