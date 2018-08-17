@@ -274,11 +274,19 @@ def user_mixins(request):
             pic = data.profile_image.url
         else:
             data = GeneralProfile.objects.get(user=id)
-            username = data.username
+            username = data.user.username
             firstname = data.first_name
             lastname = data.last_name
-            pic = data.user.touristprofile.image.url
+            pic = data.user.touristprofile
+            if hasattr(pic, 'image'):
+                try:
+                    pic = pic.image.url
+                except ValueError:
+                    pic = None
+            else:
+                pic = None
         return HttpResponse(json.dumps({'id': id, 'username': username, 'first_name': firstname,
                                         'last_name': lastname, 'pic': pic}))
     except Exception as err:
+        print(err)
         return HttpResponse(json.dumps({'status': 400, 'detail': str(err)}))
