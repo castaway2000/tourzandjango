@@ -50,6 +50,7 @@ def show_nearby_guides(request):
                                                is_online=True, trip_in_progress=False).values(*field)
         else:
             return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': 'incorrect unit of distance'}]}))
+        print(guides)
         data = json.dumps(list(guides))
         return HttpResponse(data)
     except Exception as err:
@@ -109,7 +110,7 @@ def extend_time(request):
     Remaining Time limit in minutes(Signed integer number example 90 minutes)
     """
     try:
-        req_id = int(request.POST['requester_id'])  # TODO: send notification to otehr user to accept of reject time.
+        req_id = int(request.POST['requester_id'])  # TODO: send notification to other user to accept of reject time.
         trip_id = int(request.POST['trip_id'])
         time_extending = int(request.POST['add_time'])
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
@@ -238,7 +239,6 @@ def create_review(request):
 def update_trip(request):
     print("update trip")
     try:
-        print(1234)
         print(request.POST)
         status = request.POST['status']
         if status == 'login' or status == 'update':
@@ -310,7 +310,7 @@ def update_trip(request):
             if hasattr(request.POST, 'time') and flag == 'manual':
                 tdelta = request.POST['time']
             kwargs = dict()
-            guide = GeneralProfile.objects.get(id=guide_id).user.guideprofile.user_id
+            guide = GeneralProfile.objects.get(id=guide_id).user.guideprofile.id
             tourist = GeneralProfile.objects.get(id=user_id).user.touristprofile.user_id
 
             kwargs['guide_id'] = guide
