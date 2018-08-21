@@ -355,8 +355,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
-FCM_API_KEY = 'AAAAYMNPZ9o:APA91bHTblh5t3D-dEJpYCTDSvmx3Mhn9_EPChOghBlEn9dQzroucP8EN18TgExvyzfoIeA_HFn_OcUR_a6v-ssgEbO0Nmul8YuttFFpHWOgFMuG9hwA4aoR9Mrg8qLEKKh2vu_TuNIaU_hB09DIvN-yDIJ-JBui5Q'
-
+FCM_API_KEY = 'AAAAYMNPZ9o:APA91bEcE9auTZKHvLakXzlybFFJdw6fsJoGSCBiiy4dldOW7u5RNW81cjygtW9vWh7jOgt7OcKPkQ9Zkn3vSYs7dy1-N9znlZCpUgZiY5yNd2R3E7Hbhi4WHuQrvCHF5EvtXOSqHf0Akgu9No48B4E-H4oUk9qdpQ'
 
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'
