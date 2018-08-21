@@ -138,14 +138,12 @@ def book_guide(request):
     :return: 
     """
     try:
-        token = request.POST['token']
         user_id = int(request.POST['user_id'])
         list_of_guides = json.loads(request.POST['guides'])
         lat = float(request.POST['latitude'])
         long = float(request.POST['longitude'])
         time_limit = int(request.POST['time_limit'])
         booking_type = request.POST['booking_type']
-        booking_time = datetime.now()
 
         user = GeneralProfile.objects.get(user_id=user_id)
         point = Point(long, lat)
@@ -190,7 +188,7 @@ def book_guide(request):
         device_tokens = [guide.user.generalprofile.device_id]
         payload = json.dumps({'user_id': user.user_id, 'latitude': lat, 'longitude': long, 'time_limit': time_limit,
                               'type': 1, 'body': 'You have received a booking offer!'})
-        push_notify('Trip Accepted', payload, device_id=device_tokens)
+        push_notify('You received an offer!', payload, device_id=device_tokens)
         return HttpResponse(data)
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
@@ -310,8 +308,8 @@ def update_trip(request):
             if hasattr(request.POST, 'time') and flag == 'manual':
                 tdelta = request.POST['time']
             kwargs = dict()
-            guide = GeneralProfile.objects.get(id=guide_id).user.guideprofile.id
-            tourist = GeneralProfile.objects.get(id=user_id).user.touristprofile.user_id
+            guide = GeneralProfile.objects.get(user_id=guide_id).user.guideprofile.id
+            tourist = GeneralProfile.objects.get(user_id=user_id).user.touristprofile.user_id
 
             kwargs['guide_id'] = guide
             kwargs['user_id'] = tourist
@@ -328,7 +326,7 @@ def update_trip(request):
             order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
 
             GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
-            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
+            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                     order_id=order_id)
             device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.user.generalprofile.device_id]
