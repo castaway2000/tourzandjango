@@ -163,7 +163,7 @@
                 </p>
                 <p>
                     {% if order.tour %}
-                        <a href="{% url 'tour' order.tour.slug order.tour.id %}"
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid "new" %}"
                             class="btn btn-success btn-sm">
                             Tour page
                         </a>
