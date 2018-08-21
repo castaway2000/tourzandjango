@@ -98,7 +98,7 @@
 
                                         {% else %}
                                             {% trans 'Tour with' %}
-                                            <a href="{% url 'guide' order.guide.user.general_profile.first_name order.guide.user.general_profile.uuid %}">
+                                            <a href="{% url 'guide_new' order.guide.user.general_profile.first_name order.guide.user.general_profile.uuid 'new' %}">
                                                 {{ order.guide.user.generalprofile.first_name }}
                                             </a>
                                         {% endif %}

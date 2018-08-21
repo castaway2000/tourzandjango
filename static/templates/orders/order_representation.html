@@ -23,11 +23,11 @@
                 {% endif %}
             </div>
             <div class="col-md-3">
-                <h3>
-                    {{ order.tourist.user.username }}
+                <h3 class="booking-item-name">
+                    {{ order.tourist.user.generalprofile.get_name }}
                 </h3>
                 <p>
-                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid%}"
+                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}"
                         class="btn btn-default btn-sm">
                         {% trans 'Tourist Profile' %}
                     </a>
@@ -87,7 +87,7 @@
                 {% if order.tour %}
                     <p>
                         <b>{% trans 'Booked tour' %}:</b><br>
-                        <a href="{% url 'tour' order.tour.slug order.tour.id %}">
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}">
                             {{ order.tour.name }}
                         </a>
                     </p>

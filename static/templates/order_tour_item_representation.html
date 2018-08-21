@@ -46,11 +46,11 @@
                 </p>
                 <p>
                     {% if order.tour %}
-                        <a href="{% url 'tour' order.tour.slug order.tour.id %}" class="btn btn-primary btn-xs">
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}" class="btn btn-primary btn-xs">
                             {% trans 'Go to Tour' %}
                         </a>
                     {% elif order.guide %}
-                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}" class="btn btn-primary btn-xs">
+                        <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}" class="btn btn-primary btn-xs">
                             {% trans 'Go to Guide' %}
                         </a>
                     {% endif %}
