@@ -17,7 +17,7 @@
                 {% endif %}
             </div>
             <div class="col-md-4">
-                <h3>
+                <h3 class="booking-item-name">
                     {{ order.guide.user.generalprofile.first_name }}
                 </h3>
                 <div class="row">
@@ -66,7 +66,7 @@
                 <p>
                     {% if order.tour %}
                         <b>Booked tour:</b><br>
-                        <a href="{% url 'tour' order.tour.slug order.tour.id %}">
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}">
                             {{ order.tour.name }}
                         </a>
                     {% endif %}
@@ -168,7 +168,7 @@
                             Tour page
                         </a>
                     {% else %}
-                        <a href="{% url 'guide' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid %}"
+                        <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}"
                             class="btn btn-success btn-sm">
                             {% blocktrans %}
                                 Guide Profile

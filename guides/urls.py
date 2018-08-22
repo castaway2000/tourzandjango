@@ -4,7 +4,8 @@ from . import views
 urlpatterns = [
     url(r'^guides/$', views.guides, name='guides'),
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/$', views.guide, name='guide'),
-    url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/(?P<new_view>\w+)/$', views.guide, name='guide_new'),
+    url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/(?P<new_view>\w+)/$', views.guide,
+        name='guide_new'),
 
     url(r'^profile_settings/guide/$', views.profile_settings_guide, name='profile_settings_guide'),
     url(r'^profile_settings/guide-questions/$', views.profile_questions_guide, name='profile_questions_guide'),

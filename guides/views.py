@@ -23,6 +23,7 @@ from orders.views import making_booking
 from allauth.socialaccount.models import SocialApp
 from payments.models import Payment
 from orders.models import Order
+from django.utils.translation import ugettext as _
 
 
 @xframe_options_exempt
@@ -284,7 +285,7 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
         "guide_services": guide_services
     }
 
-    guide_answers = GuideAnswer.objects.filter(guide=guide).order_by("order_priority", "id")
+    guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True).order_by("order_priority", "id")
     social_app = SocialApp.objects.filter(provider="facebook").last()
     if social_app:
         app_id = social_app.client_id
@@ -477,13 +478,43 @@ def profile_questions_guide(request):
     guide = user.guideprofile
     page = "profile_questions_guide"
 
-    answers = list(GuideAnswer.objects.filter(guide=guide).values())
+    if request.POST:
+        guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True).values()
+        print(guide_answers)
+        existing_answers_question_ids = [item["question_id"] for item in guide_answers]
+        print(existing_answers_question_ids)
+
+        data = request.POST
+        print(data)
+        files = request.FILES
+        for k, v in data.items():
+            if "-" in k:
+                field, question_id = k.split("-")
+                print(field)
+                if field == "answer":
+                    question_id = int(question_id)
+                    print(question_id)
+                    print(question_id in existing_answers_question_ids)
+                    if question_id in existing_answers_question_ids or len(v)>0:#if guide answer is already exists or if answer is more than 0 symbols
+                        default_kwargs = {"text": v}
+                        print(v)
+                        file_name = "file-%s" % question_id
+                        if file_name in files:
+                            image = files.get(file_name)
+                            default_kwargs["image"] = image
+                        GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
+
+        messages.success(request, _('Successfully updated!'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    answers = GuideAnswer.objects.filter(guide=guide, is_active=True)
     answers_dict = dict()
-    for answer in answers:
+    for answer in answers.iterator():
         obj_dict = dict()
-        obj_dict["answer"] = answer["text"]
-        obj_dict["image"] = answer["image_small"]
-        answers_dict[answer["question_id"]] = obj_dict
+        obj_dict["answer"] = answer.text
+        obj_dict["image"] = answer.image_small
+        obj_dict["answer_object"] = answer
+        answers_dict[answer.question.id] = obj_dict
 
     questions = Question.objects.filter(is_active=True)
     questions_list = list()
@@ -499,23 +530,6 @@ def profile_questions_guide(request):
                 questions_list.append(obj_dict)
             else:
                 continue #if there is no guide's answer for is_active=False question, it will not be displayed
-
-    if request.POST:
-        data = request.POST
-        files = request.FILES
-        for k, v in data.items():
-            if "-" in k:
-                field, question_id = k.split("-")
-                print(field)
-                if field == "answer" and len(v)>0:
-                    default_kwargs = {"text": v}
-                    print(v)
-                    file_name = "file-%s" % question_id
-                    if file_name in files:
-                        image = files.get(file_name)
-                        default_kwargs["image"] = image
-                    GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
-
     return render(request, 'guides/profile_questions_guide.html', locals())
 
 
