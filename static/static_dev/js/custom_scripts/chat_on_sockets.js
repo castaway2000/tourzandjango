@@ -12,13 +12,12 @@ $(document).ready(function() {
     var roomName = $("#chat_uuid").val();
 
    function connect() {
-       console.log("connecting");
+     console.log("connecting");
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/chat/' + roomName + '/';
 
       var ws = new WebSocket(url);
-       console.log(ws);
       ws.onopen = function() {
         // subscribe to some channels
         //ws.send(JSON.stringify({
@@ -28,7 +27,7 @@ $(document).ready(function() {
 
       ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        $('#messages_area').append('<div class="chat-message small">' +
+        $('#messages_area').append('<div class="chat-message small new-chat-message">' +
                         '<div class="message-meta-info">' + data.user+ ', ' + data.dt + '</div>' +
                         '<div class="chat-message-text">' + data.message + '</div>' +
                         '</div>');
@@ -54,11 +53,11 @@ $(document).ready(function() {
 
     var message_textarea = $('#message_textarea');
     message_textarea.focus();
-    message_textarea.on("keyup", function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            $('#chat_message_form').submit();
-        }
-    });
+    //message_textarea.on("keyup", function(e) {
+    //    if (e.keyCode === 13) {  // enter, return
+    //        $('#chat_message_form').submit();
+    //    }
+    //});
 
     $('#chat_message_form').on("submit", function(e) {
         e.preventDefault();
@@ -73,6 +72,4 @@ $(document).ready(function() {
 
     scrolling(scrolling_speed=0);
     //End of chats area
-
-
 });

@@ -1324,6 +1324,16 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     word-wrap: break-word;
 }
 
+.chat-container h3,
+.single-chat h3{
+    font-size: 1.4em;
+}
+
+.new-chat-message{
+    white-space: pre-line;
+}
+
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;

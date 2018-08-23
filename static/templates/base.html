@@ -45,18 +45,21 @@
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
 
     <!-- /GOOGLE FONTS -->
-    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
-    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/icomoon.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/icomoon.css">
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css">
 
-    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/styles.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/styles.css">
 
-    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css">
-    <link rel="stylesheet" href="https://dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css">
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="{% static 'css/mystyles.css' %}">
     <script src='https://www.google.com/recaptcha/api.js'></script>
     {% block header_stuff %}
@@ -115,9 +118,27 @@
         <script src="https://dwuzgckm5n8u8.cloudfront.net/js/fitvids.js"></script>
         <script src="https://dwuzgckm5n8u8.cloudfront.net/js/tweet.js"></script>
         <script src="https://dwuzgckm5n8u8.cloudfront.net/js/gridrotator.js"></script>
-        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/custom.js"></script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script src="{% static 'js/custom_scripts/toastr_settings.js' %}"></script>
+
+        {% if messages %}
+            <script type="text/javascript">
+                {% for message in messages %}
+                    toastr.{{ message.tags }}("{{ message }}");
+                {% endfor %}
+            </script>
+        {% endif %}
+
+
+        <script src="{% static 'js/custom_scripts/general_ws.js' %}"></script>
+
+        <script src="//dwuzgckm5n8u8.cloudfront.net/js/custom.js"></script>
 
         <script src="{% static 'js/custom_scripts/scripts.js' %}"></script>
+
+
+
 
         {% block js_stuff %}
         {% endblock %}
