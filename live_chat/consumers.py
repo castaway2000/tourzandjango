@@ -6,6 +6,7 @@ import datetime
 from django.core.cache import cache
 from tourzan.settings import USER_LASTSEEN_TIMEOUT
 from channels.layers import get_channel_layer
+from django.utils.text import Truncator
 
 
 class GeneralConsumer(AsyncJsonWebsocketConsumer):
@@ -53,7 +54,7 @@ class GeneralConsumer(AsyncJsonWebsocketConsumer):
         """
         Send notification to user about new chat message
         """
-        message = event["message"]
+        message =  Truncator(event["message"]).chars(75)
         message_user_name = event["message_user_name"]
         chat_uuid = event["chat_uuid"]
         try:
