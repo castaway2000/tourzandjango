@@ -258,10 +258,12 @@
                                         <div class="item-name">
                                             {{ guide.user.generalprofile.first_name }}
                                         </div>
-                                        <div class="mb10">
-                                            <a href="{% url 'country_guides' guide.city.country.slug %}" target="_blank">{{ guide.city.country.name }}</a>,
-                                            <a href="{% url 'city_guides' guide.city.country.slug guide.city.slug %}" target="_blank">{{ guide.city.name }}</a>
-                                        </div>
+                                        {% if guide.city and guide.city.slug and guide.city.country and guide.city.country.slug %}
+                                            <div class="mb10">
+                                                <a href="{% url 'country_guides' guide.city.country.slug %}" target="_blank">{{ guide.city.country.name }}</a> |
+                                                <a href="{% url 'city_guides' guide.city.country.slug guide.city.slug %}" target="_blank">{{ guide.city.name }}</a>
+                                            </div>
+                                        {% endif %}
                                         <div>
                                             <span class="guide-rate">
                                                 <b>{% blocktrans %}Rate: {% endblocktrans %}</b>

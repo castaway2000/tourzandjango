@@ -196,9 +196,6 @@
                                             <img src="{% get_sized_image tour default_size="small" %}">
                                         </a>
                                     </div>
-                                    <div class="mb10">
-                                        {{ tour.city.country.name }}/{{ tour.city.name }}
-                                    </div>
                                 </div>
                                 <div class="col-md-6 col-sm-6 col-xs-5">
                                     <div class="tour-name">
@@ -206,6 +203,17 @@
                                     </div>
                                     <div class="tour-guide-name">
                                         by {{ tour.guide.user.generalprofile.first_name }}
+                                    </div>
+
+                                    {% if tour.city and tour.city.slug and tour.city.country and tour.city.country.slug %}
+                                        <div class="mb10">
+                                            <a href="{% url 'country_guides' tour.city.country.slug %}" target="_blank">{{ tour.city.country.name }}</a> |
+                                            <a href="{% url 'city_guides' tour.city.country.slug tour.city.slug %}" target="_blank">{{ tour.city.name }}</a>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="mb10">
+                                        {{ tour.city.country.name }}/{{ tour.city.name }}
                                     </div>
                                     <div>
                                         <b>{% trans 'Type' %}: </b>{{ tour.type_name }} {% trans 'tour' %}
