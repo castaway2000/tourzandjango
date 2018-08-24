@@ -330,6 +330,7 @@ class Order(models.Model):
         tour_id = data.get("tour_id")
         guide_id = data.get("guide_id")
         tour_scheduled_id = data.get("tour_scheduled_id")
+        tour_scheduled_uuid = data.get("tour_scheduled_uuid")
 
         user = User.objects.get(id=user_id)
 
@@ -344,8 +345,11 @@ class Order(models.Model):
                 date_booked_for = data.get("start")
             else:
                 date_booked_for = data.get("date")
-        elif tour_scheduled_id:
-            tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
+        elif tour_scheduled_id or tour_scheduled_uuid:
+            if tour_scheduled_id:
+                tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
+            else:
+                tour_scheduled = ScheduledTour.objects.get(uuid=tour_scheduled_uuid)
             tour = tour_scheduled.tour
             guide = tour.guide
             kwargs["tour_scheduled"] = tour_scheduled
