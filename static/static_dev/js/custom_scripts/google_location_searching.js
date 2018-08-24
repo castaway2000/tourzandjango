@@ -24,10 +24,12 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
                     dataType: 'json',
                     success: function (res) {
                         console.log(res.rates.rate__avg);
-                        if (res.rates.rate__avg !== null) {
-                            document.getElementById("average-rate").innerText = 'The average rate in your area is: $' + Math.round(res.rates.rate__avg) + ' per hour';
-                        } else {
-                            document.getElementById("average-rate").innerText = '';
+                        if ($("#average-rate")){
+                            if (res.rates.rate__avg !== null) {
+                                document.getElementById("average-rate").innerText = 'The average rate in your area is: $' + Math.round(res.rates.rate__avg) + ' per hour';
+                            } else {
+                                document.getElementById("average-rate").innerText = '';
+                            }
                         }
                     }
                 })
