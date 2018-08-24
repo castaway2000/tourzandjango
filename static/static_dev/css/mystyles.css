@@ -78,6 +78,15 @@
     text-align: left!important;
 }
 
+.chat-message.system{
+    background: #59abc3;
+    color: white;
+}
+
+.chat-message.system .chat-message-text{
+    font-size: 1.2em;
+}
+
 /*.chat-message.small{*/
     /*width: 48%;*/
 /*}*/

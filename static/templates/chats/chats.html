@@ -45,16 +45,20 @@
                                     <div>
                                         <b>{% blocktrans %}Last Message:{% endblocktrans %}</b>
                                     </div>
-                                    <div class="chat-message">
+                                    <div class="chat-message
+                                        {% if chat.last_message.from_username == "Tourzan bot" or chat.last_message.from_username == "tourzan" %}system{% endif %}
+                                    ">
                                         <div class="message-meta-info">
-                                            {% if request.user.username  == chat.last_message.from %}
+                                            {% if request.user.username  == chat.last_message.from_username %}
                                                 me
-                                            {% else %}
+                                            {% elif chat.last_message.from %}
                                                 {{ chat.last_message.from }}
+                                            {% else %}
+                                                {{ chat.last_message.from_username }}
                                             {% endif %}, {{ chat.last_message.created|date:"m/d/Y H:i:s" }}
                                         </div>
                                         <div class="chat-message-text">
-                                            {{ chat.last_message.text|linebreaks }}
+                                            {{ chat.last_message.text|safe }}
                                         </div>
                                     </div>
                                 {% else %}

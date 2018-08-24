@@ -27,10 +27,16 @@ $(document).ready(function() {
 
       ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        $('#messages_area').append('<div class="chat-message small new-chat-message">' +
-                        '<div class="message-meta-info">' + data.user+ ', ' + data.dt + '</div>' +
+        current_user_name = $("#current_user_name").text();
+        current_user_name = current_user_name == data.user ? "me" : current_user_name;
+        message_el = $('<div class="chat-message small new-chat-message">' +
+                        '<div class="message-meta-info">' + data.user + ', ' + data.dt + '</div>' +
                         '<div class="chat-message-text">' + data.message + '</div>' +
                         '</div>');
+        $('#messages_area').append(message_el);
+        if (data.message_type == "system"){
+            message_el.addClass("system");
+        }
         scrolling();
       };
 
@@ -53,11 +59,11 @@ $(document).ready(function() {
 
     var message_textarea = $('#message_textarea');
     message_textarea.focus();
-    //message_textarea.on("keyup", function(e) {
-    //    if (e.keyCode === 13) {  // enter, return
-    //        $('#chat_message_form').submit();
-    //    }
-    //});
+    message_textarea.on("keyup", function(e) {
+        if (e.ctrlKey && e.keyCode == 13) {  // enter, return
+            $('#chat_message_form').submit();
+        }
+    });
 
     $('#chat_message_form').on("submit", function(e) {
         e.preventDefault();

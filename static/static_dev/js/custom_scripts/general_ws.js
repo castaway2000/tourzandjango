@@ -19,12 +19,12 @@ function connect() {
             message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
             toastr.options.timeOut = 0;
             toastr.options.extendedTimeOut = 0;
-            toastr.success(message);
-        }else if (data.type == "order_status_change"){
-            message = "Order " + data.order_uuid + "status change: " + data.order_status;
-            toastr.options.timeOut = 0;
-            toastr.options.extendedTimeOut = 0;
-            toastr.success(message);
+
+            if (data.color_type == "info"){
+                toastr.info(message);
+            }else{
+               toastr.success(message);
+            }
         }
       };
 

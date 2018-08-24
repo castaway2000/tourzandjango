@@ -57,12 +57,14 @@ class GeneralConsumer(AsyncJsonWebsocketConsumer):
         message =  Truncator(event["message"]).chars(75)
         message_user_name = event["message_user_name"]
         chat_uuid = event["chat_uuid"]
+        color_type = event["color_type"]
         try:
             await self.send_json({
                 "type": "new_chat_message_notification",
                 "message": message,
                 "message_user_name": message_user_name,
-                "chat_uuid": chat_uuid
+                "chat_uuid": chat_uuid,
+                "color_type": color_type
             })
         except Exception as e:
             print(e)
@@ -112,19 +114,18 @@ class ChatConsumer(WebsocketConsumer):
             }
         )
 
+        #Notification to general websockets
         uuid = message_to_user_obj.generalprofile.uuid
-        layer = get_channel_layer()
-        async_to_sync(layer.group_send)(
+        async_to_sync(self.channel_layer.group_send)(
             uuid,
             {
                 'type': 'chat.notification',
-                'content': 'triggered',
                 'message': message,
                 'message_user_name': message_user_name,
-                'chat_uuid': chat_uuid
+                'chat_uuid': chat_uuid,
+                "color_type": "success"
             }
         )
-
 
 
     def chat_message(self, event):
@@ -134,12 +135,14 @@ class ChatConsumer(WebsocketConsumer):
         message = event.get('message')
         user = event.get("user")
         dt = event.get("dt")
+        message_type = event.get("message_type", "None")
 
-        # Send message to WebSocket
+        # Send message to chat webSocket
         self.send(text_data=json.dumps({
             "message": message,
             "user": user,
-            "dt": dt
+            "dt": dt,
+            "message_type": message_type
         }))
 
     def save_message_to_db(self, message, chat_uuid):
