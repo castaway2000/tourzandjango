@@ -29,6 +29,15 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Order, OrderAdmin)
 
 
+class OrderStatusChangeHistoryAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in OrderStatusChangeHistory._meta.fields]
+
+    class Meta:
+        model = OrderStatusChangeHistory
+
+admin.site.register(OrderStatusChangeHistory, OrderStatusChangeHistoryAdmin)
+
+
 class ServiceInOrderAdmin(admin.ModelAdmin):
     list_display = [field.name for field in ServiceInOrder._meta.fields]
 

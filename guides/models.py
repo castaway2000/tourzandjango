@@ -232,6 +232,10 @@ class GuideAnswer(models.Model):
                 self.image_large = optimize_size(self.image, "large")
             except:
                 pass
+        if not self.text or self.text == "":
+            self.is_active = False
+        else:
+            self.is_active = True
         super(GuideAnswer, self).save(*args, **kwargs)
 
     def get_question_text_with_city(self):
