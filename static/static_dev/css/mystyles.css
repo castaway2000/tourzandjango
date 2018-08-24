@@ -78,6 +78,15 @@
     text-align: left!important;
 }
 
+.chat-message.system{
+    background: #59abc3;
+    color: white;
+}
+
+.chat-message.system .chat-message-text{
+    font-size: 1.2em;
+}
+
 /*.chat-message.small{*/
     /*width: 48%;*/
 /*}*/
@@ -1325,7 +1334,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 }
 
 .chat-container h3,
-.single-chat h3{
+.chat-item h3{
     font-size: 1.4em;
 }
 

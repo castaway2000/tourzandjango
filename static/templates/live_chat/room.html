@@ -14,6 +14,7 @@
             <div class="col-lg-7 col-lg-offset-2">
 
                 <div class="box bg-gray chat-item single-chat">
+                    <div id="current_user_name">{{ request.user.generalprofile.get_name }}</div>
                     <div>
                         <h3>
                             {% trans 'Chat with' %}
@@ -51,10 +52,12 @@
                     <div id="messages_area">
                         {% if chat_messages %}
                             {% for message in chat_messages %}
-                                <div class="chat-message small">
+                                <div class="chat-message small
+                                    {% if message.user__username == "Tourzan bot" or message.user__username == "tourzan" %}system{% endif %}
+                                ">
                                     <div class="message-meta-info">
                                         {% if request.user.username == message.user__username %}
-                                            me
+                                            {% trans 'me' %}
                                         {% else %}
                                             {% if message.user__generalprofile__first_name %}
                                                 {{ message.user__generalprofile__first_name }}
@@ -64,7 +67,7 @@
                                         {% endif %}, {{ message.created|date:"m/d/Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
-                                        {{ message.message|linebreaks }}
+                                        {{ message.message|safe }}
                                     </div>
                                 </div>
                             {% endfor %}
@@ -93,7 +96,7 @@
                     <div>
                         {% if order %}
                             <p>
-                                <b>{% trans "Order uuid" %}: </b>{{ order.uuid }}
+                                <b>{% trans "Order uuid" %}: </b>{{ order.get_last_uuid_symbols }}
                             </p>
                             {% if request.session.current_role == "guide" and request.user == order.guide.user %}
                                 {% with order.tour as tour %}
@@ -203,7 +206,7 @@
                             {% trans 'Order details' %}
                         </h3>
                         <p>
-                            <b>{% trans "Order uuid" %}: </b>{{ order.uuid }}
+                            <b>{% trans "Order uuid" %}: </b>{{ order.get_last_uuid_symbols }}
                         </p>
                         {% if tour %}
                             <p>

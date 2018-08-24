@@ -774,12 +774,19 @@ class Order(models.Model):
         else:
             return None
 
+    def get_last_uuid_symbols(self):
+        nmb_symbols = 5
+        return self.uuid[-nmb_symbols:]
+
 
 """
 saving ratings from review to Order object
 """
 @disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
+
+    if int(instance.status_id) != instance._original_fields["status"].id:
+        OrderStatusChangeHistory.objects.create(order=instance, status=instance.status)
 
     if instance.status.id in [4, "4"]: #completed
 
@@ -823,9 +830,72 @@ def order_post_save(sender, instance, created, **kwargs):
         if instance._original_fields["status"].id == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
             instance.tour_scheduled.seats_booked -= instance.number_persons
             instance.tour_scheduled.save(force_update=True)
-
-
 post_save.connect(order_post_save, sender=Order)
+
+
+class OrderStatusChangeHistory(models.Model):
+    order = models.ForeignKey(Order)
+    status = models.ForeignKey(OrderStatus)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % (self.id)
+
+    def send_notifications(self):
+        from chats.models import Chat
+        from channels.layers import get_channel_layer
+        from asgiref.sync import async_to_sync
+        status_name = self.status.name
+        order = self.order
+
+        topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user, guide=order.guide.user,
+                                                   order=order, defaults={"topic": topic})
+
+        order_title = "Tour %s" % (self.order.tour.name) if self.order.tour  else "Tour with %s" % order.guide.user.generalprofile.get_name()
+        message = 'Order  "%s" status has been changed to <b>%s</b>' % (order_title, status_name)
+
+        tourzan_user_name = "Tourzan bot"
+        tourzan_user, created = User.objects.get_or_create(username=tourzan_user_name)
+        chat.create_message(tourzan_user, message)
+
+        #send message to chat websockets
+        room_group = 'chat_%s' % chat.uuid
+        layer = get_channel_layer()
+        async_to_sync(layer.group_send)(
+            room_group,
+            {
+                "type": "chat_message",
+                "message": message,
+                "user": tourzan_user_name,
+                "dt": self.created.strftime("%m/%d/%Y %H:%M:%S"),
+                "message_type": "system",
+            }
+        )
+
+        #send message to generalwebsockets
+        uuids = [self.order.guide.user.generalprofile.uuid, self.order.tourist.user.generalprofile.uuid]
+        for uuid in uuids:
+            async_to_sync(layer.group_send)(
+                uuid,
+                {
+                    'type': 'chat.notification',
+                    'message': message,
+                    'message_user_name': tourzan_user_name,
+                    'chat_uuid': str(chat.uuid),
+                    "color_type": "info"
+                }
+            )
+
+
+
+
+@disable_for_loaddata
+def order_status_change_history_post_save(sender, instance, created, **kwargs):
+    if created:
+        instance.send_notifications()
+post_save.connect(order_status_change_history_post_save, sender=OrderStatusChangeHistory)
 
 
 class ServiceInOrder(models.Model):

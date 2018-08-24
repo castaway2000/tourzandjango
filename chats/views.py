@@ -39,6 +39,7 @@ def chats(request):
             last_messages_dict[chat_message["chat__id"]] = {
                 "text": chat_message["message"],
                 "from": chat_message["user__generalprofile__first_name"],
+                "from_username": chat_message["user__username"],
                 "created": chat_message["created"],
             }
 
