@@ -54,8 +54,6 @@ class GeneralConsumer(AsyncJsonWebsocketConsumer):
         """
         Send notification to user about new chat message
         """
-        print(111111111111)
-        print(event)
         message = Truncator(event["message"]).chars(75)
         message_user_name = event["message_user_name"]
         chat_uuid = event["chat_uuid"]

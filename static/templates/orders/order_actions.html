@@ -15,12 +15,23 @@
             <div class="mt20">
                 <b>{% trans 'Waiting for tourist payment reservation' %}</b>
             </div>
-        {% else %}
-            {% trans 'No actions available at this stage' %}
         {% endif %}
-    {% else %}
-        {% trans 'No actions available at this stage' %}
     {% endif %}
+
+    {% if order.status.id == 4 or order.status.id == 5 %}
+        <p>
+            <a href="{% url 'order_completing' order.uuid %}"
+                class="btn btn-primary">
+                {% if not order.review.is_guide_feedback %}
+                    {% trans 'Mark as completed' %}
+                {% else %}
+                    {% trans 'View final details' %}
+                {% endif %}
+            </a>
+        </p>
+    {% endif %}
+
+
 {% else %}
     {% with order.tour as tour %}
         <div>
@@ -46,17 +57,25 @@
                         <div class="mt20">
                             <b>{% trans 'Waiting for guide confirmation' %}</b>
                         </div>
-                    {% else %}
-                        {% trans 'No actions available at this stage' %}
                     {% endif %}
-                {% else %}
-                        {% trans 'No actions available at this stage' %}
                 {% endif %}
-            {% else %}
-                {% trans 'No actions available at this stage' %}
             {% endif %}
         </div>
     {% endwith %}
+
+    {% if order.status.id == 4 or order.status.id == 5%}
+        <p>
+            <a href="{% url 'order_completing' order.uuid %}"
+                class="btn btn-primary">
+                {% if order.payment_status.id != 4 %}
+                    {% trans 'Mark as completed' %}
+                {% else %}
+                    {% trans 'View final details' %}
+                {% endif %}
+            </a>
+        </p>
+    {% endif %}
+
 {% endif %}
 
 {% if order.status.id == 1 or order.status.id == 2 %}

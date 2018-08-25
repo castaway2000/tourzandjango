@@ -10,12 +10,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="booking-item-img">
-                            <img src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}">
+                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}">
+                                <img src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}">
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <h3 class="booking-item-name">
-                            {{ order.guide.user.generalprofile.first_name }}
+                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new'%}">
+                                {{ order.guide.user.generalprofile.first_name }}
+                            </a>
                         </h3>
                         <div class="row">
                             <div class="col-md-12 mb10">
@@ -117,13 +121,13 @@
 
             <div class="col-md-3">
                 <p>
-                    <b>Status: </b>{{ order.status.name }}
+                    <b>{% trans 'Status' %}: </b>{{ order.status.name }}
                     {% if order.status.id == 5 %}
                         ({% trans "waiting approval from guide" %})
                     {% endif %}
                 </p>
                 <p>
-                    <b>Booked: </b>{{ order.date_ordered|date:"m/d/Y" }}
+                    <b>{% trans 'Booked' %}: </b>{{ order.date_ordered|date:"m/d/Y" }}
                 </p>
                 <p>
                     {% if order.status_id == 9 %}
@@ -139,9 +143,9 @@
                     {% endif %}
                 </p>
                 <p>
-                    <b>Payment: </b>
+                    <b>{% trans 'Payment' %}: </b>
                     {% if order.payment_status.id == 1 %}
-                        no payment yet
+                        {% trans 'no payment yet' %}
                     {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
                         {% if order.payment %}
                             {{ order.payment.amount }} {{ order.payment.currency.name }}
