@@ -233,7 +233,7 @@ class WeeklyTemplateApplyForm(forms.ModelForm):
 
 
 class BookingScheduledTourForm(forms.Form):
-    tour_scheduled_id = forms.ChoiceField(required=True, label=_("Selected tour date"))
+    tour_scheduled_uuid = forms.ChoiceField(required=True, label=_("Selected tour date"))
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
 
     def __init__(self, *args, **kwargs):
@@ -241,8 +241,8 @@ class BookingScheduledTourForm(forms.Form):
         self.tour = tour
         super(BookingScheduledTourForm, self).__init__(*args, **kwargs)
         # self.fields['seats'].widget.attrs['min'] = 0
-        self.fields['tour_scheduled_id'] = forms.ChoiceField(required=True, label=_("Select tour date"),
-            choices=[(scheduled_tour.id, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates(14)]
+        self.fields['tour_scheduled_uuid'] = forms.ChoiceField(required=True, label=_("Select tour date"),
+            choices=[(scheduled_tour.uuid, scheduled_tour.get_name()) for scheduled_tour in tour.get_nearest_available_dates(14)]
         )
 
         self.helper = FormHelper(self)
@@ -259,8 +259,8 @@ class BookingScheduledTourForm(forms.Form):
 
     def clean_number_people(self):
         number_people = self.cleaned_data.get("number_people")
-        tour_scheduled_id = self.cleaned_data.get("tour_scheduled")
-        tour_scheduled = ScheduledTour.objects.get(id=tour_scheduled_id)
+        tour_scheduled_uuid = self.cleaned_data.get("tour_scheduled_uuid")
+        tour_scheduled = ScheduledTour.objects.get(uuid=tour_scheduled_uuid)
 
         if number_people > tour_scheduled.seats_available:
             raise forms.ValidationError(_("Maximum number of tour participants is: %s") % tour_scheduled.seats_available)
