@@ -117,8 +117,12 @@
                                 {% endif %}
 
                                 <div class="col-lg-4">
-                                    <div class="mb10"><b>{% trans 'Order actions' %}: </b></div>
-                                    {% include 'orders/order_actions.html' %}
+                                    {% if not order.is_canceled %}
+                                        <div class="mb10"><b>{% trans 'Order actions' %}: </b></div>
+                                        {% include 'orders/order_actions.html' %}
+                                    {% else %}
+                                        {% trans 'Booking was canceled' %}
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endif %}

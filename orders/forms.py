@@ -37,7 +37,7 @@ class GuideOrderAdjustForm(forms.ModelForm):
                 '<div class="text-left">'
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '%s</button> '
-                '</div><div>%s</div>' % ( _('Change date and time*'), _("* You can do it before guide approved booking."))
+                '</div><div>%s</div>' % ( _('Change booking parameters*'), _("* You can do it before guide approved booking."))
             ),
 
         )
