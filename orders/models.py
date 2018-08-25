@@ -495,7 +495,7 @@ class Order(models.Model):
             status = "error"
             message = _('Order status can not be changed!')
         elif new_status_id == 2:
-            if current_status_id not in [5, 9]:
+            if current_status_id not in [5, 9, 1]: #AT 25082018: Aggreed can be set up after pending as well
                 status = "error"
                 message = _('Order status can not be changed!')
         elif new_status_id in [3, 6]:
@@ -567,17 +567,14 @@ class Order(models.Model):
             self.status_id = status_id
             self.save(force_update=True)
         elif checking_status == "error":
-            print("False")
             response_dict["message"] = message if message else _('Order status can not be changed!')
             response_dict["status"] = checking_status
         elif status_id == "4":
-            print("four")
             self.status_id = status_id
             self.save(force_update=True)
             response_dict["message"] = _('Order has been successfully marked as completed!')
             response_dict["status"] = "success"
         else:
-            print("else")
             self.status_id = status_id
             self.save(force_update=True)
             response_dict["message"] = message
@@ -623,11 +620,11 @@ class Order(models.Model):
                 order.save(force_update=True)
 
                 #put status "agreed" if order details were approved from chat window by a guide
-                if order.is_approved_by_guide:
+                if order.status_id == 10:
                     order.status_id = 2
                     order.save(force_update=True)
 
-                message = _("Payment was reserved successfully")
+                message = _("Payment was reserved successfully!")
                 return {"status": "success", "message": message}
             else:
                 return {"status": "error", "message": result.errors}
@@ -784,11 +781,11 @@ saving ratings from review to Order object
 """
 @disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
+    if created or int(instance.status_id) != int(instance._original_fields["status"].id):
+        print("changing order status")
+        OrderStatusChangeHistory.objects.create(order=instance, status_id=instance.status_id)
 
-    if int(instance.status_id) != instance._original_fields["status"].id:
-        OrderStatusChangeHistory.objects.create(order=instance, status=instance.status)
-
-    if instance.status.id in [4, "4"]: #completed
+    if instance.status_id in [4, "4"]: #completed
 
         #saving info for a guide
         guide = instance.guide
@@ -819,7 +816,7 @@ def order_post_save(sender, instance, created, **kwargs):
     else:
         is_guide_saving = False
 
-    if instance._original_fields["status"] and int(instance.status_id) != instance._original_fields["status"].id and int(instance.status_id) != 1:#exclude pending status
+    if instance._original_fields["status"] and int(instance.status_id) != int(instance._original_fields["status"].id) and int(instance.status_id) != 1:#exclude pending status
         # print ("pre sending")
         data = {"order": instance, "is_guide_saving": is_guide_saving}
         SendingEmail(data).email_for_order()
@@ -827,7 +824,7 @@ def order_post_save(sender, instance, created, **kwargs):
         if int(instance.status_id) == 2 and instance.tour_scheduled:#agreed
             instance.tour_scheduled.seats_booked += instance.number_persons
             instance.tour_scheduled.save(force_update=True)
-        if instance._original_fields["status"].id == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
+        if int(instance._original_fields["status"].id) == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
             instance.tour_scheduled.seats_booked -= instance.number_persons
             instance.tour_scheduled.save(force_update=True)
 post_save.connect(order_post_save, sender=Order)
@@ -884,11 +881,10 @@ class OrderStatusChangeHistory(models.Model):
                     'message': message,
                     'message_user_name': tourzan_user_name,
                     'chat_uuid': str(chat.uuid),
-                    "color_type": "info"
+                    'color_type': 'info',
+                    'notification_type': 'order_status_change'
                 }
             )
-
-
 
 
 @disable_for_loaddata

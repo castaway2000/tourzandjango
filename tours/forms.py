@@ -305,7 +305,7 @@ class BookingPrivateTourForm(forms.Form):
                 '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
                                 _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
                                 _("Maximum participants"), self.max_persons_nmb,
-                                _("Total price") if not tour.discount else _("Total price with discount"),
+                                _("Total price"),
                             tour.price_final, _('Submit'))
             ),
         )

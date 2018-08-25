@@ -1,4 +1,17 @@
 function connect() {
+
+    function sendNotification(data){
+        message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
+        toastr.options.timeOut = 0;
+        toastr.options.extendedTimeOut = 0;
+
+        if (data.color_type == "info"){
+            toastr.info(message);
+        }else{
+           toastr.success(message);
+        }
+    }
+
     console.log("connecting");
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
@@ -15,15 +28,14 @@ function connect() {
 
       ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1 ){
-            message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
-            toastr.options.timeOut = 0;
-            toastr.options.extendedTimeOut = 0;
-
-            if (data.color_type == "info"){
-                toastr.info(message);
+          console.log(data);
+        if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
+            sendNotification(data);
+        }else if(data.type == "order_status_change"){
+            if (window.location.href.indexOf(data.chat_uuid) == -1 ){
+                sendNotification(data);
             }else{
-               toastr.success(message);
+                window.location.reload();
             }
         }
       };

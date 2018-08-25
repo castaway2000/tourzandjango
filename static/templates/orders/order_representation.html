@@ -13,14 +13,6 @@
                         <img src="{% static 'img/300x300.png' %}" class="img-responsive">
                     {% endif %}
                 </div>
-                {% if order.uuid %}
-                    <div class="text-center mt10">
-                        <a class="btn btn-primary"
-                           href="{% url 'chat_creation_order' order.uuid %}" target="_blank">
-                            {% trans 'Chat and manage' %}
-                        </a>
-                    </div>
-                {% endif %}
             </div>
             <div class="col-md-3">
                 <h3 class="booking-item-name">
@@ -136,9 +128,6 @@
                         </span>
                     {% endif %}
                 </p>
-                {% if order.status.id == 5 %}
-                    <p><b>{% trans 'Press confirm if you accept this agreement' %}!</b></p>
-                {% endif %}
             </div>
 
             <div class="col-md-3">
@@ -185,7 +174,16 @@
                         </span>
                     {% endif %}
                 {% endif %}
-                {% include 'orders/guide_orders_actions.html' %}
+
+                {% if order.uuid %}
+                    <div class="text-left mt10">
+                        <a class="btn btn-primary"
+                           href="{% url 'chat_creation_order' order.uuid %}" target="_blank">
+                            {% trans 'Chat and manage' %}
+                        </a>
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </div>

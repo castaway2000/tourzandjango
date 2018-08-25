@@ -1,0 +1,69 @@
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% if request.user == order.guide.user %}
+    {% if not order.is_canceled %}
+        {% if order.status.id == 1 %}
+            <div>
+                <a href="{% url 'change_order_status' order.uuid 2 %}"
+                   class="btn btn-primary">{% trans 'Confirm booking' %}
+                </a>
+            </div>
+        {% elif order.status.id == 2 %}
+            <div class="mt20">
+                <b>{% trans 'Waiting for tourist payment reservation' %}</b>
+            </div>
+        {% else %}
+            {% trans 'No actions available at this stage' %}
+        {% endif %}
+    {% else %}
+        {% trans 'No actions available at this stage' %}
+    {% endif %}
+{% else %}
+    {% with order.tour as tour %}
+        <div>
+            {% if not order.is_canceled %}
+                {% if order.status.id == 1 or order.status.id == 2 %}
+                    {% if order.status.id == 2 %}
+
+                        <div class="text-left">
+                            <form method="post">{% csrf_token %}
+                                <div class="form-group">
+                                    <p>
+                                        {% trans 'Your guide has approved booking conditions.' %}
+                                        {% trans 'Click the button below to go to checkout page.' %}
+                                    </p>
+                                    <a href="{% url 'order_payment_checkout' order.uuid %}"
+                                        class="btn btn-primary">{% trans 'Checkout' %}</a>
+                                </div>
+                            </form>
+                        </div>
+
+                    {% elif order.status.id == 1 %}
+                        {% crispy form %}
+                        <div class="mt20">
+                            <b>{% trans 'Waiting for guide confirmation' %}</b>
+                        </div>
+                    {% else %}
+                        {% trans 'No actions available at this stage' %}
+                    {% endif %}
+                {% else %}
+                        {% trans 'No actions available at this stage' %}
+                {% endif %}
+            {% else %}
+                {% trans 'No actions available at this stage' %}
+            {% endif %}
+        </div>
+    {% endwith %}
+{% endif %}
+
+{% if order.status.id == 1 or order.status.id == 2 %}
+    <div class="text-left mt10">
+        <a href="{% url 'cancel_order' order.uuid %}"
+            class="btn btn-danger">
+            {% trans 'Cancel booking' %}
+        </a>
+    </div>
+{% endif %}

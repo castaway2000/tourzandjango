@@ -11,7 +11,7 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-lg-7 col-lg-offset-2">
+            <div class="col-lg-6">
 
                 <div class="box bg-gray chat-item single-chat">
                     <div id="current_user_name">{{ request.user.generalprofile.get_name }}</div>
@@ -27,7 +27,7 @@
                                     {% endif %}
                                 </a>
                                 ({% trans 'guide' %})
-                            {% elif request.user == chat.tourist and request.session.current_role != "guide" %}
+                            {% elif request.user == chat.tourist %}
                                 <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
                                     {% if chat.guide.generalprofile.first_name %}
                                         {{ chat.guide.generalprofile.first_name }}
@@ -80,6 +80,7 @@
                                 <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
                             </div>
                             <div class="form-group text-right">
+                                {% trans 'Press ctrl+Enter or "Submit" button to send a message' %}
                                 <button id="chat_message_submit_btn" type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Submit{% endblocktrans %}</button>
                             </div>
                         </form>
@@ -88,116 +89,38 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-lg-offset-0">
-                {% if form %}
+            <div class="col-lg-6">
+                {% if not_scheduled_tour %}
                     <h3 class="text-center">
                         {% trans 'Order details' %}
                     </h3>
                     <div>
                         {% if order %}
-                            <p>
-                                <b>{% trans "Order uuid" %}: </b>{{ order.get_last_uuid_symbols }}
-                            </p>
-                            {% if request.session.current_role == "guide" and request.user == order.guide.user %}
-                                {% with order.tour as tour %}
-                                    {% if tour %}
-                                        <div>
-                                            <p>
-                                                <b>{% trans "Tour" %}: </b>
-                                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
-                                                                              target="_blank">{{ tour.name }}
-                                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
-                                                </a>
-                                            </p>
+                            <div class="row">
+                                {% if not order.is_canceled %}
+                                    {% if request.user == order.guide.user %}
+                                        <div class="col-lg-4">
+                                            {% include 'orders/guide_order_details.html' %}
                                         </div>
-                                    {% endif %}
-                                {% endwith %}
-                                <div>
-                                    <p>
-                                        <b>{% trans "Status" %}: </b>{{ order.status.name }}
-                                    </p>
-                                </div>
-                                {% if not order.is_approved_by_guide and not order.is_canceled %}
-                                    {% crispy form %}
-                                {% elif not order.is_canceled %}
-                                    <p>
-                                        <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
-                                    </p>
-                                    <p>
-                                        <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
-                                    </p>
-                                    {% if order.status.id == 1 %}
-                                        <div class="mt20">
-                                            <b>{% trans 'Waiting for tourist confirmation and payment reservation' %}</b>
+                                        <div class="col-lg-4">
+                                            {% include 'orders/guide_order_payment_details.html' %}
                                         </div>
+                                    {% else %}
+                                        <div class="col-lg-4">
+                                            {% include 'orders/tourist_order_details.html' %}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {% include 'orders/tourist_order_payment_details.html' %}
+                                        </div>
+
                                     {% endif %}
                                 {% endif %}
-                            {% else %}
-                                {% with order.tour as tour %}
-                                    {% if tour %}
-                                        <div>
-                                            <p>
-                                                <b>{% trans "Tour" %}: </b>
-                                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
-                                                                              target="_blank">{{ tour.name }}
-                                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
-                                                </a>
-                                            </p>
-                                        </div>
-                                    {% endif %}
-                                    <div>
-                                        <p>
-                                            <b>{% trans "Status" %}: </b>{{ order.status.name }}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        {% if not order.is_canceled %}
-                                            {% if not tour %}
-                                                <p>
-                                                    <b>{% trans "Hours" %}: </b>{{ order.hours_nmb }}
-                                                </p>
-                                            {% endif %}
-                                            <p>
-                                                <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
-                                            </p>
-                                            <p>
-                                                <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
-                                            </p>
-                                            {% if order.status.id == 1 %}
-                                                {% if order.is_approved_by_guide %}
-                                                    {% if request.session.current_role != "guide" and request.user == order.tourist.user %}
-                                                        <div class="text-left">
-                                                            <form method="post">{% csrf_token %}
-                                                                <div class="form-group">
-                                                                    <p>
-                                                                        {% trans 'Your guide has approved booking conditions.' %}
-                                                                        {% trans 'Click the button below to go to checkout page.' %}
-                                                                    </p>
-                                                                    <div class="form-group">
-                                                                        <input class="btn btn-success" type="submit" name="approve"
-                                                                            value="{% trans 'Approve and checkout' %}">
-                                                                    </div>
-                                                                    {% trans 'or' %}
-                                                                    <div class="form-group mt10">
-                                                                        <a href="{% url 'cancel_order' order.uuid %}"
-                                                                            class="btn btn-danger">
-                                                                            {% trans 'Cancel booking' %}
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    {% endif %}
-                                                {% elif order.status.id == 1 %}
-                                                    <div class="mt20">
-                                                        <b>{% trans 'Waiting for guide confirmation' %}</b>
-                                                    </div>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endif %}
-                                    </div>
-                                {% endwith %}
-                            {% endif %}
+
+                                <div class="col-lg-4">
+                                    <div><b>{% trans 'Order actions' %}: </b></div>
+                                    {% include 'orders/order_actions.html' %}
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
                 {% elif order %}
@@ -236,7 +159,7 @@
                             <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
                         </p>
 
-                        {% if request.session.current_role == "guide" and request.user == order.guide.user %}
+                        {% if request.user == order.guide.user %}
                             {% include 'orders/guide_orders_actions.html' %}
                         {% endif %}
 

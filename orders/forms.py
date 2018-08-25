@@ -34,11 +34,10 @@ class GuideOrderAdjustForm(forms.ModelForm):
 
         self.helper.layout.append(
             HTML(
-                '<div class="text-center">'
-                '<a class="btn btn-default" href="%s">%s</a> '
+                '<div class="text-left">'
                 '<button name="action" class="btn btn-primary" type="submit">'
                 '%s</button> '
-                '</div>' % (reverse("cancel_order", kwargs={"order_uuid": self.order.uuid}), _("Cancel"), _('Approve order'))
+                '</div><div>%s</div>' % ( _('Change date and time*'), _("* You can do it before guide approved booking."))
             ),
 
         )
