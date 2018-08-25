@@ -24,7 +24,7 @@ class GeoTracker(models.Model):
 
 class GeoTrip(models.Model):
     user = models.ForeignKey(User)
-    guide = models.ForeignKey(GuideProfile)
+    guide = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
     duration = models.IntegerField()

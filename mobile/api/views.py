@@ -283,7 +283,14 @@ def update_trip(request):
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
-            return HttpResponse(json.dumps(list(user)))
+            trip = GeoTrip.objects.filter(user_id=user_id, in_progress=True)
+            # TODO: find guide_id from user id and check if it is still in progress.
+            trip_id = None
+            if trip.exists():
+                trip_id = trip[0].id
+            user_data = list(user)[0]
+            user_data['trip_id'] = trip_id
+            return HttpResponse(json.dumps(user_data))
         elif status == 'clockin':
             """
             guide_id
@@ -335,10 +342,10 @@ def update_trip(request):
             if hasattr(request.POST, 'time') and flag == 'manual':
                 tdelta = request.POST['time']
             kwargs = dict()
-            guide = GeneralProfile.objects.get(user_id=guide_id).user.guideprofile.id
+            guide = GeneralProfile.objects.get(user_id=guide_id)
             tourist = GeneralProfile.objects.get(user_id=user_id).user.touristprofile.user_id
 
-            kwargs['guide_id'] = guide
+            kwargs['guide_id'] = guide.user.guideprofile.id
             kwargs['user_id'] = tourist
             kwargs['start'] = datetime.now()
             kwargs['number_persons'] = 2
@@ -353,7 +360,7 @@ def update_trip(request):
             order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
 
             GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
-            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide, in_progress=True,
+            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                     order_id=order_id)
             device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.user.generalprofile.device_id]
@@ -483,6 +490,7 @@ def push_notify(payload):
         fcm = "https://fcm.googleapis.com/fcm/send"
         send = requests.post(fcm, headers={'Authorization': "key={}".format(FCM_API_KEY),
                                            'Content-Type': 'application/json; UTF-8'}, json=payload)
+        pyfcm = FCMNotification
         print(send.text)
         print(send.status_code)
     except Exception as err:
