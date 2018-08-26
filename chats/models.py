@@ -14,7 +14,7 @@ class Chat(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     guide = models.ForeignKey(User, related_name="guide")
     tourist = models.ForeignKey(User, related_name="tourist")
-    order = models.ForeignKey(Order, blank=True, null=True, default=None)
+    order = models.OneToOneField(Order, blank=True, null=True, default=None)
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)#a chat converstion can be around some specific tour
     topic = models.CharField(max_length=256, blank=True, null=True, default=None)#some topic can be specified as well
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
