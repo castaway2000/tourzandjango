@@ -69,10 +69,8 @@
         <p>
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary">
-                {% if order.status.id == 5 %}
-                    {% trans 'Mark as completed' %}
-                {% elif not order.review.is_tourist_feedback %}
-                    {% trans 'Write review' %}
+                {% if not order.review.is_tourist_feedback %}
+                    {% trans 'Write review and pay' %}
                 {% else %}
                     {% trans 'View final details' %}
                 {% endif %}
