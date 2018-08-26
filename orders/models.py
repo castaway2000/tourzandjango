@@ -850,6 +850,8 @@ class OrderStatusChangeHistory(models.Model):
         status_name = self.status.name
         order = self.order
 
+        print("send_notifications")
+
         topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user, guide=order.guide.user,
                                                    order=order, defaults={"topic": topic})
@@ -876,7 +878,9 @@ class OrderStatusChangeHistory(models.Model):
         )
 
         #send message to generalwebsockets
+        print("pre chat notification")
         uuids = [self.order.guide.user.generalprofile.uuid, self.order.tourist.user.generalprofile.uuid]
+        print(uuids)
         for uuid in uuids:
             async_to_sync(layer.group_send)(
                 uuid,
@@ -893,7 +897,9 @@ class OrderStatusChangeHistory(models.Model):
 
 @disable_for_loaddata
 def order_status_change_history_post_save(sender, instance, created, **kwargs):
+    print("order_status change history")
     if created:
+        print("created")
         instance.send_notifications()
 post_save.connect(order_status_change_history_post_save, sender=OrderStatusChangeHistory)
 
