@@ -9,6 +9,7 @@ from channels.layers import get_channel_layer
 from django.utils.text import Truncator
 import logging
 l = logging.getLogger(__name__)
+from emoticons.templatetags.emoticons_tags import regexp_replace_emoticons
 
 
 class GeneralConsumer(WebsocketConsumer):
@@ -143,6 +144,8 @@ class ChatConsumer(WebsocketConsumer):
         """
         l.debug("chat message of chat consumer")
         message = event.get('message')
+        message = regexp_replace_emoticons(message)
+
         user = event.get("user")
         dt = event.get("dt")
         message_type = event.get("message_type", "None")

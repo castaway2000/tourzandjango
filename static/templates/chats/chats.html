@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load emoticons_tags %}
 
 
 {% block content %}
@@ -58,7 +59,7 @@
                                             {% endif %}, {{ chat.last_message.created|date:"m/d/Y H:i:s" }}
                                         </div>
                                         <div class="chat-message-text">
-                                            {{ chat.last_message.text|safe }}
+                                            {{ chat.last_message.text|safe|emoticons }}
                                         </div>
                                     </div>
                                 {% else %}
