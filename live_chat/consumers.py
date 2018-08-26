@@ -54,12 +54,14 @@ class GeneralConsumer(AsyncJsonWebsocketConsumer):
         """
         Send notification to user about new chat message
         """
+        print("chat_notification")
         message = Truncator(event["message"]).chars(75)
         message_user_name = event["message_user_name"]
         chat_uuid = event["chat_uuid"]
         color_type = event["color_type"]
         notification_type = event["notification_type"] if "notification_type" in event else "new_chat_message_notification"
         try:
+            print("try")
             await self.send_json({
                 "type": notification_type,
                 "message": message,
