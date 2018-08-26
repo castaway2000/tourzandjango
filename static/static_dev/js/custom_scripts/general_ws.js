@@ -17,16 +17,16 @@ function connect() {
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/general/';
 
-      var ws = new WebSocket(url);
-       console.log(ws);
-      ws.onopen = function() {
+      var ws_general = new WebSocket(url);
+       console.log(ws_general);
+      ws_general.onopen = function() {
         // subscribe to some channels
-        //ws.send(JSON.stringify({
+        //ws_general.send(JSON.stringify({
         //    //.... some message the I must send when I connect ....
         //}));
       };
 
-      ws.onmessage = function(e) {
+      ws_general.onmessage = function(e) {
           console.log("message in general");
         var data = JSON.parse(e.data);
           console.log(data);
@@ -41,19 +41,19 @@ function connect() {
         }
       };
 
-      ws.onclose = function(e) {
+      ws_general.onclose = function(e) {
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
         setTimeout(function() {
           connect();
         }, 5000);
       };
 
-      ws.onerror = function(err) {
+      ws_general.onerror = function(err) {
         console.error('Socket encountered error: ', err.message, 'Closing socket');
-        ws.close();
+        ws_general.close();
       };
 
-      return ws;
+      return ws_general;
 }
 
-ws = connect();
+ws_general = connect();
