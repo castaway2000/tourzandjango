@@ -12,14 +12,18 @@
                 </a>
                 <p class="booking-item-review-person-name">
                     <a href="{% url 'guide_new' review.order.guide.user.generalprofile.first_name review.order.guide.user.generalprofile.uuid 'new' %}">
-                        {{ review.order.guide.user.generalprofile.first_name }}
+                        {{ review.order.guide.user.generalprofile.get_name }}
                     </a>
                 </p>
-                <p class="booking-item-review-person-loc">{{ review.order.guide.city.original_name }}</p>
+                {% if review.order.guide.city %}
+                    <p class="booking-item-review-person-loc">
+                        {{ review.order.guide.city.name }}{% if review.order.guide.city.country.name %} ,
+                                {{ review.order.guide.city.country.name }}
+                            {% endif %}
+                    </p>
+                {% endif %}
                 <small>
-                    <a href="#">
-                        {{ review.order.guide.orders_with_review_nmb }} {% blocktrans %}Reviews{% endblocktrans %}
-                    </a>
+                    {{ review.order.guide.orders_with_review_nmb }} {% blocktrans %}Reviews{% endblocktrans %}
                 </small>
             </div>
         </div>
