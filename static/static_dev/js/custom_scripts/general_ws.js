@@ -1,9 +1,11 @@
 function connect() {
 
-    function sendNotification(data){
+    function sendNotification(data, order_status_change){
         message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
-        toastr.options.timeOut = 0;
-        toastr.options.extendedTimeOut = 0;
+        if (order_status_change==false){
+            toastr.options.timeOut = 0;
+            toastr.options.extendedTimeOut = 0;
+        }
 
         if (data.color_type == "info"){
             toastr.info(message);
@@ -31,10 +33,10 @@ function connect() {
         var data = JSON.parse(e.data);
           console.log(data);
         if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
-            sendNotification(data);
+            sendNotification(data, order_status_change=false);
         }else if(data.type == "order_status_change"){
             if (window.location.href.indexOf(data.chat_uuid) == -1 ){
-                sendNotification(data);
+                sendNotification(data, order_status_change=true);
             }else{
                 window.location.reload();
             }

@@ -67,6 +67,12 @@ $(document).ready(function() {
         }
     });
 
+    $(".emoticons-container .emoticon-item").on("click", function(){
+        emoticon_item = $(this).data("emoticon");
+        var message = $('#message_textarea').val();
+        $('#message_textarea').val(message+" "+emoticon_item);
+    });
+
     $('#chat_message_form').on("submit", function(e) {
         e.preventDefault();
         var message = $('#message_textarea').val();

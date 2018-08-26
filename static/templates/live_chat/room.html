@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load emoticons_tags %}
 
 
 {% block header_stuff %}
@@ -67,7 +68,7 @@
                                         {% endif %}, {{ message.created|date:"m/d/Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
-                                        {{ message.message|safe }}
+                                        {{ message.message|safe|emoticons }}
                                     </div>
                                 </div>
                             {% endfor %}
@@ -78,6 +79,17 @@
                             <input class="hidden" value="{{ chat_uuid }}" name="chat_uuid" id="chat_uuid">
                             <div class="form-group">
                                 <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <div class="text-left">
+                                    <a data-toggle="collapse" href="#emoticons_container" role="button">{% trans 'smiles' %}</a>
+                                </div>
+                                <div id="emoticons_container" class="emoticons-container collapse">
+                                    {% emoticons_index as emoticons_list %}
+                                    {% for emoticons in emoticons_list %}
+                                    <span class="emoticon-item" data-emoticon="{{ emoticons.0 }}">{{ emoticons.0|emoticons }}</span>
+                                    {% endfor %}
+                                </div>
                             </div>
                             <div class="form-group text-right">
                                 {% trans 'Press ctrl+Enter or "Submit" button to send a message' %}
