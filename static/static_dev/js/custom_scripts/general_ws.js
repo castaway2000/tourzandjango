@@ -2,7 +2,7 @@ function connect() {
 
     function sendNotification(data, order_status_change){
         message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
-        if (order_status_change==false){
+        if (order_status_change==true){
             toastr.options.timeOut = 0;
             toastr.options.extendedTimeOut = 0;
         }
