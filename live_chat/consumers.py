@@ -144,7 +144,7 @@ class ChatConsumer(WebsocketConsumer):
         """
         l.debug("chat message of chat consumer")
         message = event.get('message')
-        message = regexp_replace_emoticons(message)
+        message_with_emoticons = regexp_replace_emoticons(message)
 
         user = event.get("user")
         dt = event.get("dt")
@@ -152,7 +152,7 @@ class ChatConsumer(WebsocketConsumer):
 
         # Send message to chat webSocket
         self.send(text_data=json.dumps({
-            "message": message,
+            "message": message_with_emoticons,
             "user": user,
             "dt": dt,
             "message_type": message_type
