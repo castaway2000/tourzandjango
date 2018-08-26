@@ -9,48 +9,52 @@ from channels.layers import get_channel_layer
 from django.utils.text import Truncator
 
 
-class GeneralConsumer(AsyncJsonWebsocketConsumer):
-    async def connect(self):
+class GeneralConsumer(WebsocketConsumer):
+    def connect(self):
         """
         Called when the websocket is handshaking as part of initial connection.
         """
         # Are they logged in?
         if self.scope["user"].is_anonymous:
             # Reject the connection
-            await self.close()
+            self.close()
             # await self.accept()
         else:
             # Accept the connection
-            await self.accept()
+            self.accept()
 
         self.group_name = self.scope['user'].generalprofile.uuid
+        print (self.group_name)
+        print (111)
 
         # Join group
-        await self.channel_layer.group_add(
+        async_to_sync(self.channel_layer.group_add)(
             self.group_name,
             self.channel_name
         )
 
         # Send debug message for testing
-        # await self.channel_layer.group_send(
-        #     self.group_name,
-        #     {
-        #         "type": "chat.message",
-        #         "message": "test 12345",
-        #     }
-        # )
+        async_to_sync(self.channel_layer.group_send)(
+            self.group_name,
+            {
+                "type": "chat.message",
+                "message": "test 12345",
+            }
+        )
 
-    async def chat_message(self, event):
+    def chat_message(self, event):
         # Handles the "chat.message" event when it's sent to us.
+        print ("debugging chat message")
+        print(event)
         try:
-            await self.send_json({
+            self.send(text_data=json.dumps({
                 "message": "hello there 1234",
-            })
+            }))
         except Exception as e:
             print(e)
 
 
-    async def chat_notification(self, event):
+    def chat_notification(self, event):
         """
         Send notification to user about new chat message
         """
@@ -62,13 +66,13 @@ class GeneralConsumer(AsyncJsonWebsocketConsumer):
         notification_type = event["notification_type"] if "notification_type" in event else "new_chat_message_notification"
         try:
             print("try")
-            await self.send_json({
+            self.send(text_data=json.dumps({
                 "type": notification_type,
                 "message": message,
                 "message_user_name": message_user_name,
                 "chat_uuid": chat_uuid,
                 "color_type": color_type,
-            })
+            }))
         except Exception as e:
             print(e)
 

@@ -27,6 +27,7 @@ function connect() {
       };
 
       ws.onmessage = function(e) {
+          console.log("message in general");
         var data = JSON.parse(e.data);
           console.log(data);
         if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
