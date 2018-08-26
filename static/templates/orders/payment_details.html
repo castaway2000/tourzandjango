@@ -21,9 +21,9 @@
         <div class="text-center">
             {% if request.user == order.guide.user %}
                 {% if order.tourist.image %}
-                    <img src="{% get_media_prefix %}{{ order.tourist.image }}"/>
+                    <img src="{% get_media_prefix %}{{ order.tourist.image }}" class="img-circle avatar-image-x-small">
                 {% else %}
-                    <img src="{% static 'img/300x300.png' %}" class="img-responsive">
+                    <img src="{% static 'img/300x300.png' %}" class="img-circle avatar-image-x-small">
                 {% endif %}
             {% else %}
                 <img class="img-circle avatar-image-x-small"
