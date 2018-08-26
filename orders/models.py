@@ -881,7 +881,7 @@ class OrderStatusChangeHistory(models.Model):
             async_to_sync(layer.group_send)(
                 uuid,
                 {
-                    'type': 'chat.notification',
+                    'type': 'chat_notification',
                     'message': message,
                     'message_user_name': tourzan_user_name,
                     'chat_uuid': str(chat.uuid),
