@@ -653,57 +653,32 @@ class Order(models.Model):
             return {"status": "error", "message": message}
 
         dt_now = datetime.datetime.now()
-        #only agreed status can proceed with payment or "completed" status if a guide marked the order as completed before a tourist
-        if self.status.id in [2, 4]:
-            if pay_without_pre_reservation == True:
-                payment_method = self.tourist.user.generalprofile.get_default_payment_method()
-                if payment_method:
-                    amount = "%s" % float(self.total_price)
-                    result = braintree.Transaction.sale({
-                        "amount": amount,
-                        "payment_method_token": payment_method.token,
-                        "options": {
-                            "submit_for_settlement": True
-                        }
-                    })
-                    if result.is_success:
-                        data = result.transaction
-                        payment_uuid = data.id
-                        amount = data.amount
-                        currency = data.currency_iso_code
-                        currency, created = Currency.objects.get_or_create(name=currency)
-                        Payment.objects.get_or_create(order=self, payment_method=payment_method,
-                                               uuid=payment_uuid, amount=amount, currency=currency)
 
-                        self.status_id = 4 #completed
-                        payment_status = PaymentStatus.objects.get(id=4)#fully paid
-                        self.payment_status = payment_status
-                        self.save(force_update=True)
-                        message = _("Review has been successfully created!")
-                        return {"status": "success", "message": message}
-                    else:
-                        message = _("We have not processed full amount! Please check you card balance")
-                        return {"status": "error", "message": message}
-                else:
-                    message = _("Payment method is not specified")
-                    return {"status": "error", "message": message}
 
-            elif self.payment_status.id in [2, 3]:
-                payments = self.payment_set.all()
-                all_payment_successful = True
-                payments_errors = str()
-                for payment in payments.iterator():
-                    transaction_id = payment.uuid
-                    result = braintree.Transaction.submit_for_settlement(transaction_id)
-                    if not result.is_success:
-                        all_payment_successful = False
-                        payments_errors += '%s ' % result.errors
-                        # print(result.errors)
-                    else:
-                        self.status_id = 3 #partial payment reserved
-                        payment.dt_paid = dt_now
-                        payment.save(force_update=True)
-                if all_payment_successful:
+        #Marking orders as completed when make_payment function is triggered
+        self.status_id = 4 #completed
+        self.save(force_update=True)
+
+        if pay_without_pre_reservation == True:
+            payment_method = self.tourist.user.generalprofile.get_default_payment_method()
+            if payment_method:
+                amount = "%s" % float(self.total_price)
+                result = braintree.Transaction.sale({
+                    "amount": amount,
+                    "payment_method_token": payment_method.token,
+                    "options": {
+                        "submit_for_settlement": True
+                    }
+                })
+                if result.is_success:
+                    data = result.transaction
+                    payment_uuid = data.id
+                    amount = data.amount
+                    currency = data.currency_iso_code
+                    currency, created = Currency.objects.get_or_create(name=currency)
+                    Payment.objects.get_or_create(order=self, payment_method=payment_method,
+                                           uuid=payment_uuid, amount=amount, currency=currency)
+
                     self.status_id = 4 #completed
                     payment_status = PaymentStatus.objects.get(id=4)#fully paid
                     self.payment_status = payment_status
@@ -711,12 +686,38 @@ class Order(models.Model):
                     message = _("Review has been successfully created!")
                     return {"status": "success", "message": message}
                 else:
-                    #this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
                     message = _("We have not processed full amount! Please check you card balance")
                     return {"status": "error", "message": message}
-        else:
-            message = _("Current statuses of the order and payment are not suitable to finalize payment!")
-            return {"status": "error", "message": message}
+            else:
+                message = _("Payment method is not specified")
+                return {"status": "error", "message": message}
+
+        elif self.payment_status.id in [2, 3]:
+            payments = self.payment_set.all()
+            all_payment_successful = True
+            payments_errors = str()
+            for payment in payments.iterator():
+                transaction_id = payment.uuid
+                result = braintree.Transaction.submit_for_settlement(transaction_id)
+                if not result.is_success:
+                    all_payment_successful = False
+                    payments_errors += '%s ' % result.errors
+                    # print(result.errors)
+                else:
+                    self.status_id = 3 #partial payment reserved
+                    payment.dt_paid = dt_now
+                    payment.save(force_update=True)
+            if all_payment_successful:
+                self.status_id = 4 #completed
+                payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                self.payment_status = payment_status
+                self.save(force_update=True)
+                message = _("Review has been successfully created!")
+                return {"status": "success", "message": message}
+            else:
+                #this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
+                message = _("We have not processed full amount! Please check you card balance")
+                return {"status": "error", "message": message}
 
     # tourists_with_purchases_referred_nmb
     def add_coupon_for_referrer(self):
@@ -849,9 +850,6 @@ class OrderStatusChangeHistory(models.Model):
         from asgiref.sync import async_to_sync
         status_name = self.status.name
         order = self.order
-
-        print("send_notifications")
-
         topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user, guide=order.guide.user,
                                                    order=order, defaults={"topic": topic})
@@ -878,9 +876,7 @@ class OrderStatusChangeHistory(models.Model):
         )
 
         #send message to generalwebsockets
-        print("pre chat notification")
         uuids = [self.order.guide.user.generalprofile.uuid, self.order.tourist.user.generalprofile.uuid]
-        print(uuids)
         for uuid in uuids:
             async_to_sync(layer.group_send)(
                 uuid,
@@ -897,9 +893,7 @@ class OrderStatusChangeHistory(models.Model):
 
 @disable_for_loaddata
 def order_status_change_history_post_save(sender, instance, created, **kwargs):
-    print("order_status change history")
     if created:
-        print("created")
         instance.send_notifications()
 post_save.connect(order_status_change_history_post_save, sender=OrderStatusChangeHistory)
 

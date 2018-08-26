@@ -18,38 +18,29 @@ class GeneralConsumer(WebsocketConsumer):
         """
         l.debug("connect general")
         # Are they logged in?
-        # if self.scope["user"].is_anonymous:
-        #     # Reject the connection
-        #     self.close()
-        #     # await self.accept()
-        # else:
-        #     # Accept the connection
-        #     self.accept()
-
-        try:
+        if self.scope["user"].is_anonymous:
+            # Reject the connection
+            self.close()
+            # await self.accept()
+        else:
             self.group_name = self.scope['user'].generalprofile.uuid
-            l.debug(self.group_name)
-            l.debug(111)
-        except:
-            self.group_name = 2
 
+            # Join group
+            async_to_sync(self.channel_layer.group_add)(
+                self.group_name,
+                self.channel_name
+            )
 
-        # Join group
-        async_to_sync(self.channel_layer.group_add)(
-            self.group_name,
-            self.channel_name
-        )
+            # Send debug message for testing
+            async_to_sync(self.channel_layer.group_send)(
+                self.group_name,
+                {
+                    "type": "chat_message_test",
+                    "message": "test 12345",
+                }
+            )
 
-        # Send debug message for testing
-        async_to_sync(self.channel_layer.group_send)(
-            self.group_name,
-            {
-                "type": "chat_message_test",
-                "message": "test 12345",
-            }
-        )
-
-        self.accept()
+            self.accept()
 
     def chat_message_test(self, event):
         # Handles the "chat.message" event when it's sent to us.
