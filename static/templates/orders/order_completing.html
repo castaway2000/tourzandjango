@@ -49,7 +49,7 @@
 
                 {% if is_guide and not order.review.is_guide_feedback %}
                     {% include 'orders/review_form.html' %}
-                {% elif is_tourist and not order.review.is_tourist_feedback%}
+                {% elif is_tourist and not order.review.is_tourist_feedback %}
                      {% include 'orders/review_form.html' %}
                 {% endif %}
             </div>

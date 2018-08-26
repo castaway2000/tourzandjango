@@ -381,7 +381,7 @@ def order_completing(request, order_uuid):
                 order.save(force_update=True)
                 Review.objects.update_or_create(order=order, defaults=kwargs)
                 messages.success(request, 'Review has been successfully created!')
-                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
             if order.tourist.user == user and (current_role == "tourist" or not current_role):
                 tourist_kwargs = {

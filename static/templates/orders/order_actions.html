@@ -22,8 +22,10 @@
         <p>
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary">
-                {% if not order.review.is_guide_feedback %}
+                {% if order.status.id == 5 %}
                     {% trans 'Mark as completed' %}
+                {% elif not order.review.is_guide_feedback %}
+                    {% trans 'Write review' %}
                 {% else %}
                     {% trans 'View final details' %}
                 {% endif %}
@@ -63,12 +65,14 @@
         </div>
     {% endwith %}
 
-    {% if order.status.id == 4 or order.status.id == 5%}
+    {% if order.status.id == 4 or order.status.id == 5 %}
         <p>
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary">
-                {% if order.payment_status.id != 4 %}
+                {% if order.status.id == 5 %}
                     {% trans 'Mark as completed' %}
+                {% elif not order.review.is_tourist_feedback %}
+                    {% trans 'Write review' %}
                 {% else %}
                     {% trans 'View final details' %}
                 {% endif %}

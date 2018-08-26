@@ -19,9 +19,17 @@
         {% endif %}
 
         <div class="text-center">
-            <img class="img-circle avatar-image-x-small"
-                 src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}"
-                 alt="" title="" />
+            {% if request.user == order.guide.user %}
+                {% if order.tourist.image %}
+                    <img src="{% get_media_prefix %}{{ order.tourist.image }}"/>
+                {% else %}
+                    <img src="{% static 'img/300x300.png' %}" class="img-responsive">
+                {% endif %}
+            {% else %}
+                <img class="img-circle avatar-image-x-small"
+                     src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}"
+                     alt="" title="" />
+            {% endif %}
         </div>
 
         <h3 class="text-center">
@@ -37,6 +45,30 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if request.user == order.guide.user %}
+                        <tr>
+                            <td>
+                                {% trans 'Tourist' %}
+                            </td>
+                            <td>
+                                <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}" target="_blank">
+                                   {{ order.tourist.user.generalprofile.get_name }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>
+                                {% trans 'Guide' %}
+                            </td>
+                            <td>
+                                <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new'%}"
+                                    target="_blank">
+                                    {{ order.guide.user.generalprofile.get_name }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
                     <tr class="tr-mb20">
                         <td>
                             <b>
@@ -145,6 +177,10 @@
                              <td>
                                 0 {{ order.currency.name }}
                              </td>
+                        {% elif request.user == order.guide.user %}
+                            <td>
+                                {{ order.fees_guide|floatformat:2 }} {{ order.currency.name }}
+                            </td>
                         {% else %}
                             <td>
                                 {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
@@ -177,18 +213,21 @@
                              <td>
                                 {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
                              </td>
+                        {% elif request.user == order.guide.user %}
+                            <td>
+                                {{ order.guide_payment|floatformat:2 }} {{ order.currency.name }}
+                            </td>
                         {% else %}
-                        <td>
-                            {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
-                        </td>
+                            <td>
+                                {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
+                            </td>
                         {% endif %}
                     </tr>
                 </tbody>
             </table>
-
         </div>
     <br/>
-    {% if order.payment_status.id == 1 and not order.coupon and not order.discount %}
+    {% if order.payment_status.id == 1 and not order.coupon and not order.discount and request.user != order.guide.user %}
         <form class="" method="post" id="coupon_apply_form" action="{% url 'coupon_validation' %}">{% csrf_token %}
             <p id="coupon_status"></p>
             <div class="input-group">

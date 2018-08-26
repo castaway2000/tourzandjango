@@ -10,20 +10,22 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="booking-item-img">
-                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}">
+                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}"
+                                target="_blank">
                                 <img src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}">
                             </a>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <h3 class="booking-item-name">
-                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new'%}">
+                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new'%}"
+                                target="_blank">
                                 {{ order.guide.user.generalprofile.first_name }}
                             </a>
                         </h3>
                         <div class="row">
                             <div class="col-md-12 mb10">
-                                <div><b>Interests:</b></div>
+                                <div><b>{% trans 'Interests' %}:</b></div>
                                 {% for user_interest in order.guide.user.userinterest_set.all %}
                                     {% if user_interest.interest.name in interest_input %}
                                         <span class="label label-success label-tag">
@@ -68,17 +70,18 @@
             <div class="col-md-3">
                 <p>
                     {% if order.tour %}
-                        <b>Booked tour:</b><br>
-                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}">
+                        <b>{% trans 'Booked tour' %}:</b><br>
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}"
+                            target="_blank">
                             {{ order.tour.name }}
                         </a>
                     {% endif %}
                 </p>
                 {% if order.tour %}
                 {% else %}
-                    <b>Booked hourly:</b><br>
+                    <b>{% trans 'Booked hourly' %}:</b><br>
                     <span class="booking-item-price tour-booking-price">
-                        {{ order.price_hourly }} USD/hour
+                        {{ order.price_hourly }} {{ order.currency.name }}/hour
                     </span>
                 {% endif %}
                 <b>Details:</b><br>
@@ -138,7 +141,7 @@
                     {% else %}
                         <b>{% trans 'Cost' %}:</b><br/>
                         <span class="booking-item-price tour-booking-price">
-                            {{ order.total_price }} USD
+                            {{ order.total_price }} {{ order.currency.name }}
                         </span>
                     {% endif %}
                 </p>
@@ -152,7 +155,7 @@
                         {% else %}
                             0 {{ order.currency.name }}
                         {% endif %}
-                        <br>({{ order.total_price }} USD {% trans 'reserved' %})
+                        <br>({{ order.total_price }} {{ order.currency.name }} {% trans 'reserved' %})
                     {% elif order.payment_status.id == 4 %}
                         {% if order.payment %}
                             {{ order.payment.amount }} {{ order.payment.currency.name }}

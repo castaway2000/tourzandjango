@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="booking-item-img">
-                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
+                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}" target="_blank">
                         {% if order.tourist.image %}
                             <img src="{% get_media_prefix %}{{ order.tourist.image }}"/>
                         {% else %}
@@ -18,7 +18,7 @@
             </div>
             <div class="col-md-3">
                 <h3 class="booking-item-name">
-                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
+                    <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}" target="_blank">
                         {{ order.tourist.user.generalprofile.get_name }}
                     </a>
                 </h3>
@@ -77,7 +77,7 @@
                 {% if order.tour %}
                     <p>
                         <b>{% trans 'Booked tour' %}:</b><br>
-                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}">
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}" target="_blank">
                             {{ order.tour.name }}
                         </a>
                     </p>
