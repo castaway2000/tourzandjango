@@ -19,6 +19,7 @@ $(document).ready(function() {
 
       var ws = new WebSocket(url);
       ws.onopen = function() {
+          console.log("opened");
         // subscribe to some channels
         //ws.send(JSON.stringify({
         //    //.... some message the I must send when I connect ....
@@ -27,6 +28,7 @@ $(document).ready(function() {
 
       ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
+        console.log(data);
         current_user_name = $("#current_user_name").text();
         current_user_name = current_user_name == data.user ? "me" : current_user_name;
         message_el = $('<div class="chat-message small new-chat-message">' +
