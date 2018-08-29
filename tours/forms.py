@@ -44,9 +44,8 @@ class TourGeneralForm(forms.ModelForm):
     name = forms.CharField()
     overview_short = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 2}))
     overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
-    image = forms.ImageField(label=_('Tour main image'), required=True,
-                             error_messages ={'invalid':_("Image files only")},
-                             widget=forms.FileInput)
+    image = forms.ImageField(label=_('Tour main image'),
+                             error_messages ={'invalid':_("Image files only")})
     hours = forms.DecimalField(required=True, min_value=1)
     included = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is included?"))
     excluded = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is excluded?"))
@@ -108,6 +107,11 @@ class TourGeneralForm(forms.ModelForm):
                 raise forms.ValidationError(_('This tour name is already in use'))
 
         return name
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        print(image)
+        return image
 
 
 class TourProgramItemForm(forms.Form):
@@ -301,7 +305,7 @@ class BookingPrivateTourForm(forms.Form):
                 '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
                                 _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
                                 _("Maximum participants"), self.max_persons_nmb,
-                                _("Total price") if not tour.discount else _("Total price with discount"),
+                                _("Total price"),
                             tour.price_final, _('Submit'))
             ),
         )

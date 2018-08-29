@@ -227,6 +227,17 @@ class GeneralProfile(models.Model):
         super(GeneralProfile, self).save(*args, **kwargs)
 
 
+    def get_name(self):
+        if self.first_name:
+            return self.first_name
+        elif self.user:
+            if self.user.first_name:
+                return self.user.first_name
+            else:
+                return self.user.username
+        else:
+            return ""
+
     def get_default_payment_method(self):
         return PaymentMethod.objects.filter(user=self.user, is_active=True).order_by('is_default', '-id').first()
 

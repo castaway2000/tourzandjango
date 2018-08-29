@@ -52,3 +52,5 @@ txfcm==0.0.1
 baseapi==0.1.1
 requests-toolbelt==0.8.0
 redis==2.10.6
+
+django-emoticons==1.2

@@ -1,0 +1,52 @@
+{% load static %}
+{% load i18n %}
+
+
+<p>
+    <b>{% trans 'Payment' %}: </b>
+    {% if order.payment_status.id == 1 %}
+        {% trans 'no payment yet' %}
+    {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
+        {% if order.payment %}
+            {{ order.payment.amount }} {{ order.payment.currency.name }}
+        {% else %}
+            0 {{ order.currency.name }}
+        {% endif %}
+        <br>({{ order.total_price }} USD {% trans 'reserved' %})
+    {% elif order.payment_status.id == 4 %}
+        {% if order.payment %}
+            {{ order.payment.amount }} {{ order.payment.currency.name }}
+        {% else %}
+            0 {{ order.currency.name }}
+        {% endif %}
+        (paid)
+    {% else %}
+        {% trans 'no payment yet' %}
+    {% endif %}
+</p>
+
+{% if order.status_id == 9 %}
+    <p>
+        <b>{% trans 'What you agree to pay your guide directly' %}:</b><br/>
+        <span class="booking-item-price tour-booking-price">
+            ${{ order.total_price_before_fees }}
+        </span>
+    </p>
+{% else %}
+    <p>
+        <b>{% trans 'Total cost' %}:</b> {{ order.total_price|floatformat:2 }} {{ order.currency.name }}
+    </p>
+    <p>
+        <b>{% trans 'Base charge' %}:</b> {{ order.total_price_initial|floatformat:2 }} {{ order.currency.name }}
+    </p>
+    <p>
+        <b>{% trans 'Discount' %}:</b> {{ order.discount|floatformat:2 }} {{ order.currency.name }}
+    </p>
+    <p>
+        <b>{% trans 'After discount' %}:</b> {{ order.total_price_before_fees|floatformat:2 }} {{ order.currency.name }}
+    </p>
+    <p>
+        <b>{% trans 'Service fee' %}:</b> {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
+    </p>
+
+{% endif %}

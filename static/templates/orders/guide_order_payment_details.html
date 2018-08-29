@@ -1,0 +1,40 @@
+{% load static %}
+{% load i18n %}
+
+
+{% if order.tour %}
+    <b>{% trans 'Price' %}:</b><br>
+    <span class="booking-item-price tour-booking-price">
+        {{ order.total_price_before_fees }} USD
+    </span>
+{% else %}
+    <b>{% trans 'Booked hourly' %}:</b><br>
+    <span class="booking-item-price tour-booking-price">
+        {{ order.price_hourly }} USD/{% trans 'hour' %}
+    </span>
+{% endif %}
+<br>
+<b>{% trans 'Fees' %}:</b>
+<span class="booking-item-price tour-booking-price">
+    {{ order.fees_guide }} USD
+</span>
+<br>
+
+{% if order.status_id == 9 %}
+    <b>{% trans 'What you agree to' %}:</b><br/>
+    <span class="booking-item-price tour-booking-price">
+        {{ order.total_price }} USD
+    </span>
+{% else %}
+    {% if is_fee_free %}
+        <b>{% trans 'What you receive' %}:</b><br/>
+        <span class="booking-item-price tour-booking-price">
+            ${{ order.total_price_before_fees }} USD
+        </span>
+    {% else %}
+        <b>{% trans 'What you receive' %}:</b><br/>
+        <span class="booking-item-price tour-booking-price">
+            {{ order.guide_payment }} USD
+        </span>
+    {% endif %}
+{% endif %}

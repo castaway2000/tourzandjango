@@ -13,6 +13,7 @@ from tourzan.settings import FCM_API_KEY
 
 import redis as rs
 from datetime import datetime
+import requests
 import json
 r = rs.StrictRedis()
 """
@@ -186,9 +187,35 @@ def book_guide(request):
                            'longitude': float(location.longitude)
                            })
         device_tokens = [guide.user.generalprofile.device_id]
-        payload = json.dumps({'user_id': user.user_id, 'latitude': lat, 'longitude': long, 'time_limit': time_limit,
-                              'type': 1, 'body': 'You have received a booking offer!'})
-        push_notify('You received an offer!', payload, device_id=device_tokens)
+        for device in device_tokens:
+            payload = {
+                "to": device,
+                "notification": {
+                    "title": "Tourzan",
+                    "body": "You have received a booking offer!"
+                },
+                "data": {
+                    "custom_notification": {
+                        "body": "You have received a booking offer!",
+                        "title": "Tourzan",
+                        "color": "#00ACD4",
+                        "priority": "high",
+                        "icon": "ic_launcher",
+                        "group": "GROUP",
+                        "sound": "default",
+                        "id": "id",
+                        "show_in_foreground": True,
+                        "extradata": {
+                            'user_id': user.user_id,
+                            'latitude': lat,
+                            'longitude': long,
+                            'time_limit': time_limit,
+                            'type': 1,
+                            'body': 'You have received a booking offer!'}
+                    }
+                }
+            }
+            push_notify(payload)
         return HttpResponse(data)
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
@@ -256,7 +283,14 @@ def update_trip(request):
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
-            return HttpResponse(json.dumps(list(user)))
+            trip = GeoTrip.objects.filter(user_id=user_id, in_progress=True)
+            # TODO: find guide_id from user id and check if it is still in progress.
+            trip_id = None
+            if trip.exists():
+                trip_id = trip[0].id
+            user_data = list(user)[0]
+            user_data['trip_id'] = trip_id
+            return HttpResponse(json.dumps(user_data))
         elif status == 'clockin':
             """
             guide_id
@@ -308,10 +342,10 @@ def update_trip(request):
             if hasattr(request.POST, 'time') and flag == 'manual':
                 tdelta = request.POST['time']
             kwargs = dict()
-            guide = GeneralProfile.objects.get(user_id=guide_id).user.guideprofile.id
+            guide = GeneralProfile.objects.get(user_id=guide_id)
             tourist = GeneralProfile.objects.get(user_id=user_id).user.touristprofile.user_id
 
-            kwargs['guide_id'] = guide
+            kwargs['guide_id'] = guide.user.guideprofile.id
             kwargs['user_id'] = tourist
             kwargs['start'] = datetime.now()
             kwargs['number_persons'] = 2
@@ -326,12 +360,37 @@ def update_trip(request):
             order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
 
             GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
-            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide, in_progress=True,
+            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                     order_id=order_id)
             device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.user.generalprofile.device_id]
-            payload = json.dumps({'trip_id': trip[0].id, 'type': 2, 'body': 'Get ready for an adventure!'})
-            push_notify('Trip Accepted', payload, device_id=device_tokens)
+            for device in device_tokens:
+                payload = {
+                    "to": device,
+                    "notification": {
+                        "title": "Tourzan",
+                        "body": "The trip was accepted!"
+                    },
+                    "data": {
+                        "custom_notification": {
+                            "body": "The trip was accepted!",
+                            "title": "Tourzan",
+                            "color": "#00ACD4",
+                            "priority": "high",
+                            "icon": "ic_launcher",
+                            "group": "GROUP",
+                            "sound": "default",
+                            "id": "id",
+                            "show_in_foreground": True,
+                            "extradata": {
+                                'trip_id': trip[0].id,
+                                'type': 2,
+                                'body': 'Get ready for an adventure!'
+                            }
+                        }
+                    }
+                }
+                push_notify(payload)
             return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
         elif status == 'isCancelled' or status == 'isDeclined':
             """
@@ -369,7 +428,7 @@ def update_trip(request):
             order.save(force_update=True)
 
             guide_id = trip_status.guide_id
-            guide_profile = GeneralProfile.objects.get(id=guide_id).user.guideprofile
+            guide_profile = GeneralProfile.objects.get(user_id=guide_id).user.guideprofile
             if guide_profile:
                 price = float(guide_profile.rate)
                 cost_update = round((tdelta.total_seconds() / 3600) * price, 2)
@@ -383,8 +442,32 @@ def update_trip(request):
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
             device_tokens = [trip_status.user.generalprofile.device_id, trip_status.guide.user.generalprofile.device_id]
-            payload = json.dumps({'trip_id': trip_id, 'type': 3, 'body': 'Your trip on tourzan has completed successfully.'})
-            push_notify('Trip ended', payload, device_id=device_tokens)
+            for device in device_tokens:
+                payload = {
+                    "to": device,
+                    "notification": {
+                        "title": "Tourzan",
+                        "body": "Your trip on tourzan has completed successfully!"
+                    },
+                    "data": {
+                        "custom_notification": {
+                            "body": "Your trip on tourzan has completed successfully.",
+                            "title": "Tourzan",
+                            "color": "#00ACD4",
+                            "priority": "high",
+                            "icon": "ic_launcher",
+                            "group": "GROUP",
+                            "sound": "default",
+                            "id": "id",
+                            "show_in_foreground": True,
+                            "extradata":
+                                {'trip_id': trip_id,
+                                 'type': 3,
+                                 'body': 'Your trip on tourzan has completed successfully.'}
+                        }
+                    }
+                }
+                push_notify(payload)
             return HttpResponse(json.dumps({'trip_id': trip_status.id, 'price': trip_status.cost, 'isEnded': True}))
         return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'incorrect status value'}]}))
     except Exception as err:
@@ -402,10 +485,13 @@ def datetime_handler(x):
     raise TypeError("Unknown type")
 
 
-def push_notify(msg_title, msg_body, device_id):
+def push_notify(payload):
     try:
-        fcm_push_service = FCMNotification(api_key=FCM_API_KEY)
-        fcm_push_service.notify_multiple_devices(registration_ids=device_id, message_title=msg_title,
-                                                 message_body=msg_body)
+        fcm = "https://fcm.googleapis.com/fcm/send"
+        send = requests.post(fcm, headers={'Authorization': "key={}".format(FCM_API_KEY),
+                                           'Content-Type': 'application/json; UTF-8'}, json=payload)
+        pyfcm = FCMNotification
+        print(send.text)
+        print(send.status_code)
     except Exception as err:
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))

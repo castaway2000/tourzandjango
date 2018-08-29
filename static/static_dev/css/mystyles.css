@@ -78,9 +78,26 @@
     text-align: left!important;
 }
 
-/*.chat-message.small{*/
-    /*width: 48%;*/
-/*}*/
+.chat-message.system{
+    background: #59abc3;
+    color: white;
+}
+
+.chat-message.system .chat-message-text{
+    font-size: 1.2em;
+}
+
+.chat-message img{
+    width: auto;
+}
+
+.emoticons-container img{
+    width: auto;
+}
+
+.emoticons-container .emoticon{
+    cursor: pointer;
+}
 
 
 .message-meta-info{
@@ -1319,6 +1336,20 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 .panel-guide img{
     width: auto;
 }
+
+.booking-item .booking-item-name{
+    word-wrap: break-word;
+}
+
+.chat-container h3,
+.chat-item h3{
+    font-size: 1.4em;
+}
+
+.new-chat-message{
+    white-space: pre-line;
+}
+
 
 @media (min-width: 768px) {
     .navbar .navbar-nav {

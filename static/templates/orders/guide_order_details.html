@@ -1,0 +1,71 @@
+{% load static %}
+{% load i18n %}
+
+
+{% if order.tour %}
+    <p>
+        <b>{% trans 'Tour' %}:</b><br>
+        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}">
+            {{ order.tour.name }}
+        </a>
+    </p>
+{% endif %}
+
+<p>
+    <b>{% trans "Status" %}: </b><span class="label label-info label-tag">{{ order.status.name }}</span>
+</p>
+
+<p>
+    <b>{% trans 'Location' %}: </b>
+    {% if order.tour.city %}
+        {{ order.tour.city.name }}{% if order.tour.city.country %}, {{ order.tour.city.country.name }}
+        {% endif %}
+    {% else %}
+        {% trans 'Not defined' %}
+    {% endif %}
+</p>
+
+<p>
+    <b>{% trans 'What you are agreeing to' %}:</b><br>
+    <span class="booking-item-price tour-booking-price">
+        {% blocktrans %}Date{% endblocktrans %}:
+        {% if order.tour_scheduled %}
+            {{ order.tour_scheduled.dt|date:"m/d/Y" }}
+        {% else %}
+            {{ order.date_booked_for|date:"m/d/y" }}
+        {% endif %}
+    </span><br/>
+    <span class="booking-item-price tour-booking-price">
+        {% blocktrans %}Starting:{% endblocktrans %}
+        {% if order.tour_scheduled %}
+            {{ order.tour_scheduled.dt|date:"H:i" }}
+        {% else %}
+            {{ order.date_booked_for|date:"H:i" }}
+        {% endif %}
+    </span>
+    <br/>
+    <span class="booking-item-price tour-booking-price">
+        {% blocktrans %}Ending:{% endblocktrans %}
+            {% if order.tour_scheduled %}
+                {% if order.tour_scheduled.get_tour_end %}
+                    {{ order.tour_scheduled.get_tour_end|date:"H:i" }}
+                {% endif %}
+            {% elif order.get_order_end %}
+                {{ order.get_order_end|date:"H:i" }}
+            {% endif %}
+    </span><br/>
+    <span class="booking-item-price tour-booking-price">
+        {% blocktrans %}Hours{% endblocktrans %}:
+        {% if order.tour %}
+            {{ order.tour.hours }}
+        {% else %}
+            {{ order.hours_nmb }}
+        {% endif %}
+    </span>
+     {% if order.number_persons > 0 %}
+        <span class="booking-item-price tour-booking-price">
+            {% trans 'Number of persons' %}:
+                {{ order.number_persons }}
+        </span>
+    {% endif %}
+</p>
