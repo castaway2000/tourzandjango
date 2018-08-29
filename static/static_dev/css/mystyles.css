@@ -87,9 +87,17 @@
     font-size: 1.2em;
 }
 
-/*.chat-message.small{*/
-    /*width: 48%;*/
-/*}*/
+.chat-message img{
+    width: auto;
+}
+
+.emoticons-container img{
+    width: auto;
+}
+
+.emoticons-container .emoticon{
+    cursor: pointer;
+}
 
 
 .message-meta-info{

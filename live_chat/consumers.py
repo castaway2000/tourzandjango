@@ -7,71 +7,80 @@ from django.core.cache import cache
 from tourzan.settings import USER_LASTSEEN_TIMEOUT
 from channels.layers import get_channel_layer
 from django.utils.text import Truncator
+import logging
+l = logging.getLogger(__name__)
+from emoticons.templatetags.emoticons_tags import regexp_replace_emoticons
 
 
-class GeneralConsumer(AsyncJsonWebsocketConsumer):
-    async def connect(self):
+class GeneralConsumer(WebsocketConsumer):
+    def connect(self):
         """
         Called when the websocket is handshaking as part of initial connection.
         """
+        l.debug("connect general")
         # Are they logged in?
         if self.scope["user"].is_anonymous:
             # Reject the connection
-            await self.close()
+            self.close()
             # await self.accept()
         else:
-            # Accept the connection
-            await self.accept()
+            self.group_name = self.scope['user'].generalprofile.uuid
 
-        self.group_name = self.scope['user'].generalprofile.uuid
+            # Join group
+            async_to_sync(self.channel_layer.group_add)(
+                self.group_name,
+                self.channel_name
+            )
 
-        # Join group
-        await self.channel_layer.group_add(
-            self.group_name,
-            self.channel_name
-        )
+            # Send debug message for testing
+            async_to_sync(self.channel_layer.group_send)(
+                self.group_name,
+                {
+                    "type": "chat_message_test",
+                    "message": "test 12345",
+                }
+            )
 
-        # Send debug message for testing
-        # await self.channel_layer.group_send(
-        #     self.group_name,
-        #     {
-        #         "type": "chat.message",
-        #         "message": "test 12345",
-        #     }
-        # )
+            self.accept()
 
-    async def chat_message(self, event):
+    def chat_message_test(self, event):
         # Handles the "chat.message" event when it's sent to us.
+        l.debug("debugging chat message")
+        l.debug(event)
         try:
-            await self.send_json({
+            self.send(text_data=json.dumps({
                 "message": "hello there 1234",
-            })
+            }))
         except Exception as e:
-            print(e)
+            l.debug(e)
 
 
-    async def chat_notification(self, event):
+    def chat_notification(self, event):
         """
         Send notification to user about new chat message
         """
-        message =  Truncator(event["message"]).chars(75)
+        l.debug("chat_notification")
+        message = Truncator(event["message"]).chars(75)
         message_user_name = event["message_user_name"]
         chat_uuid = event["chat_uuid"]
         color_type = event["color_type"]
+        notification_type = event["notification_type"] if "notification_type" in event else "new_chat_message_notification"
         try:
-            await self.send_json({
-                "type": "new_chat_message_notification",
+            l.debug("try")
+            self.send(text_data=json.dumps({
+                "type": notification_type,
                 "message": message,
                 "message_user_name": message_user_name,
                 "chat_uuid": chat_uuid,
-                "color_type": color_type
-            })
+                "color_type": color_type,
+            }))
         except Exception as e:
-            print(e)
+            l.debug(e)
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
+        l.debug("connect sockets")
         self.user = self.scope["user"] #user object
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
@@ -104,6 +113,7 @@ class ChatConsumer(WebsocketConsumer):
         chat, message_user_name, message_to_user_obj, dt = self.save_message_to_db(message, chat_uuid)
 
         # Send message to room group
+        l.debug("sending message to chat")
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
@@ -132,14 +142,17 @@ class ChatConsumer(WebsocketConsumer):
         """
         Called when someone sent message to chat.
         """
+        l.debug("chat message of chat consumer")
         message = event.get('message')
+        message_with_emoticons = regexp_replace_emoticons(message)
+
         user = event.get("user")
         dt = event.get("dt")
         message_type = event.get("message_type", "None")
 
         # Send message to chat webSocket
         self.send(text_data=json.dumps({
-            "message": message,
+            "message": message_with_emoticons,
             "user": user,
             "dt": dt,
             "message_type": message_type

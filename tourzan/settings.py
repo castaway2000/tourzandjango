@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'coupons',
     'mobile',
     'notifications',
+    'emoticons',
 
     #external packages
     'allauth',

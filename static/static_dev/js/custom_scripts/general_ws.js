@@ -1,46 +1,61 @@
 function connect() {
+
+    function sendNotification(data, order_status_change){
+        message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
+        if (order_status_change==true){
+            toastr.options.timeOut = 0;
+            toastr.options.extendedTimeOut = 0;
+        }
+
+        if (data.color_type == "info"){
+            toastr.info(message);
+        }else{
+           toastr.success(message);
+        }
+    }
+
     console.log("connecting");
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/general/';
 
-      var ws = new WebSocket(url);
-       console.log(ws);
-      ws.onopen = function() {
+      var ws_general = new WebSocket(url);
+       console.log(ws_general);
+      ws_general.onopen = function() {
         // subscribe to some channels
-        //ws.send(JSON.stringify({
+        //ws_general.send(JSON.stringify({
         //    //.... some message the I must send when I connect ....
         //}));
       };
 
-      ws.onmessage = function(e) {
+      ws_general.onmessage = function(e) {
+          console.log("message in general");
         var data = JSON.parse(e.data);
-        if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1 ){
-            message = "Message from " + data.message_user_name + ": <br>" + data.message + "<div class='text-right'><a href='/live-chat/"+ data.chat_uuid + "/' class='btn btn-sm'>Go to chat</a>";
-            toastr.options.timeOut = 0;
-            toastr.options.extendedTimeOut = 0;
-
-            if (data.color_type == "info"){
-                toastr.info(message);
+          console.log(data);
+        if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
+            sendNotification(data, order_status_change=false);
+        }else if(data.type == "order_status_change"){
+            if (window.location.href.indexOf(data.chat_uuid) == -1 ){
+                sendNotification(data, order_status_change=true);
             }else{
-               toastr.success(message);
+                window.location.reload();
             }
         }
       };
 
-      ws.onclose = function(e) {
+      ws_general.onclose = function(e) {
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
         setTimeout(function() {
           connect();
         }, 5000);
       };
 
-      ws.onerror = function(err) {
+      ws_general.onerror = function(err) {
         console.error('Socket encountered error: ', err.message, 'Closing socket');
-        ws.close();
+        ws_general.close();
       };
 
-      return ws;
+      return ws_general;
 }
 
-ws = connect();
+ws_general = connect();

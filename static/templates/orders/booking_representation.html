@@ -6,76 +6,82 @@
 <li>
     <div class="booking-item">
         <div class="row">
-            <div class="col-md-2">
-                <div class="booking-item-img">
-                    <img src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}">
-                </div>
-                {% if order.uuid %}
-                    <div class="text-center mt10">
-                        <a class="btn btn-primary" href="{% url 'chat_creation_order' order.uuid %}">{% trans 'Go to chat' %}</a>
-                    </div>
-                {% endif %}
-            </div>
-            <div class="col-md-4">
-                <h3 class="booking-item-name">
-                    {{ order.guide.user.generalprofile.first_name }}
-                </h3>
+            <div class="col-md-6">
                 <div class="row">
-                    <div class="col-md-12">
-                        {{ order.guide.overview|safe|linebreaks|truncatewords_html:30 }}
+                    <div class="col-md-6">
+                        <div class="booking-item-img">
+                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}"
+                                target="_blank">
+                                <img src="{% get_sized_image order.guide default_size="small" image_base_field_name="profile_image" %}">
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb10">
-                        <div><b>Interests:</b></div>
-                        {% for user_interest in order.guide.user.userinterest_set.all %}
-                            {% if user_interest.interest.name in interest_input %}
-                                <span class="label label-success label-tag">
-                                    {{ user_interest.interest.name }}
-                                </span>
-                            {% else %}
-                                <span class="label label-default label-tag">
-                                    {{ user_interest.interest.name }}
-                                </span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                {% with order.guide.user.userlanguage_set.all as user_languages %}
-                    {% if user_languages %}
+                    <div class="col-md-6">
+                        <h3 class="booking-item-name">
+                            <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new'%}"
+                                target="_blank">
+                                {{ order.guide.user.generalprofile.first_name }}
+                            </a>
+                        </h3>
                         <div class="row">
                             <div class="col-md-12 mb10">
-                                <div><b>Languages:</b></div>
-                                {% for user_language in user_languages %}
-                                    {% if user_language.language in language_input %}
+                                <div><b>{% trans 'Interests' %}:</b></div>
+                                {% for user_interest in order.guide.user.userinterest_set.all %}
+                                    {% if user_interest.interest.name in interest_input %}
                                         <span class="label label-success label-tag">
-                                            {{ user_language.get_language_display }}
+                                            {{ user_interest.interest.name }}
                                         </span>
                                     {% else %}
                                         <span class="label label-default label-tag">
-                                            {{ user_language.get_language_display }}
+                                            {{ user_interest.interest.name }}
                                         </span>
                                     {% endif %}
                                 {% endfor %}
                             </div>
                         </div>
-                    {% endif %}
-                {% endwith %}
+                        {% with order.guide.user.userlanguage_set.all as user_languages %}
+                            {% if user_languages %}
+                                <div class="row">
+                                    <div class="col-md-12 mb10">
+                                        <div><b>{% trans 'Languages' %}:</b></div>
+                                        {% for user_language in user_languages %}
+                                            {% if user_language.language in language_input %}
+                                                <span class="label label-success label-tag">
+                                                    {{ user_language.get_language_display }}
+                                                </span>
+                                            {% else %}
+                                                <span class="label label-default label-tag">
+                                                    {{ user_language.get_language_display }}
+                                                </span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {{ order.guide.overview|safe|linebreaks|truncatewords_html:30 }}
+                    </div>
+                </div>
             </div>
             <div class="col-md-3">
                 <p>
                     {% if order.tour %}
-                        <b>Booked tour:</b><br>
-                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}">
+                        <b>{% trans 'Booked tour' %}:</b><br>
+                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid 'new' %}"
+                            target="_blank">
                             {{ order.tour.name }}
                         </a>
                     {% endif %}
                 </p>
                 {% if order.tour %}
                 {% else %}
-                    <b>Booked hourly:</b><br>
+                    <b>{% trans 'Booked hourly' %}:</b><br>
                     <span class="booking-item-price tour-booking-price">
-                        {{ order.price_hourly }} USD/hour
+                        {{ order.price_hourly }} {{ order.currency.name }}/hour
                     </span>
                 {% endif %}
                 <b>Details:</b><br>
@@ -118,38 +124,38 @@
 
             <div class="col-md-3">
                 <p>
-                    <b>Status: </b>{{ order.status.name }}
+                    <b>{% trans 'Status' %}: </b>{{ order.status.name }}
                     {% if order.status.id == 5 %}
                         ({% trans "waiting approval from guide" %})
                     {% endif %}
                 </p>
                 <p>
-                    <b>Booked: </b>{{ order.date_ordered|date:"m/d/Y" }}
+                    <b>{% trans 'Booked' %}: </b>{{ order.date_ordered|date:"m/d/Y" }}
                 </p>
                 <p>
                     {% if order.status_id == 9 %}
-                        <b>What you agree to pay your guide directly:</b><br/>
+                        <b>{% trans 'What you agree to pay your guide directly' %}:</b><br/>
                         <span class="booking-item-price tour-booking-price">
                             ${{ order.total_price_before_fees }}
                         </span>
                     {% else %}
-                        <b>Cost:</b><br/>
+                        <b>{% trans 'Cost' %}:</b><br/>
                         <span class="booking-item-price tour-booking-price">
-                            {{ order.total_price }} USD
+                            {{ order.total_price }} {{ order.currency.name }}
                         </span>
                     {% endif %}
                 </p>
                 <p>
-                    <b>Payment: </b>
+                    <b>{% trans 'Payment' %}: </b>
                     {% if order.payment_status.id == 1 %}
-                        no payment yet
+                        {% trans 'no payment yet' %}
                     {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
                         {% if order.payment %}
                             {{ order.payment.amount }} {{ order.payment.currency.name }}
                         {% else %}
                             0 {{ order.currency.name }}
                         {% endif %}
-                        <br>({{ order.total_price }} USD reserved)
+                        <br>({{ order.total_price }} {{ order.currency.name }} {% trans 'reserved' %})
                     {% elif order.payment_status.id == 4 %}
                         {% if order.payment %}
                             {{ order.payment.amount }} {{ order.payment.currency.name }}
@@ -158,48 +164,19 @@
                         {% endif %}
                         (paid)
                     {% else %}
-                        no payment yet
-                    {% endif %}
-                </p>
-                <p>
-                    {% if order.tour %}
-                        <a href="{% url 'tour_new' order.tour.slug order.tour.uuid "new" %}"
-                            class="btn btn-success btn-sm">
-                            Tour page
-                        </a>
-                    {% else %}
-                        <a href="{% url 'guide_new' order.guide.user.generalprofile.first_name order.guide.user.generalprofile.uuid 'new' %}"
-                            class="btn btn-success btn-sm">
-                            {% blocktrans %}
-                                Guide Profile
-                            {% endblocktrans %}
-                        </a>
+                        {% trans 'no payment yet' %}
                     {% endif %}
                 </p>
 
-                {% if order.status.id == 2 or order.status.id == 4 %}
-                    <p>
-                        <a href="{% url 'order_completing' order.uuid %}"
-                            class="btn btn-primary btn-sm">
-                            {% if order.payment_status.id != 4 %}
-                                {% trans 'Mark as completed' %}
-                            {% else %}
-                                {% trans 'View final details' %}
-                            {% endif %}
+                {% if order.uuid %}
+                    <div class="text-left mt10">
+                        <a class="btn btn-primary"
+                           href="{% url 'chat_creation_order' order.uuid %}" target="_blank">
+                            {% trans 'Chat and manage' %}
                         </a>
-                    </p>
+                    </div>
                 {% endif %}
 
-                {% if order.status.id == 1 or order.status.id == 2 or order.status.id == 5 %}
-                    <p>
-                        <a href="{% url 'cancel_order' order.uuid %}"
-                            class="btn btn-danger btn-sm">
-                            {% blocktrans %}
-                                Cancel
-                            {% endblocktrans %}
-                        </a>
-                    </p>
-                {% endif %}
             </div>
         </div>
     </div>
