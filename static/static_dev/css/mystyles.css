@@ -674,6 +674,11 @@ a{
     z-index: 1000;
 }
 
+.booking-proposal-container a,
+.booking-proposal-container button{
+    width: 100%;
+}
+
 .guide-action-container{
     visibility: hidden;
     position: fixed;
@@ -1252,6 +1257,78 @@ a{
     margin-top: 5px;
 }
 
+.tour-section-new.pt0{
+    padding-top: 0!important;
+}
+
+.tour-section-new.pb0{
+    padding-bottom: 0!important;
+}
+
+.img-container-background {
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    background-position: center !important;
+    min-height: 240px;
+}
+
+.guide-tour-item:before{
+    content: '';
+    position: absolute;
+    background: white;
+    width: 35px;
+    height: 35px;
+    z-index: 1;
+    border-radius: 50%;
+    top: -20px;
+    left: 50%;
+    margin-left: -25px;
+}
+
+.guide-tour-item:after{
+    content: '';
+    position: absolute;
+    background: white;
+    width: 35px;
+    height: 35px;
+    z-index: 1;
+    border-radius: 50%;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -25px;
+}
+
+.guide-tour-item .tour-img-container,
+.guide-tour-item .tour-info-container{
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+    min-height: 160px;
+}
+
+.guide-tour-item .tour-info-container{
+    background: #EF4915;
+    color: white;
+    padding: 10px 5px 5px 20px;
+}
+
+.guide-tour-item .tour-info-container a,
+.guide-tour-item .tour-info-container a:hover{
+    background-color: #C6380B;
+    border: none!important;
+}
+
+.guide-tour-item .tour-info-container .tour-name{
+    font-size: 1.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.guide-tour-item .img-container-background{
+    min-height: 160px;
+    background-size: cover !important;
+}
+
 .panel-item .img-container{
     background-repeat: no-repeat !important;
     background-size: contain !important;
@@ -1490,6 +1567,27 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     white-space: pre-line;
 }
 
+.text-left{
+    text-align: left!important;
+}
+
+.text-center{
+    text-align: center!important;
+}
+
+.text-right{
+    text-align: right!important;
+}
+
+.btn-orange{
+    background-image: linear-gradient(-90deg, #C93A0D, #F1683D);
+    border: 0;
+    color: white!important;
+}
+
+.owl-nav{
+    text-align: center;
+}
 
 @media (min-width: 768px) {
     .navbar .navbar-nav {

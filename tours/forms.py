@@ -269,7 +269,7 @@ class BookingScheduledTourForm(forms.Form):
 
 class BookingPrivateTourForm(forms.Form):
     # , widget=forms.HiddenInput()
-    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Date"))
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Offer date and time"))
     tour_id = forms.ChoiceField(required=True)
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
     message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}), label=_("Message"))

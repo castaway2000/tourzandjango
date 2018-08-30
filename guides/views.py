@@ -248,7 +248,8 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     guide_services = GuideService.objects.filter(guide=guide)
 
     now = datetime.datetime.now().date()
-    form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id, "date": now})
+    # form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id, "date": now})
+    form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id})
     if request.POST and form.is_valid():
         return making_booking(request)
         # data = request.POST
@@ -291,6 +292,8 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
         app_id = social_app.client_id
     if new_view == "new":
         return render(request, 'guides/guide_new.html', locals())
+    elif new_view == "new2":
+        return render(request, 'guides/guide_new2.html', locals())
     else:
         return render(request, 'guides/guide.html', locals())
 
