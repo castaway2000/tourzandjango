@@ -291,9 +291,9 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     if social_app:
         app_id = social_app.client_id
     if new_view == "new":
-        return render(request, 'guides/guide_new.html', locals())
-    elif new_view == "new2":
         return render(request, 'guides/guide_new2.html', locals())
+    elif new_view == "new-old":
+        return render(request, 'guides/guide_new.html', locals())
     else:
         return render(request, 'guides/guide.html', locals())
 
