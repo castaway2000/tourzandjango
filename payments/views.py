@@ -34,15 +34,6 @@ def payment_methods(request):
     user = request.user
     payment_methods = user.paymentmethod_set.filter(is_active=True)
     payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
-    if created:
-        result = braintree.Customer.create({
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-        })
-        payment_customer.uuid = result.customer.id
-        payment_customer.save(force_update=True)
-
     return render(request, 'payments/payment_methods.html', locals())
 
 
@@ -53,63 +44,18 @@ def payment_methods_adding(request):
     #for using at template js for initializing of braintree form
     request.session['braintree_client_token'] = braintree.ClientToken.generate()
     payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
-    if created:
-        result = braintree.Customer.create({
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-        })
-        payment_customer.uuid = result.customer.id
-        payment_customer.save(force_update=True)
 
     if request.POST:
         payment_method_nonce = request.POST.get('payment_method_nonce')
         if payment_method_nonce:
-            result = braintree.PaymentMethod.create({
-                "customer_id": payment_customer.uuid,
-                "payment_method_nonce": payment_method_nonce,
-                "options": {
-                    "verify_card": True,
-                    # "fail_on_duplicate_payment_method": True,
-                    # True #first payment method of a customer will be marked as "default"
+            make_default = True if request.POST.get('is_default') else False
+            response_data = payment_customer.payment_method_create(payment_method_nonce, make_default)
 
-                    #just checkbox without being a part of a form returns "on" instead of True if it is checked
-                    "make_default": True if request.POST.get('is_default') else False
-                }
-            })
-
-            # print(result)
-            # print(result.payment_method.token)
-            # print(result.payment_method.__class__.__name__)
-
-            try:
-                response_data = result.payment_method
-                token = response_data.token
-                kwargs = {
-                    "user": user,
-                    "token": token
-                }
-
-                #depending on payment method different set of fields should be added
-                if result.payment_method.__class__.__name__ == 'CreditCard':
-                    kwargs["is_default"] = response_data.default
-                    last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
-                    card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
-                    kwargs["card_number"] = card_number
-                    card_type = response_data.verifications[0]["credit_card"]["card_type"]
-                    card_type, created = PaymentMethodType.objects.get_or_create(name=card_type)
-                    kwargs["type"] = card_type
-                    PaymentMethod.objects.create(**kwargs)
-
-                elif result.payment_method.__class__.__name__ == 'PayPalAccount':#paypal
-                    print ("PayPal")
-                    kwargs["is_default"] = response_data.default
-                    kwargs["is_paypal"] = True
-                    kwargs["paypal_email"] = response_data.email
-                    type, created = PaymentMethodType.objects.get_or_create(name="paypal")
-                    kwargs["type"] = type
-                    PaymentMethod.objects.create(**kwargs)
-
+            #AT 31082018: transfer such code snippet to utils function later
+            status = response_data["status"]
+            message = response_data["message"]
+            if status == "success":
+                # messages.success(request, message)
                 #redirecting after payment method adding if there is a pending order id
                 pending_order_uuid = request.session.get("pending_order")
                 if pending_order_uuid:
@@ -119,9 +65,10 @@ def payment_methods_adding(request):
                 else:
                     messages.success(request, _('A new payment method was successfully added!'))
                     return HttpResponseRedirect(reverse("payment_methods"))
-            except:
-                messages.success(request, _('A new payment method was successfully added!'))
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                messages.error(request, message)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
     return render(request, 'payments/payment_methods_adding.html', locals())
 
 

@@ -3,6 +3,21 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from locations.models import Currency
+from django.utils.translation import ugettext as _
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
+import braintree
+if ON_PRODUCTION:
+    braintree.Configuration.configure(braintree.Environment.Production,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
+else:
+    braintree.Configuration.configure(braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+        )
 
 
 #created mapping between users and braintree customers
@@ -14,6 +29,69 @@ class PaymentCustomer(models.Model):
 
     def __str__(self):
         return "%s" % self.user.username
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            result = braintree.Customer.create({
+                "first_name": self.user.first_name,
+                "last_name": self.user.last_name,
+                "email": self.user.email,
+            })
+            self.uuid = result.customer.id
+        super(PaymentCustomer, self).save(*args, **kwargs)
+
+
+    def payment_method_create(self, payment_method_nonce, make_default=False):
+        payment_customer = self
+        result = braintree.PaymentMethod.create({
+            "customer_id": payment_customer.uuid,
+            "payment_method_nonce": payment_method_nonce,
+            "options": {
+                "verify_card": True,
+                # "fail_on_duplicate_payment_method": True,
+                # True #first payment method of a customer will be marked as "default"
+
+                #just checkbox without being a part of a form returns "on" instead of True if it is checked
+                "make_default": make_default
+            }
+        })
+
+        # print(result)
+        # print(result.payment_method.token)
+        # print(result.payment_method.__class__.__name__)
+
+        try:
+            response_data = result.payment_method
+            token = response_data.token
+            kwargs = {
+                "user": self.user,
+                "token": token
+            }
+
+            #depending on payment method different set of fields should be added
+            if result.payment_method.__class__.__name__ == 'CreditCard':
+                kwargs["is_default"] = response_data.default
+                last_4_digits = response_data.verifications[0]["credit_card"]["last_4"]
+                card_number = "XXXX-XXXX-XXXX-%s" % last_4_digits
+                kwargs["card_number"] = card_number
+                card_type = response_data.verifications[0]["credit_card"]["card_type"]
+                card_type, created = PaymentMethodType.objects.get_or_create(name=card_type)
+                kwargs["type"] = card_type
+                PaymentMethod.objects.create(**kwargs)
+
+            elif result.payment_method.__class__.__name__ == 'PayPalAccount':#paypal
+                print ("PayPal")
+                kwargs["is_default"] = response_data.default
+                kwargs["is_paypal"] = True
+                kwargs["paypal_email"] = response_data.email
+                type, created = PaymentMethodType.objects.get_or_create(name="paypal")
+                kwargs["type"] = type
+                PaymentMethod.objects.create(**kwargs)
+            message = _('A new payment method was successfully added!')
+            return {"status": "success", "message": message}
+        except Exception as e:
+            message = _('A new payment was not added! Details: %s. Response object: %s' % (e, result))
+            return {"status": "error", "message": message}
 
 
 class PaymentMethodType(models.Model):
