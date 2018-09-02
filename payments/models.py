@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from locations.models import Currency
 from django.utils.translation import ugettext as _
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
+from utils.general import uuid_creating
 import braintree
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
@@ -61,6 +62,12 @@ class PaymentCustomer(models.Model):
         # print(result.payment_method.__class__.__name__)
 
         try:
+            """
+            AT 02092018: The case with adding of previously deleted payment method needs to be done with real cards.
+            It works OK on the test environment.
+            There is a chance the newly added payment method, which was deactivated before, will have another token
+            and that is why it will be OK.
+            """
             response_data = result.payment_method
             token = response_data.token
             kwargs = {
@@ -114,6 +121,7 @@ class PaymentMethod(models.Model):
     is_active = models.BooleanField(default=True)
     is_paypal = models.BooleanField(default=False)
     paypal_email = models.EmailField(null=True, blank=True)
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
@@ -134,6 +142,8 @@ class PaymentMethod(models.Model):
                 pass
 
     def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = uuid_creating()
 
         #if default is set to a curent payment method, all other payment methods are being updated to default=False
         if (not self.pk and self.is_default==True) \
@@ -157,9 +167,50 @@ class PaymentMethod(models.Model):
                     last_payment_method = other_payment_methods.last()
                     #not to trigger save method
                     PaymentMethod.objects.filter(id=last_payment_method.id).update(is_default=True)
-
         super(PaymentMethod, self).save(*args, **kwargs)
 
+
+    def set_as_default(self):
+        payment_method = self
+        # all other Payment methods on Braintree side will be automatically updated to make_default = False
+        try:
+            result = braintree.PaymentMethod.update(payment_method.token, {
+                "options": {
+                    "make_default": True,
+                    "verify_card": False,
+                }
+            })
+            # print(result)
+            if result.is_success:
+                payment_method.is_default = True
+                payment_method.save()
+                message = _('New default payment method has been applied successfully!')
+                status =  "success"
+            else:
+                message = _('Failure during changing of the default payment method!')
+                status ="error"
+        except Exception as e:
+            message = _('Failure during request for changing of the default payment method!')
+            status = "error"
+        return {"status": status, "message": message}
+
+    def deactivate(self):
+        payment_method = self
+        try:
+            result = braintree.PaymentMethod.delete(payment_method.token)
+            if result.is_success:
+                payment_method.is_default = False
+                payment_method.is_active = False
+                payment_method.save()
+                message = _('Payment method has been deleted successfully!')
+                status = "success"
+            else:
+                message = _('Failure during deleting of the payment method!')
+                status = "error"
+        except Exception as e:
+            message = _('Failure during request for deleting of the payment method!')
+            status = "error"
+        return {"status": status, "message": message}
 
 class Payment(models.Model):
     order = models.ForeignKey('orders.Order', blank=True, null=True, default=None)#maybe it can be a payment without an order

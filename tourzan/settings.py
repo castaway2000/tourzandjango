@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework.schemas',
     'rest_framework.documentation',
+    'rest_framework.decorators',
     'rest_auth',
     'storages',
     'axes',
