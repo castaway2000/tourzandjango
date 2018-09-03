@@ -8,14 +8,13 @@
         <div class="col-md-2">
             <div class="booking-item-review-person">
                 <img src="{{ review.order.tourist.get_avatar }}"/>
-                <div class="tourist-name">
-                    {{ review.order.tourist.user.generalprofile.get_name }}
+                <div class="text-center">
+                    {% if review.order.tourist.user.generalprofile.first_name %}
+                        {{ review.order.tourist.user.generalprofile.first_name }}
+                    {% else %}
+                        {% trans 'Tourist' %}
+                    {% endif %}
                 </div>
-                {% if review.order.guide.city.country %}
-                    <div class="booking-item-review-person-loc text-center">
-                        {{ review.order.guide.city.country.name }}
-                    </div>
-                {% endif %}
 {#                <small>#}
 {#                    <a href="#">#}
 {#                        {{ TODO: put a number of reviews the tourist has done counter here }}#}
