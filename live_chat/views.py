@@ -21,7 +21,7 @@ def livechat_room(request, chat_uuid):
     user = request.user
     chat = Chat.objects.get(uuid=chat_uuid)
     if chat.guide != user and chat.tourist != user:
-        messages.success(request, _('You have no permissions to access this chat!'))
+        messages.success(request, _('You do not have permissions to access this chat!'))
         return HttpResponseRedirect(reverse("home"))
     chat_messages = chat.chatmessage_set.all().values("chat_id", "message", "created", "user__username",
                                                       "user__generalprofile__first_name").order_by("created")

@@ -98,19 +98,21 @@ def chat_creation(request, tour_id=None, guide_uuid=None, order_uuid=None):
         tour = Tour.objects.get(id=tour_id)
         guide_user = tour.guide.user
         topic = "Query about the tour %s" % tour.name
-        chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user,
-                                                   defaults={"guide": guide_user,
-                                                             "topic": topic})
+        chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user, guide=guide_user, order__isnull=True,
+                                                   defaults={"topic": topic})
+
     elif guide_uuid:
         guide = GuideProfile.objects.get(uuid=guide_uuid)
-        topic = "Chat with %s" % guide.user.generalprofile.first_name
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order__isnull=True)
+        topic = "Query about private tour with %s" % guide.user.generalprofile.get_name()
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order__isnull=True,
+                                                   defaults={"topic": topic})
 
     elif order_uuid:
         order = Order.objects.get(uuid=order_uuid)
+        tourist = order.tourist
         guide = order.guide
-        topic = "Chat with %s" % guide.user.generalprofile.first_name
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
+        topic = "Chat with %s about order %s" % (guide.user.generalprofile.get_name(), order_uuid)
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=tourist.user, guide=guide.user, order=order,
                                                    defaults={"topic": topic})
 
 

@@ -269,10 +269,10 @@ class BookingScheduledTourForm(forms.Form):
 
 class BookingPrivateTourForm(forms.Form):
     # , widget=forms.HiddenInput()
-    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'))
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Offer date and time"))
     tour_id = forms.ChoiceField(required=True)
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
-    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}))
+    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}), label=_("Message"))
 
     def __init__(self, *args, **kwargs):
         tour = kwargs.pop("tour")
@@ -286,11 +286,17 @@ class BookingPrivateTourForm(forms.Form):
             choices=[(tour.id, tour.id)]
         )
         self.fields['tour_id'].widget = forms.HiddenInput()
-        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.tour.max_persons_nmb,
+        self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.tour.max_persons_nmb,
                                                           label=_("Number people (max: %s)" % tour.max_persons_nmb))
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True
+
+        layout = self.helper.layout = Layout()
+        for field_name, field in self.fields.items():
+            layout.append(Field(field_name, placeholder=field.label))
+        self.helper.form_show_labels = False
+
         self.helper.layout.append(
             HTML(
                 '<div class="tour-details-text">'
@@ -298,9 +304,9 @@ class BookingPrivateTourForm(forms.Form):
                 '<div class="">{}: {} USD {}</div>'
                 '<div class="">{}: {}</div>'
                 '</div>'
-                '<div class="mb10">{}: <span id="price_total">{}</span> USD</div>'
+                '<div class="text-center tour-price">{}: <span class="price-value"><span id="price_total">{}</span> USD</span></div>'
                 '<div class="text-center">'
-                '<button name="action" class="btn btn-primary" type="submit">'
+                '<button name="action" class="btn btn-primary btn-lg" type="submit">'
                 '{}</button>'
                 '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
                                 _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
