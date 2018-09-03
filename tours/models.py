@@ -196,7 +196,7 @@ class Tour(models.Model):
         return self.tourimage_set.filter(is_active=True).values()
 
     def get_reviews(self):
-        tour_orders = self.order_set.all()
+        tour_orders = self.order_set.all().order_by("-id")
         reviews = list()
         for order in tour_orders.iterator():
             if hasattr(order, "review") and order.review.is_tourist_feedback == True:

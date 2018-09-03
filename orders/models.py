@@ -294,6 +294,13 @@ class Order(models.Model):
     def is_canceled(self):
         return True if self.status and self.status.id in [3, 6] else False
 
+    def get_name(self):
+        if self.tour:
+            name = self.tour.name
+        else:
+            name = "Tour with %s" % self.guide.user.generalprofile.get_name()
+        return name
+
     def create_order(self, *args, **data):
         """
         Params for guide hourly booking:
@@ -447,7 +454,6 @@ class Order(models.Model):
         #got rid of returning data for ajax calls
 
         if (order.tour and order.tour.type == "2") or not order.tour:#private tours and guide booking leads to chat page
-            print(11)
             topic = "Chat with %s" % guide.user.generalprofile.first_name
             chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
                                                        defaults={"topic": topic})

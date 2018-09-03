@@ -588,15 +588,20 @@ def earnings(request):
             kwargs["dt_paid__lte"] = date_end
 
     orders = guide.order_set.filter(**kwargs).order_by("-id")
-    orders_completed = Order.objects.filter(status_id=4)
+    orders_completed = orders.filter(status_id=4)#completed
+    orders_pending = orders.filter(status_id=5)  # payment reserved
 
+    # Amount reserved
+    orders_pending_aggr = orders_pending.aggregate(amount=Sum("guide_payment"))
+    orders_pending_amount = orders_pending_aggr.get("amount") if orders_pending_aggr.get("amount") else 0
 
-    orders_completed_aggr = orders_completed.aggregate(amount=Sum("guide_payment"))
-    orders_completed_amount = orders_completed_aggr.get("amount") if orders_completed_aggr.get("amount") else 0
+    #Completed and not paid
+    orders_completed_not_paid_aggr = orders_completed.filter(guide_payout_date__isnull=True).aggregate(amount=Sum("guide_payment"))
+    orders_completed_not_paid_amount = orders_completed_not_paid_aggr.get("amount") if orders_completed_not_paid_aggr.get("amount") else 0
 
-    orders_paid_aggr = orders_completed.filter(guide_payout_date__isnull=False).aggregate(amount=Sum("guide_payment"))
-    orders_paid_amount = orders_paid_aggr.get("amount") if orders_paid_aggr.get("amount") else 0
-    orders_pending_amount = orders_completed_amount - orders_paid_amount
+    #Completed and paid
+    orders_completed_paid_aggr = orders_completed.filter(guide_payout_date__isnull=False).aggregate(amount=Sum("guide_payment"))
+    orders_completed_paid_amount = orders_completed_paid_aggr.get("amount") if orders_completed_paid_aggr.get("amount") else 0
 
     return render(request, 'guides/earnings.html', locals())
 

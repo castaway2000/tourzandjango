@@ -7,21 +7,25 @@
     <div class="row">
         <div class="col-md-2">
             <div class="booking-item-review-person">
-                <a class="booking-item-review-person-avatar round" href="#">
-                    <img src="{% get_media_prefix %}{{ review.order.tourist.image }}"/>
-                </a>
-                <p class="booking-item-review-person-name"><a href="#">{{ review.order.tourist.user.username }}</a>
-                </p>
-                <small>
-                    <a href="#">
+                <img src="{{ review.order.tourist.get_avatar }}"/>
+                <div class="tourist-name">
+                    {{ review.order.tourist.user.generalprofile.get_name }}
+                </div>
+                {% if review.order.guide.city.country %}
+                    <div class="booking-item-review-person-loc text-center">
+                        {{ review.order.guide.city.country.name }}
+                    </div>
+                {% endif %}
+{#                <small>#}
+{#                    <a href="#">#}
 {#                        {{ TODO: put a number of reviews the tourist has done counter here }}#}
-                    </a>
-                </small>
+{#                    </a>#}
+{#                </small>#}
             </div>
         </div>
         <div class="col-md-10">
             <div class="booking-item-review-content">
-                <ul class="icon-group booking-item-rating-stars">
+                <ul class="icon-list icon-group booking-item-rating-stars">
                     {{ review.tourist_rating|rendering_stars|safe }}
                 </ul>
 
@@ -29,9 +33,9 @@
                     <h5>{{ review.tourist_feedback_name }}</h5>
                 {% endif %}
 
-                <p>
-                    {{ review.tourist_feedback_text|safe }}
-                </p>
+                <div class="mt5">
+                    {{ review.tourist_feedback_text|safe|linebreaks }}
+                </div>
 
 {#                <p class="booking-item-review-rate">{% blocktrans %}Was this review helpful?{% endblocktrans %}#}
 {#                    <a class="fa fa-thumbs-o-up box-icon-inline round" href="#"></a><b class="text-color"> 18</b>#}
