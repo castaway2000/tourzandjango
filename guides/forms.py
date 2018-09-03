@@ -70,13 +70,6 @@ class BookingGuideForm(forms.Form):
             ),
         )
 
-    def clean_date(self):
-        date = self.clean_data.get("date")
-        print(date)
-        print(11111)
-        import time
-        time.sleep(10)
-        return date
 
     def clean_number_people(self):
         number_people = self.cleaned_data.get("number_people")
