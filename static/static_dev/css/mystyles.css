@@ -674,6 +674,11 @@ a{
     z-index: 1000;
 }
 
+.booking-proposal-container a,
+.booking-proposal-container button{
+    width: 100%;
+}
+
 .guide-action-container{
     visibility: hidden;
     position: fixed;
@@ -1137,9 +1142,221 @@ a{
     color: white;
 }
 
+
+.tour-section-new{
+    background-color: white;
+    min-height: 220px;
+    color: #7E7E7E;
+}
+
+.tour-section-new.guide-section{
+    padding: 100px 0;
+}
+
+.tour-section-new .guide-name,
+.tour-section-new .guide-name a,
+.tour-section-new .guide-name:hover{
+    color: #EF4A16!important;
+    font-size: 1.4em;
+    position: relative;
+}
+
+.tour-section-new .guide-name .arrow-right{
+    position: absolute;
+    right: -15px;
+    top: 10px;
+    font-size: 18px;
+}
+
+.tour-section-divider{
+    padding: 45px 0;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+.tour-section-divider.orange{
+    background-image: linear-gradient(-90deg, #C93A0D, #F1683D);
+}
+
+.tour-section-divider,
+.tour-section-divider a,
+.tour-section-divider a:hover{
+    color: #E86035;
+    text-decoration: none!important;
+}
+
+.tour-section-divider.orange,
+.tour-section-divider.orange a,
+.tour-section-divider.orange a:hover{
+    color: white;
+}
+
+.tour-section-new .section-title{
+    font-size: 2.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: black;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.tour-section-new .section-subtitle{
+    font-size: 1.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: black;
+    text-align: center;
+    margin-bottom: 15px;
+    color: black;
+}
+
+.tour-section-new.images-section{
+    padding-bottom: 30px;
+}
+
+.tour-section-new.tour-booking-form button{
+    background-image: linear-gradient(-90deg, #C93A0D, #F1683D);
+    border: 0;
+}
+
+.tour-section-new.tour-booking-form textarea,
+.tour-section-new.tour-booking-form input{
+    background-color: #F8F8F8;
+}
+
+.tour-section-new.tour-booking-form .tour-price{
+    font-size: 1.2em;
+    font-weight: 700;
+    color: black;
+    margin: 10px 0 20px 0;
+}
+
+.tour-section-new.tour-booking-form .tour-price .price-value{
+    color: #EF4915;
+}
+
+.tour-section-new.program-section{
+    padding: 80px;
+}
+
+.tour-section-new.reviews-section{
+    padding-top: 100px;
+}
+
+.tour-section-new.reviews-section .icon-list .fa{
+    margin-right: 0;
+    color: #36a230;
+}
+
+.tour-section-new.reviews-section .tourist-name{
+    text-align: center;
+    color: #EF4A16!important;
+    font-size: 1.4em;
+    margin-top: 5px;
+}
+
+.tour-section-new.pt0{
+    padding-top: 0!important;
+}
+
+.tour-section-new.pb0{
+    padding-bottom: 0!important;
+}
+
+.img-container-background {
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    background-position: center !important;
+    min-height: 240px;
+}
+
+.guide-tour-item:before{
+    content: '';
+    position: absolute;
+    background: white;
+    width: 35px;
+    height: 35px;
+    z-index: 1;
+    border-radius: 50%;
+    top: -20px;
+    left: 50%;
+    margin-left: -25px;
+}
+
+.guide-tour-item:after{
+    content: '';
+    position: absolute;
+    background: white;
+    width: 35px;
+    height: 35px;
+    z-index: 1;
+    border-radius: 50%;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -25px;
+}
+
+.guide-tour-item .tour-img-container,
+.guide-tour-item .tour-info-container{
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+    min-height: 160px;
+}
+
+.guide-tour-item .tour-info-container{
+    background: #EF4915;
+    color: white;
+    padding: 10px 5px 5px 20px;
+}
+
+.guide-tour-item .tour-info-container a,
+.guide-tour-item .tour-info-container a:hover{
+    background-color: #C6380B;
+    border: none!important;
+}
+
+.guide-tour-item .tour-info-container .tour-name{
+    font-size: 1.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.guide-tour-item .img-container-background{
+    min-height: 160px;
+    background-size: cover !important;
+}
+
+.panel-item .img-container{
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    background-position: center !important;
+    min-height: 240px;
+}
+
+.panel-item .title{
+    font-size: 1.2em;
+    color: black;
+    font-weight: 700;
+}
+
+.panel-item .content{
+    padding: 30px;
+}
+
+.panel-item{
+    -webkit-box-shadow: 7px 10px 5px 3px rgba(247,247,247,1);
+    -moz-box-shadow: 7px 10px 5px 3px rgba(247,247,247,1);
+    box-shadow: 7px 10px 5px 3px rgba(247,247,247,1);
+}
+
+
 .tour-details-text{
     font-size: 14px!important;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .modal-tour-program-edit .modal-content{
@@ -1350,6 +1567,27 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     white-space: pre-line;
 }
 
+.text-left{
+    text-align: left!important;
+}
+
+.text-center{
+    text-align: center!important;
+}
+
+.text-right{
+    text-align: right!important;
+}
+
+.btn-orange{
+    background-image: linear-gradient(-90deg, #C93A0D, #F1683D);
+    border: 0;
+    color: white!important;
+}
+
+.owl-nav{
+    text-align: center;
+}
 
 @media (min-width: 768px) {
     .navbar .navbar-nav {
@@ -1456,7 +1694,6 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     }
 
     .tour-section {
-        padding: 10px 0!important;
         font-size: 16px!important;
         font-weight: 400!important;
     }
@@ -1479,4 +1716,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
         padding: 0;
     }
 
+    .tour-section-new.guide-section {
+        padding: 50px 0;
+    }
 }

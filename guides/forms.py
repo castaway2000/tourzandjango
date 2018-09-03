@@ -26,11 +26,11 @@ class GuideProfileForm(forms.ModelForm):
 
 class BookingGuideForm(forms.Form):
     # , widget=forms.HiddenInput()
-    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'))
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Offer date and time"))
     guide_id = forms.ChoiceField(required=True)
-    hours = forms.IntegerField(required=True, initial=1, min_value=1)
+    hours = forms.IntegerField(required=True, min_value=1)
     number_people = forms.IntegerField(required=True, min_value=2)
-    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}))
+    message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}), label=_("Your initial message to guide"))
 
     def __init__(self, *args, **kwargs):
         self.max_persons_nmb = 3
@@ -42,20 +42,31 @@ class BookingGuideForm(forms.Form):
             choices=[(guide.id, guide.id)]
         )
         self.fields['guide_id'].widget = forms.HiddenInput()
-        self.fields['hours'] = forms.IntegerField(required=True, initial=guide.min_hours, min_value=guide.min_hours, max_value=8)
-        self.fields['number_people'] = forms.IntegerField(required=True, initial=1, min_value=1, max_value=self.max_persons_nmb,
+        self.fields['hours'] = forms.IntegerField(required=True, min_value=guide.min_hours, max_value=8,
+                                                  label=_("Hours duration (min: %s)" % guide.min_hours))
+        self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.max_persons_nmb,
                                                           label=_("Number people (max: %s)" % self.max_persons_nmb))
         self.helper = FormHelper(self)
         self.helper.form_tag = True
+
+        layout = self.helper.layout = Layout()
+        for field_name, field in self.fields.items():
+            layout.append(Field(field_name, placeholder=field.label))
+        self.helper.form_show_labels = False
+
+
         self.helper.layout.append(
             HTML(
-                '<div class="mb10"><b>{}: </b>{}</div>'
+                '<div class="mb10 text-center">'
+                '<div><b>{}: </b>{}</div>'
+                '<div><b>{}: </b>{}</div>'
                 '<div><b>{}: </b>{} USD</div>'
-                '<div><b>{}: </b><span id="price_total">{}</span> USD</div>'
+                '<div class="text-center tour-price"><b>{}: </b><span class="price-value"><span id="price_total">{}</span> USD</span></div>'
                 '<div class="text-center">'
-                '<button name="action" class="btn btn-primary" type="submit">'
+                '<button name="action" class="btn btn-primary btn-lg" type="submit">'
                 '{}</button>'
-                '</div>'.format(_("Min hours"), guide.min_hours, _("Rate per hour"), guide.rate,  _("Total price"), guide.rate, _('Submit'))
+                '</div>'
+                '</div>'.format(_("Min hours"), self.guide.min_hours, _("Max persons"), self.max_persons_nmb, _("Rate per hour"), guide.rate,  _("Total price"), guide.rate, _('Submit'))
             ),
         )
 
