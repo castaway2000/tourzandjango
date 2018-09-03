@@ -1179,6 +1179,7 @@ a{
     text-align: center;
     font-size: 1.2em;
     font-weight: 700;
+    margin-bottom: 70px;
 }
 
 .tour-section-divider.orange{
@@ -1226,10 +1227,6 @@ a{
     border: 0;
 }
 
-.tour-section-new.tour-booking-form{
-    margin-top: 5em;
-}
-
 .tour-section-new.tour-booking-form textarea,
 .tour-section-new.tour-booking-form input{
     background-color: #F8F8F8;
@@ -1247,11 +1244,7 @@ a{
 }
 
 .tour-section-new.program-section{
-    padding: 80px;
-}
-
-.tour-section-new.reviews-section{
-    padding-top: 100px;
+    padding: 80px 0 30px 0;
 }
 
 .tour-section-new.reviews-section .icon-list .fa{
