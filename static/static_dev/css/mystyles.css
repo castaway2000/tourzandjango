@@ -1021,6 +1021,11 @@ a{
     background-color: #e0e0e0;
 }
 
+.booking-item-review-content .icon-list .fa{
+    margin-right: 0;
+    color: #36a230;
+}
+
 .page-tabs li.active,
 .page-tabs li.active a,
 .page-tabs li.active a:hover,
@@ -1221,6 +1226,10 @@ a{
     border: 0;
 }
 
+.tour-section-new.tour-booking-form{
+    margin-top: 5em;
+}
+
 .tour-section-new.tour-booking-form textarea,
 .tour-section-new.tour-booking-form input{
     background-color: #F8F8F8;
@@ -1257,12 +1266,25 @@ a{
     margin-top: 5px;
 }
 
+.booking-item-review-person .guide-name{
+    text-align: center;
+    color: #EF4A16!important;
+    font-size: 1.4em;
+    margin-top: 5px;
+}
+
 .tour-section-new.pt0{
     padding-top: 0!important;
 }
 
 .tour-section-new.pb0{
     padding-bottom: 0!important;
+}
+
+.tour-section-new.life-in-pictures,
+.tour-section-new.my-tours,
+.tour-section-new.reviews-section{
+    padding-bottom: 30px;
 }
 
 .img-container-background {
@@ -1587,6 +1609,10 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 
 .owl-nav{
     text-align: center;
+}
+
+.tour-program-item{
+    margin-bottom: 3em;
 }
 
 @media (min-width: 768px) {

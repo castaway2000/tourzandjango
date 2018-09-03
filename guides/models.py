@@ -153,6 +153,14 @@ class GuideProfile(models.Model):
         else:
             return None
 
+    def get_reviews(self):
+        tour_orders = self.order_set.all().order_by("-id")
+        reviews = list()
+        for order in tour_orders.iterator():
+            if hasattr(order, "review") and order.review.is_tourist_feedback == True:
+                reviews.append(order.review)
+        return reviews
+
 
 class Service(models.Model):
     name = models.CharField(max_length=256)
