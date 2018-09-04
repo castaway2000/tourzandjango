@@ -197,12 +197,17 @@ class Order(models.Model):
             else:#guide
 
                 #only for guides, not for tours
+                #AT 04092018: Guides are booked hour with max number of people limit,
+                #so this feature is not necessary now.
+                #ToDo: exclude additional persons price on guide's profile form
+                """
                 if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
                     guide_additional_person_cost = guide.additional_person_cost
                     self.number_additional_persons = (number_people-1)
                     additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
                     self.price_per_additional_person = guide.additional_person_cost
                     self.additional_person_total = additional_person_total
+                """
 
 
                 self.price_hourly = guide.rate
