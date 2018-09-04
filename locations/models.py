@@ -91,6 +91,9 @@ class Country(models.Model):
         cities = self.city_set.filter(is_active=True).order_by("name")
         return cities
 
+    def get_blog_posts(self):
+        return self.blogpost_set.filter(is_active=True)
+
 
 class City(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
@@ -207,6 +210,9 @@ class City(models.Model):
             return "%.2f" % float(avg)
         else:
             return None
+
+    def get_blog_posts(self):
+        return self.blogpost_set.filter(is_active=True)
 
 
 #cities, countries currencies are needed to be remade for using external packages later
