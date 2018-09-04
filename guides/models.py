@@ -46,8 +46,6 @@ class GuideProfile(models.Model):
     #not used. DELETE THEM?
     header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default=None)
     optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default=None)
-
-
     profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default=None,
                                       validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     profile_image_large = models.ImageField(upload_to=upload_path_handler_guide_profile_image_large, blank=True, null=True, default=None)

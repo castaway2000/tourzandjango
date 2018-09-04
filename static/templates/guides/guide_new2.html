@@ -91,7 +91,7 @@
     <div class="tour-section-new guide-section">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-lg-offset-2">
+                <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
 
                     <img src="{{ guide.profile_image_small.url }}" class="img-responsive">
                     <div class="text-center mt10 mb10">
@@ -108,44 +108,44 @@
                                 <span class="profession">{{ guide.user.generalprofile.profession|capfirst|default_if_none:"" }} {% trans 'by profession' %}</span>
                             </div>
                         {% endif %}
-
                     </div>
-
                 </div>
-                <div class="col-lg-5">
-                    <div class="section-title text-left">
-                        {% trans 'About me' %}
-                    </div>
-                    <div>
-                        {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
-                            {% if user_languages %}
-                                <div class="mb10">
-                                    <div>{% trans 'Languages' %}: </div>
-                                    <div>
-                                        {% for user_language in user_languages %}
-                                            <span class="label label-default label-tag">
-                                                {{ user_language.get_language_display }}
-                                            </span>
-                                        {% endfor %}
+                <div class="col-lg-5 col-md-5 col-sm-8 col-xs-12">
+                    <div class="about-me">
+                        <div class="section-title text-left">
+                            {% trans 'About me' %}
+                        </div>
+                        <div>
+                            {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
+                                {% if user_languages %}
+                                    <div class="mb10">
+                                        <div>{% trans 'Languages' %}: </div>
+                                        <div>
+                                            {% for user_language in user_languages %}
+                                                <span class="label label-default label-tag">
+                                                    {{ user_language.get_language_display }}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                                {% endif %}
+                            {% endwith %}
 
-                        {% with guide.user.userinterest_set.all as user_interests %}
-                            {% if user_interests %}
-                                <div class="">
-                                    <div>{% trans 'Interests' %}: </div>
-                                    <div>
-                                        {% for item in user_interests %}
-                                            <span class="label label-default label-tag">
-                                                {{ item.interest.name }}
-                                            </span>
-                                        {% endfor %}
+                            {% with guide.user.userinterest_set.all as user_interests %}
+                                {% if user_interests %}
+                                    <div class="">
+                                        <div>{% trans 'Interests' %}: </div>
+                                        <div>
+                                            {% for item in user_interests %}
+                                                <span class="label label-default label-tag">
+                                                    {{ item.interest.name }}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
                     </div>
                     <div class="mt10">
                         {{ guide.overview|safe }}
@@ -160,7 +160,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6 col-lg-offset-3">
-                        <div class="section-title text-left">
+                        <div class="section-title">
                             {% trans 'My life in pictures' %}
                         </div>
                         <div class="profile-container" id="profile_container">
@@ -214,38 +214,41 @@
     {% if guide.is_active and request.user != guide.user %}
         <div class="tour-section-new booking-section">
             <div class="container">
-                     <div class="row">
-                        <div class="col-lg-6 col-lg-offset-3">
-                            <div class="actions-panel">
-                                <div class="text-center mb50">
-                                    {% if guide != request.user.guideprofile or request.session.current_role != "guide" %}
-            {#                                {% if current_order.status.id == 5 %}#}
-            {#                                    <a class="btn btn-primary btn-lg popup-text btn-order-review" href="#writing_feedback_modal"#}
-            {#                                    data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">#}
-            {#                                        {% blocktrans %}Write Review{% endblocktrans %}#}
-            {#                                    </a>#}
-            {#                                {% endif %}#}
-                                        <div class="section-subtitle text-center">{% trans 'Do you have any questions?' %}</div>
-                                        <a class="btn btn-orange btn-lg"
-                                           href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                                            {% trans 'Chat with me' %}
-                                        </a>
-                                    {% endif %}
-                                </div>
+                 <div class="row">
+                    <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+                        <div class="actions-panel">
+                            <div class="text-center mb50">
+                                {% if guide != request.user.guideprofile or request.session.current_role != "guide" %}
+        {#                                {% if current_order.status.id == 5 %}#}
+        {#                                    <a class="btn btn-primary btn-lg popup-text btn-order-review" href="#writing_feedback_modal"#}
+        {#                                    data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">#}
+        {#                                        {% blocktrans %}Write Review{% endblocktrans %}#}
+        {#                                    </a>#}
+        {#                                {% endif %}#}
+                                    <div class="section-subtitle text-center">{% trans 'Do you have any questions?' %}</div>
+                                    <a class="btn btn-orange btn-lg"
+                                       href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                                        {% trans 'Chat with me' %}
+                                    </a>
+                                {% endif %}
                             </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
 
-                            <div class="tour-section-new tour-booking-form pt0 mt-2" id="booking_area">
-                                <div class="row">
-                                    <div class="col-lg-8 col-lg-offset-2">
-                                        <div class="section-title">{% trans 'Booking form' %}</div>
-                                        {% crispy form %}
-                                    </div>
-                                </div>
-                            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="tour-section-new tour-booking-form pt0 mt-2" id="booking_area">
+                        <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+                            <div class="section-title">{% trans 'Booking form' %}</div>
+                            {% crispy form %}
                         </div>
                     </div>
                 </div>
             </div>
+
+        </div>
     {% endif %}
 
     {% with guide.get_tours as guide_tours %}
@@ -261,8 +264,8 @@
 
                                 <div class="row">
                                     {% for tour in guide.get_tours %}
-                                        <div class="col-lg-4">
-                                            <div class="mb10 guide-tour-item">
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                            <div class="guide-tour-item">
                                                 <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
                                                     <div class="tour-img-container img-container-background" style="
                                                         {% if tour.image_small %}
