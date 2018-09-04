@@ -38,9 +38,9 @@
             <div class="bg-img"
                  style="
                     {% if tour.image %}
-                        background: url('{% get_sized_image tour %}') no-repeat center center fixed; background-size: cover;
+                        background: url('{% get_sized_image tour %}');
                     {% else %}
-                        background: url({% static "img/1280x848.png" %}) no-repeat center center fixed; background-size: cover;
+                        background: url({% static "img/1280x848.png" %});
                     {% endif %}
                  ">
             </div>
@@ -82,7 +82,7 @@
     <div class="tour-section-new guide-section">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-lg-offset-2">
+                <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
                     <img src="{{ tour.guide.profile_image_small.url }}" class="img-responsive">
                     <div class="text-center mt10 mb10">
                         <div class="guide-name">
@@ -93,7 +93,7 @@
                         {% trans 'the guide' %}
                     </div>
                 </div>
-                <div class="col-lg-5">
+                <div class="col-lg-5 col-md-5 col-sm-8 col-xs-12">
                     {{ tour.guide.overview|safe }}
                 </div>
             </div>
@@ -230,7 +230,7 @@
         <div id="tour_booking_form" class="tour-section-new tour-booking-form">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-4 col-lg-offset-4">
+                    <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
                         <div class="section-title">
                             {% trans 'Booking form' %}
                         </div>

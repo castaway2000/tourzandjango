@@ -14,13 +14,11 @@ function connect() {
         }
     }
 
-    console.log("connecting");
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/general/';
 
       var ws_general = new WebSocket(url);
-       console.log(ws_general);
       ws_general.onopen = function() {
         // subscribe to some channels
         //ws_general.send(JSON.stringify({
@@ -29,7 +27,6 @@ function connect() {
       };
 
       ws_general.onmessage = function(e) {
-          console.log("message in general");
         var data = JSON.parse(e.data);
           console.log(data);
         if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
