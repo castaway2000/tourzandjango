@@ -1,8 +1,11 @@
 ACCOUNT_ADAPTER = 'users.adapter_allAuth.MyAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter_allAuth.MySocialAccountAdapter'
+ACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_AUTOMATICALLY_CONNECT = True
 PRESERVE_USERNAME_CASING = True
-
+ACCOUNT_FORMS = {
+    "signup": "users.forms.CustomSignupForm",
+}
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 
