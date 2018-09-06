@@ -319,6 +319,52 @@
         {% endwith %}
     {% endif %}
 
+    {% with obj.get_blog_posts as blog_posts%}
+        {% if blog_posts %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'Blog posts about' %} {{ obj.name }}</h3>
+                    </div>
+                    {% for blog_post in blog_posts %}
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                            <div class="panel panel-default panel-guide">
+                                <div class="panel-body">
+                                    <div class="text-center">
+                                        <a href="{% url 'blog_post' blog_post.slug %}"
+                                        target="_blank">
+                                            <img src="{{ blog_post.image.url }}" class="img-responsive">
+                                        </a>
+                                    </div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ blog_post.name }}
+                                        </h4>
+                                    </div>
+                                    <div>
+                                       {{ blog_post.text|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}
+                                    </div>
+                                </div>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'blog_post' blog_post.slug %}"
+                                        target="_blank"
+                                    >
+                                        {% trans 'Read More' %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div>
+                            <div class="row">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
     {% if obj.description %}
         <div class="container mt30 mb30">
             <div class="row">

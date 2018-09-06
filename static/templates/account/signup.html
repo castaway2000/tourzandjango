@@ -27,6 +27,7 @@
 {%  load staticfiles %}
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="container">
@@ -68,42 +69,7 @@
             </div>
             <div class="col-md-4">
                 <h3>{% blocktrans %}New To Tourzan?{% endblocktrans %}</h3>
-                <form method="post" action="{% url 'account_signup' %}">{% csrf_token %}
-                    <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>{% blocktrans %}Username{% endblocktrans %}</label>
-                        <input class="form-control" placeholder="e.g. johndoe"
-                        type="text" name="username"
-                        value="{{ request.POST.username }}"
-                        />
-                        <span class="form-error-text">{{ form.username.errors }}</span>
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon input-icon-show"></i>
-                        <label>{% blocktrans %}Email{% endblocktrans %}</label>
-                        <input class="form-control" placeholder="e.g. johndoe@gmail.com"
-                        type="text" name="email"
-                        value="{{ request.POST.email }}"
-                        >
-                        <span class="form-error-text">{{ form.email.errors }}</span>
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>{% blocktrans %}Password{% endblocktrans %}</label>
-                        <input class="form-control" type="password" placeholder="my secret password" name="password1" />
-                        <span class="form-error-text">{{ form.password1.errors }}</span>
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>{% blocktrans %}Password (re-enter){% endblocktrans %}</label>
-                        <input class="form-control" type="password" placeholder="my secret password again" name="password2" />
-                        <span class="form-error-text">{{ form.password2.errors }}</span>
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-thumbs-up input-icon input-icon-show"></i>
-                        <label>{% trans 'Referal Code (optional)' %}</label>
-                        <input class="form-control" type="text" placeholder="code" name="referral_code"
-                        value="">
-                    </div>
-                    <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="{{ recaptcha_site_key }}">
-                    </div>
-                    <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
-                </form>
+                {% crispy form %}
             </div>
         </div>
     </div>

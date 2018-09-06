@@ -42,7 +42,7 @@ class BookingGuideForm(forms.Form):
             choices=[(guide.id, guide.id)]
         )
         self.fields['guide_id'].widget = forms.HiddenInput()
-        self.fields['hours'] = forms.IntegerField(required=True, min_value=guide.min_hours, max_value=8,
+        self.fields['hours'] = forms.IntegerField(required=True, min_value=guide.min_hours, max_value=24,
                                                   label=_("Hours duration (min: %s)" % guide.min_hours))
         self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.max_persons_nmb,
                                                           label=_("Number people (max: %s)" % self.max_persons_nmb))
@@ -70,6 +70,13 @@ class BookingGuideForm(forms.Form):
             ),
         )
 
+    def clean_hours(self):
+        hours_nmb = self.cleaned_data["hours"]
+        hours_min = self.guide.min_hours
+        if hours_min:
+            if hours_min > hours_min:
+                raise forms.ValidationError(_("Minimum number of hours is: %s") % self.max_persons_nmb)
+        return hours_nmb
 
     def clean_number_people(self):
         number_people = self.cleaned_data.get("number_people")

@@ -8,12 +8,19 @@
         {{ order.total_price_before_fees }} USD
     </span>
 {% else %}
-    <b>{% trans 'Booked hourly' %}:</b><br>
-    <span class="booking-item-price tour-booking-price">
-        {{ order.price_hourly }} USD/{% trans 'hour' %}
-    </span>
+    <div>
+        <b>{% trans 'Booked hourly' %}:</b><br>
+        <span class="booking-item-price tour-booking-price">
+            {{ order.price_hourly }} USD/{% trans 'hour' %}
+        </span>
+    </div>
+    <div>
+        <b>{% trans 'Price' %}:</b><br>
+        <span class="booking-item-price tour-booking-price">
+            {{ order.total_price_before_fees }} USD
+        </span>
+    </div>
 {% endif %}
-<br>
 <b>{% trans 'Fees' %}:</b>
 <span class="booking-item-price tour-booking-price">
     {{ order.fees_guide }} USD

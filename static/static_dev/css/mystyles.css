@@ -1206,6 +1206,7 @@ a{
     color: black;
     text-align: center;
     margin-bottom: 30px;
+    line-height: 1;
 }
 
 .tour-section-new .section-subtitle{
@@ -1276,7 +1277,8 @@ a{
 
 .tour-section-new.life-in-pictures,
 .tour-section-new.my-tours,
-.tour-section-new.reviews-section{
+.tour-section-new.reviews-section,
+.tour-section-new.booking-section{
     padding-bottom: 30px;
 }
 
@@ -1285,6 +1287,10 @@ a{
     background-size: contain !important;
     background-position: center !important;
     min-height: 240px;
+}
+
+.guide-tour-item{
+    margin-bottom: 10px;
 }
 
 .guide-tour-item:before{
@@ -1608,6 +1614,21 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     margin-bottom: 3em;
 }
 
+
+/*.breadcumbs-container{*/
+    /*background: #f3f3f3;*/
+    /*min-height: 50px;*/
+    /*text-align: center;*/
+/*}*/
+
+.hero-section .bg-img{
+    background-position: center center!important;
+  background-repeat: no-repeat!important;
+  background-attachment: fixed!important;
+  background-size: cover!important;
+  background-color: #464646;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
@@ -1675,6 +1696,17 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
         font-size: 25px;
     }
 
+    .tour-section.hero-section .title{
+        margin-top: 120px;
+        font-size: 1.8em!important;
+    }
+    .tour-section.hero-section .tour-description{
+        font-size: 1.4em;
+        margin-bottom: 10px;
+    }
+    .tour-section-new .section-title {
+        margin-bottom: 15px;
+    }
 }
 
 @media (max-width:768px) {
@@ -1737,5 +1769,58 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 
     .tour-section-new.guide-section {
         padding: 50px 0;
+    }
+
+    .guide-tour-item .img-container-background {
+        min-height: 192px;
+        width: 100%
+    }
+
+    .guide-tour-item .tour-info-container{
+        width: 100%;
+    }
+
+    .guide-tour-item{
+        margin-bottom: 20px;
+    }
+
+    .tour-section-new .section-title {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+
+    .guide-tour-item::before{
+        display: none;
+    }
+
+    .guide-tour-item::after {
+        display: none;
+    }
+
+    .tour-section.hero-section {
+        height: 50vh;
+        min-height: 20vh !important;
+        background: white!important;
+    }
+    .tour-section.hero-section .title{
+        margin-top: 80px;
+        font-size: 2.5em;
+    }
+    .tour-section.hero-section .tour-description{
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    .tour-section-divider {
+        margin-bottom: 0;
+    }
+    .tour-section-new.program-section {
+        padding: 30px 0 30px 0;
+    }
+    .about-me{
+        text-align: center!important;
+    }
+    .about-me .section-title{
+        text-align: center!important;
+        margin-top: 15px;
     }
 }

@@ -218,7 +218,7 @@
                         <li>
                             <div class="tour-item">
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-6 col-xs-6">
+                                    <div class="col-md-3 col-sm-5 col-xs-12">
                                         <div class="booking-item-img mb10">
                                             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}">
                                                 {% if guide.profile_image %}
@@ -254,9 +254,9 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-6 col-xs-6">
+                                    <div class="col-md-3 col-sm-7 col-xs-12">
                                         <div class="item-name">
-                                            {{ guide.user.generalprofile.first_name }}
+                                            {{ guide.user.generalprofile.get_name }}
                                         </div>
                                         {% if guide.city and guide.city.slug and guide.city.country and guide.city.country.slug %}
                                             <div class="mb10">
@@ -327,7 +327,7 @@
                                             {% endif %}
                                         {% endwith %}
                                     </div>
-                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
                                         <div class="">
                                             {{ guide.overview|safe|linebreaks|truncatewords_html:80 }}
                                         </div>

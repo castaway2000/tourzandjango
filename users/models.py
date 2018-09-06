@@ -57,7 +57,7 @@ creating user profile after user is created (mostly for login with Facebook)
 @disable_for_loaddata
 def user_post_save(sender, instance, created, **kwargs):
     user = instance
-    GeneralProfile.objects.get_or_create(user=user)
+    GeneralProfile.objects.get_or_create(user=user, first_name=user.first_name, last_name=user.last_name)
     if created:
         kwargs = dict()
         kwargs["user"] = user
@@ -141,7 +141,7 @@ class GeneralProfile(models.Model):
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
-    device_id = models.CharField(null=True, default=None, max_length=240)
+    device_id = models.CharField(blank=True, null=True, default=None, max_length=240)
 
     registration_country = models.CharField(max_length=256, blank=True, null=True, choices=COUNTRY_CHOICES)
     registration_country_ISO_3_digits = models.CharField(max_length=8, blank=True, null=True)

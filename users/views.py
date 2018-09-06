@@ -45,6 +45,7 @@ def login_view(request):
     Login redirects are handled here
     """
     form = LoginForm(request.POST or None)
+    signup_form = CustomSignupForm(request.POST or None)
     recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY
 
     url = request.META.get('HTTP_REFERER')
@@ -79,7 +80,11 @@ def login_view(request):
                 return HttpResponse("Your account is disabled.")
         else:
             messages.error(request, 'Login credentials are incorrect!')
-    return render(request, 'users/login_register.html', {"form": form, "recaptcha_site_key": recaptcha_site_key})
+    return render(request, 'users/login_register.html', {"form": form,
+                                                         "signup_form": signup_form,
+                                                         "recaptcha_site_key": recaptcha_site_key
+                                                         }
+                  )
 
 
 def logout_view(request):

@@ -25,7 +25,6 @@ from guides.models import GuideService
 from locations.models import City
 from tourzan.settings import ILLEGAL_COUNTRIES
 
-
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
         merchant_id=BRAINTREE_MERCHANT_ID,
@@ -198,12 +197,17 @@ class Order(models.Model):
             else:#guide
 
                 #only for guides, not for tours
+                #AT 04092018: Guides are booked hour with max number of people limit,
+                #so this feature is not necessary now.
+                #ToDo: exclude additional persons price on guide's profile form
+                """
                 if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
                     guide_additional_person_cost = guide.additional_person_cost
                     self.number_additional_persons = (number_people-1)
                     additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
                     self.price_per_additional_person = guide.additional_person_cost
                     self.additional_person_total = additional_person_total
+                """
 
 
                 self.price_hourly = guide.rate
@@ -838,6 +842,17 @@ def order_post_save(sender, instance, created, **kwargs):
         if int(instance._original_fields["status"].id) == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
             instance.tour_scheduled.seats_booked -= instance.number_persons
             instance.tour_scheduled.save(force_update=True)
+
+    if not created and (instance.hours_nmb != instance._original_fields["hours_nmb"]
+                        or instance.number_persons != instance._original_fields["number_persons"]
+                        or instance.date_booked_for != instance._original_fields["date_booked_for"]
+        ):
+        from utils.chat_utils import ChatHelper
+        chat_helper = ChatHelper()
+        if hasattr(instance, "chat") and instance.chat:
+            message = _("Order details were changed: hours: %s, persons: %s, tour starts at: %s"
+                        % (instance.hours_nmb, instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
+            chat_helper.send_order_message_and_notification(instance.chat, message)
 post_save.connect(order_post_save, sender=Order)
 
 
@@ -852,8 +867,7 @@ class OrderStatusChangeHistory(models.Model):
 
     def send_notifications(self):
         from chats.models import Chat
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
+        from utils.chat_utils import ChatHelper
         status_name = self.status.name
         order = self.order
         topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
@@ -862,39 +876,8 @@ class OrderStatusChangeHistory(models.Model):
 
         order_title = "Tour %s" % (self.order.tour.name) if self.order.tour  else "Tour with %s" % order.guide.user.generalprofile.get_name()
         message = 'Order  "%s" status has been changed to <b>%s</b>' % (order_title, status_name)
-
-        tourzan_user_name = "Tourzan bot"
-        tourzan_user, created = User.objects.get_or_create(username=tourzan_user_name)
-        chat.create_message(tourzan_user, message)
-
-        #send message to chat websockets
-        room_group = 'chat_%s' % chat.uuid
-        layer = get_channel_layer()
-        async_to_sync(layer.group_send)(
-            room_group,
-            {
-                "type": "chat_message",
-                "message": message,
-                "user": tourzan_user_name,
-                "dt": self.created.strftime("%m/%d/%Y %H:%M:%S"),
-                "message_type": "system",
-            }
-        )
-
-        #send message to generalwebsockets
-        uuids = [self.order.guide.user.generalprofile.uuid, self.order.tourist.user.generalprofile.uuid]
-        for uuid in uuids:
-            async_to_sync(layer.group_send)(
-                uuid,
-                {
-                    'type': 'chat_notification',
-                    'message': message,
-                    'message_user_name': tourzan_user_name,
-                    'chat_uuid': str(chat.uuid),
-                    'color_type': 'info',
-                    'notification_type': 'order_status_change'
-                }
-            )
+        chat_helper = ChatHelper()
+        chat_helper.send_order_message_and_notification(chat, message)
 
 
 @disable_for_loaddata
