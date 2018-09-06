@@ -284,11 +284,17 @@ def update_trip(request):
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
             trip = GeoTrip.objects.filter(user_id=user_id, in_progress=True)
+            trip_guide = GeoTrip.objects.filter(guide_id=user_id, in_progress=True)
             # TODO: find guide_id from user id and check if it is still in progress.
             trip_id = None
+            user_data = list(user)[0]
             if trip.exists():
                 trip_id = trip[0].id
-            user_data = list(user)[0]
+            elif trip_guide.exists():
+                trip_id = trip_guide[0].id
+
+            if trip_id:
+                user_data['trip_in_progress'] = True
             user_data['trip_id'] = trip_id
             return HttpResponse(json.dumps(user_data))
         elif status == 'clockin':
@@ -363,7 +369,8 @@ def update_trip(request):
             trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                     order_id=order_id)
-            device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.user.generalprofile.device_id]
+            print(trip[0].guide.generalprofile)
+            device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.generalprofile.device_id]
             for device in device_tokens:
                 payload = {
                     "to": device,
