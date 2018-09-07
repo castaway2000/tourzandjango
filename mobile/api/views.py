@@ -327,7 +327,7 @@ def update_trip(request):
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
+            guide_profile = GeneralProfile.objects.get(user_id=trip_status.guide_id).user
             if hasattr(guide_profile, 'guideprofile'):
                 price = float(guide_profile.guideprofile.rate)
                 cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
@@ -448,7 +448,7 @@ def update_trip(request):
                 order.make_payment(guide_profile.user.id)
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
-            device_tokens = [trip_status.user.generalprofile.device_id, trip_status.guide.user.generalprofile.device_id]
+            device_tokens = [trip_status.user.generalprofile.device_id, trip_status.guide.generalprofile.device_id]
             for device in device_tokens:
                 payload = {
                     "to": device,
