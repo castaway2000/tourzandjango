@@ -7,7 +7,9 @@ from orders.models import Order
 
 @login_required()
 def coupon_validation(request):
+    print("coupon validation")
     data = request.POST
+    print(data)
     order_id = data.get("order_id")
     coupon_code = data.get('coupon', None)
     user = request.user
@@ -18,7 +20,7 @@ def coupon_validation(request):
             order = Order.objects.get(id=order_id)
         except:
             pass
-        if order and not order.coupon and order.status.id == 1:#coupons can be applied for orders only in pending status
+        if order and not order.coupon and order.status.id == 2:#coupons can be applied for orders only in agreed status
             coupon = None
             if coupon_code:
                 try:
