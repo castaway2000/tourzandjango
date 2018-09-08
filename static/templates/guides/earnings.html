@@ -18,8 +18,8 @@
             <div class="col-lg-12">
                 <ul class="list-unstyled">
                     <li><b>{% trans 'Pending amount' %}: </b> {{ orders_pending_amount }} USD</li>
-                    <li><b>{% trans 'Paid amount' %}: </b> {{ orders_paid_amount }} USD</li>
-                    <li><b>{% trans 'Total amount' %}: </b> {{ orders_completed_amount }} USD</li>
+                    <li><b>{% trans 'Available earned amount' %}: </b> {{ orders_completed_not_paid_amount }} USD</li>
+                    <li><b>{% trans 'Paid amount' %}: </b> {{ orders_completed_paid_amount }} USD</li>
                 </ul>
             </div>
         </div>
@@ -86,30 +86,13 @@
                                         {{ order.date_booked_for|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
-                                        {% if order.tour %}
-                                            <a href="{% url 'tour_new' order.tour.slug order.tour.uuid "new" %}">
-                                                {{ order.tour.name }}
-                                            </a>
-                                                 {% blocktrans %}by{% endblocktrans %}
-
-                                            <a href="{% url 'guide_new' order.tour.guide.user.general_profile.first_name order.tour.guide.user.general_profile.uuid "new" %}">
-                                                {{ order.tour.guide.user.generalprofile.first_name }}
-                                            </a>
-
-                                        {% else %}
-                                            {% trans 'Tour with' %}
-                                            <a href="{% url 'guide_new' order.guide.user.general_profile.first_name order.guide.user.general_profile.uuid 'new' %}">
-                                                {{ order.guide.user.generalprofile.first_name }}
-                                            </a>
-                                        {% endif %}
+                                        <a href="{% url 'order_completing' order.uuid %}">
+                                            {{ order.status.name }}
+                                        </a>
                                     </td>
                                     <td>
                                         <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
-                                            {% if order.tourist.name %}
-                                                {{ order.tourist.name }}
-                                            {% else %}
-                                                {{ order.tourist.user.username }}
-                                            {% endif %}
+                                           {{ order.tourist.user.generalprofile.get_name }}
                                         </a>
                                     </td>
                                     <td>
@@ -153,7 +136,9 @@
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function(){
-            $("#earnings_table").DataTable();
+            $("#earnings_table").DataTable({
+                "aaSorting": [ [0,'desc'] ]
+            });
         })
     </script>
 {% endblock %}

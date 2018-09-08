@@ -30,7 +30,6 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
     request = context["request"]
     if hasattr(obj, image_base_field_name):
         img = getattr(obj, image_base_field_name)
-        print(str(img))
         if len(str(img)) == 0 or str(img)[0] == '/':  # error with old default image and a leading /
             default_media = 'tours/small_size/default_tour_image.jpg'
             return "%s%s" % (MEDIA_URL, default_media)

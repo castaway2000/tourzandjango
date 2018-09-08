@@ -284,11 +284,17 @@ def update_trip(request):
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
             trip = GeoTrip.objects.filter(user_id=user_id, in_progress=True)
+            trip_guide = GeoTrip.objects.filter(guide_id=user_id, in_progress=True)
             # TODO: find guide_id from user id and check if it is still in progress.
             trip_id = None
+            user_data = list(user)[0]
             if trip.exists():
                 trip_id = trip[0].id
-            user_data = list(user)[0]
+            elif trip_guide.exists():
+                trip_id = trip_guide[0].id
+
+            if trip_id:
+                user_data['trip_in_progress'] = True
             user_data['trip_id'] = trip_id
             return HttpResponse(json.dumps(user_data))
         elif status == 'clockin':
@@ -321,7 +327,7 @@ def update_trip(request):
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.get(id=trip_status.guide_id).user
+            guide_profile = GeneralProfile.objects.get(user_id=trip_status.guide_id).user
             if hasattr(guide_profile, 'guideprofile'):
                 price = float(guide_profile.guideprofile.rate)
                 cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
@@ -363,7 +369,8 @@ def update_trip(request):
             trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                     duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                     order_id=order_id)
-            device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.user.generalprofile.device_id]
+            print(trip[0].guide.generalprofile)
+            device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.generalprofile.device_id]
             for device in device_tokens:
                 payload = {
                     "to": device,
@@ -441,7 +448,7 @@ def update_trip(request):
                 order.make_payment(guide_profile.user.id)
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
-            device_tokens = [trip_status.user.generalprofile.device_id, trip_status.guide.user.generalprofile.device_id]
+            device_tokens = [trip_status.user.generalprofile.device_id, trip_status.guide.generalprofile.device_id]
             for device in device_tokens:
                 payload = {
                     "to": device,

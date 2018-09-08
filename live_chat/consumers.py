@@ -33,13 +33,13 @@ class GeneralConsumer(WebsocketConsumer):
             )
 
             # Send debug message for testing
-            async_to_sync(self.channel_layer.group_send)(
-                self.group_name,
-                {
-                    "type": "chat_message_test",
-                    "message": "test 12345",
-                }
-            )
+            # async_to_sync(self.channel_layer.group_send)(
+            #     self.group_name,
+            #     {
+            #         "type": "chat_message_test",
+            #         "message": "test 12345",
+            #     }
+            # )
 
             self.accept()
 
@@ -71,6 +71,8 @@ class GeneralConsumer(WebsocketConsumer):
                 "type": notification_type,
                 "message": message,
                 "message_user_name": message_user_name,
+                #It is needed for showing or not showing notification about the message
+                #(comparing with uuid in the current url)
                 "chat_uuid": chat_uuid,
                 "color_type": color_type,
             }))

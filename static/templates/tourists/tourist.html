@@ -8,7 +8,7 @@
         <div class="booking-item-details">
 
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-lg-6 col-lg-offset-3">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
@@ -79,18 +79,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <h3 class="mb20">{% trans 'Tours' %}</h3>
-                    {% if tours %}
-                        <ul class="booking-list">
-                            {% for order in orders %}
-                                {% include 'order_tour_item_representation.html' %}
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>{% trans 'No tours so far' %}...</p>
-                    {% endif %}
-                </div>
+{#                <div class="col-md-4">#}
+{#                    <h3 class="mb20">{% trans 'Tours' %}</h3>#}
+{#                    {% if tours %}#}
+{#                        <ul class="booking-list">#}
+{#                            {% for order in orders %}#}
+{#                                {% include 'order_tour_item_representation.html' %}#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                    {% else %}#}
+{#                        <p>{% trans 'No tours so far' %}...</p>#}
+{#                    {% endif %}#}
+{#                </div>#}
             </div>
 
         </div>
