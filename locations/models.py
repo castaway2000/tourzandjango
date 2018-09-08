@@ -135,7 +135,7 @@ class City(models.Model):
         self.slug = slugify(self.name)
 
         if not self.description:
-            self.description = get_location_summary(self.name)
+            self.description = get_location_summary(self.name, self.full_location)
 
         if not self.image:
             #But so far we get a default image from unsplash here
