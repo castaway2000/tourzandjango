@@ -57,7 +57,8 @@ creating user profile after user is created (mostly for login with Facebook)
 @disable_for_loaddata
 def user_post_save(sender, instance, created, **kwargs):
     user = instance
-    GeneralProfile.objects.get_or_create(user=user, first_name=user.first_name, last_name=user.last_name)
+    GeneralProfile.objects.update_or_create(user=user, defaults={"first_name": user.first_name,
+                                                                 "last_name": user.last_name})
     if created:
         kwargs = dict()
         kwargs["user"] = user

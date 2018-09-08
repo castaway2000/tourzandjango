@@ -1479,6 +1479,7 @@ from {
     left: 0;
     bottom: 15px;
     height: 30px;
+    margin-bottom: 10px;
 }
 
 a .panel-default, a .panel-default:hover, a .panel-default:focus{
