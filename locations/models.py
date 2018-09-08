@@ -15,6 +15,7 @@ from django.db.models import Avg
 import time
 from django.core.files.uploadedfile import SimpleUploadedFile
 from utils.unsplash import get_image
+from utils.wikitravel import get_location_summary
 
 
 class LocationType(models.Model):
@@ -68,6 +69,9 @@ class Country(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+
+        if not self.description:
+            self.description = get_location_summary(self.name)
 
         if not self.image:
             #But so far we get a default image from unsplash here
@@ -129,6 +133,9 @@ class City(models.Model):
         if not self.name:
             self.name = self.original_name
         self.slug = slugify(self.name)
+
+        if not self.description:
+            self.description = get_location_summary(self.name)
 
         if not self.image:
             #But so far we get a default image from unsplash here
