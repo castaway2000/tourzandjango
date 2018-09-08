@@ -10,6 +10,7 @@ import unidecode
 from utils.general import random_string_creating
 from crequest.middleware import CrequestMiddleware
 from utils.images_resizing import optimize_size
+from locations.models import Country, City
 
 
 class BlogCategory(models.Model):
@@ -37,6 +38,8 @@ class BlogCategory(models.Model):
 class BlogPost(models.Model):
     author = models.ForeignKey(User, blank=True, null=True, default=None, related_name="blog_post_author")
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    country = models.ForeignKey(Country, blank=True, null=True, default=None)
+    city = models.ForeignKey(City, blank=True, null=True, default=None)
     tags = models.CharField(max_length=256, blank=True, null=True)
     slug = models.SlugField(blank=True, null=True, default=random_string_creating, unique=True)
     text = models.TextField(blank=True, null=True, default=None)

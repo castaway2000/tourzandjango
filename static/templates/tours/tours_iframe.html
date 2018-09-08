@@ -229,14 +229,14 @@
                         <li>
                             <div class="tour-item">
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <div class="col-md-3 col-sm-5 col-xs-12">
                                         <div class="booking-item-img mb10">
                                             <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}?ref_id={{ request.GET.ref_id }}">
                                                 <img src="{% get_sized_image tour default_size="small" %}">
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-sm-6 col-xs-5">
+                                    <div class="col-md-9 col-sm-7 col-xs-12">
                                         <div class="tour-name">
                                             {{ tour.name }}
                                         </div>
@@ -274,7 +274,7 @@
                                             {{ tour.overview|linebreaks|truncatewords_html:30 }}
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-4">
+                                    <div class="col-md-3 col-sm-7 col-sm-offset-5 col-xs-12">
                                         <div class="tour-rating">
                                             <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
                                         </div>
@@ -307,12 +307,14 @@
                                                  <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}
                                             {% endif %}
                                         </p>
-                                        <p>
-                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}?ref_id={{ request.GET.ref_id }}"
-                                               class="btn btn-primary">
-                                                {% blocktrans %}View Details{% endblocktrans %}
-                                            </a>
-                                        </p>
+                                        <div class="text-right">
+                                            <p>
+                                                <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}?ref_id={{ request.GET.ref_id }}"
+                                                   class="btn btn-primary">
+                                                    {% blocktrans %}View Details{% endblocktrans %}
+                                                </a>
+                                            </p>
+                                        </div>
                                         {% if tour.guide.user.generalprofile.is_verified %}
                                             <p>
                                                 <b>{% trans 'Guide is verified' %}</b>

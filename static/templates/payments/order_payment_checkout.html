@@ -99,7 +99,7 @@
         var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
         data["csrfmiddlewaretoken"] = csrf_token;
         data["coupon"] = $("#coupon_id").val();
-        data["order_id"] = $("#order_id").val();
+        data["order_id"] = {{ order.id }};
         var url = $(this).attr("action");
 
         $.ajax({

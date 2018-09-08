@@ -15,6 +15,7 @@ from django.db.models import Avg
 import time
 from django.core.files.uploadedfile import SimpleUploadedFile
 from utils.unsplash import get_image
+from utils.wikitravel import get_location_summary
 
 
 class LocationType(models.Model):
@@ -69,6 +70,9 @@ class Country(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
 
+        if not self.description:
+            self.description = get_location_summary(self.name)
+
         if not self.image:
             #But so far we get a default image from unsplash here
             search_term = self.name
@@ -90,6 +94,9 @@ class Country(models.Model):
     def get_cities(self):
         cities = self.city_set.filter(is_active=True).order_by("name")
         return cities
+
+    def get_blog_posts(self):
+        return self.blogpost_set.filter(is_active=True)
 
 
 class City(models.Model):
@@ -126,6 +133,9 @@ class City(models.Model):
         if not self.name:
             self.name = self.original_name
         self.slug = slugify(self.name)
+
+        if not self.description:
+            self.description = get_location_summary(self.name, self.full_location)
 
         if not self.image:
             #But so far we get a default image from unsplash here
@@ -207,6 +217,9 @@ class City(models.Model):
             return "%.2f" % float(avg)
         else:
             return None
+
+    def get_blog_posts(self):
+        return self.blogpost_set.filter(is_active=True)
 
 
 #cities, countries currencies are needed to be remade for using external packages later

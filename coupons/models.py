@@ -22,7 +22,7 @@ class CouponType(models.Model):
 
 
 class Coupon(models.Model):
-    uuid = models.CharField(max_length=48, null=True)
+    uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     value = models.IntegerField(default=0)
     code = models.CharField(max_length=32, blank=True, null=True)
     type = models.ForeignKey(CouponType, blank=True, null=True, default=None)

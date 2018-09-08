@@ -46,8 +46,6 @@ class GuideProfile(models.Model):
     #not used. DELETE THEM?
     header_image = models.ImageField(upload_to=upload_path_handler_guide_header_images, blank=True, null=True, default=None)
     optional_image = models.ImageField(upload_to=upload_path_handler_guide_optional_image, blank=True, null=True, default=None)
-
-
     profile_image = models.ImageField(upload_to=upload_path_handler_guide_profile_image, blank=True, null=True, default=None,
                                       validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     profile_image_large = models.ImageField(upload_to=upload_path_handler_guide_profile_image_large, blank=True, null=True, default=None)
@@ -152,6 +150,14 @@ class GuideProfile(models.Model):
             return self.user.generalprofile.first_name
         else:
             return None
+
+    def get_reviews(self):
+        tour_orders = self.order_set.all().order_by("-id")
+        reviews = list()
+        for order in tour_orders.iterator():
+            if hasattr(order, "review") and order.review.is_tourist_feedback == True:
+                reviews.append(order.review)
+        return reviews
 
 
 class Service(models.Model):

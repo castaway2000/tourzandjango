@@ -35,9 +35,6 @@
                                 <th>
                                     {% trans 'Tour date' %}
                                 </th>
-                                <th>
-                                    {% trans 'Payment uuid' %}
-                                </th>
                                 <th width="30%">
                                     {% trans 'Order' %}
                                 </th>
@@ -59,31 +56,14 @@
                             {% for payment in payments %}
                                 <tr>
                                     <td>
-                                        <span class="hidden">{{ payment }}</span>
+                                        <span class="hidden">{{ payment.created|date:"YmdHi" }}</span>
                                         {{ payment.created|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
-                                        <a href="{% url 'order_payment_checkout' payment.order.uuid %}">
-                                            {{ payment.uuid }}
+                                        {{ payment.order.get_name }}<br>
+                                        {% trans 'Status' %}: <a href="{% url 'order_completing' payment.order.uuid %}">
+                                            {{ payment.order.status.name }}
                                         </a>
-                                    </td>
-                                    <td>
-                                        {% if payment.order.tour %}
-                                            <a href="{% url 'tour_new' payment.order.tour.slug payment.order.tour.uuid 'new' %}">
-                                                {{ payment.order.tour.name }}
-                                            </a>
-                                                 {% blocktrans %}by{% endblocktrans %}
-
-                                            <a href="{% url 'guide_new' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid 'new' %}">
-                                                {{ payment.order.guide.user.generalprofile.first_name }}
-                                            </a>
-
-                                        {% else %}
-                                            {% trans 'Tour with' %}
-                                            <a href="{% url 'guide_new' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid 'new' %}">
-                                                {{ payment.order.guide.user.generalprofile.first_name }}
-                                            </a>
-                                        {% endif %}
                                     </td>
                                     <td>
                                         {{ payment.amount|safe }}
@@ -123,7 +103,9 @@
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function(){
-            $("#payments_table").DataTable();
+            $("#payments_table").DataTable({
+                "aaSorting": [ [0,'desc'] ]
+            });
         })
     </script>
 {% endblock %}
