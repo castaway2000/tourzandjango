@@ -3,7 +3,7 @@ import re
 import bs4
 
 
-def get_location_summary(location, full_location):
+def get_location_summary(location, full_location=None):
     try:
         location_description = 'Description Pending'
         location = re.sub(r'[\(].*?[\)]', '', location)  # removing parenthesis for proper search
@@ -24,7 +24,7 @@ def get_location_summary(location, full_location):
                 out.append(' '.join(re.sub(r'\[.*?\]', '', line).split()))
                 location_description = ''.join(out)
         print(location_description)
-        if "There is more than one place called" in location_description:
+        if "There is more than one place called" in location_description and full_location is not None:
             location_description = '%s is a City located in %s' % (location, str(full_location).split(",")[1])
         return location_description
     except KeyError:
