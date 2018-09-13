@@ -134,7 +134,7 @@ class City(models.Model):
             self.name = self.original_name
         self.slug = slugify(self.name)
 
-        if not self.description:
+        if not self.description or self.description == 'None':
             self.description = get_location_summary(self.name, self.full_location)
 
         if not self.image:

@@ -604,6 +604,11 @@ class Order(models.Model):
             message
             status ("success" or "error")
         """
+
+        class Bunch:
+            def __init__(self, **kwds):
+                self.__dict__.update(kwds)
+
         order = self
         if int(user_id) != self.tourist.user_id:
             message = _("User, who has initialized payment is not a tourist in the selected order")
@@ -611,15 +616,21 @@ class Order(models.Model):
         else:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
             amount = "%s" % float(self.total_price)
-            result = braintree.Transaction.sale({
-                "amount": amount,
-                "payment_method_token": payment_method.token,
-                "options": {
-                    "submit_for_settlement": False
-                }
-            })
-
-            # print (result)
+            if self.total_price > 0:
+                result = braintree.Transaction.sale({
+                    "amount": amount,
+                    "payment_method_token": payment_method.token,
+                    "options": {
+                        "submit_for_settlement": False
+                    }
+                })
+            else:
+                result = Bunch()
+                result.is_success = True
+                result.transaction = Bunch()
+                result.transaction.id = uuid_creating()
+                result.transaction.amount = 0
+                result.transaction.currency_iso_code = 'USD'
 
             if result.is_success:
                 data = result.transaction
@@ -628,7 +639,7 @@ class Order(models.Model):
                 currency = data.currency_iso_code
                 currency, created = Currency.objects.get_or_create(name=currency)
                 Payment.objects.get_or_create(order=order, payment_method=payment_method,
-                                       uuid=payment_uuid, amount=amount, currency=currency)
+                                              uuid=payment_uuid, amount=amount, currency=currency)
                 order.status_id = 5 # payment reserved
                 order.payment_status_id = 2 #full payment reserverd
                 order.save(force_update=True)

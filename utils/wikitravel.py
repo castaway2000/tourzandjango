@@ -11,7 +11,9 @@ def get_location_summary(location, full_location=None):
         data = requests.get(wiki).json()
         bs = bs4.BeautifulSoup
         dataset = bs(data['parse']['text']['*'], features="html.parser").text.strip()
+        print(dataset)
         stripped = re.sub(r'\n\s*\n', '\n', dataset).splitlines()
+        # print(stripped)
         if stripped[0] == location:
             stripped = stripped[1:]
         out = []
@@ -23,7 +25,7 @@ def get_location_summary(location, full_location=None):
             else:
                 out.append(' '.join(re.sub(r'\[.*?\]', '', line).split()))
                 location_description = ''.join(out)
-        print(location_description)
+        # print(location_description)
         if "There is more than one place called" in location_description and full_location is not None:
             location_description = '%s is a City located in %s' % (location, str(full_location).split(",")[1])
         return location_description
@@ -34,3 +36,5 @@ def get_location_summary(location, full_location=None):
         print(err)
         location_description = 'Description Pending'
         return str(location_description)
+
+get_location_summary('Seattle')

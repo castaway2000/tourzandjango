@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404
 from utils.api_helpers import FilterViewSet
 from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
 import braintree
+import datetime
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
         merchant_id=BRAINTREE_MERCHANT_ID,
@@ -29,7 +30,7 @@ else:
         private_key=BRAINTREE_PRIVATE_KEY
         )
 
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from .permissions import IsOwnerOnly
 from django.shortcuts import get_object_or_404
 
@@ -70,6 +71,8 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
     def set_as_default_payment_method(self, request, pk=None):
         #AT 02092018: possible improve - use uuid instead of id. This needs researching.
         user = request.user
+        if request.GET:
+            pk = request.get('payment_method_id')
         payment_method = get_object_or_404(PaymentMethod, id=pk, user=user)
         if payment_method:
             response_data = payment_method.set_as_default()
@@ -81,6 +84,8 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
     def deactivate_payment_method(self, request, pk=None):
         #AT 02092018: possible improve - use uuid instead of id. This needs researching.
         user = request.user
+        if request.GET:
+            pk = request.get('payment_method_id')
         payment_method = get_object_or_404(PaymentMethod, id=pk, user=user)
         if payment_method:
             response_data = payment_method.deactivate()
