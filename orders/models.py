@@ -683,7 +683,7 @@ class Order(models.Model):
         if pay_without_pre_reservation == True:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
             if payment_method:
-                amount = "%s" % float(self.total_price)
+                amount = "%s" % round(self.total_price, 2)
                 result = braintree.Transaction.sale({
                     "amount": amount,
                     "payment_method_token": payment_method.token,
