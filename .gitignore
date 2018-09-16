@@ -16,7 +16,8 @@ __pycache__/
 .git
 tasks_description.txt
 local_settings.py
-
+static/media
+static/static_prod
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

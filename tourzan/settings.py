@@ -111,7 +111,10 @@ MIDDLEWARE = [
     'crequest.middleware.CrequestMiddleware',
     'users.middleware.TrackingActiveUserMiddleware',
 
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
+    'subdomains.middleware.SubdomainURLRoutingMiddlewa',
+
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 
 ]
 
