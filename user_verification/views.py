@@ -6,6 +6,7 @@ from .models import *
 from .forms import *
 import requests
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.contrib import messages
 from tourzan.settings import ONFIDO_TOKEN, ONFIDO_IS_TEST_MODE
 from django.http import JsonResponse
@@ -16,6 +17,7 @@ import pycountry
 
 
 @login_required()
+@never_cache
 def identity_verification_router(request):
     """
     This is a kind of routing view. Depending on already done scan docs uploading of live photo making, the script
@@ -46,6 +48,7 @@ def identity_verification_router(request):
 
 
 @login_required()
+@never_cache
 def identity_verification_ID_uploading(request):
     page = "identity_verification"
 
@@ -104,6 +107,7 @@ def identity_verification_ID_uploading(request):
 
 
 @login_required()
+@never_cache
 def identity_verification_photo(request):
     page = "identity_verification"
 
@@ -119,12 +123,21 @@ def identity_verification_photo(request):
 
     general_profile = user.generalprofile
     if request.POST:
+        print(request.POST)
         webcam_img = request.POST.get("webcam_image")
         format, imgstr = webcam_img.split(';base64,')
         ext = format.split('/')[-1]
         webcam_img_file = ContentFile(base64.b64decode(imgstr), name='webcam.' + ext)
+
+        #08032018 temporary workaround solution for cases when there are no first_name and last name on general profile
+        if not general_profile.first_name and request.POST.get("first_name"):
+            general_profile.first_name = request.POST.get("first_name")
+        if not general_profile.last_name and request.POST.get("last_name"):
+            general_profile.last_name = request.POST.get("last_name")
+
         general_profile.webcam_image = webcam_img_file
         general_profile.save(force_update=True)
+
 
         token = "Token token=%s" % ONFIDO_TOKEN
         headers = {'Authorization': token}
@@ -143,6 +156,11 @@ def identity_verification_photo(request):
             if guide.date_of_birth:
                 applicant_data["dob"] = guide.date_of_birth.strftime('%Y-%m-%d')
 
+            if general_profile.registration_postcode and general_profile.registration_postcode != "" and general_profile.registration_postcode != " ":
+                postcode = general_profile.registration_postcode
+            else:
+                postcode = "00000"
+
             address = {
                   "flat_number": general_profile.registration_flat_nmb,
                   "building_number": general_profile.registration_building_nmb,
@@ -151,7 +169,7 @@ def identity_verification_photo(request):
                   # "sub_street": null,
                   "town": general_profile.registration_city,
                   "state": general_profile.registration_state,
-                  "postcode": general_profile.registration_postcode,
+                  "postcode": postcode,
                   "country": general_profile.registration_country_ISO_3_digits,
             }
             applicant_data["addresses"] = [address]
@@ -266,6 +284,8 @@ def identity_verification_photo(request):
                                                       report_url=report_url,
                                                       type=report_type, defaults = defaults_kwargs
                                                       )
+            user.generalprofile.is_verified = True
+            user.generalprofile.save(force_update=True)
         print ("Onfido API integration is finished")
         return HttpResponseRedirect(reverse("identity_verification_router"))
     else:
@@ -273,6 +293,7 @@ def identity_verification_photo(request):
 
 
 @csrf_exempt
+@never_cache
 def identity_verification_webhook(request):
     #Todo: add here infido ips to check + implement request token comparason
     data = json.loads(request.body.decode('utf-8'))
@@ -305,6 +326,10 @@ def identity_verification_webhook(request):
         # print(report_status)
         # print(report_result)
 
+        if report_status == 'complete' and report.type == 'document' and report_result != 'clear' or report_result != 'consider':
+            general_profile = report.identification_checking.applicant.general_profile
+            general_profile.is_verified = False
+            general_profile.save(force_update=True)
         report.status = report_status
         report.result = report_result
         report.save(force_update=True)

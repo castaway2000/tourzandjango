@@ -27,12 +27,17 @@
                                 {{ blog_post.name }}
                             </a></h4>
                         <ul class="post-meta">
-                            <li><i class="fa fa-calendar"></i><a href="#">{{ blog_post.created|date:"m.d.Y" }}</a>
+{#                            <li>#}
+{#                                <i class="fa fa-calendar"></i><a href="#">{{ blog_post.created|date:"m.d.Y" }}</a>#}
+{#                            </li>#}
+                            <li><i class="fa fa-user"></i><a href="#" rel="author">{{ blog_post.author.generalprofile.get_name }}</a>
                             </li>
-                            <li><i class="fa fa-user"></i><a href="#">{{ blog_post.author}}</a>
-                            </li>
-                            <li><i class="fa fa-tags"></i><a href="#">{{ blog_post.tags }}</a>
-                            </li>
+                            {% if blog_post.tags %}
+                                <li>
+                                    <i class="fa fa-tags"></i>
+                                    <a href="#">{{ blog_post.tags }}</a>
+                                </li>
+                            {% endif %}
                         </ul>
                         <p class="blog-text">
                             {{ blog_post.text|safe }}

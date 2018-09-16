@@ -27,6 +27,11 @@ def blog(request, category_slug=None):
     paginator = Paginator(blog_posts, 10)
     try:
         blog_posts = paginator.page(page)
+        index = blog_posts.number - 1
+        max_index = len(paginator.page_range)
+        start_index = index - 5 if index >= 5 else 0
+        end_index = index + 5 if index <= max_index - 5 else max_index
+        page_range = paginator.page_range[start_index:end_index]
     except PageNotAnInteger:
         blog_posts = paginator.page(1)
     except EmptyPage:

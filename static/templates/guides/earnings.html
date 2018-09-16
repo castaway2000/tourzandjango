@@ -7,14 +7,20 @@
 {% endblock %}
 
 {% block content_profile %}
-    <div class="col-md-9" xmlns="http://www.w3.org/1999/html">
+    <div class="col-lg-9" xmlns="http://www.w3.org/1999/html">
         <div class="row">
 
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <h4>
                     {% blocktrans %}Your Earnings{% endblocktrans %}
                 </h4>
-
+            </div>
+            <div class="col-lg-12">
+                <ul class="list-unstyled">
+                    <li><b>{% trans 'Pending amount' %}: </b> {{ orders_pending_amount }} USD</li>
+                    <li><b>{% trans 'Available earned amount' %}: </b> {{ orders_completed_not_paid_amount }} USD</li>
+                    <li><b>{% trans 'Paid amount' %}: </b> {{ orders_completed_paid_amount }} USD</li>
+                </ul>
             </div>
         </div>
 
@@ -47,25 +53,28 @@
                         <thead>
                             <tr>
                                 <th>
-                                    Date
+                                    {% trans 'Tour date' %}
                                 </th>
                                 <th>
-                                    Order
+                                    {% trans 'Order' %}
                                 </th>
                                 <th>
-                                    Client
+                                    {% trans 'Client' %}
                                 </th>
                                 <th>
-                                    Total amount
+                                    {% trans 'Total amount' %}
                                 </th>
                                 <th>
-                                    Fees amount
+                                    {% trans 'Fees amount' %}
                                 </th>
                                 <th>
-                                    Paid amount
+                                    {% trans 'Your earnings' %}
                                 </th>
                                 <th>
-                                    Currency
+                                    {% trans 'Currency' %}
+                                </th>
+                                <th>
+                                    {% trans 'Payout date' %}
                                 </th>
                             </tr>
                         </thead>
@@ -73,35 +82,17 @@
                             {% for order in orders %}
                                 <tr>
                                     <td>
-                                        <span class="hidden">{{ order.payment.dt_paid|date:"YmdHi" }}</span>
-                                        {{ order.payment.dt_paid|date:"m.d.Y H:i" }}
+                                        <span class="hidden">{{ order.date_booked_for|date:"YmdHi" }}</span>
+                                        {{ order.date_booked_for|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
-                                        {% if order.tour %}
-                                            <a href="{% url 'tour' order.tour.slug payment.order.tour.id %}">
-                                                {{ order.tour.name }}
-                                            </a>
-                                                 {% blocktrans %}by{% endblocktrans %}
-
-                                            <a href="{% url 'guide' order.guide.user.username %}">
-                                                {{ order.guide.user.generalprofile.first_name }}
-                                            </a>
-
-                                        {% else %}
-                                            Tour with
-                                            <a href="{% url 'guide' order.guide.user.username %}">
-                                                {{ order.guide.user.generalprofile.first_name }}
-                                            </a>
-
-                                        {% endif %}
+                                        <a href="{% url 'order_completing' order.uuid %}">
+                                            {{ order.status.name }}
+                                        </a>
                                     </td>
                                     <td>
                                         <a href="{% url 'tourist' order.tourist.user.generalprofile.uuid %}">
-                                            {% if order.tourist.name %}
-                                                {{ order.tourist.name }}
-                                            {% else %}
-                                                {{ order.tourist.user.username }}
-                                            {% endif %}
+                                           {{ order.tourist.user.generalprofile.get_name }}
                                         </a>
                                     </td>
                                     <td>
@@ -116,6 +107,13 @@
                                     <td>
                                         {{ order.currency.name }}
                                     </td>
+                                    <td>
+                                        {% if order.guide_payout_date %}
+                                            {{ order.guide_payout_date|date:"m/d/Y H:i" }}
+                                        {% else %}
+                                            {% trans 'not paid' %}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -124,7 +122,7 @@
             {% else %}
                 <div class="col-lg-12">
                     <p>
-                        You have no earning for this period
+                        {% trans 'You have no earning for this period' %}.
                     </p>
                 </div>
             {% endif %}
@@ -138,7 +136,9 @@
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function(){
-            $("#earnings_table").DataTable();
+            $("#earnings_table").DataTable({
+                "aaSorting": [ [0,'desc'] ]
+            });
         })
     </script>
 {% endblock %}

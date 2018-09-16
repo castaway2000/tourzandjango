@@ -3,13 +3,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from utils.uploadings import upload_path_handler_tourist_profile_image, upload_path_handler_tourist_travel_pictures
 from utils.images_resizing import optimize_size
+from django.core.validators import FileExtensionValidator
+from tourzan.settings import STATIC_URL
 
 
 #tourist profile which is created by default for all users
 class TouristProfile(models.Model):
     user = models.OneToOneField(User)
     rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    image = models.ImageField(upload_to=upload_path_handler_tourist_profile_image, blank=True, null=True, default=None)
+    image = models.ImageField(upload_to=upload_path_handler_tourist_profile_image, blank=True, null=True, default=None,
+                              validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     about = models.TextField(max_length=5000, blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -33,10 +36,17 @@ class TouristProfile(models.Model):
             self.image = optimize_size(self.image, "medium")
         super(TouristProfile, self).save(*args, **kwargs)
 
+    def get_avatar(self):
+        if self.image:
+            return self.image.url
+        else:
+            return "%simg/%s" % (STATIC_URL, "no-avatar.png")
+
 
 class TouristTravelPhoto(models.Model):
     user = models.ForeignKey(User)
-    image = models.ImageField(upload_to=upload_path_handler_tourist_travel_pictures)
+    image = models.ImageField(upload_to=upload_path_handler_tourist_travel_pictures,
+                              validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     order = models.ForeignKey("orders.Order", blank=True, null=True, default=None)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)

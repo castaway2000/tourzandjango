@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+
+{% block seo_stuff %}
+    <title>{% trans 'Find guides in' %} {{ obj.name }}</title>
+    <meta name="description" content="Tourzan is the best showaround service online and only the best tours by locals,
+         search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
+    <meta property="og:description" content="Tourzan is the best showaround service online and only the best tours by locals,
+         search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
+
+    <meta property="og:title" content="{% trans 'Find guides in' %} {{ obj.name }}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:image" content="{% get_sized_image obj %}" />
+    <meta property="og:image:height" content="640" />
+{#    <meta property="og:image:width" content="1200" />#}
+    <meta property="og:type" content="website" />
+{% endblock seo_stuff %}
+
+
+{% block content %}
+    <div class="top-area show-onload mask-wrapper">
+        <div class="bg-holder full text-center text-white">
+            <div class="bg-mask"></div>
+            <div class="bg-img"
+                 style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;">
+            </div>
+            <div class="bg-front full-center">
+                <div class="owl-cap">
+                    <div class="text">{% trans 'Welcome to' %}</div>
+                    <h2 class="owl-cap-title fittext">
+                        {{ obj.name }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="breadcrumb mb10">
+                    <li>
+                        <a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a>
+                    </li>
+                    {% if obj|get_class == "Country" %}
+                        <li class="active">{{ obj.name }}</li>
+                    {% else %}
+                        <li><a href="{% url 'country_guides' country_slug %}">{{ obj.country.name }}</a>
+                        <li class="active">{{ obj.name }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% if obj|get_class == "Country" %}
+        {% with obj.get_cities as cities %}
+        {% if cities|length > 0 %}
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'Find tours and private guides in the following cities' %}</h3>
+                    </div>
+                    {% for city in cities %}
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div>
+                                        <a href="{% url 'city_guides' country_slug city.slug %}" target="_blank">
+                                            <img src="{% get_sized_image city "small" %}">
+                                        </a>
+                                    </div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ city.name }}
+                                        </h4>
+                                        <div>
+                                            {{ city.description|safe|linebreaks|truncatewords_html:30 }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'city_guides' country_slug city.slug %}" target="_blank"
+                                    >
+                                        {% trans 'View details' %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div>
+                            <div class="row">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>{% trans 'There is no guides for this country in our database' %}</p>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+    {% else %}
+        {% with obj.get_tours_12 as tours %}
+        {% if tours|length > 0 %}
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'Tours in' %} {{ obj.name }}</h3>
+                        {% with obj.get_average_tour_price as average_tour_price %}
+                        {% if average_tour_price %}
+                            <div class="mt10 mb10">
+                                <b>{% trans 'Average price per person' %}: </b> {{ average_tour_price }} USD
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                        {% for tour in tours %}
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div>
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
+                                                <img src="{% get_sized_image tour default_size="small" %}">
+                                            </a>
+                                        </div>
+                                        <div class="mt10">
+                                            <h4 class="text-center">
+                                                {{ tour.name }}
+                                            </h4>
+                                        </div>
+                                        <div>
+                                            <ul class="list-unstyled">
+                                                {% if tour.type == "1" %}
+                                                    <li><b>{% trans 'Type' %}:</b> {{ tour.type_name }} {% trans ' tour' %}</li>
+                                                    <li>
+                                                        <b>{% trans 'Languages' %}</b>:
+                                                        {% with tour.get_languages as tour_languages %}
+                                                        {% if not tour_languages %}
+                                                            <span class="label label-success label-tag">
+                                                                English
+                                                            </span>
+                                                        {% else %}
+                                                            {% for tour_language in tour_languages %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ tour_language.name }}
+                                                                </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        {% endwith %}
+                                                    </li>
+                                                    <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
+                                                    <li><b>{% trans 'Price' %}:</b> {{ tour.get_lowest_scheduled_tour_price }} USD</li>
+                                                    <li>
+                                                        <b>{% trans 'Closest date' %}:</b>
+                                                        {% with  tour.get_nearest_available_dates as nearest_available_dates %}
+                                                            {% if nearest_available_dates %}
+                                                                {% for nearest_available_date in nearest_available_dates %}
+                                                                    <span class="label label-success label-tag">
+                                                                        {{ nearest_available_date.dt|date:"m/d/Y h:i" }}
+                                                                         - {{ nearest_available_date.seats_available }}
+                                                                        {% if nearest_available_date.seats_available == 1 %}
+                                                                            {% trans 'available spot' %}{% else %}{% trans 'available spots' %}
+                                                                        {% endif %}
+                                                                    </span>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                {% trans 'No free dates for the nearest 30 days' %}
+                                                            {% endif %}
+                                                        {% endwith %}
+
+                                                    </li>
+                                                {% else %}
+                                                    <li><b>{% trans 'Type' %}:</b> {{ tour.type_name }} {% trans 'tour' %}</li>
+                                                    <li>
+                                                        <b>{% trans 'Languages' %}</b>:
+                                                        {% with tour.get_languages as tour_languages %}
+                                                        {% if not tour_languages %}
+                                                            <span class="label label-success label-tag">
+                                                                English
+                                                            </span>
+                                                        {% else %}
+                                                            {% for tour_language in tour_languages %}
+                                                                <span class="label label-success label-tag">
+                                                                    {{ tour_language.name }}
+                                                                </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        {% endwith %}
+                                                    </li>
+                                                    <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
+                                                    <li><b>{% trans 'Price' %}:</b>
+                                                        1-{{ tour.get_persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
+                                                    </li>
+                                                    <li><b>{% trans 'Additional people' %}: </b> {{ tour.get_additional_person_price }} USD {% trans 'for each person' %}</li>
+                                                    <li><b>{% trans 'Maximum participants' %}: </b> {{ tour.get_max_persons_nmb }}</li>
+                                                    <li class="mt10">{% trans 'Contact guide directly to book a tour' %}</li>
+                                                {% endif %}
+                                                <br>
+                                                <li>{{ tour.overview_short|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="text-center panel-button">
+                                        <a class="btn btn-default"
+                                            href="{% url 'tour_new' tour.slug tour.uuid "new" %}"
+                                            target="_blank"
+                                        >
+                                            {% trans 'View details' %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div>
+                                <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with obj.get_guides_12 as guides %}
+        {% if guides|length > 0 %}
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'Guides in' %} {{ obj.name }}</h3>
+                        {% with obj.get_average_guide_rate as average_guide_rate %}
+                        {% if average_guide_rate %}
+                            <div class="mt10 mb10">
+                                <b>{% trans 'Average hourly rate' %}: </b> {{ average_guide_rate }} USD
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                        {% for guide in guides %}
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                <div class="panel panel-default panel-guide">
+                                    <div class="panel-body">
+                                        <div class="text-center">
+                                            <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
+                                            target="_blank">
+                                                <img src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}">
+                                            </a>
+                                        </div>
+                                        <div class="mt10">
+                                            <h4 class="text-center">
+                                                {{ guide.user.generalprofile.first_name }}
+                                            </h4>
+                                        </div>
+                                        <div>
+                                            <ul class="list-unstyled">
+                                                <li><b>{% trans 'Rate' %}:</b> {{ guide.guide_rate }}</li>
+                                                <li><b>{% trans 'Min hours' %}:</b> {{ guide.min_hours }}</li>
+                                                <li>
+                                                    <b>{% trans 'Languages' %}</b>:
+                                                    {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
+                                                    {% if not user_languages %}
+                                                        <span class="label label-success label-tag">
+                                                            English
+                                                        </span>
+                                                    {% else %}
+                                                        {% for user_language in user_languages %}
+                                                            <span class="label label-success label-tag">
+                                                                {{ user_language.get_language_display }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    {% endwith %}
+                                                </li>
+                                                <br>
+                                                <li>{{ guide.overview|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="text-center panel-button">
+                                        <a class="btn btn-default"
+                                            href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
+                                            target="_blank"
+                                        >
+                                            {% trans 'View profile' %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div>
+                                <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with obj.get_special_offer_tours as special_offer_tours %}
+        {% if special_offer_tours %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Special offers' %}</h3>
+                    </div>
+                </div>
+                {% include "tours/special_offers_section.html" %}
+            </div>
+        {% endif %}
+        {% endwith %}
+    {% endif %}
+
+    {% with obj.get_blog_posts as blog_posts%}
+        {% if blog_posts %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'Blog posts about' %} {{ obj.name }}</h3>
+                    </div>
+                    {% for blog_post in blog_posts %}
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                            <div class="panel panel-default panel-guide">
+                                <div class="panel-body">
+                                    <div class="text-center">
+                                        <a href="{% url 'blog_post' blog_post.slug %}"
+                                        target="_blank">
+                                            <img src="{{ blog_post.image.url }}" class="img-responsive">
+                                        </a>
+                                    </div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ blog_post.name }}
+                                        </h4>
+                                    </div>
+                                    <div>
+                                       {{ blog_post.text|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}
+                                    </div>
+                                </div>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'blog_post' blog_post.slug %}"
+                                        target="_blank"
+                                    >
+                                        {% trans 'Read More' %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div>
+                            <div class="row">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if obj.description %}
+        <div class="container mt30 mb30">
+            <div class="row">
+                <div class="col-lg-6 col-lg-offset-3">
+                    <h3>{% trans 'General information' %}</h3>
+                    <div>
+                        {{ obj.description|safe|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock content %}

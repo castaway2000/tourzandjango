@@ -7,6 +7,10 @@ from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions
+from allauth.account.forms import SignupForm
+from tourzan.settings import GOOGLE_RECAPTCHA_SITE_KEY
+from crequest.middleware import CrequestMiddleware
+from django.urls import reverse
 
 
 class LoginForm(forms.Form):
@@ -15,6 +19,7 @@ class LoginForm(forms.Form):
 
     class Meta:
         widgets = {'password': forms.PasswordInput()}
+        fields = "referral_code"
 
 
 class VerificationCodeForm(forms.Form):
@@ -93,8 +98,6 @@ class GeneralProfileAsGuideForm(forms.ModelForm):
         if email != user.email:
             if User.objects.filter(email=email, is_active=True).exists():
                 raise ValidationError(_('Email already in use by another user'))
-        else:
-            raise ValidationError(_('Email is the same as a current one'))
         return email
 
 
@@ -121,3 +124,65 @@ class GeneralProfileAsTouristForm(forms.ModelForm):
                 raise ValidationError(_('Email already in use by another user'))
         return new_email
 
+
+class CustomSignupForm(SignupForm):
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder':'First name'}))
+    agree_to_PP = forms.BooleanField(label="%s <a href='%s' target='_blank'>%s</a>" % (
+                                                                                  _("I agree to"),
+                                                                                  "/privacy-policy",
+                                                                                  _("Privacy Policy"))
+                                     )
+    agree_to_TOS = forms.BooleanField(
+        label="%s <a href='%s' target='_blank'>%s</a>" % (_("I agree to"), "/tos", _("Terms and Conditions"))
+                                     )
+    agree_to_emails = forms.BooleanField(label="%s" % (
+        _("I accept and give my consent to receive emails concerning website updates, coupon codes and special offers"))
+                                         )
+
+    referral_code = forms.CharField(required=False, label=_('Referral code (optional)'))
+    field_order = ('email', 'first_name', 'username', 'password1', 'password2',
+                   'referral_code', 'agree_to_PP', 'agree_to_TOS', 'agree_to_emails',)
+
+    # class Meta:
+    #     fields = ['first_name', 'email', 'username', 'password1', 'password2', 'agree_to_PP',
+    #                    'agree_to_TOS', 'agree_to_emails']
+
+    def __init__(self, *args, **kwargs):
+        super(CustomSignupForm, self).__init__(*args, **kwargs)
+        current_request = CrequestMiddleware.get_request()
+        if current_request.session.get("referral_code"):
+            self.fields['referral_code'].initial = current_request.session["referral_code"]
+
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'text-left'
+        self.helper.form_action = reverse('account_signup')
+        self.helper.form_method = "post"
+        # Add magic stuff to redirect back.
+        self.helper.layout.append(
+            HTML(
+                "{% if redirect_field_value %}"
+                "<input type='hidden' name='{{ redirect_field_name }}'"
+                " value='{{ redirect_field_value }}' />"
+                "{% endif %}"
+            )
+        )
+
+        # Adding of google recapcha
+        self.helper.layout.append(
+            HTML(
+                '<div class="form-group">'
+                    '<div class="g-recaptcha" data-sitekey="' + GOOGLE_RECAPTCHA_SITE_KEY + '"></div>'
+                '</div>'
+            )
+        )
+
+        # Add submit button like in original form.
+        self.helper.layout.append(
+            HTML(
+                '<div class="form-group text-center">'
+                '<button class="btn btn-primary" type="submit">'
+                '%s &raquo;</button>'
+                '</div>' % _('Sign Up for Tourzan')
+            ),
+        )

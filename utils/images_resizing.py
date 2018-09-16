@@ -10,9 +10,9 @@ def optimize_size(initial_image, size):
 
     size_dict = {
         "xsmall": 50,
-        "small": 400,
-        "medium": 600,
-        "large": 1500
+        "small": 320,
+        "medium": 640,
+        "large": 1680
     }
 
     image_file = initial_image.file
@@ -31,12 +31,16 @@ def optimize_size(initial_image, size):
     image.thumbnail((target_width, target_height), Image.ANTIALIAS)
     output = BytesIO()
     try:
-        image.save(output, format='JPEG', quality=75)
+        if size == "large":
+            quality = 75
+        else:
+            quality = 100
+        image.save(output, format='JPEG', quality=quality)
         output.seek(0)
         img = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % image_name.split(".")[0],
                                           'image/jpeg', sys.getsizeof(output), None)
     except:
-        image.convert('RGB').save(output, format='JPEG', quality=75)
+        image.convert('RGB').save(output, format='JPEG', quality=quality)
         output.seek(0)
         img = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % image_name.split(".")[0],
                                           'image/jpeg', sys.getsizeof(output), None)

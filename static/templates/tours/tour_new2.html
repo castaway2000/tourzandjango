@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load stars_rating %}
+{% load crispy_forms_tags %}
+{% load utils_tags %}
+
+
+{% block seo_stuff %}
+    <title>{% trans 'Tour in' %} {{ tour.city.name }}: {{ tour.name }}</title>
+    {% if tour.overview_short %}
+        <meta name="description" content="{{ tour.overview_short|remove_newlines }}"/>
+        <meta property="og:description" content="{{ tour.overview_short|remove_newlines }}" />
+    {% else %}
+        <meta name="description" content="{{ tour.overview|safe }}"/>
+        <meta property="og:description" content="{{ tour.overview|safe }}" />
+    {% endif %}
+
+    <meta property="og:title" content="{% trans 'Tour in' %} {{ tour.city.name }}: {{ tour.name }}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:image" content="{{ tour.image_medium.url }}" />
+    <meta property="og:image:height" content="640" />
+{#    <meta property="og:image:width" content="1200" />#}
+    <meta property="og:type" content="website" />
+{% endblock seo_stuff %}
+
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock  %}
+
+
+{% block content %}
+    <div class="tour-section hero-section top-area show-onload mask-wrapper">
+        <div class="bg-holder full text-center text-white">
+            <div class="bg-mask"></div>
+            <div class="bg-img"
+                 style="
+                    {% if tour.image %}
+                        background: url('{% get_sized_image tour %}');
+                    {% else %}
+                        background: url({% static "img/1280x848.png" %});
+                    {% endif %}
+                 ">
+            </div>
+            <div class="container container-information">
+                <div>
+                    <ul class="breadcrumb pull-left">
+                        <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
+                        <li>
+                            <a href="{% url 'country_guides' tour.city.country.slug %}">{{ tour.city.country.name }}</a>
+                        </li>
+    {#                    <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a></li>#}
+                        <li>
+                            <a href="{% url 'city_guides' tour.city.country.slug tour.city.slug %}">{{ tour.city.name }}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}">{{ tour.guide.user.generalprofile.first_name }}</a>
+                        </li>
+                        <li class="active">{{ tour.name }}</li>
+                    </ul>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center title">{{ tour.name }}</div>
+                    </div>
+                </div>
+                {% if tour.overview_short %}
+                    <div class="row">
+                        <div class="col-lg-6 col-lg-offset-3">
+                            <div class="text-center tour-description">
+                                {{ tour.overview_short|safe|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="tour-section-new guide-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
+                    <img src="{{ tour.guide.profile_image_small.url }}" class="img-responsive">
+                    <div class="text-center mt10 mb10">
+                        <div class="guide-name">
+                            <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}"
+                               target="_blank">{{ tour.guide.user.generalprofile.get_name }}<span class="arrow-right"> > </span>
+                            </a>
+                        </div>
+                        {% trans 'the guide' %}
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-8 col-xs-12">
+                    {{ tour.guide.overview|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tour-section-divider orange">
+        <a href="#" class="book-private-tour">{% trans 'Book a tour for your date' %}&thinsp;&thinsp;> </a>
+    </div>
+
+    {% if tour.overview or tour.included or tour.excluded%}
+        <div class="tour-section-new program-section">
+            <div class="container">
+                {% if tour.overview %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="section-title">
+                                {% trans 'Description' %}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-lg-offset-4">
+                            <div class="mb20">
+                                {{ tour.overview|safe|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if tour.included %}
+                    <div class="row">
+                        <div class="col-lg-4 col-lg-offset-4">
+                            <div class="section-subtitle">
+                                {% trans 'What is included' %}
+                            </div>
+                            <div>
+                                {{ tour.included|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if tour.excluded %}
+                    <div class="row">
+                        <div class="col-lg-4 col-lg-offset-4">
+                            <div class="section-subtitle">
+                                {% trans 'What is excluded' %}
+                            </div>
+                            <div>
+                                {{ tour.excluded|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% with tour.get_tourprogram_items as tourprogram_items %}
+        {% if tourprogram_items %}
+            <div class="tour-section-new program-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="section-title">
+                                {% trans 'Tour program' %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for item in tourprogram_items %}
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <div class="tour-program-item panel-item">
+                                    <div class="img-container" style="
+                                        {% if item.image_medium %}
+                                            background: url('{{ item.image_medium.url }}')
+                                        {% else %}
+                                            background: url('{% static "img/800x600.png" %}')
+                                        {% endif %}
+                                    ">
+                                        {% if item.time %}
+                                            <div class="circle circle-time text-center">
+                                                {{ item.time|date:"H:i" }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="content">
+                                        <div class="title">
+                                            {{ forloop.counter }}. {{ item.name }}
+                                        </div>
+                                        <div class="description">
+                                            {{ item.description|safe|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div><!--end row -->
+                                <div class="row">
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="tour-section-divider">
+                <a href="#" class="book-private-tour">{% trans 'Book a tour for your date' %}&thinsp;&thinsp;> </a>
+            </div>
+
+        {% endif %}
+    {% endwith %}
+
+
+    {% with tour.get_tours_images as tour_images %}
+        {% if tour_images %}
+            <div class="tour-section-new images-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-lg-offset-2">
+                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                {% for tour_image in tour_images %}
+                                    <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                         class="img-responsive"
+                                         title="Image for {{ tour.name }}" />
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if tour.type == "1" and tour.get_nearest_available_dates_1_item|length == 0 %}
+    {% elif tour.is_active and request.user != tour.guide.user %}
+        <div id="tour_booking_form" class="tour-section-new tour-booking-form">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+                        <div class="section-title">
+                            {% trans 'Booking form' %}
+                        </div>
+                        <div class="mt10">
+                            {% crispy form %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% with tour.get_reviews as reviews %}
+        {% if reviews %}
+            <div class="tour-section-new reviews-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-lg-offset-3">
+                            <div class="review-container">
+                                <div class="section-title">
+                                    {% trans 'Tourists Reviews' %}
+                                </div>
+
+                                <ul class="booking-item-reviews list">
+                                    {% for review in reviews %}
+                                        {% include 'users/review_representation_guide.html' %}
+                                    {% endfor %}
+                                 </ul>
+
+                                {% if reviews.has_other_pages %}
+                                    <div class="row wrap">
+                                        <div class="col-md-5">
+                                            <p>
+                                                <small>{{ reviews_total_nmb }} {% blocktrans %}reviews for this tour{% endblocktrans %}.</small>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <ul class="pagination">
+                                                {% if reviews.has_previous %}
+                                                    <li class="next"><a href="?page={{ reviews.previous_page_number }}">Previous Page</a>
+                                                    </li>
+                                                {% endif %}
+                                                {% for i in reviews.paginator.page_range %}
+                                                    {% if reviews.number == i %}
+                                                        <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                                                      {% else %}
+                                                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                                      {% endif %}
+                                                {% endfor %}
+                                                {% if reviews.has_next %}
+                                                    <li class="next"><a href="?page={{ reviews.next_page_number }}">Next Page</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+    <script>
+
+        $(document).ready(function(){
+            $('.owl-carousel').owlCarousel();
+            if ($("#id_date") !== undefined){
+                $("#id_date").datetimepicker({
+                     minDate: new Date(),
+                     format: 'MM/DD/YYYY HH:mm',
+                     stepping: 15,
+                });
+            }
+
+            function finalPriceCalculation(){
+                if ($("#price_total")){
+                    price = {{ tour.price_final }};
+                    nmb_people = $("#id_number_people").val();
+                    max_people = {{ tour.max_persons_nmb }};
+                    limit_people_for_low_price = {{ tour.persons_nmb_for_min_price }};
+                    additional_person_price = {{ tour.additional_person_price }}
+                    final_price = 0;
+                    nmb_people_additional = nmb_people - limit_people_for_low_price;
+                    if (nmb_people_additional>0){
+                        final_price = price + (nmb_people_additional*additional_person_price);
+                    }else{
+                        final_price = price;
+                    }
+                    $("#price_total").text(final_price);
+                }
+            }
+            finalPriceCalculation();
+            $("#id_number_people").on("change", function(){
+                finalPriceCalculation();
+            });
+        });
+
+    </script>
+{% endblock js_stuff %}
+
+

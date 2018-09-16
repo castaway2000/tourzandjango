@@ -1,12 +1,14 @@
 {% load static %}
 {% load stars_rating %}
+{% load i18n %}
+{% load utils_tags %}
 
 <li>
     <div class="booking-item booking-item-small">
         <div class="row">
             <div class="col-xs-4">
                 <img {% if tour.image %}
-                        src="{% get_media_prefix %}{{ tour.image }}"
+                        src="{% get_sized_image tour default_size="small" %}"
                      {% else %}
                         src="{% static 'img/300x300.png' %}"
                      {% endif %}
@@ -26,14 +28,14 @@
                     {% if tour.price %}
                         {{ tour.price }} {{ tour.currency.name }}
                     {% elif tour.price_hourly %}
-                        {{ tour.price_hourly }} {{ tour.currency.name }} per hour
+                        {{ tour.price_hourly }} {{ tour.currency.name }} {% trans 'per hour' %}
                     {% else %}
-                        free!
+                        {% trans 'free' %}!
                     {% endif %}
                 </p>
                 <p>
-                    <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary btn-xs">
-                        Go to Tour
+                    <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary btn-xs">
+                        {% trans 'Go to Tour' %}
                     </a>
                 </p>
             </div>

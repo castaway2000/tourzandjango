@@ -1,5 +1,7 @@
 import uuid
 from random import randint
+import os
+from PIL import Image
 
 
 def random_string_creating():
@@ -8,5 +10,16 @@ def random_string_creating():
 
 
 def uuid_creating():
-    random_string = uuid.uuid4()
-    return random_string.hex
+    return uuid.uuid4().hex
+
+
+def uuid_size_6_creating():
+    return uuid.uuid4().hex[:6]
+
+
+def remove_zeros_from_float(x):
+    if (x * 10) % 10 == 0:
+        x = int(x)
+        return x
+    else:
+        return x

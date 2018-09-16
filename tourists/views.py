@@ -16,15 +16,14 @@ from users.models import GeneralProfile
 def profile_settings_tourist(request):
     page = "profile_settings_tourist"
     user = request.user
+    ref_code = user.generalprofile.referral_code
     profile, profile_created = TouristProfile.objects.get_or_create(user=user)
-    user_languages = UserLanguage.objects.filter(user=user)
-    language_levels = LanguageLevel.objects.all().values()
-    user_language_native = None
-    for user_language in user_languages:
-        if user_language.level_id == 1 and not user_language_native:
-            user_language_native = user_language
-        else:
-            user_language_second = user_language
+
+    try:
+        guide_status = bool(profile.user.guideprofile)
+    except:
+        guide_status = False
+
     form = TouristProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if request.method == 'POST' and form.is_valid():
 
@@ -44,9 +43,11 @@ def profile_settings_tourist(request):
         # it is the same peace of code as at guide view - maybe to remake this in the future
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
-        language_second_proficiency = request.POST.get("language_second_proficiency")
+        language_second_proficiency = request.POST.get("language_second_proficiency") if request.POST.get("language_second_proficiency") != "" else 3
+        language_third = request.POST.get("language_third")
+        language_third_proficiency = request.POST.get("language_third_proficiency") if request.POST.get("language_third_proficiency") != "" else 3
 
-        if language_native or language_second:
+        if language_native or language_second or language_third:
             user_languages_list = list()
             if language_native:
                 user_languages_list.append(UserLanguage(language=language_native, user=user,
@@ -54,17 +55,12 @@ def profile_settings_tourist(request):
             if language_second:
                 user_languages_list.append(UserLanguage(language=language_second, user=user,
                                                         level_id=language_second_proficiency))
+            if language_third:
+                user_languages_list.append(UserLanguage(language=language_third, user=user,
+                                                        level_id=language_third_proficiency))
 
             UserLanguage.objects.filter(user=user).delete()
-            user_languages = UserLanguage.objects.bulk_create(user_languages_list)
-
-            #dublication of the peace of code at the beginning of the function
-            user_language_native = None
-            for user_language in user_languages:
-                if user_language.level_id == 1 and not user_language_native:
-                    user_language_native = user_language
-                else:
-                    user_language_second = user_language
+            UserLanguage.objects.bulk_create(user_languages_list)
 
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
@@ -75,6 +71,9 @@ def profile_settings_tourist(request):
             return HttpResponseRedirect(reverse("making_booking"))
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    language_levels = LanguageLevel.objects.all().values()
+    user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
 
     user_interests = UserInterest.objects.filter(user=user)
     return render(request, 'users/profile_settings_tourist.html', locals())
@@ -159,10 +158,16 @@ def travel_photos(request):
     travel_photos = user.touristtravelphoto_set.all().order_by("-id")
     form = TouristTravelPhotoForm(request.POST or None, request.FILES or None)
 
-    if request.POST:
-        images = request.FILES.getlist('image')
-        for image in images:
-            TouristTravelPhoto.objects.create(user=user, image=image)
+    print(1)
+    print(request.FILES.getlist('image'))
+
+    if request.POST and form.is_valid():
+        # images = request.FILES.getlist('image')
+        # for image in images:
+        #     TouristTravelPhoto.objects.create(user=user, image=image)
+        new_form = form.save(commit=False)
+        new_form.user=user
+        new_form = form.save()
         travel_photos = user.touristtravelphoto_set.all().order_by("-id")
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -170,6 +175,7 @@ def travel_photos(request):
     return render(request, 'tourists/travel_photos.html', locals())
 
 
+@login_required()
 def deleting_travel_photo(request, photo_id):
     user = request.user
     try:

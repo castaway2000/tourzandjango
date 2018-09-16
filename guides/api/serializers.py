@@ -32,10 +32,9 @@ class GuideProfileSerializer(serializers.ModelSerializer):
     tours = TourSerializer(source='tour_set', many=True)#specify source if it is different from field name
     interests = UserInterestSerializer(source='user.userinterest_set', many=True, required=False)
     languages = UserLanguageSerializer(source='user.userlanguage_set', many=True, required=False)
-
-    orders = OrderSerializer(source='order_set', many=True, required=False)
+    # orders = OrderSerializer(source='order_set', many=True, required=False)
     # reviews = serializers.SerializerMethodField(required=False)#this field searches for the function "get_"+field_name
-    chats = ChatSerializer(source='user.guide', many=True, required=False)
+    # chats = ChatSerializer(source='user.guide', many=True, required=False)
 
     class Meta:
         model = GuideProfile
@@ -45,6 +44,17 @@ class GuideProfileSerializer(serializers.ModelSerializer):
         guide = obj
         reviews = Review.objects.filter(order__guide=guide) # Or whatever queryset filter
         return ReviewSerializer(reviews, many=True).data
+
+
+class GuideProfileBasicSerializer(serializers.ModelSerializer):
+    guide_services = GuideServiceSerializer(source='guideservice_set', many=True, required=False)
+    interests = UserInterestSerializer(source='user.userinterest_set', many=True, required=False)
+    languages = UserLanguageSerializer(source='user.userlanguage_set', many=True, required=False)
+
+    class Meta:
+        model = GuideProfile
+        fields = '__all__'
+
 
 
 #serializers examples for cases with generic views

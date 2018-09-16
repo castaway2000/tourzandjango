@@ -46,6 +46,7 @@ admin.site.register(Question, QuestionAdmin)
 
 
 class GuideAnswerAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in GuideAnswer._meta.fields]
 
     class Meta:
         model = GuideAnswer

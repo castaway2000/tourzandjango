@@ -14,11 +14,28 @@
 
 
 {% block js_stuff %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
 
     <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+            src="//maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
     </script>
     <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
+    <script>
+        $(function(){
+            new Clipboard('#copy_text_btn');
+            $("#copy_text_btn").popover({
+                content: "Copied!",
+                placement : 'top'
+            });
+        });
+        $("#copy_text_btn").on('shown.bs.popover', function() {
+            this_popover = $(this);
+            setTimeout(function () {
+                this_popover.popover('hide');
+            }, 1000);
+        });
+    </script>
 {% endblock js_stuff %}

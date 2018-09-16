@@ -4,13 +4,16 @@
 {% load utils_tags %}
 
 {% block header_stuff %}
+    <title>Tourzan.com | Experiences by locals</title>
+    <meta name="description" content="Tours by locals curated for the most personal and bespoke
+    experience at a price and titailored that's talored to you. Get the best vacation experience here.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 {% endblock %}
 
 {% block content %}
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
+            <li><a href="/" rel="nofollow">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
             <li class="active">
                 <a href="{% url 'my_bookings' %}">
@@ -39,17 +42,19 @@
                                value="{% if request.GET.order_results %}{{ request.GET.order_results }}{% endif %}">
                         <ul class="list booking-filters-list">
                             <li>
-                                <h5 class="booking-filters-title">{% blocktrans %}City{% endblocktrans %}</h5>
-                                <input id="city_search_input" class="form-control"
-                                    {% if city_from_place_id %}
-                                        value="{{ city_from_place_id }}"
-                                    {% endif %}
+                                <h5 class="booking-filters-title">{% blocktrans %}Location{% endblocktrans %}</h5>
+                                <input id="location_search_input" name="location_search_input" class="form-control"
+                                        {% if location_from_place_id %}
+                                       value="{{ location_from_place_id }}"
+                                        {% endif %}
                                 >
+                                <input id="is_country" name="is_country" type="checkbox" class="hidden"
+                                        {% if "is_country" in request.GET %}checked{% endif %}>
                                 <input id="place_id" name="place_id" class="hidden"
-                                    {% if place_id %}
+                                       {% if place_id %}
                                         value="{{ place_id }}"
-                                    {% endif %}
-                                >
+                                       {% endif %}
+                                       >
                             </li>
                             <li>
                                 <h5 class="booking-filters-title">{% blocktrans %}Guide{% endblocktrans %}</h5>
@@ -149,30 +154,30 @@
                         {% with request.GET.order_results as order_results %}
                             <h5 class="booking-sort-title">
                                 {% if not order_results or order_results == "price" %}
-                                    <a href="#">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Price (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-price" %}
-                                    <a href="#">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Price (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "rating" %}
-                                    <a href="#">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Rating (low to high){% endblocktrans %}<i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
                                 {% elif order_results == "-rating" %}
-                                    <a href="#">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+                                    <a href="#" rel="canonical">{% blocktrans %}Sort: Rating (high to low){% endblocktrans %}<i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
                                 {% endif %}
                             </h5>
                             <ul class="nav-drop-menu" id="sorting_area">
                                 {% if order_results and order_results != "price" %}
-                                    <li><a href="#" data-order_value="price">{% blocktrans %}Price (low to high){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="price">{% blocktrans %}Price (low to high){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-price" %}
-                                    <li><a href="#" data-order_value="-price">{% blocktrans %}Price (high to low){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="-price">{% blocktrans %}Price (high to low){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "rating" %}
-                                    <li><a href="#" data-order_value="rating">{% blocktrans %}Rating (low to high){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="rating">{% blocktrans %}Rating (low to high){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
                                 {% if order_results != "-rating" %}
-                                    <li><a href="#" data-order_value="-rating">{% blocktrans %}Rating (high to low){% endblocktrans %}</a>
+                                    <li><a href="#" rel="canonical" data-order_value="-rating">{% blocktrans %}Rating (high to low){% endblocktrans %}</a>
                                     </li>
                                 {% endif %}
 
@@ -185,56 +190,95 @@
                     <li>
                         <div class="tour-item">
                             <div class="row">
-                                <div class="col-md-3 col-sm-3 col-xs-3">
-                                    <div class="booking-item-img">
-                                        <a href="{% url 'tour' tour.slug tour.id %}">
-                                            {% if tour.image_small %}
-                                                <img src="{{ tour.image_small.url }}"/>
-                                            {% elif tour.image %}
-                                                <img src="{{ tour.image.url }}"/>
-                                            {% else %}
-                                                <img src="{% static 'img/default_tour_image.jpg' %}">
-                                            {% endif %}
+                                <div class="col-md-3 col-sm-5 col-xs-12">
+                                    <div class="booking-item-img mb10">
+                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
+                                            <img src="{% get_sized_image tour default_size="small" %}">
                                         </a>
                                     </div>
-                                    <br>
                                 </div>
-                                <div class="col-md-6 col-sm-6 col-xs-5">
+                                <div class="col-md-9 col-sm-7 col-xs-12">
                                     <div class="tour-name">
                                         {{ tour.name }}
                                     </div>
                                     <div class="tour-guide-name">
                                         by {{ tour.guide.user.generalprofile.first_name }}
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            {{ tour.overview|linebreaks|truncatewords_html:30 }}
+
+                                    {% if tour.city and tour.city.slug and tour.city.country and tour.city.country.slug %}
+                                        <div class="mb10">
+                                            <a href="{% url 'country_guides' tour.city.country.slug %}" target="_blank">{{ tour.city.country.name }}</a> |
+                                            <a href="{% url 'city_guides' tour.city.country.slug tour.city.slug %}" target="_blank">{{ tour.city.name }}</a>
                                         </div>
+                                    {% endif %}
+
+                                    <div>
+                                        <b>{% trans 'Type' %}: </b>{{ tour.type_name }} {% trans 'tour' %}
+                                    </div>
+                                    <div>
+                                        <b>{% trans 'Languages' %}</b>:
+                                        {% with tour.get_languages as tour_languages %}
+                                        {% if not tour_languages %}
+                                            <span class="label label-success label-tag">
+                                                English
+                                            </span>
+                                        {% else %}
+                                            {% for tour_language in tour_languages %}
+                                                <span class="label label-success label-tag">
+                                                    {{ tour_language.name }}
+                                                </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div>
+                                        {{ tour.overview|linebreaks|truncatewords_html:30 }}
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-3 col-xs-4">
-                                    <div class="tour-rating">
-                                        <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
-                                    </div>
+                                <div class="col-md-3 col-sm-7 col-sm-offset-5 col-xs-12">
+
+                                    {% if tour.rating != 0 %}
+                                        <div class="tour-rating">
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
+                                        </div>
+                                    {% endif %}
+
                                     <p class="tour-price">
-                                        <b>{% blocktrans %}Price: {% endblocktrans %}</b>
-                                        {% if tour.payment_type_id == 1 %}
-                                            {{ tour.price_hourly }} {{ tour.currency.name }} / hour
-                                        {% elif tour.payment_type_id == 2 %}
-                                            {{ tour.price }} {{ tour.currency.name }}
-                                        {% elif tour.payment_type_id == 3 %}
-                                            {% blocktrans %}Free!{% endblocktrans %}
+                                        <b>{% blocktrans %}Price:{% endblocktrans %}</b>
+                                        {% if tour.type == "1" %}
+                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
+                                        {% else %}
+                                            {% if tour.payment_type_id == 1 %}
+                                                {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
+                                            {% elif tour.payment_type_id == 2 %}
+                                                {% if not tour.discount %}
+                                                    {{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                {% else %}
+                                                    <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
+                                                    <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                {% endif %}
+                                            {% elif tour.payment_type_id == 3 %}
+                                                {% blocktrans %}Free!{% endblocktrans %}
+                                            {% else  %}
+                                                {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                            {% endif %}
                                         {% endif %}
                                         <br>
+                                        {% if tour.hours %}
+                                            <b>{% trans 'Duration' %}: </b> {{ tour.hours }}
+                                            <br>
+                                        {% endif %}
                                         {% if tour.min_hours %}
                                              <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}
                                         {% endif %}
                                     </p>
-                                    <p>
-                                        <a href="{% url 'tour' tour.slug tour.id %}" class="btn btn-primary">
-                                            {% blocktrans %}Go to Tour{% endblocktrans %}
-                                        </a>
-                                    </p>
+                                    <div class="text-right">
+                                        <p>
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary">
+                                                {% blocktrans %}View details{% endblocktrans %}
+                                            </a>
+                                        </p>
+                                    </div>
                                     {% if tour.guide.user.generalprofile.is_verified %}
                                         <p>
                                             <b>{% trans 'Guide is verified' %}</b>
@@ -253,14 +297,14 @@
                 </ul>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         {% if tours.has_other_pages %}
                             <ul class="pagination">
                                 {% if tours.has_previous %}
-                                    <li class="next"><a href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>
+                                    <li class="next"><a rel="prev" href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>
                                     </li>
                                 {% endif %}
-                                {% for i in tours.paginator.page_range %}
+                                {% for i in page_range %}
                                     {% if tours.number == i %}
                                         <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
                                       {% else %}
@@ -268,8 +312,9 @@
                                       {% endif %}
                                 {% endfor %}
                                 {% if tours.has_next %}
-                                    <li class="next"><a href="?{% url_replace page=tours.next_page_number %}">{% trans 'Next Page' %}</a></li>
+                                    <li class="next"><a rel="next" href="?{% url_replace page=tours.next_page_number %}">{% trans 'Next Page' %}</a></li>
                                 {% endif %}
+                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>

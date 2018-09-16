@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.contrib.sitemaps import ping_google
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ import unidecode
 from utils.general import random_string_creating
 from crequest.middleware import CrequestMiddleware
 from utils.images_resizing import optimize_size
+from locations.models import Country, City
 
 
 class BlogCategory(models.Model):
@@ -36,6 +38,8 @@ class BlogCategory(models.Model):
 class BlogPost(models.Model):
     author = models.ForeignKey(User, blank=True, null=True, default=None, related_name="blog_post_author")
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    country = models.ForeignKey(Country, blank=True, null=True, default=None)
+    city = models.ForeignKey(City, blank=True, null=True, default=None)
     tags = models.CharField(max_length=256, blank=True, null=True)
     slug = models.SlugField(blank=True, null=True, default=random_string_creating, unique=True)
     text = models.TextField(blank=True, null=True, default=None)
@@ -81,11 +85,15 @@ class BlogPost(models.Model):
                 self.is_image_optimized = True
             except:
                 pass
-
         super(BlogPost, self).save(*args, **kwargs)
+        try:
+            ping_google()
+        except Exception:
+            pass
 
     def get_absolute_url(self):
-        return reverse('post', kwargs={'slug': self.slug})
+        return '/blog_post/%s/' % self.slug
+        # return reverse('post', kwargs={'slug': self.slug})
 
 
 class BlogTag(models.Model):

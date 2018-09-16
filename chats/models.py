@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from tours.models import Tour
+from orders.models import Order
 import uuid
 from utils.sending_emails import SendingEmail
 from django.db.models.signals import post_save
@@ -13,6 +14,7 @@ class Chat(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     guide = models.ForeignKey(User, related_name="guide")
     tourist = models.ForeignKey(User, related_name="tourist")
+    order = models.OneToOneField(Order, blank=True, null=True, default=None)
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)#a chat converstion can be around some specific tour
     topic = models.CharField(max_length=256, blank=True, null=True, default=None)#some topic can be specified as well
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -20,6 +22,18 @@ class Chat(models.Model):
 
     def __str__(self):
         return "%s-%s" % (self.guide.generalprofile.first_name, self.tourist.generalprofile.first_name)
+
+    def create_message(self, user, message):
+        ChatMessage.objects.create(chat=self, message=message, user=user)
+        return True
+
+    @property
+    def last_chat_message_dt(self):
+        last_chat_message = self.chatmessage_set.all().last()
+        if last_chat_message:
+            return last_chat_message.created
+        else:
+            return 1
 
 
 class ChatMessage(models.Model):
@@ -50,8 +64,6 @@ class ChatMessage(models.Model):
 @disable_for_loaddata
 def chat_message_post_save(sender, instance, created, **kwargs):
     receiver_user = instance.get_receiver_user()
-    print("chat message saving")
-    print(receiver_user.generalprofile.get_is_user_online())
 
     if receiver_user and not receiver_user.generalprofile.get_is_user_online():
         data = {"chat_message": instance, "user_from": instance.user, "user_to": receiver_user}

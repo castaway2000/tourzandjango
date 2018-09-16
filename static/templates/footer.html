@@ -5,10 +5,9 @@
     <div class="container">
         <div class="row row-wrap">
             <div class="col-md-3">
-                <a class="logo" href="/">
-                    <img src="{% static 'img/tourzan_logo.png' %}" class="footer-logo"
+                <a class="logo" href="/" rel="nofollow">
+                    <img src="{% static 'img/Tourzan-LinedLogoTransparentTeal.png' %}"
                          alt="Tourzan logo" title="Tourzan logo" />
-
                 </a>
                 <h4>Tourzan&trade;</h4>
                 <p class="mb20">
@@ -16,23 +15,23 @@
                 </p>
                 <ul class="list list-horizontal list-space">
                     <li>
-                        <a class="fa fa-facebook box-icon-normal round animate-icon-bottom-to-top"
+                        <a rel="external" class="fa fa-facebook box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.facebook.com/tourzanHQ/" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-twitter box-icon-normal round animate-icon-bottom-to-top"
+                        <a rel="external" class="fa fa-twitter box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.twitter.com/tourzanhq" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-instagram box-icon-normal round animate-icon-bottom-to-top"
+                        <a rel="external" class="fa fa-instagram box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.instagram.com/tourzanhq/" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-youtube box-icon-normal round animate-icon-bottom-to-top"
+                        <a rel="external" class="fa fa-youtube box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.youtube.com/channel/UCFjdoTb1c5G0D_e2P7sm9GQ" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-pinterest box-icon-normal round animate-icon-bottom-to-top"
+                        <a rel="external" class="fa fa-pinterest box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.pinterest.com/tourzan/" target="_blank"></a>
                     </li>
                 </ul>
@@ -41,12 +40,18 @@
             <div class="col-md-3">
                 <ul class="list list-footer">
                     <li>
-                        <a href="{% url 'blog' %}">
-                            <p class="lead">{% blocktrans %}Blog{% endblocktrans %}</p>
+                        <a href="{% url 'faq' %}">
+                            {% blocktrans %}Frequently Asked Questions{% endblocktrans %}
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'faq' %}">{% blocktrans %}Frequently Asked Questions{% endblocktrans %}</a>
+                        <a href="{% url 'api_partner_application' %}">{% blocktrans %}API Application{% endblocktrans %}</a>
+                    </li>
+                <br>
+                    <li>
+                        <a href="{% url 'blog' %}">
+                            <p class="lead">{% blocktrans %}News{% endblocktrans %}</p>
+                        </a>
                     </li>
                 </ul>
             </div>

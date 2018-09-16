@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load utils_tags %}
 
 
 <div class="row">
@@ -8,8 +9,8 @@
     </div>
     {% if guide %}
         <div class="col-lg-3">
-             <a href="{% url 'guide' guide.user.username %}">
-                 {% blocktrans %}See Public Page{% endblocktrans %}
+             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid 'new' %}">
+                 {% blocktrans %}Go to Public Page{% endblocktrans %}
              </a>
         </div>
     {% endif %}
@@ -18,21 +19,83 @@
     <div class="row">
         <div class="col-lg-7">
             {% if guide %}
+                <div class="mt20">
+                    <h4>{% trans 'Attention! We are swithcing to a new style of profile page.' %}</h4>
+                    <div>
+                        {% trans 'It represents you in a more personal way.' %}
+                        {% trans 'check out and answer a few' %} <a rel=nofollow href="{% url 'profile_questions_guide' %}" target="_blank">{% trans 'guide profile questions.' %}</a>
+                    </div>
+                </div>
+                <br><br>
                <div class="form-group">
                     <div class="checkbox">
                         <label>
                           <input type="checkbox" class=""
                                 name="{{ form.is_active.html_name }}"
-                                {% if form.is_active.value != False %}checked {% endif %}
-                          >{% blocktrans %}Is visible{% endblocktrans %}
+                                {% if form.is_active.value != False %}checked {% endif %}>
+                            {% blocktrans %}Is visible{% endblocktrans %}
+                        </label>
+                        <br/>
+                        {% if guide.is_active.value != True %}
+                            <p><b>{% blocktrans %}Heads up: Any tours you created will remain visible even if you are not.{% endblocktrans %}</b></p>
+                        {% endif %}
+                        <label>
+                        <input type="checkbox" class=""
+                                name="{{ form.is_default_guide.html_name }}"
+                                {% if form.is_default_guide.value %}checked {% endif %}>
+                            {% blocktrans %}Guide profile is default when sign in{% endblocktrans %}
                         </label>
                     </div>
                </div>
             {% endif %}
 
+            <div class="form-group">
+                <div>
+                    <b>{% trans 'Your referral code' %}:</b> {{ ref_code }}
+                </div>
+                <div>
+                    <b>{% trans 'Your referral link' %}:</b> <span id="content_to_copy">{{ site_root }}?ref={{ request.user.generalprofile.referral_code }}</span>
+                    <button id="copy_text_btn" class="btn btn-xs btn-primary" data-clipboard-target="#content_to_copy" >copy</button>
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}First Name{% endblocktrans %}*:</label>
+                <span class="text-error">{{ form.first_name.errors }}</span>
+                <div class="div-input-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input required class="form-control" id="first_name_input" name="first_name"
+                    {% if request.POST.first_name %}
+                        value="{{ request.POST.first_name }}"
+                    {% elif user.generalprofile.first_name %}
+                        value="{{ user.generalprofile.first_name }}"
+                    {% elif guide and guide.first_name %}
+                        value="{{ guide.first_name }}"
+                    {% endif %}
+                    >
+                </div>
+            </div>
+
+            <div class="form-group form-group-icon-left">
+                <label>{% blocktrans %}Last Name{% endblocktrans %}*:</label>
+                <span class="text-error">{{ form.last_name.errors }}</span>
+                <div class="div-input-icon">
+                    <i class="fa fa-lock input-icon"></i>
+                    <input required class="form-control" id="last_name_input" name="last_name"
+                    {% if request.POST.last_name %}
+                        value="{{ request.POST.last_name }}"
+                    {% elif user.generalprofile.last_name %}
+                        value="{{ user.generalprofile.last_name }}"
+                    {% elif guide and guide.last_name %}
+                        value="{{ guide.last_name }}"
+                    {% endif %}
+                >
+                </div>
+            </div>
+
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}City{% endblocktrans %}*:</label>
-                <span class="text-error">{{ form.name.errors }}</span>
+                <span class="text-error">{{ form.city_search_input.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
                     <input required class="typeahead form-control" id="city_search_input" name="city_search_input"
@@ -54,6 +117,7 @@
 
             <div class="form-group form-group-icon-left">
                 <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %} *:
+                    <p id="average-rate"></p>
                     <span class="text-error">{{ form.rate.errors }}</span>
                 </label>
                 <div class="div-input-icon">
@@ -66,23 +130,28 @@
                         {% endif %}
                     >
                 </div>
-            </div>
-
-            <div class="form-group form-group-icon-left">
-                <label>{% blocktrans %}Min hours{% endblocktrans %}*:
-                    <span class="text-error">{{ form.min_hours.errors }}</span>
-                </label>
-                <div class="div-input-icon">
-                    <i class="fa fa-clock-o input-icon"></i>
-                    <input required type="number" min="1" step="1" name="{{ form.min_hours.html_name }}"
-                           class="form-control w100"
-                        {% if request.POST.rate %}
-                           value="{{ request.POST.min_hours|safe }}"
-                        {% elif guide %}
-                           value="{{ guide.min_hours|safe }}"
-                        {% endif %}
-                    >
+                <div class="form-group form-group-icon-left">
+                    <label>{% blocktrans %}Min hours{% endblocktrans %}*:
+                        <span class="text-error">{{ form.min_hours.errors }}</span>
+                    </label>
+                    <div class="div-input-icon">
+                        <i class="fa fa-clock-o input-icon"></i>
+                        <input required type="number" min="1" step="1" name="{{ form.min_hours.html_name }}"
+                               class="form-control w100"
+                            {% if request.POST.rate %}
+                               value="{{ request.POST.min_hours|safe }}"
+                            {% elif guide %}
+                               value="{{ guide.min_hours|safe }}"
+                            {% endif %}
+                        >
+                    </div>
                 </div>
+
+                <div class="gap gap-small"></div>
+
+                <strong>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
+                    might also charge a processing fee. Please charge for services accordingly.
+                {% endblocktrans %}</strong>
             </div>
 
             <div class="form-group form-group-icon-left">
@@ -90,13 +159,13 @@
                 <span class="text-error">{{ form.date_of_birth.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
-                    <input required class="form-control datepicker-date" data-date-format="mm.dd.yyyy"
+                    <input required class="form-control datepicker-date" data-date-format="mm/dd/yyyy"
                            id="date_of_birth"
                            name="date_of_birth"
                            {% if request.POST.date_of_birth %}
                                 value="{{ request.POST.date_of_birth }}"
                            {% else %}
-                                value="{{ user.generalprofile.date_of_birth|date:'m.d.Y' }}"
+                                value="{{ user.generalprofile.date_of_birth|date:'m/d/Y' }}"
                            {% endif %}
                     >
                 </div>
@@ -126,100 +195,9 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>{% blocktrans %}Native Language{% endblocktrans %} *:</label>
-                <select required class="form-control select2"
-                    id="language_native" name="language_native"
-                    data-search_url="{% url 'search_language' %}"
-                >
-                    {% if user_language_native %}
-                        <option value="{{ user_language_native.language}}" selected>
-                            {{ user_language_native.get_language_display}}
-                        </option>
-                    {% endif %}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <label>{% blocktrans %}Second Language{% endblocktrans %}:</label>
-                        <select class="form-control select2" id="language_second" name="language_second">
-                            {% if user_language_second %}
-                                <option value="{{ user_language_second.language}}" selected>
-                                    {{ user_language_second.get_language_display}}
-                                </option>
-                            {% endif %}
-                        </select>
-                    </div>
-                    <div class="col-lg-6">
-                        <label>{% blocktrans %}Proficiency{% endblocktrans %}:</label>
-                        <select class="form-control select2"
-                            id="language_second_proficiency" name="language_second_proficiency"
-                        >
-                            <option selected>{% blocktrans %}Select level{% endblocktrans %}</option>
-                            {% for language_level in language_levels %}
-                                <option value="{{ language_level.id }}"
-                                        {% if language_level.id == user_language_second.level.id %}selected="selected"{% endif %}
-                                >
-                                    {{ language_level.name }}
-                                </option>
-                            {% endfor %}
-
-                        </select>
-                    </div>
-                </div>
-            </div>
+            {% include "users/languages_form_section.html" %}
 
             <p class="lead">{% blocktrans %}Additional services{% endblocktrans %}:</p>
-
-            <p>
-                {% blocktrans %}Selected services{% endblocktrans %}:
-            </p>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for guide_service in guide_services %}
-                        <tr class="service_item_container">
-
-                            <td>
-                                <div class="checkbox">
-                                    <label>
-                                      <input type="checkbox" class="service-name-checkbox"
-                                            name="service_{{ guide_service.service.html_field_name }}"
-                                          checked
-                                      > {{ guide_service.service.name }}
-                                    </label>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="form-group form-group-icon-left service-price
-                                ">
-                                    <i class="fa fa-money input-icon"></i>
-                                    <input type="number" step="1" name="serviceprice_{{ guide_service.service.html_field_name }}"
-                                           class="form-control w100"
-                                           {% if guide_service.price %}
-                                               value="{{ guide_service.price|safe }}"
-                                           {% else %}
-                                                value="0"
-                                           {% endif %}
-                                    >
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <p>
-                {% blocktrans %}Other services{% endblocktrans %}:
-            </p>
 
             <table>
                 <thead>
@@ -230,21 +208,34 @@
                 </thead>
                 <tbody>
                     {% for service in services %}
+                        <tr class="service_item_container">
 
-                        {% if not service.id in guide_services_ids %}
-                            <tr class="service_item_container">
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                      <input type="checkbox" class="service-name-checkbox"
+                                             {% if service.guide_service.is_active %}checked{% endif %}
+                                            name="service_{{ service.html_field_name }}"
+                                      > {{ service.name }}
+                                    </label>
+                                </div>
+                            </td>
 
-                                <td>
-                                    <div class="checkbox">
-                                        <label>
-                                          <input type="checkbox" class="service-name-checkbox"
-                                                name="service_{{ service.html_field_name }}"
-                                          > {{ service.name }}
-                                        </label>
+                            <td>
+                                {% if service.guide_service.is_active %}
+                                    <div class="form-group form-group-icon-left service-price
+                                    ">
+                                        <i class="fa fa-money input-icon"></i>
+                                        <input type="number" step="1" name="serviceprice_{{ service.html_field_name }}"
+                                               class="form-control w100"
+                                               {% if service.guide_service.price %}
+                                                   value="{{ service.guide_service.price|safe }}"
+                                               {% else %}
+                                                    value="0"
+                                               {% endif %}
+                                        >
                                     </div>
-                                </td>
-
-                                <td>
+                                {% else %}
                                     <div class="form-group form-group-icon-left service-price
                                         hidden
                                     ">
@@ -254,10 +245,9 @@
                                                value="0"
                                         >
                                     </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -266,7 +256,7 @@
             <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
             {% if user.guideprofile and user.guideprofile.profile_image %}
                 <div>
-                    <img src="{{ user.guideprofile.profile_image.url }}" class="img-responsive img-rounded">
+                    <img src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}" class="img-responsive img-rounded">
                 </div>
                 <div class="form-group">
                     <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
@@ -286,8 +276,31 @@
             <hr>
             <input type="submit" class="btn btn-primary" value="Save Changes">
             <br/><br/>
-            <strong>{% blocktrans %}Reminder:{% endblocktrans %}<br/></strong>
-            <strong>{% blocktrans %}Make sure keep your payout preferences current to avoid delayed payouts.{% endblocktrans %}</strong>
+            <p class="lead">{% blocktrans %}Reminder:{% endblocktrans %}<br/></p>
+            <strong>{% blocktrans %}Your schedule must be set in order for tourists to book you out. Make sure it reflects
+                your current availability.{% endblocktrans %}</strong>
+            <br><br>
+            <h4>{% blocktrans %}Guide License{% endblocktrans %}</h4>
+
+            {% if user.guideprofile and user.guideprofile.license_image %}
+                <div>
+                    <img src="{{ user.guideprofile.license_image.url }}" class="img-responsive img-rounded">
+                </div>
+                <div class="form-group">
+                    <label>{% blocktrans %}Upload new guide license{% endblocktrans %}:</label>
+                    <span class="text-error">{{ form.license_image.errors }}</span>
+                    <input type="file" name="{{ form.license_image.html_name }}">
+                </div>
+            {% else %}
+                <div>
+                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                </div>
+                <div class="form-group">
+                    <label>{% blocktrans %}Upload Guide License{% endblocktrans %}:</label>
+                    <span class="text-error">{{ form.profile_image.errors }}</span>
+                    <input type="file" name="{{ form.license_image.html_name }}">
+                </div>
+            {% endif %}
         </div>
     </div>
 </form>

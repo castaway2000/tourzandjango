@@ -13,7 +13,7 @@
             <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
             </li>
             <li>
-                <a href="{% url 'guide' tour.guide.user.username %}">{{ tour.guide.user.generalprofile.first_name }}</a>
+                <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid  'new' %}">{{ tour.guide.user.generalprofile.first_name }}</a>
             </li>
             <li class="active">{{ tour.name }}</li>
         </ul>
@@ -63,9 +63,18 @@
                     <!-- END LIGHTBOX GALLERY -->
                     <div class="booking-item-meta">
                         {% if tour.overview  %}
+                            <h3>{% blocktrans %}About this tour:{% endblocktrans %}</h3>
                             {{ tour.overview|linebreaks }}
                         {% else %}
                             <p class="lead">{% blocktrans %}No tour overview so far...{% endblocktrans %}</p>
+                        {% endif %}
+                        {% if tour.included %}
+                            <h3>{% blocktrans %}Whats Included:{% endblocktrans %}</h3>
+                            {{ tour.included|linebreaks }}
+                        {% endif %}
+                        {% if tour.excluded %}
+                            <h3>{% blocktrans %}Whats Not Included:{% endblocktrans %}</h3>
+                            {{ tour.excluded|linebreaks }}
                         {% endif %}
                     </div>
                 </div>
@@ -91,7 +100,6 @@
             </div>
 
             <div class="gap gap-small"></div>
-
 
             <div class="row row-wrap">
                 <div class="col-md-8">
@@ -378,19 +386,15 @@
                          $('#booking_form_error_container').html("");
                          time_slots_container.html("");
 
-                         console.log(data);
                          available_time_slots = data.available_time_slots;
-                         console.log(available_time_slots);
 
                          if (available_time_slots.length > 0){
-                             console.log("111");
                              $.each(available_time_slots, function(index, el){
                                 slot_time_from = el.calendar_item__time_from.split("T")[1].substr(0, 5);
                                 slot_time_to = el.calendar_item__time_to.split("T")[1].substr(0, 5);
                                 time_slots_container.append("<div class='time-slot' data-guide_time_slot='"+el.id+"'>"+slot_time_from+"-"+slot_time_to+"</div>")
                              })
                          }else{
-                             console.log("else");
                              $('#booking_form_error_container').html("<div class='text-black text-center text-error'>" +
                                      "There are no available time slots for this date. <br>" +
                                      "Please select another date.</div>")
