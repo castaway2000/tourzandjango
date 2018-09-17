@@ -6,7 +6,6 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
             enablePoweredByContainer: false
         };
         var autocomplete = new google.maps.places.Autocomplete(input, options);
-        console.log(1);
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             place = autocomplete.getPlace();
             document.getElementById('place_id').value = place.place_id;
