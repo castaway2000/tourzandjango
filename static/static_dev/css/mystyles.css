@@ -1246,7 +1246,7 @@ a{
 }
 
 .tour-section-new.program-section{
-    padding: 80px 0 30px 0;
+    padding: 20px 0 30px 0;
 }
 
 .tour-section-new.reviews-section .icon-list .fa{
@@ -1303,7 +1303,7 @@ a{
     z-index: 1;
     border-radius: 50%;
     top: -20px;
-    left: 50%;
+    left: 53%;
     margin-left: -25px;
 }
 
@@ -1315,8 +1315,8 @@ a{
     height: 35px;
     z-index: 1;
     border-radius: 50%;
-    bottom: -10px;
-    left: 50%;
+    bottom: -19px;
+    left: 53%;
     margin-left: -25px;
 }
 
@@ -1326,12 +1326,19 @@ a{
     width: 48%;
     vertical-align: top;
     min-height: 160px;
+
+}
+
+.guide-tour-item .tour-img-container{
+    position: absolute;
+    height: 100%;
 }
 
 .guide-tour-item .tour-info-container{
     background: #EF4915;
     color: white;
     padding: 10px 5px 5px 20px;
+    float: right;
 }
 
 .guide-tour-item .tour-info-container a,
