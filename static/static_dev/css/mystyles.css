@@ -1624,7 +1624,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 /*}*/
 
 .hero-section .bg-img{
-    background-position: center center!important;
+  background-position: center center!important;
   background-repeat: no-repeat!important;
   background-attachment: fixed!important;
   background-size: cover!important;
@@ -1826,6 +1826,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
         margin-top: 15px;
     }
     .container-equal-items .panel img {
-        height: auto;
+        height: inherit;
+        width: 100%;
     }
 }
