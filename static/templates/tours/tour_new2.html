@@ -12,8 +12,8 @@
         <meta name="description" content="{{ tour.overview_short|remove_newlines }}"/>
         <meta property="og:description" content="{{ tour.overview_short|remove_newlines }}" />
     {% else %}
-        <meta name="description" content="{{ tour.overview|safe }}"/>
-        <meta property="og:description" content="{{ tour.overview|safe }}" />
+        <meta name="description" content="{{ tour.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}"/>
+        <meta property="og:description" content="{{ tour.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}" />
     {% endif %}
 
     <meta property="og:title" content="{% trans 'Tour in' %} {{ tour.city.name }}: {{ tour.name }}" />
@@ -58,7 +58,6 @@
                         <li>
                             <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}">{{ tour.guide.user.generalprofile.first_name }}</a>
                         </li>
-                        <li class="active">{{ tour.name }}</li>
                     </ul>
                 </div>
                 <div class="row">
@@ -94,7 +93,7 @@
                     </div>
                 </div>
                 <div class="col-lg-5 col-md-5 col-sm-8 col-xs-12">
-                    {{ tour.guide.overview|safe }}
+                    {{ tour.guide.overview|safe|truncatewords_html:30 }}
                 </div>
             </div>
         </div>

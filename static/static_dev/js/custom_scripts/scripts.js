@@ -92,7 +92,7 @@ $(document).ready(function(){
     $('#scroll_top').on('click', function(e){
         e.preventDefault();
         var link = $(this).attr('href');
-        $('html, body').animate({scrollTop: ($(link).offset().top)}, 500);
+        $('html, body').animate({scrollTop: 0}, 500);
     });
 
     function updatingChosenHours(){
@@ -374,7 +374,6 @@ $(window).scroll(function () {
     elementsResizing();
 
     if($(".mask-wrapper .bg-mask")!=undefined){
-        console.log(scroll);
         if(scroll > 70){
             $(".mask-wrapper").addClass("show-only-image");
         }else{
