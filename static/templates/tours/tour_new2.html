@@ -100,7 +100,7 @@
                     {% ifnotequal tour.guide.overview|safe|truncatewords_html:30|length tour.guide.overview|safe|truncatewords_html:31|length %}
                        <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}"
                                target="_blank">
-                           read more...
+                           read more
                        </a>
                     {% endifnotequal %}
                 </div>
