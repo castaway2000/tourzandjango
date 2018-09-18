@@ -124,7 +124,6 @@ MIDDLEWARE = [
     'users.middleware.ReferralCodesGettingMiddleware',
 
     'users.middleware.ReferralCodesGettingMiddleware',
-    'subdomains.middleware.SubdomainURLRoutingMiddlewa',
 
     # 'django.middleware.cache.FetchFromCacheMiddleware',
 
@@ -157,7 +156,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'users.context_processors.site'
+                'users.context_processors.site',
+                'users.context_processors.get_subdomain'
             ],
         },
     },

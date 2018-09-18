@@ -6,6 +6,7 @@
 
 {% block content %}
     <div class="container">
+        {% if subdomain != 'api' %}
         <ul class="breadcrumb">
             <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
@@ -17,6 +18,7 @@
             </li>
             <li class="active">{{ tour.name }}</li>
         </ul>
+        {% endif %}
 
         <div class="booking-item-details">
             <header class="booking-item-header">
