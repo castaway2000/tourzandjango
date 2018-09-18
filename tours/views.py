@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 from django.db.models import Avg, Max, Min, Sum
 from django.views.decorators.clickjacking import xframe_options_exempt
 import datetime
+import tldextract
 from dateutil.rrule import rrule, DAILY
 from orders.views import making_booking
 

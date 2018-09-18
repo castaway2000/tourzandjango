@@ -55,3 +55,4 @@ redis==2.10.6
 
 django-emoticons==1.2
 django-robots==3.1.0
+tldextract==2.2.0

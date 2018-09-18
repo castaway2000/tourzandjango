@@ -41,6 +41,7 @@
 <div class="global-wrap">
 
     <div class="container">
+    {% if subdomain != 'api' %}
         <ul class="breadcrumb">
             <li><a href="/">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
@@ -50,6 +51,7 @@
                 </a>
             </li>
         </ul>
+    {% endif %}
         <h3 class="booking-title">
             {% if items_nmb == 0 %}
                 {% blocktrans %}No guides were found{% endblocktrans %}

@@ -79,15 +79,15 @@
     <!-- /FACEBOOK WIDGET -->
 
     <div class="global-wrap">
-
-        {% include 'navbar.html' %}
-
-        {% include 'topbar_notifications.html' %}
-
+        {% if subdomain != 'api' %}
+            {% include 'navbar.html' %}
+            {% include 'topbar_notifications.html' %}
+        {% endif %}
         {% block content %}
         {% endblock %}
-
-        {% include 'footer.html' %}
+        {% if subdomain != 'api' %}
+            {% include 'footer.html' %}
+        {% endif %}
 
         <form id="csrf_getting_form" class="hidden">{% csrf_token %}
         </form>
