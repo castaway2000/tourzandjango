@@ -13,6 +13,7 @@
 
 {% block content %}
     <div class="container">
+    {% if subdomain != 'api' %}
         <ul class="breadcrumb">
             <li><a rel="nofollow" href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
@@ -22,6 +23,7 @@
             <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>
             <li class="active">{{ guide.user.generalprofile.first_name }}</li>
         </ul>
+    {% endif %}
 
         <div class="booking-item-details">
 
