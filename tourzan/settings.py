@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_user_agents',
     'crispy_forms',
+    'robots',
 ]
 
 MIDDLEWARE = [
