@@ -256,7 +256,7 @@
     {% with guide.get_tours as guide_tours %}
         {% if guide_tours %}
             <div class="tour-section-new my-tours">
-                <div class="container">
+                <div class="container ">
                     <div class="row">
                         <div class="col-lg-12">
 
@@ -269,7 +269,8 @@
                                         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                                             <div class="guide-tour-item">
                                                 <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
-                                                    <div class="tour-img-container img-container-background" style="
+                                                    <div class="tour-img-container img-container-background"
+                                                         style="
                                                         {% if tour.image_small %}
                                                             background: url(' {% get_sized_image tour default_size="small" %} ')
                                                          {% else %}
