@@ -26,7 +26,7 @@ class GuideProfileForm(forms.ModelForm):
 
 class BookingGuideForm(forms.Form):
     # , widget=forms.HiddenInput()
-    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Offer date and time"))
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Propose date and time"))
     guide_id = forms.ChoiceField(required=True)
     hours = forms.IntegerField(required=True, min_value=1)
     number_people = forms.IntegerField(required=True, min_value=2)
