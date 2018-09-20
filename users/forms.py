@@ -154,7 +154,6 @@ class CustomSignupForm(SignupForm):
             self.fields['referral_code'].initial = current_request.session["referral_code"]
 
         self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'text-left'
         self.helper.form_action = reverse('account_signup')
         self.helper.form_method = "post"

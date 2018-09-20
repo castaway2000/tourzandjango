@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_user_agents',
     'crispy_forms',
+    'robots',
 ]
 
 MIDDLEWARE = [
@@ -121,6 +122,8 @@ MIDDLEWARE = [
     'django_user_agents.middleware.UserAgentMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'users.middleware.TrackingActiveUserMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
+
     'users.middleware.ReferralCodesGettingMiddleware',
 
     # 'django.middleware.cache.FetchFromCacheMiddleware',
@@ -154,7 +157,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'users.context_processors.site'
+                'users.context_processors.site',
+                'users.context_processors.get_subdomain'
             ],
         },
     },
@@ -358,6 +362,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
 FCM_API_KEY = 'AAAAYMNPZ9o:APA91bEcE9auTZKHvLakXzlybFFJdw6fsJoGSCBiiy4dldOW7u5RNW81cjygtW9vWh7jOgt7OcKPkQ9Zkn3vSYs7dy1-N9znlZCpUgZiY5yNd2R3E7Hbhi4WHuQrvCHF5EvtXOSqHf0Akgu9No48B4E-H4oUk9qdpQ'
+
+ROBOTS_USE_SCHEME_IN_HOST = True
+ROBOTS_USE_HOST = False
+ROBOTS_SITEMAP_VIEW_NAME = 'django.contrib.sitemaps.views.sitemap'
+
 
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'

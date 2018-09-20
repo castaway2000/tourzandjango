@@ -45,6 +45,7 @@
                  ">
             </div>
             <div class="container container-information">
+            {% if subdomain != 'api' %}
                 <div>
                     <ul class="breadcrumb pull-left">
                         <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
@@ -61,6 +62,7 @@
                         <li class="active">{{ tour.name }}</li>
                     </ul>
                 </div>
+               {% endif %}
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center title">{{ tour.name }}</div>

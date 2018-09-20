@@ -20,7 +20,7 @@ def coupon_validation(request):
             order = Order.objects.get(id=order_id)
         except:
             pass
-        if order and not order.coupon and order.status.id == 2:#coupons can be applied for orders only in agreed status
+        if order and not order.coupon:  # and order.status.id == 2:#coupons can be applied for orders only in agreed status
             coupon = None
             if coupon_code:
                 try:

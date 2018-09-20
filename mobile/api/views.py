@@ -445,7 +445,7 @@ def update_trip(request):
                 GeoTrip.objects.filter(id=trip_id, in_progress=True).update(in_progress=False)
                 GeoTracker.objects.filter(user_id__in=[trip_status.guide_id, trip_status.user_id])\
                     .update(trip_in_progress=False)
-                order.make_payment(guide_profile.user.id)
+                order.make_payment(guide_profile.user.id, True)
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 400, 'error': 'guide_id has no guide profile'}]}))
             device_tokens = [trip_status.user.generalprofile.device_id, trip_status.guide.generalprofile.device_id]
@@ -475,7 +475,12 @@ def update_trip(request):
                     }
                 }
                 push_notify(payload)
-            return HttpResponse(json.dumps({'trip_id': trip_status.id, 'price': trip_status.cost, 'isEnded': True}))
+            return HttpResponse(json.dumps({'trip_id': trip_status.id,
+                                            'price': round(order.total_price, 2),
+                                            'tourist_trip_fees': round(order.fees_tourist, 2),
+                                            'guide_trip_fees': round(order.fees_guide, 2),
+                                            'guide_pay': round(order.guide_payment, 2),
+                                            'isEnded': True}))
         return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'incorrect status value'}]}))
     except Exception as err:
         print(err)

@@ -269,7 +269,7 @@ class BookingScheduledTourForm(forms.Form):
 
 class BookingPrivateTourForm(forms.Form):
     # , widget=forms.HiddenInput()
-    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Offer date and time"))
+    date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Propose date and time"))
     tour_id = forms.ChoiceField(required=True)
     number_people = forms.IntegerField(required=True, initial=1, min_value=1)
     message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}), label=_("Message"))
@@ -286,8 +286,8 @@ class BookingPrivateTourForm(forms.Form):
             choices=[(tour.id, tour.id)]
         )
         self.fields['tour_id'].widget = forms.HiddenInput()
-        self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.tour.max_persons_nmb,
-                                                          label=_("Number people (max: %s)" % tour.max_persons_nmb))
+        self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.max_persons_nmb,
+                                                          label=_("Number people (max: %s)" % self.max_persons_nmb))
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True
@@ -297,28 +297,45 @@ class BookingPrivateTourForm(forms.Form):
             layout.append(Field(field_name, placeholder=field.label))
         self.helper.form_show_labels = False
 
-        self.helper.layout.append(
-            HTML(
-                '<div class="tour-details-text">'
-                '<div class="">1-{} {}: {} USD {}</div>'
-                '<div class="">{}: {} USD {}</div>'
-                '<div class="">{}: {}</div>'
-                '</div>'
-                '<div class="text-center tour-price">{}: <span class="price-value"><span id="price_total">{}</span> USD</span></div>'
-                '<div class="text-center">'
-                '<button name="action" class="btn btn-primary btn-lg" type="submit">'
-                '{}</button>'
-                '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
-                                _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
-                                _("Maximum participants"), self.max_persons_nmb,
-                                _("Total price"),
-                            tour.price_final, _('Submit'))
-            ),
-        )
+        if self.persons_nmb_for_min_price == self.max_persons_nmb:
+            self.helper.layout.append(
+                HTML(
+                    '<div class="tour-details-text">'
+                    '<div class="">1-{} {}: {} USD {}</div>'
+                    '</div>'
+                    '<div class="text-center tour-price">{}: <span class="price-value"><span id="price_total">{}</span> USD</span></div>'
+                    '<div class="text-center">'
+                    '<button name="action" class="btn btn-primary btn-lg" type="submit">'
+                    '{}</button>'
+                    '</div>'.format(self.persons_nmb_for_min_price, _("persons"),
+                                    remove_zeros_from_float(tour.price_final), _("for all"),
+                                    _("Total price"),
+                                    tour.price_final, _('Submit'))
+                ),
+            )
+        else:
+            self.helper.layout.append(
+                HTML(
+                    '<div class="tour-details-text">'
+                    '<div class="">1-{} {}: {} USD {}</div>'
+                    '<div class="">{}: {} USD {}</div>'
+                    '<div class="">{}: {}</div>'
+                    '</div>'
+                    '<div class="text-center tour-price">{}: <span class="price-value"><span id="price_total">{}</span> USD</span></div>'
+                    '<div class="text-center">'
+                    '<button name="action" class="btn btn-primary btn-lg" type="submit">'
+                    '{}</button>'
+                    '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
+                                    _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
+                                    _("Maximum participants"), self.max_persons_nmb,
+                                    _("Total price"),
+                                tour.price_final, _('Submit'))
+                ),
+            )
 
     def clean_number_people(self):
         number_people = self.cleaned_data.get("number_people")
-        if number_people > self.tour.max_persons_nmb:
+        if number_people > self.max_persons_nmb:
             raise forms.ValidationError(_("Maximum number of tour participants is: %s") % self.tour.max_persons_nmb)
         return self.cleaned_data.get("number_people")
 
