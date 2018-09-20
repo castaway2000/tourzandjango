@@ -21,6 +21,7 @@ from rest_framework import viewsets
 from ..models import *
 from orders.models import Review, Order
 from mobile.models import GeoTracker
+from user_verification.models import IdentityVerificationApplicant, IdentityVerificationReport, IdentityVerificationCheck
 from .serializers import *
 from .permissions import IsUserOwnerOrReadOnly
 
@@ -234,6 +235,17 @@ def user_profile(request):
                     print(err)
                     lat = None
                     lon = None
+
+                try:
+                    idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
+                    idvr = IdentityVerificationReport.objects.filter(identification_checking__applicant__applicant_id=idva.applicant_id,
+                                                                     type=1).last()
+                    verification_status = str(idvr.status)
+                    verification_result = str(idvr.result)
+                except Exception as err:
+                    print(err)
+                    verification_status = None
+                    verification_result = None
                 res = { 'id': user_id,
                         'profile_picture': None,
                         'username': user.username,
@@ -244,6 +256,8 @@ def user_profile(request):
                         'is_fee_free': user.generalprofile.is_fee_free,
                         'is_trusted': user.generalprofile.is_trusted,
                         'is_verified': user.generalprofile.is_verified,
+                        'verification_result': verification_result,
+                        'verification_status': verification_status,
                         'referral_code': user.generalprofile.referral_code,
                         'latitude': lat,
                         'longitude': lon,
