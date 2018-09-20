@@ -286,8 +286,8 @@ class BookingPrivateTourForm(forms.Form):
             choices=[(tour.id, tour.id)]
         )
         self.fields['tour_id'].widget = forms.HiddenInput()
-        self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.tour.max_persons_nmb,
-                                                          label=_("Number people (max: %s)" % tour.max_persons_nmb))
+        self.fields['number_people'] = forms.IntegerField(required=True, min_value=1, max_value=self.max_persons_nmb,
+                                                          label=_("Number people (max: %s)" % self.max_persons_nmb))
 
         self.helper = FormHelper(self)
         self.helper.form_tag = True
@@ -335,7 +335,7 @@ class BookingPrivateTourForm(forms.Form):
 
     def clean_number_people(self):
         number_people = self.cleaned_data.get("number_people")
-        if number_people > self.tour.max_persons_nmb:
+        if number_people > self.max_persons_nmb:
             raise forms.ValidationError(_("Maximum number of tour participants is: %s") % self.tour.max_persons_nmb)
         return self.cleaned_data.get("number_people")
 

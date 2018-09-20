@@ -252,6 +252,7 @@ class Tour(models.Model):
     def get_max_persons_nmb(self):
         return self.max_persons_nmb if self.max_persons_nmb > 0 else 5
 
+
 class TourIncludedItem(models.Model):
     tour = models.ForeignKey(Tour)
     order_priority = models.IntegerField(default=0)
