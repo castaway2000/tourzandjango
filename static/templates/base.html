@@ -45,7 +45,8 @@
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
 
     <!-- /GOOGLE FONTS -->
-    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">
+{#    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">#}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
     <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/icomoon.css">
 
@@ -78,15 +79,15 @@
     <!-- /FACEBOOK WIDGET -->
 
     <div class="global-wrap">
-
-        {% include 'navbar.html' %}
-
-        {% include 'topbar_notifications.html' %}
-
+        {% if subdomain != 'api' %}
+            {% include 'navbar.html' %}
+            {% include 'topbar_notifications.html' %}
+        {% endif %}
         {% block content %}
         {% endblock %}
-
-        {% include 'footer.html' %}
+        {% if subdomain != 'api' %}
+            {% include 'footer.html' %}
+        {% endif %}
 
         <form id="csrf_getting_form" class="hidden">{% csrf_token %}
         </form>

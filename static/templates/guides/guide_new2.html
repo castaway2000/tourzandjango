@@ -9,8 +9,8 @@
 {% block seo_stuff %}
     <title>{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}</title>
 
-    <meta name="description" content="{{ guide.overview|remove_newlines }}"/>
-    <meta property="og:description" content="{{ guide.overview|remove_newlines }}" />
+    <meta name="description" content="{{ guide.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}"/>
+    <meta property="og:description" content="{{ guide.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}" />
 
     <meta property="og:title" content="{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
@@ -41,10 +41,10 @@
             {% if request.user != guide.user %}
                 <div class="mb5">
                     <a class="btn btn-orange" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                        {% trans 'Chat with me' %}</a>
+                        {% trans 'Chat' %}</a>
                 </div>
                 <div>
-                    <a href="#booking_area" class="btn btn-primary btn-booking-proposal">
+                    <a href="#booking_area" class="btn btn-orange btn-booking-proposal">
                         {% trans 'Book now' %}!
                     </a>
                 </div>
@@ -58,20 +58,20 @@
                     &display=popup">
                     <i class="fa fa-facebook"></i> {% trans 'Share' %}
                 </a>
-                <a class="btn btn-primary" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                    {% trans 'Message' %}
+                <a class="btn btn-orange" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                    {% trans 'Chat' %}
                 </a>
-                <a href="#booking_area" class="btn btn-primary btn-booking-proposal">{%  trans 'Book' %}</a>
+                <a href="#booking_area" class="btn btn-orange btn-booking-proposal">{%  trans 'Book now' %}</a>
             </div>
             <div class="scroll-top-container">
-                <a href="#profile_container" class="btn btn-primary" id="scroll_top">
+                <a href="#profile_container" class="btn btn-orange" id="scroll_top">
                     <i class="fa fa-chevron-up" aria-hidden="true"></i>
                 </a>
             </div>
         </div>
 
     {% endif %}
-
+    {% if subdomain != 'api' %}
     <div class="container">
         <div class="breadcrumb-guide-container text-center">
             <ul class="breadcrumb">
@@ -87,6 +87,7 @@
             </ul>
         </div>
     </div>
+    {% endif %}
 
     <div class="tour-section-new guide-section">
         <div class="container">
@@ -164,23 +165,25 @@
                             {% trans 'My life in pictures' %}
                         </div>
                         <div class="profile-container" id="profile_container">
-                            <div class="images">
-                                <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
-                                    {% for guide_answer in guide_answers.reverse %}
-                                        {% if guide_answer.image_medium %}
-                                            <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
-                                                 alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
-                                                 class="img-responsive"
-                                                 title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
-                                        {% elif guide_answer.image %}
-                                            <img src="{% get_media_prefix %}{{ guide_answer.image }}"
-                                                 alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
-                                                 class="img-responsive"
-                                                 title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
-                                        {% endif %}
-                                    {% endfor %}
+                            {% if guide_answers|length > 1 %}
+                                <div class="images">
+                                    <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                        {% for guide_answer in guide_answers.reverse %}
+                                            {% if guide_answer.image_medium %}
+                                                <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
+                                                     alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
+                                                     class="img-responsive"
+                                                     title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
+                                            {% elif guide_answer.image %}
+                                                <img src="{% get_media_prefix %}{{ guide_answer.image }}"
+                                                     alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
+                                                     class="img-responsive"
+                                                     title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
 
                             <div class="answers mt30">
 
@@ -254,7 +257,7 @@
     {% with guide.get_tours as guide_tours %}
         {% if guide_tours %}
             <div class="tour-section-new my-tours">
-                <div class="container">
+                <div class="container ">
                     <div class="row">
                         <div class="col-lg-12">
 
@@ -267,7 +270,8 @@
                                         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                                             <div class="guide-tour-item">
                                                 <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
-                                                    <div class="tour-img-container img-container-background" style="
+                                                    <div class="tour-img-container img-container-background"
+                                                         style="
                                                         {% if tour.image_small %}
                                                             background: url(' {% get_sized_image tour default_size="small" %} ')
                                                          {% else %}
@@ -398,9 +402,6 @@
             $("#id_hours").on("change", function(){
                 finalPriceCalculation();
             });
-
-
-
         })
     </script>
 {% endblock js_stuff %}

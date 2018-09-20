@@ -8,8 +8,19 @@
     {% if countries|length > 0 %}
         <div class="container container-equal-items mt20">
             <div class="row">
+                <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
+                    <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
+                        <div class="form-group form-group-lg">
+                            <div class="text-center">
+                                <label>{% trans 'Type your destination to find tours and local guides' %}</label>
+                            </div>
+                            <input class="typeahead form-control" id="city_search_input">
+                                <input id="place_id" name="place_id" class="hidden">
+                        </div>
+                    </form>
+                </div>
                 <div class="col-lg-12">
-                    <h3>{% trans 'Select a country of your destination' %}</h3>
+                    <h3 class="text-center">{% trans 'All Destinations' %}</h3>
                 </div>
                 {% for country in countries %}
                     <div class="col-lg-4 col-md-4 col-sm-6">
@@ -61,3 +72,10 @@
         </div>
     {% endif %}
 {% endblock content %}
+
+{% block js_stuff %}
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
+{% endblock %}

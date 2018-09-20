@@ -71,6 +71,7 @@
     {% endif %}
 
     <div class="container">
+    {% if subdomain != 'api' %}
         <div class="breadcrumb-guide-container text-center">
             <ul class="breadcrumb">
                 <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
@@ -84,6 +85,7 @@
                 <li class="active">{{ guide.user.generalprofile.get_name }}</li>
             </ul>
         </div>
+    {% endif %}
 
         <div class="row">
             <div class="col-lg-6 col-lg-offset-3">

@@ -12,8 +12,8 @@
         <meta name="description" content="{{ tour.overview_short|remove_newlines }}"/>
         <meta property="og:description" content="{{ tour.overview_short|remove_newlines }}" />
     {% else %}
-        <meta name="description" content="{{ tour.overview|safe }}"/>
-        <meta property="og:description" content="{{ tour.overview|safe }}" />
+        <meta name="description" content="{{ tour.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}"/>
+        <meta property="og:description" content="{{ tour.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}" />
     {% endif %}
 
     <meta property="og:title" content="{% trans 'Tour in' %} {{ tour.city.name }}: {{ tour.name }}" />
@@ -45,6 +45,7 @@
                  ">
             </div>
             <div class="container container-information">
+            {% if subdomain != 'api' %}
                 <div>
                     <ul class="breadcrumb pull-left">
                         <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
@@ -58,9 +59,9 @@
                         <li>
                             <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}">{{ tour.guide.user.generalprofile.first_name }}</a>
                         </li>
-                        <li class="active">{{ tour.name }}</li>
                     </ul>
                 </div>
+            {% endif %}
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center title">{{ tour.name }}</div>
@@ -83,7 +84,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
-                    <img src="{{ tour.guide.profile_image_small.url }}" class="img-responsive">
+                    <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}"
+                               target="_blank">
+                        <img src="{{ tour.guide.profile_image_small.url }}" class="img-responsive">
+                    </a>
                     <div class="text-center mt10 mb10">
                         <div class="guide-name">
                             <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}"
@@ -94,7 +98,13 @@
                     </div>
                 </div>
                 <div class="col-lg-5 col-md-5 col-sm-8 col-xs-12">
-                    {{ tour.guide.overview|safe }}
+                    {{ tour.guide.overview|safe|truncatewords_html:30 }}
+                    {% ifnotequal tour.guide.overview|safe|truncatewords_html:30|length tour.guide.overview|safe|truncatewords_html:31|length %}
+                       <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid "new" %}"
+                               target="_blank">
+                           read more
+                       </a>
+                    {% endifnotequal %}
                 </div>
             </div>
         </div>
@@ -114,7 +124,7 @@
                                 {% trans 'Description' %}
                             </div>
                         </div>
-                        <div class="col-lg-4 col-lg-offset-4">
+                        <div class="col-lg-6 col-lg-offset-3">
                             <div class="mb20">
                                 {{ tour.overview|safe|linebreaks }}
                             </div>
@@ -123,7 +133,7 @@
                 {% endif %}
                 {% if tour.included %}
                     <div class="row">
-                        <div class="col-lg-4 col-lg-offset-4">
+                        <div class="col-lg-6 col-lg-offset-3">
                             <div class="section-subtitle">
                                 {% trans 'What is included' %}
                             </div>
@@ -135,7 +145,7 @@
                 {% endif %}
                 {% if tour.excluded %}
                     <div class="row">
-                        <div class="col-lg-4 col-lg-offset-4">
+                        <div class="col-lg-6 col-lg-offset-3">
                             <div class="section-subtitle">
                                 {% trans 'What is excluded' %}
                             </div>

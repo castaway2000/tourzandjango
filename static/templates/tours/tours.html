@@ -12,6 +12,7 @@
 
 {% block content %}
     <div class="container">
+    {% if subdomain != 'api' %}
         <ul class="breadcrumb">
             <li><a href="/" rel="nofollow">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
@@ -21,6 +22,7 @@
                 </a>
             </li>
         </ul>
+    {% endif %}
         <h3 class="booking-title">
             {% if tours_nmb == 0 %}
                 {% blocktrans %}No tours were found{% endblocktrans %}
