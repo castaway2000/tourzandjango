@@ -42,7 +42,10 @@
                     <input id="webcam_image" name="webcam_image" class="hidden">
                 </div>
                 <div class="form-group">
-                    <button id="submit_button" type="submit" class="btn btn-primary hidden">{% trans 'Save' %}</button>
+                    <button id="submit_button" type="submit" class="btn btn-primary hidden"
+                            data-loading-text="<i class='fa fa-spinner fa-spin'></i> Uploading">
+                        {% trans 'Save' %}</button>
+{#                    <span id="spinnerbtn"><i class='fa fa-spinner fa-spin'></i>Uploading"</span>#}
                 </div>
             </form>
         </div>
@@ -70,5 +73,14 @@
                 $('#submit_button').removeClass("hidden");
             } );
         }
+    </script>
+        <script>
+        $('#submit_button').on('click', function() {
+        var $this = $(this);
+      $this.button('loading');
+        setTimeout(function() {
+           $this.button('reset');
+       }, 16000);
+    });
     </script>
 {% endblock js_stuff %}
