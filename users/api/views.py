@@ -4,16 +4,23 @@ from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticatedOrReadOnly,
     )
+from .permissions import IsUserOwnerOrReadOnly
 
 from allauth.account.views import password_reset
 from django.core import serializers as serial
 from django.contrib.auth import authenticate
-from django.http import HttpResponse
-from rest_framework.decorators import api_view
+from django.http import HttpResponse, HttpRequest
+
+from rest_framework.decorators import api_view, authentication_classes, permission_classes, list_route
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.authtoken.models import Token
 from rest_framework_jwt.settings import api_settings
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
+
 import urllib3
 import json
 
@@ -22,6 +29,7 @@ from ..models import *
 from orders.models import Review, Order
 from mobile.models import GeoTracker
 from user_verification.models import IdentityVerificationApplicant, IdentityVerificationReport, IdentityVerificationCheck
+from users.models import UserInterest
 from .serializers import *
 from .permissions import IsUserOwnerOrReadOnly
 
@@ -276,6 +284,178 @@ def user_profile(request):
             print('ERROR: ', err)
             return Response(HTTP_400_BAD_REQUEST)
 
+
+class EditProfileViewSet(viewsets.ModelViewSet):
+    queryset = GeneralProfile.objects.all()
+    serializer_class = GeneralProfileSerializer
+    permission_classes = (IsUserOwnerOrReadOnly,)
+    http_method_names = ('get',)
+
+    def get_tourist_representation_by_id(self, user):
+        qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+        data = json.loads(serial.serialize('json', qs))
+        for d in data:
+            order = Order.objects.get(id=d['fields']['order'])
+            d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+            d['fields']['reviewers_name'] = order.guide.name
+        return data
+
+    # def if_guide(self, user):
+    #     data = {'is_guide': False, 'is_default': False, 'profile_image': None, 'guide_overview': None,
+    #             'guide_rating': 0, 'reviews': None}
+    #     if hasattr(user, 'guideprofile'):
+    #         data['reviews'] = self.get_guide_representation_by_id(user)
+    #         data['is_guide'] = True
+    #         data['is_default'] = user.guideprofile.is_default_guide
+    #         data['guide_overview'] = user.guideprofile.overview
+    #         data['guide_rating'] = user.guideprofile.rating
+    #         try:
+    #             data['profile_image'] = str(user.guideprofile.profile_image.url)
+    #         except Exception as e:
+    #             print(e)
+    #     return data
+
+    @list_route()
+    def edit_profile(self, request):
+        try:
+            user = request.user
+            get = request.GET
+            print(get)
+            if user:
+                gp = GeneralProfile.objects.get(id=user.generalprofile.id)
+                tp = TouristProfile.objects.get(id=user.touristprofile.id)
+                uo = User.objects.get(id=user.id)
+                try:
+                    idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
+                    idvr = IdentityVerificationReport.objects.filter(
+                        identification_checking__applicant__applicant_id=idva.applicant_id,
+                        type=1).last()
+                    verification_status = str(idvr.status)
+                    verification_result = str(idvr.result)
+                except Exception as err:
+                    print(err)
+                    verification_status = None
+                    verification_result = None
+                try:
+                    geotracker = GeoTracker.objects.get(user_id=user.id)
+                    lat = geotracker.latitude
+                    lon = geotracker.longitude
+                except Exception as err:
+                    print(err)
+                    lat = None
+                    lon = None
+
+                # if 'first_name' in get.keys:
+                gp.first_name = get['first_name']
+                # if get['last_name']:
+                gp.last_name = get['last_name']
+                # if get['about']:
+                tp.about = get['about']
+                # if get['profession']:
+                gp.profession = get['profession']
+                # if get['dob'] != '0':
+                #     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
+                #     gp.date_of_birth = date
+                # if get['interests']:
+                #     uo.userinterest_set.update_or_create(get['interests'])
+                uo.save(force_update=True)
+                gp.save(force_update=True)
+                tp.save(force_update=True)
+
+                res = { 'id': user.generalprofile.id,
+                        'profile_picture': None,
+                        'username': user.username,
+                        'first_name': user.generalprofile.first_name,
+                        'last_name': user.generalprofile.last_name,
+                        'about_tourist': user.touristprofile.about,
+                        'tourist_rating': user.touristprofile.rating,
+                        'is_fee_free': user.generalprofile.is_fee_free,
+                        'is_trusted': user.generalprofile.is_trusted,
+                        'is_verified': user.generalprofile.is_verified,
+                        'verification_result': verification_result,
+                        'verification_status': verification_status,
+                        'referral_code': user.generalprofile.referral_code,
+                        'latitude': lat,
+                        'longitude': lon,
+                        'interests': [],
+                        'tourist_reviews': self.get_tourist_representation_by_id(user),
+                        }
+                return Response(res)
+            else:
+                return Response({'detail': 'bad credentials'})
+        except Exception as err:
+            return Response({'error': 400, 'detail': str(err)})
+
+    @list_route()
+    def edit_guide_profile(self, request):
+        try:
+            user = request.user
+            get = request.GET
+            print(get)
+            if user:
+                uo = User.objects.get(id=user.id)
+                if not hasattr(user, 'guideprofile'):
+                    GuideProfile.objects.update_or_create(user=uo)
+                gp = GeneralProfile.objects.get(id=user.generalprofile.id)
+                gup = GuideProfile.objects.get(id=user.guideprofile.id)
+                try:
+                    idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
+                    idvr = IdentityVerificationReport.objects.filter(
+                        identification_checking__applicant__applicant_id=idva.applicant_id,
+                        type=1).last()
+                    verification_status = str(idvr.status)
+                    verification_result = str(idvr.result)
+                except Exception as err:
+                    print(err)
+                    verification_status = None
+                    verification_result = None
+                try:
+                    geotracker = GeoTracker.objects.get(user_id=user.id)
+                    lat = geotracker.latitude
+                    lon = geotracker.longitude
+                except Exception as err:
+                    print(err)
+                    lat = None
+                    lon = None
+
+                gp.first_name = get['first_name']
+                gp.last_name = get['last_name']
+                city = City.objects.get_or_create(name=gup['city'])[0]
+                gup.city = city # not sure what to do here. it wont register.
+                gup.rate = get['rate']
+                gup.date_of_birth = get['dob']
+                # uo.userinterest_set.update_or_create(get['interests']) #interests and languages need some attention.
+                gup.overview = get['overview']
+                # uo.userlanguage_set.update_or_create(get['languages'])
+                gup.name = '%s %s' % (get['first_name'], get['last_name'])
+                uo.save(force_update=True)
+                gp.save(force_update=True)
+                gup.save(force_update=True)
+
+                res = {'id': user.generalprofile.id,
+                       'profile_picture': None,
+                       'username': user.username,
+                       'first_name': gup.first_name,
+                       'last_name': gup.last_name,
+                       'overview': gup.overview,
+                       'guide_rating': gup.rating,
+                       'is_active': gup.is_active,
+                       'is_fee_free': user.generalprofile.is_fee_free,
+                       'is_trusted': user.generalprofile.is_trusted,
+                       'is_verified': user.generalprofile.is_verified,
+                       'verification_result': verification_result,
+                       'verification_status': verification_status,
+                       'referral_code': user.generalprofile.referral_code,
+                       'latitude': lat,
+                       'longitude': lon,
+                       'interests': [],
+                       'tourist_reviews': self.get_tourist_representation_by_id(user),
+                       }
+                return Response(res)
+            else:
+                return Response({'detail': 'bad credentials or not a guide'})
+        except Exception as err:
+            return Response({'error': 400, 'detail': str(err)})
 
 @api_view(['POST'])
 def user_mixins(request):
