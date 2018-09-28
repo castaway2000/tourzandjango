@@ -46,7 +46,9 @@ class GuideProfileViewSet(viewsets.ModelViewSet):
     queryset = GuideProfile.objects.filter(is_active=True)
     serializer_class = GuideProfileSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+    http_method_names = ['get', 'create']
     filter_class = GuideFilter
+
 
     @list_route()
     def get_tourist_representation(self, request):
