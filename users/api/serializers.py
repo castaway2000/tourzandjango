@@ -86,7 +86,7 @@ class UserDetailsSerializerCustom(UserDetailsSerializer):
         fields = ('pk', 'username', 'email', 'guide_id',
                   'guide_profile_image', 'tourist_profile_image',
                   'general_profile', 'interests',)
-        read_only_fields = ('email', )
+        read_only_fields = ('email', 'pk',)
 
 
 class PasswordResetSerializerCustom(PasswordResetSerializer):

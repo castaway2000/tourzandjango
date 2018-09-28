@@ -83,6 +83,7 @@ class Interest(models.Model):
 class UserInterest(models.Model):
     user = models.ForeignKey(User)
     interest = models.ForeignKey(Interest)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         if self.interest.name:
@@ -106,6 +107,7 @@ class UserLanguage(models.Model):
     level = models.ForeignKey(LanguageLevel, blank=True, null=True, default=1)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return "%s" % self.language
@@ -250,7 +252,7 @@ class GeneralProfile(models.Model):
             return referral_code
 
     def get_languages(self):
-        user_languages = UserLanguage.objects.filter(user=self.user)
+        user_languages = UserLanguage.objects.filter(user=self.user, is_active=True)
         print(user_languages)
         #Refactor this!!!
         user_language_native = None
@@ -309,6 +311,27 @@ class GeneralProfile(models.Model):
 
     def get_user_proficient_languages(self):
         return self.user.userlanguage_set.filter(level_id__in=[1, 2]).order_by("language")#native, advances - maybe to change their titles or add upper intermediate?
+
+    def set_interests_from_list(self, interests_list):
+        user = self.user
+        user_interest_ids = list()
+        for interest_name in interests_list:
+            interest, created = Interest.objects.get_or_create(name=interest_name.lower())
+            user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, kwargs={"is_active": True})
+            user_interest_ids.append(user_interest.id)
+        UserInterest.objects.filter(user=user).exclude(id__in=user_interest_ids).update(is_active=False)
+
+    def set_languages_from_list(self, languages_list):
+        user = self.user
+        user_language_ids = list()
+        for language in languages_list:
+            language_name = language.name
+            language_level_id = language.level
+            user_language, created = UserLanguage.objects.update_or_create(language=language_name, user=user,
+                                                                           level_id=language_level_id, kwargs={"is_active": True})
+            user_language_ids.append(user_language.id)
+        UserLanguage.objects.filter(user=user).exclude(id__in=user_language_ids).update(is_active=False)
+
 
 def general_profile_post_save(sender, instance, **kwargs):
     if hasattr(instance.user, "guideprofile"):

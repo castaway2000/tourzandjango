@@ -353,16 +353,18 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 tp.about = get['about']
                 # if get['profession']:
                 gp.profession = get['profession']
-                # if get['dob'] != '0':
-                #     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
-                #     gp.date_of_birth = date
-                # if get['interests']:
-                #     uo.userinterest_set.update_or_create(get['interests'])
+                if get['dob'] != '0':
+                    date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
+                    gp.date_of_birth = date_of_birth
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 tp.save(force_update=True)
 
-                res = { 'id': user.generalprofile.id,
+                interests = get['interests']
+                if interests:
+                    gp.set_interests_from_list(interests)
+
+                res = {'id': user.generalprofile.id,
                         'profile_picture': None,
                         'username': user.username,
                         'first_name': user.generalprofile.first_name,
@@ -424,13 +426,18 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 gup.city = city # not sure what to do here. it wont register.
                 gup.rate = get['rate']
                 gup.date_of_birth = get['dob']
-                # uo.userinterest_set.update_or_create(get['interests']) #interests and languages need some attention.
                 gup.overview = get['overview']
-                # uo.userlanguage_set.update_or_create(get['languages'])
-                gup.name = '%s %s' % (get['first_name'], get['last_name'])
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 gup.save(force_update=True)
+
+                interests = get['interests']
+                if interests:
+                    gp.set_interests_from_list(interests)
+
+                languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
+                if languages:
+                    gp.set_languages_from_list(languages)
 
                 res = {'id': user.generalprofile.id,
                        'profile_picture': None,
@@ -457,6 +464,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
         except Exception as err:
             return Response({'error': 400, 'detail': str(err)})
 
+
 @api_view(['POST'])
 def user_mixins(request):
     try:
@@ -466,8 +474,8 @@ def user_mixins(request):
         if user_type == 'guide':
             data = GuideProfile.objects.get(id=id)
             username = data.user.username
-            firstname = data.user.first_name
-            lastname = data.user.last_name
+            firstname = data.user.generalprofile.first_name
+            lastname = data.user.generalprofile.last_name
             pic = data.profile_image.url
         else:
             data = GeneralProfile.objects.get(user=id)
