@@ -84,7 +84,6 @@ def signup_api_view(request):
     email = request.data.get("email")
     password1 = request.data.get("password1")
     password2 = request.data.get("password2")
-
     if User.objects.filter(username=username).exists():
         return Response({"error": "Signup failed: such username exists"}, status=HTTP_401_UNAUTHORIZED)
 

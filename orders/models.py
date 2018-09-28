@@ -966,6 +966,18 @@ class Review(models.Model):
         super(Review, self).save(*args, **kwargs)
 
 
+class OtherReviews(models.Model):
+    guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
+    tourist_first_name = models.CharField(max_length=100, blank=True, null=True, default=None)
+    tourist_last_name = models.CharField(max_length=100, blank=True, null=True, default=None)
+    tourist_feedback_name = models.CharField(max_length=256, blank=True, null=True, default=None)
+    tourist_feedback_text = models.TextField(blank=True, null=True, default=None)
+    tourist_rating = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    is_tourist_feedback = models.BooleanField(default=False)
+    tourist_review_created = models.DateTimeField(blank=True, null=True, default=None)
+    tourist_review_updated = models.DateTimeField(blank=True, null=True, default=None)
+
+
 ##AT 13082018: Comment out this, because Reviews has OneToOne relation with orders, so this code is unnecessary
 # """
 # saving ratings from review to Order object

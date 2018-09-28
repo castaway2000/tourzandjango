@@ -5,7 +5,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from mobile.models import GeoTracker, GeoTrip
-from orders.models import Order, PaymentStatus
+from orders.models import Order, PaymentStatus, Review
 from users.models import GeneralProfile, User
 from guides.models import GuideProfile
 from pyfcm import FCMNotification
@@ -231,31 +231,33 @@ def create_review(request):
         feedback = request.POST['feedback']
 
         order = Order.objects.get(id=order_id)
+        review = Review.objects.get_or_create(order=order)[0]
         if order.guide_id == user_id:
             reviewed_user = order.tourist_id
-            order.review.tourist_feedback_name = title
-            order.review.tourist_feedback_text = feedback
-            order.review.tourist_rating = rating
-            order.review.is_guide_feedback = True
-            if order.review.tourist_review_created:
-                order.review.tourist_review_updated = datetime.now()
+            review.tourist_feedback_name = title
+            review.tourist_feedback_text = feedback
+            review.tourist_rating = rating
+            review.is_guide_feedback = True
+            if review.tourist_review_created:
+                review.tourist_review_updated = datetime.now()
             else:
-                order.review.tourist_review_created = datetime.now()
+                review.tourist_review_created = datetime.now()
         else:
             reviewed_user = order.guide_id
-            order.review.guide_feedback_name = title
-            order.review.guide_feedback_text = feedback
-            order.review.guide_rating = rating
-            order.review.is_tourist_feedback = True
-            if order.review.guide_review_created:
-                order.review.guide_review_updated = datetime.now()
+            review.guide_feedback_name = title
+            review.guide_feedback_text = feedback
+            review.guide_rating = rating
+            review.is_tourist_feedback = True
+            if review.guide_review_created:
+                review.guide_review_updated = datetime.now()
             else:
-                order.review.guide_review_created = datetime.now()
-        order.review.save()
+                review.guide_review_created = datetime.now()
+        review.save()
 
-        data = json.dumps({'detail': 'data is created'})
+        data = json.dumps({'detail': 'review created!'})
         return HttpResponse(data)
     except Exception as err:
+        print(err)
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
