@@ -12,7 +12,7 @@ from django.views.decorators.cache import never_cache
 from .forms import *
 from django.contrib import messages
 from django.http import JsonResponse
-from orders.models import Review, Order
+from orders.models import Review, Order, OtherReviews
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 from django.db.models import Avg, Max, Min, Sum
@@ -267,6 +267,7 @@ def tour(request, slug, tour_uuid, tour_new=None):
 
     tours_images = tour.tourimage_set.filter(is_active=True).order_by('-is_main', 'id')
     reviews = Review.objects.filter(order__tour=tour, is_tourist_feedback=True)
+    other_reviews = OtherReviews.objects.filter(guide=guide, is_tourist_feedback=True)
     reviews_total_nmb = Review.objects.filter(order__tour=tour, is_tourist_feedback=True).count()
 
     other_tours = guide.tour_set.filter(is_active=True).exclude(id=tour.id)

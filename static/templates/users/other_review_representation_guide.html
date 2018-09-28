@@ -1,0 +1,40 @@
+{% load static %}
+{% load i18n %}
+{% load stars_rating %}
+
+
+<li>
+    <div class="row">
+        <div class="col-lg-2 col-sm-3 col-xs-3">
+            <div class="booking-item-review-person">
+{#                <img src="{{ review.avatar }}"/>#}
+                <div class="text-center">
+                    {{ review.tourist_first_name }}
+                    {% if review.tourist_last_name %}
+                        {{ review.tourist_last_name }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10 col-sm-9 col-xs-9">
+            <div class="booking-item-review-content">
+                <ul class="icon-list icon-group booking-item-rating-stars">
+                    {{ review.tourist_rating|rendering_stars|safe }}
+                </ul>
+
+                {% if review.tourist_feedback_name %}
+                    <h5>{{ review.tourist_feedback_name }}</h5>
+                {% endif %}
+
+                <div class="mt5">
+                    {{ review.tourist_feedback_text|safe|linebreaks }}
+                </div>
+
+{#                <p class="booking-item-review-rate">{% blocktrans %}Was this review helpful?{% endblocktrans %}#}
+{#                    <a class="fa fa-thumbs-o-up box-icon-inline round" href="#"></a><b class="text-color"> 18</b>#}
+{#                </p>#}
+
+            </div>
+        </div>
+    </div>
+</li>
