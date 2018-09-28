@@ -54,3 +54,12 @@ class ReviewAdmin(admin.ModelAdmin):
         model = Review
 
 admin.site.register(Review, ReviewAdmin)
+
+
+class OtherReviewsAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in OtherReviews._meta.fields]
+
+    class Meta:
+        model = OtherReviews
+
+admin.site.register(OtherReviews, OtherReviewsAdmin)
