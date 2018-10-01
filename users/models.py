@@ -317,8 +317,10 @@ class GeneralProfile(models.Model):
         user_interest_ids = list()
         for interest_name in interests_list:
             interest, created = Interest.objects.get_or_create(name=interest_name.lower())
-            user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, kwargs={"is_active": True})
+            user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, is_active=True)
             user_interest_ids.append(user_interest.id)
+            print(user_interest_ids)
+            print(user_interest.id)
         UserInterest.objects.filter(user=user).exclude(id__in=user_interest_ids).update(is_active=False)
 
     def set_languages_from_list(self, languages_list):
@@ -328,7 +330,7 @@ class GeneralProfile(models.Model):
             language_name = language.name
             language_level_id = language.level
             user_language, created = UserLanguage.objects.update_or_create(language=language_name, user=user,
-                                                                           level_id=language_level_id, kwargs={"is_active": True})
+                                                                           level_id=language_level_id, is_active=True)
             user_language_ids.append(user_language.id)
         UserLanguage.objects.filter(user=user).exclude(id__in=user_language_ids).update(is_active=False)
 

@@ -23,6 +23,7 @@ from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 
 import urllib3
 import json
+import ast
 
 from rest_framework import viewsets
 from ..models import *
@@ -360,9 +361,14 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 gp.save(force_update=True)
                 tp.save(force_update=True)
 
-                interests = get['interests']
+                interests = ast.literal_eval(get['interests'])
+                active_interests = None
                 if interests:
                     gp.set_interests_from_list(interests)
+                    user_interests = UserInterest.objects.filter(user=user, is_active=True)
+                    active_interests = []
+                    for u in user_interests:
+                        active_interests.append(str(u.interest))
 
                 res = {'id': user.generalprofile.id,
                         'profile_picture': None,
@@ -379,7 +385,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                         'referral_code': user.generalprofile.referral_code,
                         'latitude': lat,
                         'longitude': lon,
-                        'interests': [],
+                        'interests': active_interests,
                         'tourist_reviews': self.get_tourist_representation_by_id(user),
                         }
                 return Response(res)
@@ -393,18 +399,18 @@ class EditProfileViewSet(viewsets.ModelViewSet):
         try:
             user = request.user
             get = request.GET
-            print(get)
+            print('REQ: ', get)
             if user:
+                city = City.objects.get(name=get['city'])
                 uo = User.objects.get(id=user.id)
                 if not hasattr(user, 'guideprofile'):
-                    GuideProfile.objects.update_or_create(user=uo)
+                    GuideProfile.objects.create(user=uo, city=city)
                 gp = GeneralProfile.objects.get(id=user.generalprofile.id)
-                gup = GuideProfile.objects.get(id=user.guideprofile.id)
+                gup = GuideProfile.objects.get(user=uo)
                 try:
                     idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
                     idvr = IdentityVerificationReport.objects.filter(
-                        identification_checking__applicant__applicant_id=idva.applicant_id,
-                        type=1).last()
+                        identification_checking__applicant__applicant_id=idva.applicant_id, type=1).last()
                     verification_status = str(idvr.status)
                     verification_result = str(idvr.result)
                 except Exception as err:
@@ -412,50 +418,58 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                     verification_status = None
                     verification_result = None
                 try:
-                    geotracker = GeoTracker.objects.get(user_id=user.id)
+                    geotracker = GeoTracker.objects.get_or_create(user_id=user.id)
                     lat = geotracker.latitude
                     lon = geotracker.longitude
                 except Exception as err:
                     print(err)
                     lat = None
                     lon = None
-
+                print(101)
+                if get['dob'] != '0':
+                    date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
+                    gup.date_of_birth = date_of_birth
                 gp.first_name = get['first_name']
                 gp.last_name = get['last_name']
-                city = City.objects.get_or_create(name=gup['city'])[0]
-                gup.city = city # not sure what to do here. it wont register.
+                # city = City.objects.get_or_create(name=gup['city'])[0]
+                # gup.city = city  # not sure what to do here. it wont register.
+                gup.name = get['first_name']
                 gup.rate = get['rate']
-                gup.date_of_birth = get['dob']
                 gup.overview = get['overview']
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 gup.save(force_update=True)
-
-                interests = get['interests']
+                print(111)
+                interests = ast.literal_eval(get['interests'])
+                active_interests = None
                 if interests:
                     gp.set_interests_from_list(interests)
+                    user_interests = UserInterest.objects.filter(user=user, is_active=True)
+                    active_interests = []
+                    for u in user_interests:
+                        active_interests.append(str(u.interest))
 
-                languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
-                if languages:
-                    gp.set_languages_from_list(languages)
+                # languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
+                # if languages:
+                #     gp.set_languages_from_list(languages)
 
                 res = {'id': user.generalprofile.id,
                        'profile_picture': None,
                        'username': user.username,
-                       'first_name': gup.first_name,
-                       'last_name': gup.last_name,
+                       'first_name': gp.first_name,
+                       'last_name': gp.last_name,
                        'overview': gup.overview,
                        'guide_rating': gup.rating,
                        'is_active': gup.is_active,
-                       'is_fee_free': user.generalprofile.is_fee_free,
-                       'is_trusted': user.generalprofile.is_trusted,
-                       'is_verified': user.generalprofile.is_verified,
+                       'is_fee_free': gp.is_fee_free,
+                       'is_trusted': gp.is_trusted,
+                       'is_verified': gp.is_verified,
                        'verification_result': verification_result,
                        'verification_status': verification_status,
-                       'referral_code': user.generalprofile.referral_code,
+                       'referral_code': gp.referral_code,
                        'latitude': lat,
                        'longitude': lon,
-                       'interests': [],
+                       'interests': active_interests,
                        'tourist_reviews': self.get_tourist_representation_by_id(user),
                        }
                 return Response(res)
