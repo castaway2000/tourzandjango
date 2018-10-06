@@ -370,6 +370,15 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                     for u in user_interests:
                         active_interests.append(str(u.interest))
 
+                languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
+                if languages:
+                    user_language = ast.literal_eval(languages)
+                    gp.set_languages_from_list(user_language)
+                active_languages = []
+                for idx, language in enumerate(gp.get_languages()):
+                    if language is not None:
+                        active_languages.append({'name': str(language), 'level': idx+1})
+
                 res = {'id': user.generalprofile.id,
                         'profile_picture': None,
                         'username': user.username,
@@ -386,6 +395,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                         'latitude': lat,
                         'longitude': lon,
                         'interests': active_interests,
+                        'languages': active_languages,
                         'tourist_reviews': self.get_tourist_representation_by_id(user),
                         }
                 return Response(res)
@@ -399,7 +409,6 @@ class EditProfileViewSet(viewsets.ModelViewSet):
         try:
             user = request.user
             get = request.GET
-            print('REQ: ', get)
             if user:
                 city = City.objects.get(name=get['city'])
                 uo = User.objects.get(id=user.id)
@@ -425,21 +434,17 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                     print(err)
                     lat = None
                     lon = None
-                print(101)
                 if get['dob'] != '0':
                     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
                     gup.date_of_birth = date_of_birth
                 gp.first_name = get['first_name']
                 gp.last_name = get['last_name']
-                # city = City.objects.get_or_create(name=gup['city'])[0]
-                # gup.city = city  # not sure what to do here. it wont register.
                 gup.name = get['first_name']
                 gup.rate = get['rate']
                 gup.overview = get['overview']
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 gup.save(force_update=True)
-                print(111)
                 interests = ast.literal_eval(get['interests'])
                 active_interests = None
                 if interests:
@@ -449,9 +454,15 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                     for u in user_interests:
                         active_interests.append(str(u.interest))
 
-                # languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
-                # if languages:
-                #     gp.set_languages_from_list(languages)
+                languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
+                if languages:
+                    user_language = ast.literal_eval(languages)
+                    gp.set_languages_from_list(user_language)
+                active_languages = []
+                for idx, language in enumerate(gp.get_languages()):
+                    if language is not None:
+                        active_languages.append({'name': str(language), 'level': idx+1})
+
 
                 res = {'id': user.generalprofile.id,
                        'profile_picture': None,
@@ -470,6 +481,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                        'latitude': lat,
                        'longitude': lon,
                        'interests': active_interests,
+                       'languages': active_languages,
                        'tourist_reviews': self.get_tourist_representation_by_id(user),
                        }
                 return Response(res)

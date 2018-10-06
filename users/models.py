@@ -265,7 +265,6 @@ class GeneralProfile(models.Model):
                 user_language_third = user_language
             else:
                 user_language_second = user_language
-
         return (user_language_native, user_language_second, user_language_third)
 
     def last_seen(self):
@@ -327,8 +326,8 @@ class GeneralProfile(models.Model):
         user = self.user
         user_language_ids = list()
         for language in languages_list:
-            language_name = language.name
-            language_level_id = language.level
+            language_name = language['name']
+            language_level_id = language['level']
             user_language, created = UserLanguage.objects.update_or_create(language=language_name, user=user,
                                                                            level_id=language_level_id, is_active=True)
             user_language_ids.append(user_language.id)
