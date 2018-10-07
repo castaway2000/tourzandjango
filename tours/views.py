@@ -104,7 +104,7 @@ def tours(request):
     if filter_form_data and not filtered_is_company:
         base_kwargs['guide__user__generalprofile__is_company'] = False
 
-    #filtering by trusted guides
+    #filtering by verified guides
     if filter_form_data and not filtered_is_verified:
         pass #show all
     else:
