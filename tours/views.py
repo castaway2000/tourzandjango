@@ -55,7 +55,7 @@ def tours(request):
     #Hourly price tours filtering
     if filtered_is_hourly_price_included and filtered_hourly_prices:
         hourly_price = filtered_hourly_prices.split(";")
-        if len(hourly_price)==2:
+        if len(hourly_price) == 2:
             hourly_price_min = hourly_price[0]
             hourly_price_max = hourly_price[1]
             hourly_price_kwargs["price_hourly__gte"] = hourly_price_min
@@ -105,9 +105,7 @@ def tours(request):
         base_kwargs['guide__user__generalprofile__is_company'] = False
 
     #filtering by verified guides
-    if filter_form_data and not filtered_is_verified:
-        pass #show all
-    else:
+    if filter_form_data and filtered_is_verified:
         base_kwargs["guide__user__generalprofile__is_verified"] = True
 
     # print(base_kwargs)
