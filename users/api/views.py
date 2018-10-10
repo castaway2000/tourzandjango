@@ -410,12 +410,10 @@ class EditProfileViewSet(viewsets.ModelViewSet):
             user = request.user
             get = request.GET
             if user:
-                city = City.objects.get(name=get['city'])
                 uo = User.objects.get(id=user.id)
-                if not hasattr(user, 'guideprofile'):
-                    GuideProfile.objects.create(user=uo, city=city)
                 gp = GeneralProfile.objects.get(id=user.generalprofile.id)
-                gup = GuideProfile.objects.get(user=uo)
+                gup = GuideProfile.objects.get_or_create(user=uo)[0]
+                city = City.objects.get_or_create(name=get['city'])[0]
                 try:
                     idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
                     idvr = IdentityVerificationReport.objects.filter(
@@ -442,6 +440,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 gup.name = get['first_name']
                 gup.rate = get['rate']
                 gup.overview = get['overview']
+                gup.city = city
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 gup.save(force_update=True)
@@ -480,6 +479,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                        'referral_code': gp.referral_code,
                        'latitude': lat,
                        'longitude': lon,
+                       'city': gup.city.name,
                        'interests': active_interests,
                        'languages': active_languages,
                        'tourist_reviews': self.get_tourist_representation_by_id(user),
