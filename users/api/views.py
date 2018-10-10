@@ -412,8 +412,11 @@ class EditProfileViewSet(viewsets.ModelViewSet):
             if user:
                 uo = User.objects.get(id=user.id)
                 gp = GeneralProfile.objects.get(id=user.generalprofile.id)
-                gup = GuideProfile.objects.get_or_create(user=uo)[0]
                 city = City.objects.get_or_create(name=get['city'])[0]
+                if hasattr(uo, 'guideprofile'):
+                    gup = GuideProfile.objects.get(user=uo)
+                else:
+                    gup = GuideProfile.objects.create(user=uo, city=city)
                 try:
                     idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
                     idvr = IdentityVerificationReport.objects.filter(
