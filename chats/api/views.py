@@ -100,10 +100,11 @@ class ChatMessageViewSet(viewsets.ModelViewSet, FilterViewSet):
         try:
             user = request.user
             chat_id = request.GET['chat_id']
-            chat_uuid = request.GET['chat_uuid']
+            chat_uuid = request.GET['chat_uuid'] # needs both uuid and id to prevent id targeting
             msg = request.GET['message']
             chat = Chat.objects.get(id=chat_id, uuid=chat_uuid)
-            chat.create_message(user=user, message=msg)
+            if user.id == chat.tourist.id or user.id == chat.guide.id:
+                chat.create_message(user=user, message=msg)
             return HttpResponse(json.dumps({'message': msg}))
         except Exception:
             return HttpResponse(json.dumps({'errors': [{'status': 403}]}))
