@@ -8,12 +8,16 @@ from rest_framework.permissions import (
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
+from django.http.response import HttpResponse
 
 from ..models import *
 from .serializers import *
 from .permissions import IsParticipant
 from django.db.models import Q
 from utils.api_helpers import FilterViewSet
+
+import json
+
 
 
 class ChatViewSet(viewsets.ModelViewSet, FilterViewSet):
@@ -90,3 +94,16 @@ class ChatMessageViewSet(viewsets.ModelViewSet, FilterViewSet):
 
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
+
+    @list_route()
+    def send_message(self, request):
+        try:
+            user = request.user
+            chat_id = request.GET['chat_id']
+            chat_uuid = request.GET['chat_uuid']
+            msg = request.GET['message']
+            chat = Chat.objects.get(id=chat_id, uuid=chat_uuid)
+            chat.create_message(user=user, message=msg)
+            return HttpResponse(json.dumps({'message': msg}))
+        except Exception:
+            return HttpResponse(json.dumps({'errors': [{'status': 403}]}))

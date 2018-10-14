@@ -1,6 +1,5 @@
 from django.conf.urls import url, include
 from ..api import views
-from rest_framework.routers import DefaultRouter
 from tourzan.api_router import SharedAPIRootRouter
 
 # Create a router and register our viewsets with it.
