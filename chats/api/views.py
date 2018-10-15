@@ -16,6 +16,8 @@ from .permissions import IsParticipant
 from django.db.models import Q
 from utils.api_helpers import FilterViewSet
 
+from mobile.api.views import push_notify
+
 import json
 
 
@@ -105,6 +107,36 @@ class ChatMessageViewSet(viewsets.ModelViewSet, FilterViewSet):
             chat = Chat.objects.get(id=chat_id, uuid=chat_uuid)
             if user.id == chat.tourist.id or user.id == chat.guide.id:
                 chat.create_message(user=user, message=msg)
+                device = chat.tourist.generalprofile.device_id
+                if user.id == chat.tourist.id:
+                    device = chat.guide.generalprofile.device_id
+                payload = {
+                    "to": device,
+                    "notification": {
+                        "title": "Tourzan",
+                        "body": "You have a new message!"
+                    },
+                    "data": {
+                        "custom_notification": {
+                            "body": "You have a new message!",
+                            "title": "Tourzan",
+                            "color": "#00ACD4",
+                            "priority": "high",
+                            "icon": "ic_launcher",
+                            "group": "GROUP",
+                            "sound": "default",
+                            "id": "id",
+                            "show_in_foreground": True,
+                            "extradata": {
+                                'update_chat': True
+                            }
+                        }
+                    }
+                }
+                try:
+                    push_notify(payload)
+                except Exception as err:
+                    pass
             return HttpResponse(json.dumps({'message': msg}))
         except Exception:
             return HttpResponse(json.dumps({'errors': [{'status': 403}]}))
