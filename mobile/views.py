@@ -1,5 +1,6 @@
 from mobile.models import Waitlist
 from django.shortcuts import render
+from django.contrib import messages
 
 
 def waitlist(request):
@@ -15,6 +16,8 @@ def waitlist(request):
         waitlist.country = country
         waitlist.comments = comments
         waitlist.save(force_update=True)
+        if request.POST:
+            messages.success(request, _('Thank you for your interest!'))
     except:
         pass
     return render(request, 'mobile/waitlist.html', locals())
