@@ -56,6 +56,7 @@ urlpatterns = i18n_patterns(
     url(r'^', include('orders.urls')),
     url(r'^', include('tours.urls')),
     url(r'^', include('users.urls')),
+    url(r'^', include('mobile.urls')),
 
     url(r'^', include('guides.urls')),
     url(r'^', include('guides_calendar.urls')),

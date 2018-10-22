@@ -23,3 +23,9 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
         return instance
+
+
+class PaymentMethodTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentMethodType
+        fields = '__all__'

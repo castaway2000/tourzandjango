@@ -13,6 +13,7 @@ from tourzan.api_router import SharedAPIRootRouter
 
 router = SharedAPIRootRouter()
 router.register(r'secret/payment-methods', views.PaymentMethodViewSet)
+router.register(r'secret/paymentmethodtypes', views.PaymentMethodTypeViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
