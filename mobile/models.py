@@ -76,6 +76,14 @@ class GeoChatMessage(models.Model):
         return receiver_user
 
 
+class Waitlist(models.Model):
+    name = models.CharField(max_length=120)
+    email = models.EmailField()
+    city = models.CharField(max_length=120)
+    country = models.CharField(max_length=120)
+    comments = models.TextField()
+
+
 @disable_for_loaddata
 def chat_message_post_save(sender, instance, created, **kwargs):
     receiver_user = instance.get_receiver_user()

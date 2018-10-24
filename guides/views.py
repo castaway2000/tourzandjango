@@ -110,6 +110,7 @@ def guides(request):
         guide = GuideProfile.objects.get(uuid__in=guide_input)
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
+        base_user_interests_kwargs["is_active"] = True
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
 
@@ -330,7 +331,7 @@ def profile_settings_guide(request, guide_creation=True):
     page = "profile_settings_guide"
     user = request.user
     ref_code = user.generalprofile.referral_code
-    user_languages = UserLanguage.objects.filter(user=user)
+    user_languages = UserLanguage.objects.filter(user=user, is_active=True)
     language_levels = LanguageLevel.objects.all().values()
 
     # duplication of this peace of code below in POST area - remake it later
@@ -375,13 +376,7 @@ def profile_settings_guide(request, guide_creation=True):
         interests = request.POST.getlist("interests")
         user_interest_list = list()
         if interests:
-            for interest in interests:
-                interest, created = Interest.objects.get_or_create(name=interest)
-                #adding to bulk create list for faster creation all at once
-                user_interest_list.append(UserInterest(interest=interest, user=user))
-        UserInterest.objects.filter(user=user).delete()
-        UserInterest.objects.bulk_create(user_interest_list)
-
+            user.generalprofile.set_interests_from_list(interests)
         # Languages assigning
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
@@ -455,7 +450,7 @@ def profile_settings_guide(request, guide_creation=True):
     language_levels = LanguageLevel.objects.all().values()
     user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
 
-    user_interests = UserInterest.objects.filter(user=user)
+    user_interests = UserInterest.objects.filter(user=user, is_active=True)
     services = list(Service.objects.all().values())
     guide_services = GuideService.objects.filter(guide=guide)
     guide_services_dict = dict()

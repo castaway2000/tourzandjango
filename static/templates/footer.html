@@ -9,7 +9,7 @@
                     <img src="{% static 'img/Tourzan-LinedLogoTransparentTeal.png' %}"
                          alt="Tourzan logo" title="Tourzan logo" />
                 </a>
-                <h4>Tourzan&trade;</h4>
+                <h4>Tourzan&reg;</h4>
                 <p class="mb20">
                     {% blocktrans %}Book local guides, while travelling!{% endblocktrans %}
                 </p>
@@ -47,7 +47,11 @@
                     <li>
                         <a href="{% url 'api_partner_application' %}">{% blocktrans %}API Application{% endblocktrans %}</a>
                     </li>
-                <br>
+                    <li>
+                        <a href="{% url 'waitlist' %}">{% blocktrans %}Mobile App{% endblocktrans %}</a>
+                        </a>
+                    </li>
+                <br/>
                     <li>
                         <a href="{% url 'blog' %}">
                             <p class="lead">{% blocktrans %}News{% endblocktrans %}</p>

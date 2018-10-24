@@ -478,7 +478,10 @@ def update_trip(request):
                 }
                 push_notify(payload)
             return HttpResponse(json.dumps({'trip_id': trip_status.id,
+                                            'order_id': order.id,
                                             'price': round(order.total_price, 2),
+                                            'tourist_id': order.tourist_id,
+                                            'guide_id': order.guide_id,
                                             'tourist_trip_fees': round(order.fees_tourist, 2),
                                             'guide_trip_fees': round(order.fees_guide, 2),
                                             'guide_pay': round(order.guide_payment, 2),

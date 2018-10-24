@@ -36,3 +36,12 @@ class GeoChatMessageAdmin(admin.ModelAdmin):
         model = GeoChatMessage
 
 admin.site.register(GeoChatMessage, GeoChatMessageAdmin)
+
+
+class WaitlistAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Waitlist._meta.fields]
+
+    class Meta:
+        model = Waitlist
+
+admin.site.register(Waitlist, WaitlistAdmin)

@@ -134,9 +134,9 @@
                                 <div class="checkbox">
                                     <label>
                                         <input class="i-check" type="checkbox" name="is_verified"
-                                                {% if not request.GET.is_verified and request.GET.filter_form_data %}
-                                                   {% else %}
-                                                   checked {% endif %}
+                                                {% if request.GET.is_verified and request.GET.filter_form_data %}
+                                                   checked
+                                                {% endif %}
                                         >
                                         {% blocktrans %}Show tours from verified guides{% endblocktrans %}
                                     </label>

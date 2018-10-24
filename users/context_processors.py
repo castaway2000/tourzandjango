@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 
+from tourzan.settings import ON_PRODUCTION
 from chats.models import Chat
 from django.db.models import Q
 
@@ -24,3 +25,8 @@ def get_subdomain(request):
     url = request.META['HTTP_HOST']
     subdomain = tldextract.extract(url).subdomain
     return {'subdomain': subdomain}
+
+
+def on_prod(request):
+    print(on_prod)
+    return {'on_prod': ON_PRODUCTION}
