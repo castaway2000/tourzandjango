@@ -51,7 +51,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         tourist_user_obj = model_obj.order.guide.user if hasattr(model_obj, "order") else None
         return UserDetailsSerializerCustom(tourist_user_obj, many=False).data
 
-
     def update(self, instance, validated_data):
 
         if instance.order.tourist.user:

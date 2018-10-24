@@ -92,3 +92,8 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
             return Response(response_data)
         else:
             return Response(self.permissions_error_dict)
+
+
+class PaymentMethodTypeViewSet(viewsets.ModelViewSet):
+    queryset = PaymentMethodType.objects.all()
+    serializer_class = PaymentMethodTypeSerializer

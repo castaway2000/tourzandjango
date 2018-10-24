@@ -84,6 +84,40 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
+    @list_route()
+    def create_review(self, request, *args, **kwargs):
+        data = request.GET
+        Review.objects.get_or_create(order_id=data['order'])
+        review = Review.objects.get(order_id=data['order'])
+        dt = datetime.datetime.now()
+        if data['is_tourist_feedback'] == 'True':
+            print('tourist review')
+            review.is_tourist_feedback = True
+            review.guide_feedback_name = data['guide_feedback_name']
+            review.guide_feedback_text = data['guide_feedback_text']
+            review.guide_rating = int(data['guide_rating'])
+            if review.guide_review_created is not None:
+                review.guide_review_updated = dt
+            else:
+                review.guide_review_created = dt
+                review.guide_review_updated = dt
+
+        if data['is_guide_feedback'] == 'True':
+            print('guide review')
+            review.is_guide_feedback = True
+            review.tourist_feedback_name = data['tourist_feedback_name']
+            review.tourist_feedback_text = data['tourist_feedback_text']
+            review.tourist_rating = int(data['tourist_rating'])
+            if review.tourist_review_created is not None:
+                review.tourist_review_updated = dt
+            else:
+                review.tourist_review_created = dt
+                review.tourist_review_updated = dt
+        print(review)
+        review.save()
+        return Response({'detail': 'success'})
+
+
 
 class OrderViewSet(viewsets.ModelViewSet, FilterViewSet):
     #add later a logic to permissions for not allowing modify completed orders
