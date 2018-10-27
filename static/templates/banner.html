@@ -1,0 +1,20 @@
+{% if banner %}
+    <div class="well col-sm-3" style="position: fixed; bottom: 0; right: 0; z-index: 4000">
+            <div style="width: 100%"><span id='close' class="btn btn-sm"
+                                           style="right: auto;
+                                           float:right;
+                                           display:inline-block;
+                                           padding:2px 5px;
+                                           background:#ccc;"
+                                           onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;'>x</span></div>
+            <strong>{{ banner.title }}</strong>
+            <br>
+            {{ banner.message }}
+        {% if banner.url %}
+            <br>
+            <a href="{{ banner.url }}" class="btn btn-sm btn-primary">
+                {% if banner.call_to_action %}{{ banner.call_to_action }}{% endif %}
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
