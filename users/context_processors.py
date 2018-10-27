@@ -2,6 +2,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import SimpleLazyObject
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from notifications.models import Banner
 
 
 from tourzan.settings import ON_PRODUCTION
@@ -30,3 +31,16 @@ def get_subdomain(request):
 def on_prod(request):
     print(on_prod)
     return {'on_prod': ON_PRODUCTION}
+
+
+def if_banner(request):
+    try:
+        data = Banner.objects.get(active=True)
+        title = data.title
+        message = data.message
+        url = data.url
+        active = data.active
+        context = {'title': title, 'message': message, 'url': url, 'is_active': active}
+        return {'banner': context}
+    except:
+        return {'banner': False}

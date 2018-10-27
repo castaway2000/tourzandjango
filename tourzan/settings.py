@@ -159,7 +159,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'users.context_processors.site',
                 'users.context_processors.get_subdomain',
-                'users.context_processors.on_prod'
+                'users.context_processors.on_prod',
+                'users.context_processors.if_banner',
             ],
         },
     },
