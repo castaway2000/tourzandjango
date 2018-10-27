@@ -40,7 +40,8 @@ def if_banner(request):
         message = data.message
         url = data.url
         active = data.active
-        context = {'title': title, 'message': message, 'url': url, 'is_active': active}
+        call_to_action = data.call_to_action
+        context = {'title': title, 'message': message, 'url': url, 'is_active': active, 'call_to_action': call_to_action}
         return {'banner': context}
     except:
         return {'banner': False}
