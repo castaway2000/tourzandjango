@@ -124,6 +124,9 @@
                 </div>
             </section>
         {% endif %}
+    {% if subdomain != 'api' %}
+        {% include 'banner.html' %}
+    {% endif %}
     </div>
 {% endblock content %}
 
