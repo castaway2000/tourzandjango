@@ -73,6 +73,7 @@ urlpatterns = i18n_patterns(
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^summernote/', include('django_summernote.urls')),
+    url(r'^hijack/', include('hijack.urls', namespace='hijack')),
 
 )\
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \

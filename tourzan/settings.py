@@ -92,6 +92,9 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'drip',
     'django_social_share',
+    'hijack',
+    'compat',
+    'hijack_admin',
 
     # 'corsheaders',
     'django_extensions',
@@ -368,6 +371,11 @@ FCM_API_KEY = 'AAAAYMNPZ9o:APA91bEcE9auTZKHvLakXzlybFFJdw6fsJoGSCBiiy4dldOW7u5RN
 ROBOTS_USE_SCHEME_IN_HOST = True
 ROBOTS_USE_HOST = False
 ROBOTS_SITEMAP_VIEW_NAME = 'django.contrib.sitemaps.views.sitemap'
+
+HIJACK_LOGIN_REDIRECT_URL = '/'  # Where admins are redirected to after hijacking a user
+HIJACK_LOGOUT_REDIRECT_URL = '/adminissomewherethere/'
+HIJACK_USE_BOOTSTRAP = True
+HIJACK_ALLOW_GET_REQUESTS = True
 
 
 # Channels
