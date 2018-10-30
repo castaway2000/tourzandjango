@@ -10,6 +10,7 @@ from allauth.account.views import password_reset
 from django.core import serializers as serial
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpRequest
+from django.core.files import File
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes, list_route
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -24,6 +25,9 @@ from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 import urllib3
 import json
 import ast
+from PIL import Image
+from base64 import decodebytes
+import tempfile
 
 from rest_framework import viewsets
 from ..models import *
@@ -492,6 +496,30 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 return Response({'detail': 'bad credentials or not a guide'})
         except Exception as err:
             return Response({'error': 400, 'detail': str(err)})
+
+
+@api_view(['POST'])
+def upload_profile_image(request):
+    try:
+        user = request.user
+        data = request.POST
+        user_type = data['user_type']
+        signature_data = bytes(data['image'], 'UTF-8')
+        signature_data = decodebytes(signature_data)
+        with tempfile.NamedTemporaryFile(mode='w+b', delete=True) as jpg:
+            jpg.write(signature_data)
+            Image.open(jpg).verify()  # test image before the image is saved
+            if user_type == 'tourist':
+                tourist = TouristProfile.objects.get(id=user.touristprofile.id)
+                tourist.image = File(jpg)
+                tourist.save(force_update=True)
+            elif user_type == 'guide':
+                guide = GuideProfile.objects.get(id=user.guideprofile.id)
+                guide.profile_image = File(jpg)
+                guide.save(force_update=True)
+        return HttpResponse(json.dumps({'detail': 'success', 'status': 200}))
+    except Exception as err:
+        return HttpResponse(json.dumps({'detail': err, 'status': 400}))
 
 
 @api_view(['POST'])
