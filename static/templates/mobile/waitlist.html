@@ -15,6 +15,13 @@
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <div class="container">
         <div class="container-fluid">
             <div class="col-lg-4 col-lg-offset-1" style="padding-top: 50px;">
@@ -41,7 +48,7 @@
                         <textarea class="form-control" name="comments" placeholder="Put your comments here"></textarea>
                         <br/><br/>
                         <input type="submit" class="btn btn-primary" value="Send me news when its ready!">
-                    </div>
+                    </div>s
                 </form>
             </div>
             <div class="col-lg-7" style="padding-bottom: 50px">

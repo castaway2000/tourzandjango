@@ -204,7 +204,9 @@ def general_settings(request):
 
                 #additional check to cope with lowercase emails, etc
                 email_in_user_exists = User.objects.filter(is_active=True, email=email).exclude(id=user.id).exists()
+
                 if email_address_exists or email_in_user_exists:
+
                     # print("ERROR")
                     pass
                 else:
@@ -213,11 +215,11 @@ def general_settings(request):
 
                     #there is no email field on GeneralProfile model, so the logic for changing email is in this view only.
                     #this code is for triggering sending confirmation email function from django allauth
-                    email_address = EmailAddress.objects.create(
+                    email_address = EmailAddress.objects.update_or_create(  # TODO make this better
                         user=request.user,
                         email=email,
                     )
-                    email_address.send_confirmation(request)
+                    email_address[0].send_confirmation(request)
 
                 #this message is here to prevent signup users emails leaking
                 messages.success(request, _('Your email address has been changed, please check you mailbox to confirm a new email address!'))
