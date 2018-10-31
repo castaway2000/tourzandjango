@@ -16,8 +16,7 @@ def waitlist(request):
         waitlist.country = country
         waitlist.comments = comments
         waitlist.save(force_update=True)
-        if request.POST:
-            messages.success(request, _('Thank you for your interest!'))
+        messages.success(request, 'Thank you for your interest!')
     except:
         pass
     return render(request, 'mobile/waitlist.html', locals())

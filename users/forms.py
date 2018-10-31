@@ -136,7 +136,9 @@ class CustomSignupForm(SignupForm):
         label="%s <a href='%s' target='_blank'>%s</a>" % (_("I agree to"), "/tos", _("Terms and Conditions"))
                                      )
     agree_to_emails = forms.BooleanField(label="%s" % (
-        _("I accept and give my consent to receive emails concerning website updates, coupon codes and special offers"))
+        _("I accept and give my consent to receive emails concerning website updates, coupon codes and special offers."))
+                                         ,help_text='Due to GDPR compliance we can only let you opt-in as a requirement. '
+                                                    'We promise to not send a lot of useless emails.'
                                          )
 
     referral_code = forms.CharField(required=False, label=_('Referral code (optional)'))

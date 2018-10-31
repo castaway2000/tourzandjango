@@ -98,7 +98,8 @@ def tours(request):
 
     #filtering by guides
     if guide_input:
-        base_kwargs["guide__user__username__in"] = guide_input
+        print(guide_input)
+        base_kwargs["guide__user__guideprofile__uuid__in"] = guide_input
 
     #filtering by company
     if filter_form_data and not filtered_is_company:
