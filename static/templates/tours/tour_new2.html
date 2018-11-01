@@ -234,9 +234,8 @@
             </div>
         {% endif %}
     {% endwith %}
-
-    {% if tour.type == "1" and tour.get_nearest_available_dates_1_item|length == 0 %}
-    {% elif tour.is_active and request.user != tour.guide.user %}
+{#    {% if tour.type == "1" and tour.get_nearest_available_dates_1_item|length == 0 %}#}
+    {% if tour.is_active and request.user != tour.guide.user %}
         <div id="tour_booking_form" class="tour-section-new tour-booking-form">
             <div class="container">
                 <div class="row">
