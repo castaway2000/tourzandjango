@@ -195,6 +195,7 @@ def general_settings(request):
         if form.is_valid():
             new_form = form.save(commit=False)
             new_form = form.save()
+            messages.success(request, 'profile saved')
 
             user_email = user.email
             email = form.cleaned_data.get("email")

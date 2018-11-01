@@ -59,6 +59,7 @@ def profile_settings_tourist(request):
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
         user_interests = UserInterest.objects.filter(user=user, is_active=True)
+        messages.success(request, 'profile saved')
 
         #redirect to pending order if tourist account was created
         if request.session.get("pending_order_creation"):
