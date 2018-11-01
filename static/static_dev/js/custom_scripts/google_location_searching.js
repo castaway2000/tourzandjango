@@ -2,10 +2,11 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
     function initialize() {
         var input = document.getElementById('city_search_input');
         var options = {
-            types: ['(cities)'],
+            // types: ['(cities)'],
+            types: ['(Regions)'],
             enablePoweredByContainer: false
         };
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        var autocomplete = new google.maps.places.Autocomplete(input);//, options);
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             place = autocomplete.getPlace();
             document.getElementById('place_id').value = place.place_id;
@@ -128,3 +129,4 @@ else {
         })
     });
 }
+//by aszablya
