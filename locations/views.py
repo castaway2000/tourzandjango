@@ -52,13 +52,13 @@ def location_search_router(request):
     data = request.GET
     place_id = data.get("place_id")
     if place_id:
-        city = City.objects.filter(place_id=place_id).last()
-        if city:
-            return HttpResponseRedirect(reverse("city_guides", kwargs={"country_slug":city.country.slug, "city_slug": city.slug}))
-        else:
-            country = Country.objects.filter(place_id=place_id).last()
-            if country:
-                return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug":city.country.slug }))
-
-    messages.error(request, 'We do not have any tours or guides in your searching location yet! Check all the available locations at this page')
-    return HttpResponseRedirect(reverse("all_countries"))
+        try:
+            city = City.objects.filter(place_id=place_id).last()
+            return HttpResponseRedirect(reverse("city_guides", kwargs={"country_slug": city.country.slug, "city_slug": city.slug}))
+        except AttributeError:
+            try:
+                country = Country.objects.filter(place_id=place_id).last()
+                return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug": country.slug}))
+            except AttributeError:
+                messages.error(request, 'We do not have any tours or guides in your searching location yet! Check all the available locations at this page')
+                return HttpResponseRedirect(reverse("all_countries"))

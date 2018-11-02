@@ -104,20 +104,19 @@
                                         <select class="form-control select2" id="guide_input" name="guide_input"
                                                 data-search_url="{% url 'search_guide' %}">
                                             {% if guide %}
-                                                <option value="{{ guide.uuid }}"
-                                                        selected>{{ guide.user.generalprofile.first_name }}</option>
+                                                <option value="{{ guide.uuid }}" selected>
+                                                    {{ guide.user.generalprofile.first_name }}
+                                                </option>
                                             {% endif %}
                                         </select>
                                     </li>
                                     <li>
                                         <h5 class="booking-filters-title">{% blocktrans %}
                                             Services{% endblocktrans %}</h5>
-                                        <select multiple class="form-control select2 js-example-basic-multiple"
-                                                id="service_input" name="service_input"
+                                        <select multiple class="form-control select2 js-example-basic-multiple" id="service_input" name="service_input"
                                                 data-search_url="{% url 'search_service' %}">
                                             {% for item in services %}
-                                                <option value="{{ item.name }}" {% if item.name in service_input %}
-                                                        selected {% endif %}>
+                                                <option value="{{ item.name }}" {% if item.name in service_input %} selected {% endif %}>
                                                     {{ item.name }}
                                                 </option>
                                             {% endfor %}
