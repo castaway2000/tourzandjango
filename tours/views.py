@@ -98,7 +98,8 @@ def tours(request):
 
     #filtering by guides
     if guide_input:
-        base_kwargs["guide__user__username__in"] = guide_input
+        print(guide_input)
+        base_kwargs["guide__user__guideprofile__uuid__in"] = guide_input
 
     #filtering by company
     if filter_form_data and not filtered_is_company:
@@ -281,7 +282,8 @@ def tour(request, slug, tour_uuid, tour_new=None):
         reviews = paginator.page(paginator.num_pages)
 
     if tour_new == "new" or tour_new =="new-old":
-        if tour.type == "1":
+        nearest = tour.get_nearest_available_dates(180)
+        if tour.type == "1" and len(nearest) > 0:
             form = BookingScheduledTourForm(request.POST or None, tour=tour)
         else:
             now = datetime.datetime.now().date()
@@ -638,6 +640,9 @@ def apply_week_template_to_dates(request, slug):
                         "price": item.price,
                         "seats_total": item.seats_total
                     })
+                    if created and created_items_nmb == 0:
+                        tour.price = item.price
+                        tour.save(force_update=True)
                     if created:
                         created_items_nmb += 1
                     else:
@@ -671,6 +676,8 @@ def guide_settings_tour_edit_price_and_schedule(request, slug):
     if request.method == 'POST' and form.is_valid():
         new_form = form.save(commit=False)
         new_form.tour = tour
+        tour.price = new_form.price
+        tour.save(force_update=True)
         new_form.save()
         messages.success(request, _("Successfully created!"))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -68,6 +68,7 @@ def guides(request):
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
     languages = [(x,languages_english_dict[x]) for x in language_input]
+    language_list = [languages_english_dict[l] for l in language_input]
 
     order_results = request.GET.get('order_results')
 
@@ -113,7 +114,9 @@ def guides(request):
         base_user_interests_kwargs["is_active"] = True
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
-
+    # if languages:  # TODO: later n stuff
+    #     user.generalprofile.
+    #     base_kwargs["user__generalprofile__getlanguages__in"] = language_list
     if filter_form_data and not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 

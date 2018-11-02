@@ -5,8 +5,8 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
             types: ['(cities)'],
             enablePoweredByContainer: false
         };
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var autocomplete = new google.maps.places.Autocomplete(input,options);
+        google.maps.event.addListener(autocomplete, 'place_changed', function() {
             place = autocomplete.getPlace();
             document.getElementById('place_id').value = place.place_id;
             console.log("place_id: " + place.place_id);
@@ -21,9 +21,9 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
                         'location': name_original
                     },
                     dataType: 'json',
-                    success: function (res) {
+                    success: function(res) {
                         console.log(res.rates.rate__avg);
-                        if ($("#average-rate")){
+                        if ($("#average-rate")) {
                             if (res.rates.rate__avg !== null) {
                                 document.getElementById("average-rate").innerText = 'The average rate in your area is: $' + Math.round(res.rates.rate__avg) + ' per hour';
                             } else {
@@ -35,17 +35,15 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
             }
         })
     }
-
     google.maps.event.addDomListener(window, 'load', initialize);
-    $(document).ready(function () {
-        $('#city_search_input').on("change", function () {
+    $(document).ready(function() {
+        $('#city_search_input').on("change", function() {
             if (!$(this).val()) {
                 $("#place_id").val("");
             }
         })
     });
-}
-else {
+} else {
     console.log('country');
     function initialize() {
         if ($("#location_search_input").length > 0) {
@@ -63,9 +61,8 @@ else {
                 enablePoweredByContainer: false
             };
         }
-
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var autocomplete = new google.maps.places.Autocomplete(input,options);
+        google.maps.event.addListener(autocomplete, 'place_changed', function() {
             place = autocomplete.getPlace();
             document.getElementById('place_id').value = place.place_id;
             console.log("place_id: " + place.place_id);
@@ -77,23 +74,23 @@ else {
             if (name_original) {
                 $.ajax({
                     url: "/en/ajax/rate_agregate/",
-                    data: {'location': name_original},
+                    data: {
+                        'location': name_original
+                    },
                     dataType: 'json',
-                    success: function (res) {
+                    success: function(res) {
                         console.log(res.rates.rate__avg);
-                        if ($("#average-rate")){
-                           if (res.rates.rate__avg !== null) {
-                                document.getElementById("average-rate").innerText = 'The average rate in your area is: $'
-                                    + Math.round(res.rates.rate__avg) + ' per hour';
-                            }
-                            else {
+                        if ($("#average-rate")) {
+                            if (res.rates.rate__avg !== null) {
+                                document.getElementById("average-rate").innerText = 'The average rate in your area is: $' + Math.round(res.rates.rate__avg) + ' per hour';
+                            } else {
                                 document.getElementById("average-rate").innerText = '';
                             }
                         }
                     }
                 })
             }
-            if ("address_components" in place) {
+            if ("address_components"in place) {
                 var place_types = place["address_components"][0]["types"];
                 console.log(place_types);
                 console.log($.inArray("country", place_types));
@@ -110,17 +107,15 @@ else {
             $("#search_form").submit();
         })
     }
-
     google.maps.event.addDomListener(window, 'load', initialize);
-
-    $(document).ready(function () {
+    $(document).ready(function() {
         console.log('doc ready');
         if ($("#location_search_input").length > 0) {
             var search_input = $("#location_search_input")
         } else {
             var search_input = $("#city_search_input");
         }
-        search_input.on("change", function () {
+        search_input.on("change", function() {
             console.log('onchange');
             if (!$(this).val()) {
                 $("#place_id").val("");
@@ -128,3 +123,4 @@ else {
         })
     });
 }
+//known working
