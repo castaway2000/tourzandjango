@@ -51,7 +51,14 @@ def making_booking(request):
         data = request.POST
         request.session["pending_order_creation"] = data
         # request.session["pending_order_creation"] = dict(request.POST.lists())
-        return HttpResponseRedirect(reverse("login"))
+        # return HttpResponseRedirect(reverse("login"))
+        """
+        AT 03112018: previously redirect to login/signup page was here.
+        Now it is redirect to router page where user can to choose option to login, sigup or quicksignup with email only
+        """
+        return HttpResponseRedirect(reverse("authorization_options"))
+
+
 
     return_dict = dict()
     if request.session.get("pending_order_creation"):
@@ -396,14 +403,19 @@ def order_completing(request, order_uuid):
 
                 #completing payment
 
-                response = order.make_payment(user.id)
-                message = response["message"]
-                if response["status"] == "success":
-                    messages.success(request, message)
+                if order.tour and order.tour.type == "1":
                     Review.objects.update_or_create(order=order, defaults=kwargs)
                     order = Order.objects.get(uuid=order_uuid)
-                elif response["status"] == "error":
-                    messages.error(request, message)
+                    messages.success(request, _("Created!"))
+                else:
+                    response = order.make_payment(user.id)
+                    message = response["message"]
+                    if response["status"] == "success":
+                        messages.success(request, message)
+                        Review.objects.update_or_create(order=order, defaults=kwargs)
+                        order = Order.objects.get(uuid=order_uuid)
+                    elif response["status"] == "error":
+                        messages.error(request, message)
 
         else:
             messages.error(request, _('You do not have permissions to access to this page!'))

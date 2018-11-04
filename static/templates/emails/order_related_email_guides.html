@@ -10,8 +10,11 @@
 </head>
 <body>
     <div>
-        <p>
-            Hi, {{ user.username }}
+        <p>{% if user.first_name %}
+                Hi, {{ user.first_name }}!
+            {% else %}
+                Hi!
+            {% endif %}
         </p>
         <p>
             {{ message|safe }}

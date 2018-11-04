@@ -159,6 +159,8 @@ class GeneralProfile(models.Model):
     business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
 
     is_previously_logged_in = models.BooleanField(default=False)
+    is_express_signup_initial = models.BooleanField(default=False)
+    is_express_signup_current = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -316,7 +318,7 @@ class GeneralProfile(models.Model):
         user_interest_ids = list()
         for interest_name in interests_list:
             interest, created = Interest.objects.get_or_create(name=interest_name.lower())
-            user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, is_active=True)
+            user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, defaults={"is_active": True})
             user_interest_ids.append(user_interest.id)
             print(user_interest_ids)
             print(user_interest.id)
@@ -329,9 +331,20 @@ class GeneralProfile(models.Model):
             language_name = language['name']
             language_level_id = language['level']
             user_language, created = UserLanguage.objects.update_or_create(language=language_name, user=user,
-                                                                           level_id=language_level_id, is_active=True)
+                                                                           level_id=language_level_id, defaults={"is_active": True})
             user_language_ids.append(user_language.id)
         UserLanguage.objects.filter(user=user).exclude(id__in=user_language_ids).update(is_active=False)
+
+    def apply_referral_code(self, referral_code):
+        if not self.referred_by: #to prevent double changing for cases when referral program is used in some bounties or perks or ratings
+            try:
+                referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
+                referred_by_user = referred_by_gp.user
+                self.referred_by = referred_by_user
+                self.save(force_update=True)
+            except Exception as e:
+                print(e)
+        return True
 
 
 def general_profile_post_save(sender, instance, **kwargs):

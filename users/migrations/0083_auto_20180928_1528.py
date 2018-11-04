@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('users', '0082_auto_20180904_2353'),
     ]
-
+    #AT 03112018: it is strange, but locally I had to comment out operations elements for this migration, because fields are already exist
     operations = [
         migrations.AddField(
             model_name='userinterest',

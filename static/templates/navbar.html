@@ -50,7 +50,7 @@
                         {% else %}
                             <li class="top-user-area-avatar">
                                 <a href="{% url 'settings_router' %}">
-                                    Hi, {{ request.user.username }}
+                                    Hi, {% if request.user.first_name %}{{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}!
                                 </a>
                             </li>
                             <li><a href="{% url 'logout' %}">{% blocktrans %}Logout{% endblocktrans %}</a>
