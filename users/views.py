@@ -528,7 +528,6 @@ def authorization_options(request):
             SendingEmail({"user": user}).email_for_express_signup()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             if request.session.get("pending_order_creation"):
-                messages.success(request, _('Finalize your order!'))
                 return HttpResponseRedirect(reverse("making_booking"))
             else:
                 return HttpResponseRedirect(reverse("home"))

@@ -21,7 +21,9 @@ def coupon_validation(request):
             order = Order.objects.get(id=order_id)
         except:
             pass
-        if order and not order.coupon:  # and order.status.id == 2:#coupons can be applied for orders only in agreed status
+        if order and not order.coupon:  # and order.status.id == 2:#coupons can be applied for orders only in agreed status.
+            # AT0411: TODO validate that the check for order status is on template side? Think about putting it here as well
+            #TODO and about moving this all to model method at all for API re-usage
             coupon = None
             if coupon_code:
                 try:
@@ -37,7 +39,7 @@ def coupon_validation(request):
                     if coupon.get_if_more_users_available():
                         coupon_user, created = CouponUser.objects.get_or_create(user_id=user.id, coupon=coupon)
                         redeemed = coupon_user.redeemed_at
-                        coupon_type = coupon_user.coupon.type.name
+                        coupon_type = coupon_user.coupon.type.name #AT 04112018 TODO switch to id here
 
                         """
                         AT 03112018: extend this with our types, when they will be implemented, like absolute amount or target amount

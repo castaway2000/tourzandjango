@@ -235,9 +235,14 @@ class Order(models.Model):
         #getting discount if there is a coupon
         if (not self._original_fields["coupon"] and self.coupon) or (self._original_fields["coupon"] and self.coupon and self._original_fields["coupon"].id != self.coupon.id):
             if self.coupon:
-                print("get_discount_amount_for_amount")
                 self.discount = self.coupon.get_discount_amount_for_amount(self.total_price_initial)
-                print(self.discount)
+                if self.discount == self.total_price_initial:
+                    self.status = OrderStatus.objects.get(id=2)#status agreed
+                    self.payment_status = PaymentStatus.objects.get(id=4)#status fully processed
+        elif not self.coupon and self._original_fields["coupon"]:
+            # this flow is unlikely (user can not cancel coupon now), but for debugging and for future implementation of cancellation
+            # of coupone code
+            self.discount = 0
 
         #calculating tour price
         #this was remade 20052018: now even additional services can be discounted
