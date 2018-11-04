@@ -237,7 +237,7 @@
                                         {{ tour.overview|linebreaks|truncatewords_html:30 }}
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-7 col-sm-offset-5 col-xs-12">
+                                <div class="col-md-3 col-md-offset-3 col-sm-7 col-sm-offset-5 col-xs-12">
 
                                     {% if tour.rating != 0 %}
                                         <div class="tour-rating">
@@ -274,13 +274,6 @@
                                              <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}
                                         {% endif %}
                                     </p>
-                                    <div class="text-right">
-                                        <p>
-                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary">
-                                                {% blocktrans %}View details{% endblocktrans %}
-                                            </a>
-                                        </p>
-                                    </div>
                                     {% if tour.guide.user.generalprofile.is_verified %}
                                         <p>
                                             <b>{% trans 'Guide is verified' %}</b>
@@ -291,6 +284,15 @@
                                             <b>{% trans 'Guide is trusted' %}</b>
                                         </p>
                                     {% endif %}
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="text-center">
+                                        <p>
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary">
+                                                {% blocktrans %}View details{% endblocktrans %}
+                                            </a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

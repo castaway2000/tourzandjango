@@ -184,3 +184,21 @@ class SendingEmail(object):
             to_email = [user_to.email]
             self.sending_email(user_to, to_email, subject, message)
 
+    def email_for_express_signup(self):
+        """
+        Sending of the email with a link to fully complete express signup process later
+        """
+        user = self.data.get("user")
+        email_type, created = EmailMessageType.objects.get_or_create(name='Welcome email for express singup')
+        self.email_type_id = email_type.id
+        subject = "Tourzan Welcome Email"
+        message = "You have initiated booking a tour without user sign up on www.tourzan.com. \n" \
+                  "To complete full signup process your email please use " \
+                  "<a href='%s/express-signup-completing/%s' target='_blank'>this link</a> \n\n" \
+                  "Have a great day.\n" \
+                  "<br><br>The Tourzan Team</p>" % (self.domain, user.generalprofile.uuid)
+        to_user = user
+        to_email = [to_user.email]
+        self.sending_email(to_user, to_email, subject, message)
+
+

@@ -625,6 +625,11 @@ class Order(models.Model):
                     }
                 })
             else:
+                """
+                AT 03112018: it seems like a stream for orders with 100% discount, it works fine, but one more point to improve
+                is that such orders require from the user to add some payment method anyway.
+                TODO: improve the logic on payment_checkout page to show after applying buttons, as it is after successful payment
+                """
                 result = Bunch()
                 result.is_success = True
                 result.transaction = Bunch()
@@ -670,15 +675,16 @@ class Order(models.Model):
             status ("success" or "error")
         """
         if int(user_id) != self.tourist.user.id and int(user_id) != self.guide.user.id:
-            message = _("User, who has initialized payment is not a tourist in the selected order")
+            message = _("User, who has initialized payment is not a tourist or a guide in the selected order")
             return {"status": "error", "message": message}
 
         dt_now = datetime.datetime.now()
 
 
-        #Marking orders as completed when make_payment function is triggered
-        self.status_id = 4 #completed
-        self.save(force_update=True)
+        if not (self.tour and self.tour.type == "1"):#not scheduled
+            #Marking orders as completed when make_payment function is triggered
+            self.status_id = 4 #completed
+            self.save(force_update=True)
 
         if pay_without_pre_reservation == True:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
@@ -704,7 +710,7 @@ class Order(models.Model):
                     payment_status = PaymentStatus.objects.get(id=4)#fully paid
                     self.payment_status = payment_status
                     self.save(force_update=True)
-                    message = _("Review has been successfully created!")
+                    message = _("Full payment has been processed!")
                     return {"status": "success", "message": message}
                 else:
                     message = _("We have not processed full amount! Please check you card balance")
@@ -733,12 +739,16 @@ class Order(models.Model):
                 payment_status = PaymentStatus.objects.get(id=4)#fully paid
                 self.payment_status = payment_status
                 self.save(force_update=True)
-                message = _("Review has been successfully created!")
+                message = _("Full payment has been processed and review has been successfully created!")
                 return {"status": "success", "message": message}
             else:
                 #this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
                 message = _("We have not processed full amount! Please check you card balance")
                 return {"status": "error", "message": message}
+        else:
+            # this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
+            message = _("Success")
+            return {"status": "success", "message": message}
 
     # tourists_with_purchases_referred_nmb
     def add_coupon_for_referrer(self):
@@ -760,6 +770,8 @@ class Order(models.Model):
                     CouponUser.objects.create(user=referred_by, coupon=coupon)
 
     def get_is_full_payment_processed(self):
+        a = self._original_fields
+        print(a)
         if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
             and self.payment_status.id == 4:
             #full payment processed

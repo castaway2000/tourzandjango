@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from coupons.models import Coupon, CouponUser
 from orders.models import Order
+from datetime import datetime
 
 
 @login_required()
@@ -36,19 +37,21 @@ def coupon_validation(request):
                     if coupon.get_if_more_users_available():
                         coupon_user, created = CouponUser.objects.get_or_create(user_id=user.id, coupon=coupon)
                         redeemed = coupon_user.redeemed_at
-                        discount = coupon_user.coupon.value
                         coupon_type = coupon_user.coupon.type.name
 
-                        #setting coupon to order:
-                        order.coupon = coupon
-                        order.save(force_update=True)
-                        order = Order.objects.get(id=order.id)
-
+                        """
+                        AT 03112018: extend this with our types, when they will be implemented, like absolute amount or target amount
+                        """
                         if coupon_type == 'percentage':
                             data["result"] = "success" #for reloading a page in ajax
 
-                        if redeemed:
-                            data = {'is_used': True}
+                            if redeemed:
+                                data = {'is_used': True}
+                            else:
+                                coupon_user.redeemed_at = datetime.now()
+                                # setting coupon to order:
+                                order.coupon = coupon
+                                order.save(force_update=True)
                     else:
                         data = {'is_used': True}
 

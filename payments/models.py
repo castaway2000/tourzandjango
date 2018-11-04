@@ -212,6 +212,7 @@ class PaymentMethod(models.Model):
             status = "error"
         return {"status": status, "message": message}
 
+
 class Payment(models.Model):
     order = models.ForeignKey('orders.Order', blank=True, null=True, default=None)#maybe it can be a payment without an order
     payment_method = models.ForeignKey(PaymentMethod)

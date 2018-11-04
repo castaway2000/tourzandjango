@@ -124,7 +124,6 @@
                                         <div class="col-lg-4">
                                             {% include 'orders/tourist_order_payment_details.html' %}
                                         </div>
-
                                     {% endif %}
                                 {% endif %}
 
@@ -140,49 +139,28 @@
                         {% endif %}
                     </div>
                 {% elif order %}
-                    {% with order.tour as tour %}
-                        <h3 class="text-center">
-                            {% trans 'Order details' %}
-                        </h3>
-                        <p>
-                            <b>{% trans "Order uuid" %}: </b>{{ order.get_last_uuid_symbols }}
-                        </p>
-                        {% if tour %}
-                            <p>
-                                <b>{% trans "Tour" %}: </b>
-                                <a href="{% url 'tour_new' tour.slug tour.id 'new' %}"
-                                                              target="_blank">{{ tour.name }}
-                                    ({{ tour.hours }} {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %})
-                                </a>
-                            </p>
-                            <p>
-                                <b>{% trans 'Type' %}: </b>{{ tour.type_name }}
-                            </p>
-                        {% endif %}
+                    <h3 class="text-center">
+                        {% trans 'Order details' %}
+                    </h3>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {% include 'orders/tourist_order_details.html' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% include 'orders/tourist_order_payment_details.html' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if not order.is_canceled %}
+                                <div class="mb10"><b>{% trans 'Order actions' %}: </b></div>
+                                {% include 'orders/order_actions.html' %}
+                            {% else %}
+                                <b>{% trans 'Status' %}: </b><br> {{ order.status.name }}
+                            {% endif %}
+                        </div>
+                    </div>
 
-                        <p>
-                            <b>{% trans "Status" %}: </b>{{ order.status.name }}
-                        </p>
-                        {% if not tour %}
-                            <p>
-                                <b>{% trans "Hours" %}: </b>{{ order.hours_nmb }}
-                            </p>
-                        {% endif %}
-                        <p>
-                            <b>{% trans "Persons nmb" %}: </b>{{ order.number_persons }}
-                        </p>
-                        <p>
-                            <b>{% trans "Start at" %}: </b>{{ order.date_booked_for|date:"m/d/Y H:i" }}
-                        </p>
-
-                        {% if request.user == order.guide.user %}
-                            {% include 'orders/guide_orders_actions.html' %}
-                        {% endif %}
-
-                    {% endwith %}
                 {% endif %}
             </div>
-
         </div>
     </div>
 {% endblock content %}
