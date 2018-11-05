@@ -37,4 +37,4 @@ def get_location_summary(location, full_location=None):
         location_description = 'Description Pending'
         return str(location_description)
 
-get_location_summary('Seattle')
+# get_location_summary('Seattle')
