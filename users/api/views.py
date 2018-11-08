@@ -8,6 +8,8 @@ from .permissions import IsUserOwnerOrReadOnly
 
 from allauth.account.views import password_reset
 from django.core import serializers as serial
+from django.forms.models import model_to_dict
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpRequest
 from django.core.files import File
@@ -552,3 +554,78 @@ def user_mixins(request):
     except Exception as err:
         print(err)
         return HttpResponse(json.dumps({'status': 400, 'detail': str(err)}))
+
+
+@api_view(['POST'])
+def get_my_profile_info(request):
+    try:
+        user = request.user
+        gp = GeneralProfile.objects.get(user=user)
+        tp = dict()
+        gpd = dict()
+        genp = dict()
+        tourist_profile = model_to_dict(gp.user.touristprofile)
+        for k, v in tourist_profile.items():
+            if k == 'image':
+                tp[k] = gp.user.touristprofile.image.url
+                if hasattr(v, 'url'):
+                    tp[k] = str(v.url) if v.url else ''
+            else:
+                tp[k] = v
+        general_profile = model_to_dict(gp)
+        for k, v in general_profile.items():
+            if 'image' in k:
+                try:
+                    genp[k] = str(v.url)
+                except:
+                    genp[k] = None
+            else:
+                genp[k] = v
+        genp['interests'] = []
+        genp['languages'] = {}
+        try:
+            geotracker = GeoTracker.objects.get(user_id=user.id)
+            lat = geotracker.latitude
+            lon = geotracker.longitude
+        except Exception as err:
+            print(err)
+            lat = None
+            lon = None
+
+        try:
+            idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
+            idvr = IdentityVerificationReport.objects.filter(
+                identification_checking__applicant__applicant_id=idva.applicant_id,
+                type=1).last()
+            verification_status = str(idvr.status)
+            verification_result = str(idvr.result)
+        except Exception as err:
+            print(err)
+            verification_status = None
+            verification_result = None
+        genp['latitude'] = lat
+        genp['longitude'] = lon
+        gpd['verification_status'] = verification_status
+        gpd['verification_result'] = verification_result
+
+        if hasattr(gp.user, 'guideprofile'):
+            guide_profile = model_to_dict(gp.user.guideprofile)
+            for k, v in guide_profile.items():
+                if 'image' in k:
+                    try:
+                        gpd[k] = str(v.url)
+                    except:
+                        gpd[k] = None
+                else:
+                    gpd[k] = v
+        for i in user.userinterest_set.all():
+            genp['interests'].append(i.interest.name)
+
+        user_languages = UserLanguage.objects.filter(user=user, is_active=True).all()
+        for i in user_languages:
+            genp['languages'][str(i.level.name)] = i.language
+
+        data = {'tourist_profile': tp, 'guide_profile': gpd, 'general_profile': genp}
+        return Response(data)
+    except Exception as err:
+        return Response({'status': 400, 'detail': str(err)})
