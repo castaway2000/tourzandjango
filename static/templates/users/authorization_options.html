@@ -15,7 +15,9 @@
                 <div class="panel">
                     <div class="panel-body">
                         <div class="text-center mt10 mb10">
-                            <a href="{% url 'account_login' %}" class="btn btn-info">Sign in or Sign up</a>
+                            <a href="{% url 'account_login' %}" class="btn btn-info">{% trans 'Sign in' %}</a>
+                            or
+                            <a href="{% url 'account_signup' %}" class="btn btn-info">{% trans 'Sign up' %}</a>
                         </div>
                         <div class="text-center mb10">
                             {% trans 'Or proceed without signup and just leave your first name and email here' %}.<br>

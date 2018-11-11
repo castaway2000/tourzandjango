@@ -1,79 +1,15 @@
-{#{% extends "account/base.html" %}#}
-{##}
-{#{% load i18n %}#}
-{##}
-{#{% block head_title %}{% trans "Signup" %}{% endblock %}#}
-{##}
-{#{% block content %}#}
-{#<h1>{% trans "Sign Up" %}</h1>#}
-{##}
-{#<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>#}
-{##}
-{#<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">#}
-{#  {% csrf_token %}#}
-{#  {{ form.as_p }}#}
-{#  {% if redirect_field_value %}#}
-{#  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />#}
-{#  {% endif %}#}
-{#  <button type="submit">{% trans "Sign Up" %} &raquo;</button>#}
-{#</form>#}
-{##}
-{#{% endblock %}#}
+{% extends "account/base.html" %}
 
-
-
-{% extends 'base.html' %}
 {% load i18n %}
-{%  load staticfiles %}
-{% load socialaccount %}
-{% get_providers as socialaccount_providers %}
 {% load crispy_forms_tags %}
 
-{% block content %}
-    <div class="container">
-        <h1 class="page-title">{% blocktrans %}Login/Register on Tourzan{% endblocktrans %}</h1>
-    </div>
+{% block head_title %}{% trans "Signup" %}{% endblock %}
 
-    <div class="gap-small"></div>
+{% block sub-content %}
+<h1>{% trans "Sign Up" %}</h1>
 
-    <div class="container">
-        <div class="row" data-gutter="60">
-            <div class="col-md-4">
-                <h3>{% blocktrans %}Welcome to Tourzan{% endblocktrans %}</h3>
-                <p>{% blocktrans %}You may be authenticated, using social networks or sign in/sign up using username and password{% endblocktrans %}</p>
-                <div class="text-center">
-                    <a title="Facebook" class="btn btn-default btn-facebook"
-                       {% if request.GET.next  %}
-                           href="{% provider_login_url "facebook" method="oauth2"  next=request.GET.next %}"
-                       {% else %}
-                            href="{% provider_login_url "facebook" method="oauth2" %}"
-                       {% endif %}
-                    >
-                        <i class="fa fa-2x fa-facebook" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <h3>{% blocktrans %}Login{% endblocktrans %}</h3>
-                <form method="post" action="">{% csrf_token %}
-                    <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>{% blocktrans %}Username or email{% endblocktrans %}</label>
-                        <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="text" name="username" />
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>{% blocktrans %}Password{% endblocktrans %}</label>
-                        <input class="form-control" type="password" placeholder="my secret password" name="password" />
-                    </div>
-                    <input class="btn btn-primary" type="submit" name="login_btn" value="Log In" />
-                </form>
-            </div>
-            <div class="col-md-4">
-                <h3>{% blocktrans %}New To Tourzan?{% endblocktrans %}</h3>
-                {% crispy form %}
-            </div>
-        </div>
-    </div>
+<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
 
-    <div class="gap"></div>
+{% crispy form %}
 
-{% endblock content %}
+{% endblock %}

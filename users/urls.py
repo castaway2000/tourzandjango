@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^accounts/login/$', views.login_view, name='login'),
     url(r'^accounts/logout/$', views.logout_view, name='logout'),
 
     url(r'^after_login_router/$', views.after_login_router, name='after_login_router'),
@@ -20,6 +19,7 @@ urlpatterns = [
 
     url(r'^search_interest/$', views.search_interest, name='search_interest'),
     url(r'^search_language/$', views.search_language, name='search_language'),
+    url(r'^accounts/login/$', views.LoginViewCustom.as_view(), name='account_login'),
     url(r'^accounts/signup/$', views.SignupViewCustom.as_view(), name='account_signup'),
     url(r'^password_changing/$', views.password_changing, name='password_changing'),
 
