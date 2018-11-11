@@ -237,7 +237,7 @@ class Order(models.Model):
             if self.coupon:
                 self.discount = self.coupon.get_discount_amount_for_amount(self.total_price_initial)
                 if self.discount == self.total_price_initial:
-                    self.status = OrderStatus.objects.get(id=2)#status agreed
+                    self.status = OrderStatus.objects.get(id=5)#payment reserved
                     self.payment_status = PaymentStatus.objects.get(id=4)#status fully processed
         elif not self.coupon and self._original_fields["coupon"]:
             # this flow is unlikely (user can not cancel coupon now), but for debugging and for future implementation of cancellation
