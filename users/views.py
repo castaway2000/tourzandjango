@@ -21,7 +21,7 @@ from orders.models import Order
 from guides.models import GuideProfile
 from django.http import JsonResponse, HttpResponseForbidden
 from utils.internalization_wrapper import languages_english
-from allauth.account.views import SignupView, _ajax_response
+from allauth.account.views import SignupView, LoginView, _ajax_response
 from tourzan.settings import GOOGLE_RECAPTCHA_SITE_KEY, GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
@@ -39,53 +39,7 @@ from locations.models import Country
 import urllib.parse as urlparse
 from .forms import ExpressSignupForm
 from utils.sending_emails import SendingEmail
-
-
-def login_view(request):
-    """
-    this funtion re-applies /login funtion from django-allauth/
-    Login redirects are handled here
-    """
-    form = LoginForm(request.POST or None)
-    signup_form = CustomSignupForm(request.POST or None)
-    recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY
-
-    url = request.META.get('HTTP_REFERER')
-    parsed = urlparse.urlparse(url)
-    get_parameters = urlparse.parse_qs(parsed.query)
-
-    if not "next" in get_parameters:
-        request.GET.next = reverse("home")
-    if request.method == 'POST' and form.is_valid():
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            if user.is_active:
-                login(request, user)
-                if request.GET:
-                    next_url = request.GET.get("next")
-                    if next_url:
-                        return HttpResponseRedirect(next_url)
-                if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
-                    request.session["current_role"] = "guide"
-                elif not hasattr(user, "guideprofile"):
-                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (reverse("guide_registration_welcome"), _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
-                if request.session.get("pending_order_creation"):
-                    return HttpResponseRedirect(reverse("making_booking"))
-                next_url = get_parameters.get("next")
-                if next_url:
-                    return HttpResponseRedirect(next_url[0])
-                return HttpResponseRedirect(reverse("home"))
-            else:
-                return HttpResponse("Your account is disabled.")
-        else:
-            messages.error(request, _('Login credentials are incorrect!'))
-    return render(request, 'users/login_register.html', {"form": form,
-                                                         "signup_form": signup_form,
-                                                         "recaptcha_site_key": recaptcha_site_key
-                                                         }
-                  )
+from allauth.account.utils import get_next_redirect_url
 
 
 def logout_view(request):
@@ -404,8 +358,40 @@ def search_language(request):
     return JsonResponse(response_data, safe=False)
 
 
+class LoginViewCustom(LoginView):
+
+
+    def get_success_url(self):
+        request = self.request
+        user = request.user
+        if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
+            request.session["current_role"] = "guide"
+        elif not hasattr(user, "guideprofile"):
+            messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (
+                reverse("guide_registration_welcome"),
+                _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
+        if request.session.get("pending_order_creation"):
+            self.success_url = reverse("making_booking")
+
+        ret = (get_next_redirect_url(
+            self.request,
+            self.redirect_field_name) or self.success_url)
+        return ret
+
 #redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
 class SignupViewCustom(SignupView):
+
+    def get_success_url(self):
+        request = self.request
+        if request.session.get("pending_order_creation"):
+            self.success_url = reverse("making_booking")
+
+        # Explicitly passed ?next= URL takes precedence
+        ret = (
+            get_next_redirect_url(
+                self.request,
+                self.redirect_field_name) or self.success_url)
+        return ret
 
     def get_context_data(self, **kwargs):
         context = super(SignupViewCustom, self).get_context_data(**kwargs)

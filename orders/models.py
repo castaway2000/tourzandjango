@@ -751,7 +751,7 @@ class Order(models.Model):
                 message = _("We have not processed full amount! Please check you card balance")
                 return {"status": "error", "message": message}
         else:
-            # this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
+            #AT 11112018: a case for full payment processed case for 100% discount
             message = _("Success")
             return {"status": "success", "message": message}
 
@@ -805,9 +805,7 @@ class Order(models.Model):
             return self.total_price
 
     def get_order_end(self):
-        print("get_order_end")
         tour_hours = self.tour.hours if self.tour else self.hours_nmb
-        print(tour_hours)
         if self.date_booked_for:
             tour_ends_time = self.date_booked_for + datetime.timedelta(hours=tour_hours)
             return tour_ends_time.time()
