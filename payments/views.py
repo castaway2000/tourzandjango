@@ -148,7 +148,13 @@ def order_payment_checkout(request, order_uuid):
         if message:
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
         if not illegal_country:
-            payment_processed = order.reserve_payment(user.id)  #method on order model
+            print(555)
+            print(order.tour.type)
+            if order.tour and order.tour.type == "1":  # scheduled tour -> pay full amount from the beginning
+                print(1)
+                payment_processed = order.make_payment(user.id, True)
+            else:
+                payment_processed = order.reserve_payment(user.id)  # method on order model
             message = payment_processed["message"]
             if payment_processed["status"] == "error":
                 messages.error(request, message)

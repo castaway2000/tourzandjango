@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-lg-offset-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="text-center mt10 mb10">
+                            <a href="{% url 'account_login' %}" class="btn btn-info">{% trans 'Sign in' %}</a>
+                            or
+                            <a href="{% url 'account_signup' %}" class="btn btn-info">{% trans 'Sign up' %}</a>
+                        </div>
+                        <div class="text-center mb10">
+                            {% trans 'Or proceed without signup and just leave your first name and email here' %}.<br>
+                            {% trans 'We will send booking information' %}.
+                        </div>
+                        {% crispy form %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -46,11 +46,12 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_anonymous %}
-                            <li><a href="{% url 'login' %}">{% blocktrans %}Sign In/Sign Up{% endblocktrans %}</a>
+                            <li><a href="{% url 'account_login' %}">{% trans 'Sign In' %}</a></li>
+                            <li><a href="{% url 'account_signup' %}">{% trans 'Sign Up' %}</a></li>
                         {% else %}
                             <li class="top-user-area-avatar">
                                 <a href="{% url 'settings_router' %}">
-                                    Hi, {{ request.user.username }}
+                                    Hi, {% if request.user.first_name %}{{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}!
                                 </a>
                             </li>
                             <li><a href="{% url 'logout' %}">{% blocktrans %}Logout{% endblocktrans %}</a>

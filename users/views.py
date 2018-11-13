@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -19,9 +19,9 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from orders.models import Order
 from guides.models import GuideProfile
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from utils.internalization_wrapper import languages_english
-from allauth.account.views import SignupView, _ajax_response
+from allauth.account.views import SignupView, LoginView, _ajax_response
 from tourzan.settings import GOOGLE_RECAPTCHA_SITE_KEY, GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
@@ -37,54 +37,9 @@ import time
 from website_management.models import HomePageContent
 from locations.models import Country
 import urllib.parse as urlparse
-
-
-def login_view(request):
-    """
-    this funtion re-applies /login funtion from django-allauth/
-    Login redirects are handled here
-    """
-    form = LoginForm(request.POST or None)
-    signup_form = CustomSignupForm(request.POST or None)
-    recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY
-
-    url = request.META.get('HTTP_REFERER')
-    parsed = urlparse.urlparse(url)
-    get_parameters = urlparse.parse_qs(parsed.query)
-
-    if not "next" in get_parameters:
-        request.GET.next = reverse("home")
-    if request.method == 'POST' and form.is_valid():
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(username=username, password=password)
-        if user:
-            if user.is_active:
-                login(request, user)
-                if request.GET:
-                    next_url = request.GET.get("next")
-                    if next_url:
-                        return HttpResponseRedirect(next_url)
-                if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
-                    request.session["current_role"] = "guide"
-                elif not hasattr(user, "guideprofile"):
-                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (reverse("guide_registration_welcome"), _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
-                if request.session.get("pending_order_creation"):
-                    return HttpResponseRedirect(reverse("making_booking"))
-                next_url = get_parameters.get("next")
-                if next_url:
-                    return HttpResponseRedirect(next_url[0])
-                return HttpResponseRedirect(reverse("home"))
-            else:
-                return HttpResponse("Your account is disabled.")
-        else:
-            messages.error(request, 'Login credentials are incorrect!')
-    return render(request, 'users/login_register.html', {"form": form,
-                                                         "signup_form": signup_form,
-                                                         "recaptcha_site_key": recaptcha_site_key
-                                                         }
-                  )
+from .forms import ExpressSignupForm
+from utils.sending_emails import SendingEmail
+from allauth.account.utils import get_next_redirect_url
 
 
 def logout_view(request):
@@ -403,8 +358,40 @@ def search_language(request):
     return JsonResponse(response_data, safe=False)
 
 
+class LoginViewCustom(LoginView):
+
+
+    def get_success_url(self):
+        request = self.request
+        user = request.user
+        if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
+            request.session["current_role"] = "guide"
+        elif not hasattr(user, "guideprofile"):
+            messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (
+                reverse("guide_registration_welcome"),
+                _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
+        if request.session.get("pending_order_creation"):
+            self.success_url = reverse("making_booking")
+
+        ret = (get_next_redirect_url(
+            self.request,
+            self.redirect_field_name) or self.success_url)
+        return ret
+
 #redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
 class SignupViewCustom(SignupView):
+
+    def get_success_url(self):
+        request = self.request
+        if request.session.get("pending_order_creation"):
+            self.success_url = reverse("making_booking")
+
+        # Explicitly passed ?next= URL takes precedence
+        ret = (
+            get_next_redirect_url(
+                self.request,
+                self.redirect_field_name) or self.success_url)
+        return ret
 
     def get_context_data(self, **kwargs):
         context = super(SignupViewCustom, self).get_context_data(**kwargs)
@@ -461,14 +448,8 @@ class SignupViewCustom(SignupView):
                 #in this step not only tourists can be referred, but guides as well, so reffered by is set to generalprofile,
                 #which is related to user by OneToOne field
                 #Dublicate this logic for API singup functionality later
-                try:
-                    referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
-                    referred_by_user = referred_by_gp.user
-                    request.user.generalprofile.referred_by = referred_by_user
-                    request.user.generalprofile.save(force_update=True)
-                except Exception as e:
-                    print(e)
-                    pass
+                #AT 04112018: it is implemented, because this flow is used in at least one more place (completing express signup)
+                request.user.generalprofile.apply_referral_code(referral_code)
 
             #creating Tourist Profile (moved here from
             if u"login_btn" in request.POST:
@@ -509,3 +490,62 @@ def sending_sms_code(request):
 @login_required()
 def promotions(request):
     return render(request, 'users/promotions.html', locals())
+
+
+def authorization_options(request):
+    user = request.user
+    if not user.is_anonymous():
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse("home")))
+    else:
+        form = ExpressSignupForm(request.POST or None)
+        if request.POST and form.is_valid():
+            first_name = form.cleaned_data.get("first_name")
+            email = form.cleaned_data.get("email")
+            user = User.objects.create(username=email, email=email)
+            user.set_unusable_password()
+
+            general_profile = user.generalprofile
+            general_profile.first_name = first_name
+            general_profile.is_express_signup_initial = True
+            general_profile.is_express_signup_current = True
+            general_profile.save(force_update=True)
+
+            #sending email with link to continue checkout
+            SendingEmail({"user": user}).email_for_express_signup()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            if request.session.get("pending_order_creation"):
+                return HttpResponseRedirect(reverse("making_booking"))
+            else:
+                return HttpResponseRedirect(reverse("home"))
+        return render(request, 'users/authorization_options.html', locals())
+
+
+def express_signup_completing(request, uuid):
+    general_profile = get_object_or_404(GeneralProfile, uuid=uuid)
+    user = general_profile.user
+    if user.has_usable_password():
+        return HttpResponseForbidden()
+    else:
+        form = ExpressSignupCompletingForm(request.POST or None, initial={"email": user.email, "first_name": user.first_name})
+    if request.POST and form.is_valid():
+        print(request.POST)
+        password = form.cleaned_data["password1"]
+        username = form.cleaned_data["username"]
+        first_name = form.cleaned_data["first_name"]
+        referral_code = form.cleaned_data["referral_code"]
+
+        #updating info for user
+        user.set_password(password)
+        user.username = username
+        user.save(force_update=True)
+
+        #updating info for user profile
+        general_profile = user.generalprofile
+        general_profile.first_name = first_name
+        general_profile.is_express_signup_current = False
+        general_profile.save(force_update=True)
+        general_profile.apply_referral_code(referral_code)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, _('Successfully signed up!'))
+        return HttpResponseRedirect(reverse("home"))
+    return render(request, 'users/express_signup_completing.html', locals())
