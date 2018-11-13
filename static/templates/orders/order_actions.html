@@ -4,7 +4,7 @@
 
 
 {% if request.user == order.guide.user %}
-    {% if not order.is_canceled %}
+    {% if not order.is_canceled and not order.tour.type == "1" %}
         {% if order.status.id == 1 %}
             <div>
                 <a href="{% url 'change_order_status' order.uuid 2 %}"
@@ -54,11 +54,14 @@
                             </form>
                         </div>
 
-                    {% elif order.status.id == 1 %}
+                    {% elif order.status.id == 1 and form %}
                         {% crispy form %}
                         <div class="mt20">
                             <b>{% trans 'Waiting for guide confirmation' %}</b>
                         </div>
+                     {% elif order.status.id == 1 and tour and tour.type == "1" %}
+                        <a href="{% url 'order_payment_checkout' order.uuid %}"
+                                        class="btn btn-primary">{% trans 'Checkout' %}</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -70,7 +73,11 @@
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary">
                 {% if not order.review.is_tourist_feedback %}
-                    {% trans 'Write review and pay' %}
+                    {% if order.payment_status.id == 4 %}
+                        {% trans 'Write review' %}
+                    {% else %}
+                        {% trans 'Write review and pay' %}
+                    {% endif %}
                 {% else %}
                     {% trans 'View final details' %}
                 {% endif %}

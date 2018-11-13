@@ -187,3 +187,67 @@ class CustomSignupForm(SignupForm):
                 '</div>' % _('Sign Up for Tourzan')
             ),
         )
+
+
+class ExpressSignupForm(forms.Form):
+    first_name = forms.CharField(required=True, label="", widget=forms.TextInput(attrs={'placeholder': 'First name'}))
+    email = forms.EmailField(required=True, label="", widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+
+    agree_to_PP = forms.BooleanField(label="%s <a href='%s' target='_blank'>%s</a>" % (
+        _("I agree to"),
+        "/privacy-policy",
+        _("Privacy Policy"))
+                                     )
+    agree_to_TOS = forms.BooleanField(
+        label="%s <a href='%s' target='_blank'>%s</a>" % (_("I agree to"), "/tos", _("Terms and Conditions"))
+    )
+    agree_to_emails = forms.BooleanField(label="%s" % (
+        _(
+            "I accept and give my consent to receive emails concerning website updates, coupon codes and special offers."))
+                                         ,
+                                         help_text='Due to GDPR compliance we can only let you opt-in as a requirement. '
+                                                   'We promise to not send a lot of useless emails.'
+                                         )
+
+    def __init__(self, *args, **kwargs):
+        super(ExpressSignupForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'text-left'
+        self.helper.form_method = "post"
+        self.helper.layout.append(
+            self.helper.layout.append(
+                HTML(
+                    '<div class="form-group text-center">'
+                    '<button class="btn btn-primary" type="submit">%s'
+                    '</button>'
+                    '</div>' % _('proceed')
+                ),
+            )
+        )
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email=email).exists():
+            raise ValidationError(_('Email is already in use. Please log in!'))
+        return email
+
+
+class ExpressSignupCompletingForm(CustomSignupForm):
+    pass
+
+    def __init__(self, *args, **kwargs):
+        super(ExpressSignupCompletingForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs['readonly'] = True
+        self.helper.form_action = ""#current url
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        #doublecking apart of view that this user has unhashable password
+        user = User.objects.filter(email=email).last()
+        if user:
+            if user.has_usable_password():
+                raise ValidationError(_('Email is already in use. Please log in!'))
+        if not user:
+            #not sure, what is the possible case for this
+            raise ValidationError(_('User with such email does not exist!'))
+        return email

@@ -37,6 +37,7 @@ class MyAccountAdapter(DefaultAccountAdapter):
     It works only for sign up.
     Sign in view is re-applied in users/views.py
     """
+
     def get_login_redirect_url(self, request):
         """
         Returns the default URL to redirect to after logging in.  Note

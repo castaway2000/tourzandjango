@@ -54,7 +54,6 @@ class GeneralConsumer(WebsocketConsumer):
         except Exception as e:
             l.debug(e)
 
-
     def chat_notification(self, event):
         """
         Send notification to user about new chat message
@@ -107,12 +106,13 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json.get('message')
         chat_uuid = text_data_json.get("chat_uuid")
+        user_id = self.user.generalprofile.id
 
         #update last user activity dt - the same as in users.middleware.TrackingActiveUserMiddleware
         self.update_last_user_activity_dt()
 
         #saving message to the database
-        chat, message_user_name, message_to_user_obj, dt = self.save_message_to_db(message, chat_uuid)
+        chat, message_user_name, message_to_user_obj, dt, user_id = self.save_message_to_db(message, chat_uuid)
 
         # Send message to room group
         l.debug("sending message to chat")
@@ -122,6 +122,7 @@ class ChatConsumer(WebsocketConsumer):
                 "type": "chat_message",
                 "message": message,
                 "user": message_user_name,
+                "user_id": user_id,
                 "dt": dt
             }
         )
@@ -149,6 +150,8 @@ class ChatConsumer(WebsocketConsumer):
         message_with_emoticons = regexp_replace_emoticons(message)
 
         user = event.get("user")
+        print(type(user))
+        print(self.user.generalprofile.id)
         dt = event.get("dt")
         message_type = event.get("message_type", "None")
 
@@ -156,6 +159,7 @@ class ChatConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             "message": message_with_emoticons,
             "user": user,
+            "user_id": self.user.generalprofile.id,
             "dt": dt,
             "message_type": message_type
         }))
@@ -169,7 +173,7 @@ class ChatConsumer(WebsocketConsumer):
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
             message_user = user.generalprofile.get_name() if hasattr(user, "generalprofile") else user.username
             dt = chat_message.created.strftime("%m/%d/%Y %H:%M:%S")
-            return (chat, message_user, message_to_user_obj, dt)
+            return (chat, message_user, message_to_user_obj, dt, user.generalprofile.id)
 
     def update_last_user_activity_dt(self):
         user = self.user

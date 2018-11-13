@@ -8,6 +8,9 @@
             <div class="col-md-5">
                 <h4>{% blocktrans %}Adding new payment method{% endblocktrans %}</h4>
                 <form id="braintree_form" name="braintree_form" method="post">{% csrf_token %}
+                    <div class="mb20">
+                        <img src="https://s3.amazonaws.com/braintree-badges/braintree-badge-wide-light.png" width="280px" height ="44px" border="0"/>
+                    </div>
                     <div id="payment_form"></div>
                     <div class="form-group">
                         <div class="checkbox">
@@ -20,7 +23,6 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Save Payment Method</button>
                 </form>
-
             </div>
         </div>
     </div>
@@ -30,9 +32,7 @@
 {% block js_stuff %}
 
     <script src="https://js.braintreegateway.com/js/braintree-2.32.1.min.js"></script>
-
     <script type="text/javascript">
-
         braintree.setup(
             "{{ request.session.braintree_client_token }}",
             "dropin", {
@@ -46,6 +46,5 @@
         );
 
     </script>
-
 {% endblock %}
 

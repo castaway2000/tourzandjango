@@ -21,7 +21,6 @@ from mobile.api.views import push_notify
 import json
 
 
-
 class ChatViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer

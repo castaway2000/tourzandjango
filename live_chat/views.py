@@ -24,7 +24,8 @@ def livechat_room(request, chat_uuid):
         messages.success(request, _('You do not have permissions to access this chat!'))
         return HttpResponseRedirect(reverse("home"))
     chat_messages = chat.chatmessage_set.all().values("chat_id", "message", "created", "user__username",
-                                                      "user__generalprofile__first_name").order_by("created")
+                                                      "user__generalprofile__first_name",
+                                                      "user__generalprofile__id").order_by("created")
 
     order = chat.order
     if order and ((order.tour and order.tour.type=="2") or (not order.tour)):#only dates for private tours or guide hourly booking can be adjusted

@@ -329,7 +329,7 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     # return render(request, 'users/profile_settings.html', locals())
 
 
-@login_required()
+@login_required(login_url='/accounts/signup/')  # AS: this is for routing after clicking become a guide
 def profile_settings_guide(request, guide_creation=True):
     page = "profile_settings_guide"
     user = request.user
