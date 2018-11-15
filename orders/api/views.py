@@ -8,6 +8,12 @@ from rest_framework.permissions import (
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
+from django.core import serializers as serial
+from django.core.serializers.json import DjangoJSONEncoder
+from django.forms.models import model_to_dict
+
+from django.http import HttpResponse
+
 from ..models import *
 from .serializers import *
 from .permissions import IsTouristOwnerOrReadOnly, IsTouristOrGuideOwnerOrReadOnly
@@ -16,6 +22,8 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from utils.api_helpers import FilterViewSet
 from .filters import ReviewFilter
+
+import json
 
 
 class OrderStatusViewSet(viewsets.ModelViewSet, FilterViewSet):
@@ -132,14 +140,28 @@ class OrderViewSet(viewsets.ModelViewSet, FilterViewSet):
 
     @list_route()
     def get_tourist_representation(self, request):
+        results = []
         user = request.user
         qs = Order.objects.filter(tourist__user=user).order_by('-id')
-        serializer = self.get_serializer(qs, many=True)
-        return Response(serializer.data)
+        for q in qs:
+            tourist = q.tourist.user.generalprofile.id
+            guide = q.guide.user.generalprofile.id
+            new_query = model_to_dict(q)
+            new_query['tourist_generalprofile_id'] = tourist
+            new_query['guide_generalprofile_id'] = guide
+            results.append(new_query)
+        return HttpResponse(json.dumps(results, cls=DjangoJSONEncoder))
 
     @list_route()
     def get_guide_representation(self, request):
+        results = []
         user = request.user
         qs = Order.objects.filter(guide__user=user).order_by('-id')
-        serializer = self.get_serializer(qs, many=True)
-        return Response(serializer.data)
+        for q in qs:
+            tourist = q.tourist.user.generalprofile.id
+            guide = q.guide.user.generalprofile.id
+            new_query = model_to_dict(q)
+            new_query['tourist_generalprofile_id'] = tourist
+            new_query['guide_generalprofile_id'] = guide
+            results.append(new_query)
+        return HttpResponse(json.dumps(results, cls=DjangoJSONEncoder))

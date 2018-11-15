@@ -90,6 +90,7 @@ def get_trip_status(request):
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         data = {
             'guide_id': trip_status.guide_id,
+            'tourist_id': trip_status.user_id,
             'total_time': trip_status.duration,
             'remianing_time': trip_status.time_remaining,
             'flag': trip_status.time_flag,
@@ -507,7 +508,6 @@ def push_notify(payload):
         fcm = "https://fcm.googleapis.com/fcm/send"
         send = requests.post(fcm, headers={'Authorization': "key={}".format(FCM_API_KEY),
                                            'Content-Type': 'application/json; UTF-8'}, json=payload)
-        pyfcm = FCMNotification
         print(send.text)
         print(send.status_code)
     except Exception as err:
