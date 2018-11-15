@@ -236,6 +236,8 @@ def user_profile(request):
                         data['is_default'] = user.guideprofile.is_default_guide
                         data['guide_overview'] = user.guideprofile.overview
                         data['guide_rating'] = user.guideprofile.rating
+                        data['first_name'] = user.generalprofile.first_name
+                        data['last_name'] = user.generalprofile.last_name
                         try:
                             data['profile_image'] = str(user.guideprofile.profile_image.url)
                         except Exception as e:
