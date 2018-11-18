@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^guides/in/(?P<country_slug>\S+)/$', views.location_guides, name='country_guides'),
 
     url(r'^location_search_router/$', views.location_search_router, name='location_search_router'),
+    url(r'^request-custom-booking/$', views.request_new_location_booking, name='request_new_location_booking'),
 ]

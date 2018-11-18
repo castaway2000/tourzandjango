@@ -7,8 +7,12 @@
 
 
 {% if request.session.current_role != "guide"  %}
-    <li class="{% if current_page == "all_countries" %}active{% endif %}"><a href="{% url 'all_countries' %}">{% blocktrans %}EXPLORE LOCATIONS{% endblocktrans %}</a>
-
+    <li class="{% if current_page == "all_countries" %}active{% endif %}">
+        <a href="{% url 'all_countries' %}">
+            <i class="fa fa-search" aria-hidden="true"></i>
+            {% blocktrans %}EXPLORE LOCATIONS{% endblocktrans %}
+        </a>
+    </li>
     <li class="{% if current_page == "guides" %}active{% endif %}">
         <a href="{% url 'guides' %}">{% blocktrans %}GUIDES{% endblocktrans %}</a>
     </li>

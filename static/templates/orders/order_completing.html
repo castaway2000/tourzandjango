@@ -2,6 +2,9 @@
 {% load static %}
 {% load i18n %}
 
+{% block header_stuff %}
+    <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.5/css/star-rating.min.css" rel=stylesheet type=text/css>
+{% endblock header_stuff %}
 
 {% block content %}
 
@@ -63,5 +66,7 @@
 
 {% endblock %}
 
+
 {% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.5/js/star-rating.min.js"></script>
 {% endblock js_stuff %}
