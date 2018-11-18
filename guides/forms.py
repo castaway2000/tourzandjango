@@ -10,13 +10,15 @@ from string import Template
 from django.utils.safestring import mark_safe
 import datetime
 from dateutil.relativedelta import relativedelta
+from utils.mixins import ImageCroppingMixin
 
 
-class GuideProfileForm(forms.ModelForm):
+class GuideProfileForm(ImageCroppingMixin, forms.ModelForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     city_search_input = forms.CharField(required=True)
     date_of_birth = forms.DateTimeField(input_formats=['%m/%d/%Y'], widget=forms.DateTimeInput(format='%d/%m/%Y %H:%M:%S'))
+    image_field_name = "profile_image"
 
     class Meta:
         model = GuideProfile
