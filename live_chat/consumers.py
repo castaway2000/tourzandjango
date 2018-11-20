@@ -49,7 +49,7 @@ class GeneralConsumer(WebsocketConsumer):
         l.debug(event)
         try:
             self.send(text_data=json.dumps({
-                "message": "hello there 1234",
+                "message": "hello there 12345",
             }))
         except Exception as e:
             l.debug(e)
@@ -122,7 +122,7 @@ class ChatConsumer(WebsocketConsumer):
                 "type": "chat_message",
                 "message": message,
                 "user": message_user_name,
-                "user_id": user_id,
+                "user_test_id": user_id,
                 "dt": dt
             }
         )
@@ -136,7 +136,7 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message,
                 'message_user_name': message_user_name,
                 'chat_uuid': chat_uuid,
-                'user_id': user_id,
+                'user_test2_id': user_id,
                 "color_type": "success"
             }
         )
@@ -153,7 +153,8 @@ class ChatConsumer(WebsocketConsumer):
         user = event.get("user")
         dt = event.get("dt")
         message_type = event.get("message_type", "None")
-        user_id = event.get('user_id', "None")
+        user_id = event.get('user_id')
+        print('event user id: ', user_id)
 
         # Send message to chat webSocket
         self.send(text_data=json.dumps({
