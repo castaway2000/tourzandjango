@@ -144,8 +144,8 @@ class OrderViewSet(viewsets.ModelViewSet, FilterViewSet):
         user = request.user
         qs = Order.objects.filter(tourist__user=user).order_by('-id')
         for q in qs:
-            tourist = q.tourist.user.generalprofile.id
-            guide = q.guide.user.generalprofile.id
+            tourist = q.tourist.user.generalprofile.user_id
+            guide = q.guide.user.generalprofile.user_id
             new_query = model_to_dict(q)
             new_query['tourist_generalprofile_id'] = tourist
             new_query['guide_generalprofile_id'] = guide
