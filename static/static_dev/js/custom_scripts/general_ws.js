@@ -17,7 +17,6 @@ function connect() {
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/general/';
-
       var ws_general = new WebSocket(url);
       ws_general.onopen = function() {
         // subscribe to some channels

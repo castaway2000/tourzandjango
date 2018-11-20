@@ -89,6 +89,7 @@ def get_trip_status(request):
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(), cost=cost_update)
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         data = {
+            'order_id': trip_status.order.id,
             'guide_id': trip_status.guide_id,
             'tourist_id': trip_status.user_id,
             'total_time': trip_status.duration,
@@ -470,6 +471,7 @@ def update_trip(request):
                             "show_in_foreground": True,
                             "extradata":
                                 {'trip_id': trip_id,
+                                 'order_id': order.id,
                                  'type': 3,
                                  'body': 'Your trip on tourzan has completed successfully.'}
                         }

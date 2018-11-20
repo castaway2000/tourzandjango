@@ -106,7 +106,7 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json.get('message')
         chat_uuid = text_data_json.get("chat_uuid")
-        user_id = self.user.generalprofile.id
+        user_id = text_data_json.get('user_id')
 
         #update last user activity dt - the same as in users.middleware.TrackingActiveUserMiddleware
         self.update_last_user_activity_dt()
@@ -136,6 +136,7 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message,
                 'message_user_name': message_user_name,
                 'chat_uuid': chat_uuid,
+                'user_id': user_id,
                 "color_type": "success"
             }
         )
@@ -150,16 +151,15 @@ class ChatConsumer(WebsocketConsumer):
         message_with_emoticons = regexp_replace_emoticons(message)
 
         user = event.get("user")
-        print(type(user))
-        print(self.user.generalprofile.id)
         dt = event.get("dt")
         message_type = event.get("message_type", "None")
+        user_id = event.get('user_id', "None")
 
         # Send message to chat webSocket
         self.send(text_data=json.dumps({
             "message": message_with_emoticons,
             "user": user,
-            "user_id": self.user.generalprofile.id,
+            "user_id": user_id,
             "dt": dt,
             "message_type": message_type
         }))
