@@ -27,7 +27,6 @@ function connect() {
 
       ws_general.onmessage = function(e) {
         var data = JSON.parse(e.data);
-          console.log(data);
         if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
             sendNotification(data, order_status_change=false);
         }else if(data.type == "order_status_change"){

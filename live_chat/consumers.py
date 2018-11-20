@@ -106,14 +106,12 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json.get('message')
         chat_uuid = text_data_json.get("chat_uuid")
-        user_id = text_data_json.get('user_id')
 
         #update last user activity dt - the same as in users.middleware.TrackingActiveUserMiddleware
         self.update_last_user_activity_dt()
 
         #saving message to the database
         chat, message_user_name, message_to_user_obj, dt, user_id = self.save_message_to_db(message, chat_uuid)
-
         # Send message to room group
         l.debug("sending message to chat")
         async_to_sync(self.channel_layer.group_send)(
@@ -122,10 +120,11 @@ class ChatConsumer(WebsocketConsumer):
                 "type": "chat_message",
                 "message": message,
                 "user": message_user_name,
-                "user_test_id": user_id,
+                "user_id": user_id,
                 "dt": dt
             }
         )
+        print(user_id)
 
         #Notification to general websockets
         uuid = message_to_user_obj.generalprofile.uuid
@@ -136,7 +135,7 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message,
                 'message_user_name': message_user_name,
                 'chat_uuid': chat_uuid,
-                'user_test2_id': user_id,
+                'user_id': user_id,
                 "color_type": "success"
             }
         )
@@ -154,8 +153,6 @@ class ChatConsumer(WebsocketConsumer):
         dt = event.get("dt")
         message_type = event.get("message_type", "None")
         user_id = event.get('user_id')
-        print('event user id: ', user_id)
-
         # Send message to chat webSocket
         self.send(text_data=json.dumps({
             "message": message_with_emoticons,
@@ -170,11 +167,10 @@ class ChatConsumer(WebsocketConsumer):
         chat = Chat.objects.get(uuid=chat_uuid)
         if chat.guide == user or chat.tourist == user:
             message_to_user_obj = chat.tourist if chat.guide == user else chat.guide #defining user to whom message was sent in chat
-
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
             message_user = user.generalprofile.get_name() if hasattr(user, "generalprofile") else user.username
             dt = chat_message.created.strftime("%m/%d/%Y %H:%M:%S")
-            return (chat, message_user, message_to_user_obj, dt, user.generalprofile.id)
+            return (chat, message_user, message_to_user_obj, dt, user.generalprofile.user_id)
 
     def update_last_user_activity_dt(self):
         user = self.user
