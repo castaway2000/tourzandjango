@@ -57,7 +57,16 @@ def after_login_router(request):
         return HttpResponseRedirect(reverse("guide_registration"))
     else:
         if user.generalprofile.is_previously_logged_in:
-            return HttpResponseRedirect(reverse("home"))
+            if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
+                request.session["current_role"] = "guide"
+            elif not hasattr(user, "guideprofile"):
+                messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (
+                    reverse("guide_registration_welcome"),
+                    _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
+            if request.session.get("pending_order_creation"):
+                return HttpResponseRedirect(reverse("making_booking"))
+            else:
+                return HttpResponseRedirect(reverse("home"))
         else:
             user.generalprofile.is_previously_logged_in = True
             user.generalprofile.save(force_update=True)
@@ -253,7 +262,6 @@ def general_settings(request):
     return render(request, 'users/general_settings.html', locals())
 
 
-
 #this view is a based on the code of django view (django.views.i18n.py set_language() ), because there were [roblems with utf-8
 #instruction how to use standard django approach for language changing using that view is described here:
 #http://joaoventura.net/blog/2016/django-translation-4/
@@ -282,6 +290,7 @@ def set_language(request, language):
 @login_required()
 def change_role(request, new_role=None):
     user = request.user
+    new_role = False
     if not user.is_anonymous() and hasattr(user, 'guideprofile'):
         current_role = request.session.get("current_role")
         if current_role == "tourist" or not current_role:
@@ -290,20 +299,16 @@ def change_role(request, new_role=None):
         else:
             request.session["current_role"] = "tourist"
             messages.success(request, 'Switched to tourist profile!')
+        return HttpResponseRedirect(reverse("settings_router"))
     else:
         request.session["current_role"] = "tourist"
         return HttpResponseRedirect(reverse("guide_registration_welcome"))
-
-    #new_role option is goes from settings page switching to another user
-    if new_role:
-        return HttpResponseRedirect(reverse("settings_router"))
-    else:
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required()
 def settings_router(request):
     current_role = request.session.get("current_role")
+    print(current_role)
     if current_role == "guide":
         return HttpResponseRedirect(reverse("profile_settings_guide"))
     elif current_role == "tourist" or not current_role:
@@ -360,19 +365,8 @@ def search_language(request):
 
 class LoginViewCustom(LoginView):
 
-
     def get_success_url(self):
-        request = self.request
-        user = request.user
-        if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
-            request.session["current_role"] = "guide"
-        elif not hasattr(user, "guideprofile"):
-            messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (
-                reverse("guide_registration_welcome"),
-                _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
-        if request.session.get("pending_order_creation"):
-            self.success_url = reverse("making_booking")
-
+        self.success_url = reverse("after_login_router")
         ret = (get_next_redirect_url(
             self.request,
             self.redirect_field_name) or self.success_url)

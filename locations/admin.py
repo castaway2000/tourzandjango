@@ -29,3 +29,20 @@ class CurrencyAdmin(admin.ModelAdmin):
         model = Currency
 
 admin.site.register(Currency, CurrencyAdmin)
+
+
+class SearchLogAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in SearchLog._meta.fields]
+
+    class Meta:
+        model = SearchLog
+
+admin.site.register(SearchLog, SearchLogAdmin)
+
+
+class NewLocationTourRequestAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in NewLocationTourRequest._meta.fields]
+    class Meta:
+        model = NewLocationTourRequest
+
+admin.site.register(NewLocationTourRequest, NewLocationTourRequestAdmin)

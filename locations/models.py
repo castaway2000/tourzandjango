@@ -16,6 +16,10 @@ import time
 from django.core.files.uploadedfile import SimpleUploadedFile
 from utils.unsplash import get_image
 from utils.wikitravel import get_location_summary
+from django.contrib.auth.models import User
+from utils.sending_emails import SendingEmail
+from django.db.models.signals import post_save
+from utils.disabling_signals_for_load_data import disable_for_loaddata
 
 
 class LocationType(models.Model):
@@ -232,4 +236,70 @@ class Currency(models.Model):
     def __str__(self):
         return "%s" % self.name
 
+
+class SearchLog(models.Model):
+    session_id = models.CharField(max_length=64, blank=True, null=True, default=None)
+    country = models.ForeignKey(Country, blank=True, null=True, default=None)
+    city = models.ForeignKey(City, blank=True, null=True, default=None)
+    search_term = models.CharField(max_length=64, blank=True, null=True, default=None)
+    user = models.ForeignKey(User, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+    def __str__(self):
+        if self.search_term:
+            return "%s" % self.search_term
+        elif self.country:
+            return "%s" % self.country.name
+        elif self.city:
+            return "%s" % self.city.name
+        else:
+            return "%s" % self.id
+
+    def create(self, request, city, country, search_term):
+        kwargs = dict()
+        kwargs["session_id"] = request.session.session_key
+        if not request.user.is_anonymous():
+            kwargs["user"] = request.user
+        if city:
+            kwargs["city"] = city
+        elif country:
+            kwargs["country"] = country
+        elif search_term:
+            kwargs["search_term"] = search_term
+        SearchLog.objects.create(**kwargs)
+        return True
+
+
+class NewLocationTourRequest(models.Model):
+    NEW = "10"
+    PROCESSING = "20"
+    PROCESSED = "30"
+    CANCELLED = "40"
+    STATUSES = (
+        (NEW, "New"),
+        (PROCESSING, "Processing"),
+        (PROCESSED, "Processed"),
+        (CANCELLED, "Cancelled"),
+    )
+    location_name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    location_id = models.CharField(max_length=64, blank=True, null=True, default=None)
+    user = models.ForeignKey(User, blank=True, null=True, default=None)
+    first_name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    email = models.EmailField(blank=True, null=True, default=None)
+    description = models.TextField(max_length=3000, blank=True, null=True, default=None)
+    tour_date = models.DateTimeField(blank=True, null=True, default=None)
+    number_persons = models.IntegerField(default=1)
+    status = models.CharField(choices=STATUSES, max_length=20, default=NEW)
+    tourzan_notes = models.TextField(max_length=3000, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "Id %s: %s" % (self.id, self.status)
+
+
+@disable_for_loaddata
+def new_location_request_post_save(sender, instance, created, **kwargs):
+    SendingEmail({}).email_booking_in_new_location_request()
+post_save.connect(new_location_request_post_save, sender=NewLocationTourRequest)
 

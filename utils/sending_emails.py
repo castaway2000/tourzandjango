@@ -145,6 +145,7 @@ class SendingEmail(object):
         print("to email is tuple")
         self.sending_email(to_user, to_email, subject, message)
 
+
     def email_for_verficiation(self):
         user_id = self.data.get("user_id")
         email_type, created = EmailMessageType.objects.get_or_create(name='Verification Notification Email')
@@ -200,6 +201,19 @@ class SendingEmail(object):
                   "<br><br>The Tourzan Team</p>" % (domain, user.generalprofile.uuid)
         to_user = user
         to_email = [to_user.email]
+        self.sending_email(to_user, to_email, subject, message)
+
+    def email_booking_in_new_location_request(self):
+        """
+        Email to admin
+        """
+        email_type, created = EmailMessageType.objects.get_or_create(name='Booking in new location request')
+        self.email_type_id = email_type.id
+        domain = Site.objects.get_current().domain
+        subject = "Booking in new location request"
+        message = "We have request for booking in new location request. Please check the details in admin page."
+        to_email = ["notification@tourzan.com"]
+        to_user = None
         self.sending_email(to_user, to_email, subject, message)
 
 

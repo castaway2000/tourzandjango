@@ -22,7 +22,8 @@
     <div class="form-group">
         <label>Put your score here</label>
         <input type="number" step="1" min="1" max="5" required
-                id="rating" class="form-control"
+               id="rating" class="form-control rating rating-loading"
+               data-min="0" data-max="5" data-step="1" data-show-clear="false"
                name="rating" {% if request.POST.rating %} value="{{ request.POST.rating }}" {% else %} value="5" {% endif %}>
     </div>
 

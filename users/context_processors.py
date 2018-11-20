@@ -29,7 +29,6 @@ def get_subdomain(request):
 
 
 def on_prod(request):
-    print(on_prod)
     return {'on_prod': ON_PRODUCTION}
 
 
@@ -45,3 +44,13 @@ def if_banner(request):
         return {'banner': context}
     except:
         return {'banner': False}
+
+
+def get_or_create_session_key(request):
+    session_key = request.session.session_key
+    if not session_key:
+        #workaround for newer Django versions
+        request.session["session_key"] = 123
+        #re-apply value
+        request.session.cycle_key()
+    return locals()
