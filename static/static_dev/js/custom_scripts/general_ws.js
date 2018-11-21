@@ -54,3 +54,4 @@ function connect() {
 }
 
 ws_general = connect();
+console.log('general');

@@ -124,7 +124,6 @@ class ChatConsumer(WebsocketConsumer):
                 "dt": dt
             }
         )
-        print(user_id)
 
         #Notification to general websockets
         uuid = message_to_user_obj.generalprofile.uuid
@@ -135,11 +134,9 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message,
                 'message_user_name': message_user_name,
                 'chat_uuid': chat_uuid,
-                'user_id': user_id,
                 "color_type": "success"
             }
         )
-
 
     def chat_message(self, event):
         """
@@ -166,11 +163,12 @@ class ChatConsumer(WebsocketConsumer):
         user = self.user
         chat = Chat.objects.get(uuid=chat_uuid)
         if chat.guide == user or chat.tourist == user:
-            message_to_user_obj = chat.tourist if chat.guide == user else chat.guide #defining user to whom message was sent in chat
+            message_to_user_obj = chat.tourist if chat.guide == user else chat.guide  # defining user to whom message was sent in chat
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
             message_user = user.generalprofile.get_name() if hasattr(user, "generalprofile") else user.username
             dt = chat_message.created.strftime("%m/%d/%Y %H:%M:%S")
-            return (chat, message_user, message_to_user_obj, dt, user.generalprofile.user_id)
+            l.debug((chat, message_user, message_to_user_obj, dt, user.generalprofile.user_id))
+            return chat, message_user, message_to_user_obj, dt, user.generalprofile.user_id
 
     def update_last_user_activity_dt(self):
         user = self.user

@@ -87,3 +87,4 @@ $(document).ready(function() {
     scrolling(scrolling_speed=0);
     //End of chats area
 });
+console.log('chat on sockets');
