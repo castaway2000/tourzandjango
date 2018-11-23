@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'hijack',
     'compat',
     'hijack_admin',
+    'import_export',
 
     # 'corsheaders',
     'django_extensions',

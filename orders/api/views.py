@@ -126,7 +126,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Response({'detail': 'success'})
 
 
-
 class OrderViewSet(viewsets.ModelViewSet, FilterViewSet):
     #add later a logic to permissions for not allowing modify completed orders
     queryset = Order.objects.all()

@@ -231,7 +231,7 @@ def user_profile(request):
                     data = {'is_guide': False, 'is_default': False, 'profile_image': None, 'guide_overview': None,
                             'guide_rating': 0, 'reviews': None}
                     if hasattr(user, 'guideprofile'):
-                        data['reviews'] = get_guide_representation_by_id(user)
+                        # data['reviews'] = get_guide_representation_by_id(user)
                         data['is_guide'] = True
                         data['is_default'] = user.guideprofile.is_default_guide
                         data['guide_overview'] = user.guideprofile.overview
@@ -278,7 +278,7 @@ def user_profile(request):
                         'latitude': lat,
                         'longitude': lon,
                         'interests': [],
-                        'tourist_reviews': get_tourist_representation_by_id(user),
+                        # 'tourist_reviews': get_tourist_representation_by_id(user),
                         'guide_data': if_guide()
                         }
                 for i in user.userinterest_set.all():
