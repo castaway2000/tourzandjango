@@ -291,7 +291,7 @@ def user_profile(request):
                 return Response(res)
         except Exception as err:
             print('ERROR: ', err)
-            return Response(HTTP_400_BAD_REQUEST)
+            return HttpResponse(json.dumps({'status': 400, 'detail': str(err)}))
 
 
 class EditProfileViewSet(viewsets.ModelViewSet):
