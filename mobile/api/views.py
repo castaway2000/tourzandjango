@@ -394,8 +394,8 @@ def update_trip(request):
                                 "extradata": {
                                     'trip_id': trip[0].id,
                                     'type': 2,
-                                    'guide_generalprofile_id': order.guide_id,
-                                    'tourist_general_profile_id': order.user_id,
+                                    'guide_generalprofile_id': trip[0].guide_id,
+                                    'tourist_general_profile_id': trip[0].user_id,
                                     'body': 'Get ready for an adventure!'
                                 }
                             }
@@ -474,8 +474,8 @@ def update_trip(request):
                             "extradata":
                                 {'trip_id': trip_id,
                                  'order_id': order.id,
-                                 'guide_generalprofile_id': order.guide_id,
-                                 'tourist_general_profile_id': order.user_id,
+                                 'guide_generalprofile_id': trip_status.guide_id,
+                                 'tourist_general_profile_id': trip_status.user_id,
                                  'type': 3,
                                  'body': 'Your trip on tourzan has completed successfully.'}
                         }
@@ -485,8 +485,8 @@ def update_trip(request):
             return HttpResponse(json.dumps({'trip_id': trip_status.id,
                                             'order_id': order.id,
                                             'price': round(order.total_price, 2),
-                                            'tourist_id': order.tourist_id,
-                                            'guide_id': order.guide_id,
+                                            'tourist_id': trip_status.user_id,
+                                            'guide_id': trip_status.guide_id,
                                             'tourist_trip_fees': round(order.fees_tourist, 2),
                                             'guide_trip_fees': round(order.fees_guide, 2),
                                             'guide_pay': round(order.guide_payment, 2),
