@@ -214,8 +214,13 @@ def user_profile(request):
                     data = json.loads(serial.serialize('json', qs))
                     for d in data:
                         order = Order.objects.get(id=d['fields']['order'])
-                        d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+                        d['fields']['reviewers_picture'] = None
                         d['fields']['reviewers_name'] = order.guide.name
+                        try:
+                            d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+                        except Exception as err:
+                            print(err)
+                            pass
                     return data
 
                 def get_guide_representation_by_id(user):
@@ -223,8 +228,13 @@ def user_profile(request):
                     data = json.loads(serial.serialize('json', qs))
                     for d in data:
                         order = Order.objects.get(id=d['fields']['order'])
-                        d['fields']['reviewers_picture'] = str(order.tourist.image.url)
+                        d['fields']['reviewers_picture'] = None
                         d['fields']['reviewers_name'] = order.tourist.user.generalprofile.first_name
+                        try:
+                            d['fields']['reviewers_picture'] = str(order.tourist.image.url)
+                        except Exception as err:
+                            print(err)
+                            pass
                     return data
 
                 def if_guide():
@@ -242,6 +252,7 @@ def user_profile(request):
                             data['profile_image'] = str(user.guideprofile.profile_image.url)
                         except Exception as e:
                             print(e)
+                            data['profile_image'] = None
                     return data
                 try:
                     geotracker = GeoTracker.objects.get(user_id=user.id)
