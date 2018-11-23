@@ -209,29 +209,29 @@ def user_profile(request):
                 user_id = request.POST['user_id']
                 gp = GeneralProfile.objects.get(id=user_id)
 
-                # def get_tourist_representation_by_id(user):
-                #     qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
-                #     data = json.loads(serial.serialize('json', qs))
-                #     for d in data:
-                #         order = Order.objects.get(id=d['fields']['order'])
-                #         d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
-                #         d['fields']['reviewers_name'] = order.guide.name
-                #     return data
-                #
-                # def get_guide_representation_by_id(user):
-                #     qs = Review.objects.filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
-                #     data = json.loads(serial.serialize('json', qs))
-                #     for d in data:
-                #         order = Order.objects.get(id=d['fields']['order'])
-                #         d['fields']['reviewers_picture'] = str(order.tourist.image.url)
-                #         d['fields']['reviewers_name'] = order.tourist.user.generalprofile.first_name
-                #     return data
+                def get_tourist_representation_by_id(user):
+                    qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+                    data = json.loads(serial.serialize('json', qs))
+                    for d in data:
+                        order = Order.objects.get(id=d['fields']['order'])
+                        d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+                        d['fields']['reviewers_name'] = order.guide.name
+                    return data
+
+                def get_guide_representation_by_id(user):
+                    qs = Review.objects.filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
+                    data = json.loads(serial.serialize('json', qs))
+                    for d in data:
+                        order = Order.objects.get(id=d['fields']['order'])
+                        d['fields']['reviewers_picture'] = str(order.tourist.image.url)
+                        d['fields']['reviewers_name'] = order.tourist.user.generalprofile.first_name
+                    return data
 
                 def if_guide():
                     data = {'is_guide': False, 'is_default': False, 'profile_image': None, 'guide_overview': None,
                             'guide_rating': 0, 'reviews': None}
                     if hasattr(gp.user, 'guideprofile'):
-                        # data['reviews'] = get_guide_representation_by_id(user)
+                        data['reviews'] = get_guide_representation_by_id(gp.user)
                         data['is_guide'] = True
                         data['is_default'] = gp.user.guideprofile.is_default_guide
                         data['guide_overview'] = gp.user.guideprofile.overview
@@ -278,7 +278,7 @@ def user_profile(request):
                         'latitude': lat,
                         'longitude': lon,
                         'interests': [],
-                        # 'tourist_reviews': get_tourist_representation_by_id(user),
+                        'tourist_reviews': get_tourist_representation_by_id(gp.user),
                         'guide_data': if_guide()
                         }
                 for i in gp.user.userinterest_set.all():
