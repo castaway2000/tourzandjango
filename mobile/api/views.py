@@ -394,6 +394,8 @@ def update_trip(request):
                                 "extradata": {
                                     'trip_id': trip[0].id,
                                     'type': 2,
+                                    'guide_generalprofile_id': order.guide_id,
+                                    'tourist_general_profile_id': order.user_id,
                                     'body': 'Get ready for an adventure!'
                                 }
                             }
@@ -472,6 +474,8 @@ def update_trip(request):
                             "extradata":
                                 {'trip_id': trip_id,
                                  'order_id': order.id,
+                                 'guide_generalprofile_id': order.guide_id,
+                                 'tourist_general_profile_id': order.user_id,
                                  'type': 3,
                                  'body': 'Your trip on tourzan has completed successfully.'}
                         }

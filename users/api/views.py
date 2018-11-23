@@ -542,23 +542,23 @@ def user_mixins(request):
     try:
         id = int(request.POST['id'])
         user_type = request.POST['user_type']
-        print(1)
+        data = GeneralProfile.objects.get(user=id)
+        username = data.user.username
+        firstname = data.first_name
+        lastname = data.last_name
         if user_type == 'guide':
-            data = GuideProfile.objects.get(id=id)
-            username = data.user.username
-            firstname = data.user.generalprofile.first_name
-            lastname = data.user.generalprofile.last_name
-            pic = data.profile_image.url
+            try:
+                pic = data.user.guideprofile.profile_image.url
+            except Exception as err:
+                print(err)
+                pic = None
         else:
-            data = GeneralProfile.objects.get(user=id)
-            username = data.user.username
-            firstname = data.first_name
-            lastname = data.last_name
             pic = data.user.touristprofile
             if hasattr(pic, 'image'):
                 try:
                     pic = pic.image.url
-                except ValueError:
+                except ValueError as err:
+                    print(err)
                     pic = None
             else:
                 pic = None
