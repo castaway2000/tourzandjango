@@ -207,7 +207,7 @@ def user_profile(request):
             if request.POST['user_id']:
                 print(request.POST)
                 user_id = request.POST['user_id']
-                gp = GeneralProfile.objects.get(id=user_id)
+                user = User.objects.get(id=user_id)
 
                 def get_tourist_representation_by_id(user):
                     qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
@@ -230,21 +230,21 @@ def user_profile(request):
                 def if_guide():
                     data = {'is_guide': False, 'is_default': False, 'profile_image': None, 'guide_overview': None,
                             'guide_rating': 0, 'reviews': None}
-                    if hasattr(gp.user, 'guideprofile'):
-                        data['reviews'] = get_guide_representation_by_id(gp.user)
+                    if hasattr(user, 'guideprofile'):
+                        data['reviews'] = get_guide_representation_by_id(user)
                         data['is_guide'] = True
-                        data['is_default'] = gp.user.guideprofile.is_default_guide
-                        data['guide_overview'] = gp.user.guideprofile.overview
-                        data['guide_rating'] = gp.user.guideprofile.rating
-                        data['first_name'] = gp.first_name
-                        data['last_name'] = gp.last_name
+                        data['is_default'] = user.guideprofile.is_default_guide
+                        data['guide_overview'] = user.guideprofile.overview
+                        data['guide_rating'] = user.guideprofile.rating
+                        data['first_name'] = user.first_name
+                        data['last_name'] = user.last_name
                         try:
-                            data['profile_image'] = str(gp.user.guideprofile.profile_image.url)
+                            data['profile_image'] = str(user.guideprofile.profile_image.url)
                         except Exception as e:
                             print(e)
                     return data
                 try:
-                    geotracker = GeoTracker.objects.get(user_id=gp.user.id)
+                    geotracker = GeoTracker.objects.get(user_id=user.id)
                     lat = geotracker.latitude
                     lon = geotracker.longitude
                 except Exception as err:
@@ -253,7 +253,7 @@ def user_profile(request):
                     lon = None
 
                 try:
-                    idva = IdentityVerificationApplicant.objects.get(general_profile_id=gp.id)
+                    idva = IdentityVerificationApplicant.objects.get(general_profile_id=user.id)
                     idvr = IdentityVerificationReport.objects.filter(identification_checking__applicant__applicant_id=idva.applicant_id,
                                                                      type=1).last()
                     verification_status = str(idvr.status)
@@ -264,27 +264,27 @@ def user_profile(request):
                     verification_result = None
                 res = { 'id': user_id,
                         'profile_picture': None,
-                        'username': gp.user.username,
-                        'first_name': gp.first_name,
-                        'last_name': gp.last_name,
-                        'about_tourist': gp.user.touristprofile.about,
-                        'tourist_rating': gp.user.touristprofile.rating,
-                        'is_fee_free': gp.is_fee_free,
-                        'is_trusted': gp.is_trusted,
-                        'is_verified': gp.is_verified,
+                        'username': user.username,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'about_tourist': user.touristprofile.about,
+                        'tourist_rating': user.touristprofile.rating,
+                        'is_fee_free': user.generalprofile.is_fee_free,
+                        'is_trusted': user.generalprofile.is_trusted,
+                        'is_verified': user.generalprofile.is_verified,
                         'verification_result': verification_result,
                         'verification_status': verification_status,
-                        'referral_code': gp.referral_code,
+                        'referral_code': user.generalprofile.referral_code,
                         'latitude': lat,
                         'longitude': lon,
                         'interests': [],
-                        'tourist_reviews': get_tourist_representation_by_id(gp.user),
+                        'tourist_reviews': get_tourist_representation_by_id(user),
                         'guide_data': if_guide()
                         }
-                for i in gp.user.userinterest_set.all():
+                for i in user.userinterest_set.all():
                     res['interests'].append(i.interest.name)
                 try:
-                    res['profile_picture'] = str(gp.user.touristprofile.image.url)
+                    res['profile_picture'] = str(user.touristprofile.image.url)
                 except Exception as error:
                     print(error)
                     pass
