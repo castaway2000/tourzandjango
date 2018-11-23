@@ -284,7 +284,7 @@ def user_profile(request):
                 for i in gp.user.userinterest_set.all():
                     res['interests'].append(i.interest.name)
                 try:
-                    res['profile_picture'] = str(gp.touristprofile.image.url)
+                    res['profile_picture'] = str(gp.user.touristprofile.image.url)
                 except Exception as error:
                     print(error)
                     pass
