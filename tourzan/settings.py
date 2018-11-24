@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'hijack',
     'compat',
     'hijack_admin',
+    'import_export',
 
     # 'corsheaders',
     'django_extensions',
@@ -164,6 +165,7 @@ TEMPLATES = [
                 'users.context_processors.get_subdomain',
                 'users.context_processors.on_prod',
                 'users.context_processors.if_banner',
+                'users.context_processors.get_or_create_session_key',
             ],
         },
     },

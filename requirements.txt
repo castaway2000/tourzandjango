@@ -59,3 +59,4 @@ tldextract==2.2.0
 django-hijack==2.1.10
 django-hijack-admin==2.1.10
 selenium==3.12.0
+django-import-export==1.1.0

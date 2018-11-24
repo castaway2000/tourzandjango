@@ -6,9 +6,11 @@ from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions
+from utils.mixins import ImageCroppingMixin
 
 
-class TouristProfileForm(forms.ModelForm):
+class TouristProfileForm(ImageCroppingMixin, forms.ModelForm):
+    image_field_name = "image"
 
     class Meta:
         model = TouristProfile
