@@ -36,7 +36,6 @@ class TourForm(forms.ModelForm):
             tour_exist = Tour.objects.filter(name=name).exclude(id=self.instance.pk).exists()
             if tour_exist:
                 raise forms.ValidationError("This tour name is already in use")
-
         return self.cleaned_data.get('name')
 
 

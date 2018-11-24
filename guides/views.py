@@ -421,7 +421,6 @@ def profile_settings_guide(request, guide_creation=True):
         #saving services
         guide = new_form
         guide_services_ids_list = list()
-        print(request.POST)
         for name, value in request.POST.items():
             string_key = "service_"
             if name.startswith(string_key):

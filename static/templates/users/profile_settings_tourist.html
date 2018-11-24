@@ -3,7 +3,8 @@
 {% load i18n %}
 
 {% block header_stuff %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.css" rel=stylesheet type=text/css>
 
     <!-- Event snippet for post tourist register conversion page -->
     <script>
@@ -14,8 +15,11 @@
 
 {% block content_profile %}
     <div class="col-md-9">
-        {{ form.errors }}
         <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ form.x }}
+            {{ form.y }}
+            {{ form.width }}
+            {{ form.height }}
             <div class="row">
                 <div class="col-md-7">
                     <div class="row">
@@ -78,7 +82,7 @@
                     {% endif %}
                     <div class="form-group">
                         <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
-                        <input type="file" name="{{ form.image.html_name }}">
+                        <input type="file" name="{{ form.image.html_name }}" id="id_avatar">
                     </div>
                     <hr>
                     <input type="submit" class="btn btn-primary" value="Save Changes">
@@ -86,10 +90,16 @@
             </div>
         </form>
     </div>
+
+    {% include "users/avatar_edit_modal.html" %}
+
 {% endblock %}
 
 
 {% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/custom_scripts/image_cropper.js' %}"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
 

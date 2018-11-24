@@ -1,8 +1,11 @@
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect
 from django.http import JsonResponse
-from .models import City, Country
+from .models import City, Country, SearchLog
+from .forms import NewLocationTourRequestForm
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.translation import ugettext as _
+from utils.google_recapcha import check_recaptcha
 
 
 # Create your views here.
@@ -16,7 +19,6 @@ def search_city(request):
         city_name = data.get(u"q")
         print ("city name: %s" % city_name)
         cities = City.objects.filter(name__icontains=city_name)
-
         for city in cities:
             results.append({
                 "id": city.original_name,
@@ -49,16 +51,47 @@ def location_guides(request, country_slug, city_slug=None):
 
 
 def location_search_router(request):
-    data = request.GET
+    data = request.POST
+    print(data)
     place_id = data.get("place_id")
-    if place_id:
+    search_term = data.get("search_term")
+    city = None
+    country = None
+    try:
+        city = City.objects.filter(place_id=place_id).last()
+    except:
         try:
-            city = City.objects.filter(place_id=place_id).last()
-            return HttpResponseRedirect(reverse("city_guides", kwargs={"country_slug": city.country.slug, "city_slug": city.slug}))
-        except AttributeError:
-            try:
-                country = Country.objects.filter(place_id=place_id).last()
-                return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug": country.slug}))
-            except AttributeError:
-                messages.error(request, 'We do not have any tours or guides in your searching location yet! Check all the available locations at this page')
-                return HttpResponseRedirect(reverse("all_countries"))
+            country = Country.objects.filter(place_id=place_id).last()
+        except:
+            pass
+    SearchLog().create(request, city, country, search_term)
+    if city:
+        city = City.objects.filter(place_id=place_id).last()
+        return HttpResponseRedirect(reverse("city_guides", kwargs={"country_slug": city.country.slug, "city_slug": city.slug}))
+    elif country:
+        country = Country.objects.filter(place_id=place_id).last()
+        return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug": country.slug}))
+    else:
+        url = "%s?search_term=%s&place_id=%s" % (reverse("request_new_location_booking"), search_term, place_id)
+        return HttpResponseRedirect(url)
+
+
+@check_recaptcha
+def request_new_location_booking(request):
+    user = request.user
+    search_term = request.GET.get("search_term")
+    place_id = request.GET.get("place_id")
+    if place_id:
+        form = NewLocationTourRequestForm(request.POST or None, user=user)
+        if request.method == "POST":
+            if form.is_valid() and request.recaptcha_is_valid:
+                new_form = form.save(commit=False)
+                new_form.location_name = search_term
+                new_form.location_id = place_id
+                if not user.is_anonymous():
+                    new_form.user = user
+                new_form.save()
+                messages.success(request, _('Your request was successfully created! '
+                                            'We will be in touch with you via email within 3 days'))
+                hide_form = True
+    return render(request, 'locations/request_new_location_booking.html', locals())

@@ -16,6 +16,10 @@
     {% endif %}
 </div>
 <form method="post" enctype="multipart/form-data" action="{% url 'profile_settings_guide' %}">{% csrf_token %}
+    {{ form.x }}
+    {{ form.y }}
+    {{ form.width }}
+    {{ form.height }}
     <div class="row">
         <div class="col-lg-7">
             {% if guide %}
@@ -254,25 +258,21 @@
         </div>
         <div class="col-md-4 col-md-offset-1">
             <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
-            {% if user.guideprofile and user.guideprofile.profile_image %}
-                <div>
+
+
+            <div>
+                {% if user.guideprofile and user.guideprofile.profile_image %}
                     <img src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}" class="img-responsive img-rounded">
-                </div>
-                <div class="form-group">
-                    <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %}:</label>
-                    <span class="text-error">{{ form.profile_image.errors }}</span>
-                    <input type="file" name="{{ form.profile_image.html_name }}">
-                </div>
-            {% else %}
-                <div>
+                {% else %}
                     <img src="{% static 'img/300x300.png' %}" alt="" title="">
-                </div>
-                <div class="form-group">
-                    <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %} *:</label>
-                    <span class="text-error">{{ form.profile_image.errors }}</span>
-                    <input required type="file" name="{{ form.profile_image.html_name }}">
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label>{% blocktrans %}Upload New Avatar Image{% endblocktrans %} *:</label>
+                <span class="text-error">{{ form.profile_image.errors }}</span>
+                <input type="file" name="{{ form.profile_image.html_name }}" id="id_avatar" {% if not user.guideprofile.profile_image %}required{% endif %}>
+            </div>
+
             <hr>
             <input type="submit" class="btn btn-primary" value="Save Changes">
             <br/><br/>
@@ -297,10 +297,12 @@
                 </div>
                 <div class="form-group">
                     <label>{% blocktrans %}Upload Guide License{% endblocktrans %}:</label>
-                    <span class="text-error">{{ form.profile_image.errors }}</span>
+                    <span class="text-error">{{ form.license_image.errors }}</span>
                     <input type="file" name="{{ form.license_image.html_name }}">
                 </div>
             {% endif %}
         </div>
     </div>
 </form>
+
+{% include "users/avatar_edit_modal.html" %}
