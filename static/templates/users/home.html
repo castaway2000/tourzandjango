@@ -25,7 +25,7 @@
                             </div>
                             <br><br>
                             <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
-                                <form id="search_form" class="homepage-form" method="post" action="{% url 'location_search_router' %}">
+                                <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
                                     {% csrf_token %}
                                     <div class="form-group form-group-lg">
                                         <label>{% trans 'Type your destination to find tours and local guides' %}</label>
@@ -39,6 +39,17 @@
                 </div>
             </div>
         </div>
+        {% if city %}
+            <section>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            dsad
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
         <section class="platform-description">
             <div class="container">
                 <div class="row">
