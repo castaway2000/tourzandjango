@@ -65,16 +65,21 @@ def location_search_router(request):
             country = Country.objects.get(place_id=place_id)
         except:
             pass
-    SearchLog().create(request, city, country, search_term)
-    if city:
-        city = City.objects.filter(place_id=place_id).last()
-        return HttpResponseRedirect(reverse("city_guides", kwargs={"country_slug": city.country.slug, "city_slug": city.slug}))
-    elif country:
-        country = Country.objects.filter(place_id=place_id).last()
-        return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug": country.slug}))
-    else:
-        url = "%s?search_term=%s&place_id=%s" % (reverse("request_new_location_booking"), search_term, place_id)
-        return HttpResponseRedirect(url)
+    try:
+        SearchLog().create(request, city, country, search_term)
+        if city:
+            city = City.objects.filter(place_id=place_id).last()
+            return HttpResponseRedirect(reverse("city_guides", kwargs={"country_slug": city.country.slug, "city_slug": city.slug}))
+        elif country:
+            country = Country.objects.filter(place_id=place_id).last()
+            return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug": country.slug}))
+        else:
+            url = "%s?search_term=%s&place_id=%s" % (reverse("request_new_location_booking"), search_term, place_id)
+            return HttpResponseRedirect(url)
+    except:
+        messages.error(request,
+                       'We do not have any tours or guides in your searching location yet! Check all the available locations at this page')
+        return HttpResponseRedirect(reverse("all_countries"))
 
 
 @check_recaptcha
