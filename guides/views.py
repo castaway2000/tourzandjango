@@ -208,7 +208,6 @@ def guides(request):
 
 def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     user = request.user
-    print("new view %s" % new_view)
     #referal id for partner to track clicks in iframe
     ref_id = request.GET.get("ref_id")
     if ref_id and not "ref_id" in request.session:
@@ -425,7 +424,6 @@ def profile_settings_guide(request, guide_creation=True):
             string_key = "service_"
             if name.startswith(string_key):
                 cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
-                print(cleared_name)
                 service = Service.objects.get(html_field_name=cleared_name)
                 price_field_name = "serviceprice_%s" % cleared_name
                 price = request.POST.get(price_field_name, 0)

@@ -283,6 +283,10 @@ def update_trip(request):
             device_id = str(request.POST['device_token'])
             point = Point(long, lat)
             GeoTracker.objects.get_or_create(user_id=user_id)
+            devices = GeneralProfile.objects.filter(device_id=device_id)
+            for d in devices:
+                d.device_id=None
+                d.save(force_update=True)
             GeneralProfile.objects.filter(user_id=user_id).update(device_id=device_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
