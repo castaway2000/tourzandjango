@@ -70,7 +70,6 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
             console.log("full location: " + location_input);
             name_original = location_input.split(",")[0];
             console.log("name_original: " + name_original);
-            console.log(place);
             if (name_original) {
                 $.ajax({
                     url: "/en/ajax/rate_agregate/",
@@ -92,8 +91,6 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
             }
             if ("address_components"in place) {
                 var place_types = place["address_components"][0]["types"];
-                console.log(place_types);
-                console.log($.inArray("country", place_types));
                 if ($.inArray("country", place_types) != -1) {
                     $("#is_country").prop("checked", true);
                 } else {
@@ -103,7 +100,6 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
                 $("#is_country").prop("checked", false);
             }
             search_input.focus();
-            console.log("finish");
             $("#search_form").submit();
         })
     }

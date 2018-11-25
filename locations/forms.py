@@ -27,7 +27,7 @@ class NewLocationTourRequestForm(forms.ModelForm):
             self.fields.pop("first_name")
         else:
             self.fields['email'] = forms.EmailField(required=True, label=_("Your email"))
-            self.fields['first_name'] = forms.EmailField(required=True, label=_("Your first name"))
+            self.fields['first_name'] = forms.CharField(required=True, label=_("Your first name"))
         self.helper = FormHelper(self)
         self.helper.form_tag = True
         self.helper.layout.append(

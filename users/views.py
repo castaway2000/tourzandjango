@@ -40,6 +40,7 @@ import urllib.parse as urlparse
 from .forms import ExpressSignupForm
 from utils.sending_emails import SendingEmail
 from allauth.account.utils import get_next_redirect_url
+from utils.locations import get_city_country
 
 
 def logout_view(request):
@@ -86,6 +87,11 @@ def home(request):
     # cities = City.objects.filter(is_active=True, is_featured=True)\
     #              .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
 
+    src = request.GET.get("src")
+    city = None
+    if src:
+        city_slug = src
+        city, country = get_city_country(city_slug=city_slug)
     try:
         obj = HomePageContent.objects.last()
     except:
@@ -116,6 +122,8 @@ def home(request):
         "countries": countries,
         "special_offer_tours": special_offer_tours,
     }
+    if city:
+        context["city"] = city
     return render(request, 'users/home.html', context)
 
 
