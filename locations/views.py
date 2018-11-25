@@ -6,18 +6,16 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from utils.google_recapcha import check_recaptcha
+from utils.locations import get_city_country
 
 
 # Create your views here.
 def search_city(request):
-    response_data = dict()
     results = list()
 
     if request.GET:
-
         data = request.GET
         city_name = data.get(u"q")
-        print ("city name: %s" % city_name)
         cities = City.objects.filter(name__icontains=city_name)
         for city in cities:
             results.append({
@@ -52,19 +50,14 @@ def location_guides(request, country_slug, city_slug=None):
 
 def location_search_router(request):
     data = request.GET
+    print(data)
     place_id = data.get("place_id")
     search_term = data.get("search_term")
+    print(search_term)
     if not search_term:
         search_term = data.get("location_search_input")
-    city = None
-    country = None
-    try:
-        city = City.objects.get(place_id=place_id)
-    except:
-        try:
-            country = Country.objects.get(place_id=place_id)
-        except:
-            pass
+        print(search_term)
+    city, country = get_city_country(place_id=place_id)
     SearchLog().create(request, city, country, search_term)
     if city:
         city = City.objects.filter(place_id=place_id).last()
