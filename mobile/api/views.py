@@ -277,18 +277,17 @@ def update_trip(request):
             lon
             return channel
             """
-            user_id = GeneralProfile.objects.get(id=int(request.POST['user_id'])).user_id
+            user_id = int(request.POST['user_id'])
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
             device_id = str(request.POST['device_token'])
             point = Point(long, lat)
+            GeoTracker.objects.get_or_create(user_id=user_id)
             devices = GeneralProfile.objects.filter(device_id=device_id)
             for d in devices:
-                d.device_id = None
-                d.save()
-            GeoTracker.objects.get_or_create(user_id=user_id)
+                d.device_id=None
+                d.save(force_update=True)
             GeneralProfile.objects.filter(user_id=user_id).update(device_id=device_id)
-
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
             user = GeoTracker.objects.filter(user_id=user_id).values(*field)
@@ -301,6 +300,7 @@ def update_trip(request):
                 trip_id = trip[0].id
             elif trip_guide.exists():
                 trip_id = trip_guide[0].id
+
             if trip_id:
                 user_data['trip_in_progress'] = True
             user_data['trip_id'] = trip_id
