@@ -214,8 +214,13 @@ def user_profile(request):
                     data = json.loads(serial.serialize('json', qs))
                     for d in data:
                         order = Order.objects.get(id=d['fields']['order'])
-                        d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+                        d['fields']['reviewers_picture'] = None
                         d['fields']['reviewers_name'] = order.guide.name
+                        try:
+                            d['fields']['reviewers_picture'] = str(order.guide.profile_image.url)
+                        except Exception as err:
+                            print(err)
+                            pass
                     return data
 
                 def get_guide_representation_by_id(user):
@@ -223,8 +228,13 @@ def user_profile(request):
                     data = json.loads(serial.serialize('json', qs))
                     for d in data:
                         order = Order.objects.get(id=d['fields']['order'])
-                        d['fields']['reviewers_picture'] = str(order.tourist.image.url)
+                        d['fields']['reviewers_picture'] = None
                         d['fields']['reviewers_name'] = order.tourist.user.generalprofile.first_name
+                        try:
+                            d['fields']['reviewers_picture'] = str(order.tourist.image.url)
+                        except Exception as err:
+                            print(err)
+                            pass
                     return data
 
                 def if_guide():
@@ -236,12 +246,13 @@ def user_profile(request):
                         data['is_default'] = user.guideprofile.is_default_guide
                         data['guide_overview'] = user.guideprofile.overview
                         data['guide_rating'] = user.guideprofile.rating
-                        data['first_name'] = user.generalprofile.first_name
-                        data['last_name'] = user.generalprofile.last_name
+                        data['first_name'] = user.first_name
+                        data['last_name'] = user.last_name
                         try:
                             data['profile_image'] = str(user.guideprofile.profile_image.url)
                         except Exception as e:
                             print(e)
+                            data['profile_image'] = None
                     return data
                 try:
                     geotracker = GeoTracker.objects.get(user_id=user.id)
@@ -265,8 +276,8 @@ def user_profile(request):
                 res = { 'id': user_id,
                         'profile_picture': None,
                         'username': user.username,
-                        'first_name': user.generalprofile.first_name,
-                        'last_name': user.generalprofile.last_name,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
                         'about_tourist': user.touristprofile.about,
                         'tourist_rating': user.touristprofile.rating,
                         'is_fee_free': user.generalprofile.is_fee_free,
@@ -291,7 +302,7 @@ def user_profile(request):
                 return Response(res)
         except Exception as err:
             print('ERROR: ', err)
-            return Response(HTTP_400_BAD_REQUEST)
+            return HttpResponse(json.dumps({'status': 400, 'detail': str(err)}))
 
 
 class EditProfileViewSet(viewsets.ModelViewSet):
@@ -531,23 +542,23 @@ def user_mixins(request):
     try:
         id = int(request.POST['id'])
         user_type = request.POST['user_type']
-        print(1)
+        data = GeneralProfile.objects.get(user=id)
+        username = data.user.username
+        firstname = data.first_name
+        lastname = data.last_name
         if user_type == 'guide':
-            data = GuideProfile.objects.get(id=id)
-            username = data.user.username
-            firstname = data.user.generalprofile.first_name
-            lastname = data.user.generalprofile.last_name
-            pic = data.profile_image.url
+            try:
+                pic = data.user.guideprofile.profile_image.url
+            except Exception as err:
+                print(err)
+                pic = None
         else:
-            data = GeneralProfile.objects.get(user=id)
-            username = data.user.username
-            firstname = data.first_name
-            lastname = data.last_name
             pic = data.user.touristprofile
             if hasattr(pic, 'image'):
                 try:
                     pic = pic.image.url
-                except ValueError:
+                except ValueError as err:
+                    print(err)
                     pic = None
             else:
                 pic = None

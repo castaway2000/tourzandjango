@@ -59,10 +59,10 @@ def location_search_router(request):
     city = None
     country = None
     try:
-        city = City.objects.filter(place_id=place_id).last()
+        city = City.objects.get(place_id=place_id)
     except:
         try:
-            country = Country.objects.filter(place_id=place_id).last()
+            country = Country.objects.get(place_id=place_id)
         except:
             pass
     SearchLog().create(request, city, country, search_term)

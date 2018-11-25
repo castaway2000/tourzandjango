@@ -17,7 +17,6 @@ function connect() {
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/general/';
-
       var ws_general = new WebSocket(url);
       ws_general.onopen = function() {
         // subscribe to some channels
@@ -28,7 +27,6 @@ function connect() {
 
       ws_general.onmessage = function(e) {
         var data = JSON.parse(e.data);
-          console.log(data);
         if (data.type == "new_chat_message_notification" && window.location.href.indexOf(data.chat_uuid) == -1){
             sendNotification(data, order_status_change=false);
         }else if(data.type == "order_status_change"){
@@ -56,3 +54,4 @@ function connect() {
 }
 
 ws_general = connect();
+console.log('general');

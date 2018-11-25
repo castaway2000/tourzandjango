@@ -16,6 +16,7 @@ $(document).ready(function() {
      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
      var url = ws_scheme+ '://' + window.location.host +
         '/ws/chat/' + roomName + '/';
+     console.log(url);
       var ws = new WebSocket(url);
       ws.onopen = function() {
           console.log("opened");
@@ -27,6 +28,7 @@ $(document).ready(function() {
 
       ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
+        console.log(data);
         current_user_name = $("#current_user_name").text();
         current_user_name = current_user_name == data.user ? "me" : current_user_name;
         message_el = $('<div class="chat-message small new-chat-message">' +
@@ -85,3 +87,4 @@ $(document).ready(function() {
     scrolling(scrolling_speed=0);
     //End of chats area
 });
+console.log('chat on sockets');

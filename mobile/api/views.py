@@ -89,6 +89,7 @@ def get_trip_status(request):
         GeoTrip.objects.filter(id=trip_id, in_progress=True).update(duration=tdelta.total_seconds(), cost=cost_update)
         trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).get()
         data = {
+            'order_id': trip_status.order.id,
             'guide_id': trip_status.guide_id,
             'tourist_id': trip_status.user_id,
             'total_time': trip_status.duration,
@@ -282,6 +283,10 @@ def update_trip(request):
             device_id = str(request.POST['device_token'])
             point = Point(long, lat)
             GeoTracker.objects.get_or_create(user_id=user_id)
+            devices = GeneralProfile.objects.filter(device_id=device_id)
+            for d in devices:
+                d.device_id=None
+                d.save(force_update=True)
             GeneralProfile.objects.filter(user_id=user_id).update(device_id=device_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
             field = no_geo_point_fields(GeoTracker)
@@ -347,61 +352,61 @@ def update_trip(request):
             flag = request.POST['type']
             user_id = int(request.POST['user_id'])
             guide_id = int(request.POST['guide_id'])
-            tdelta = 0
-            if hasattr(request.POST, 'time') and flag == 'manual':
-                tdelta = request.POST['time']
-            kwargs = dict()
-            guide = GeneralProfile.objects.get(user_id=guide_id)
-            tourist = GeneralProfile.objects.get(user_id=user_id).user.touristprofile.user_id
+            check_trip = GeoTrip.objects.filter(user_id=user_id, guide_id=guide_id, in_progress=True)
+            if len(check_trip) == 0:  # make sure only one trip is ever accepted at a time.
+                tdelta = 0
+                if hasattr(request.POST, 'time') and flag == 'manual':
+                    tdelta = request.POST['time']
+                kwargs = dict()
+                guide = GeneralProfile.objects.get(user_id=guide_id)
+                tourist = GeneralProfile.objects.get(user_id=user_id).user.touristprofile.user_id
 
-            kwargs['guide_id'] = guide.user.guideprofile.id
-            kwargs['user_id'] = tourist
-            kwargs['start'] = datetime.now()
-            kwargs['number_persons'] = 2
-            response = Order().create_order(**kwargs)
-            order_id = response["order_id"]
-            print('ORDER_ID: ', order_id)
-            order = Order.objects.get(id=order_id)
-            print(order)
-            #setting agreed status to the order, skipping check for status flows inconsistancy.
-            #In this case "pending" status will be changed to "agreed" status, which can not be true in existing order, because a tour should be approved
-            #by guide as well
-            order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
-
-            GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
-            trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
-                                                    duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
-                                                    order_id=order_id)
-            print(trip[0].guide.generalprofile)
-            device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.generalprofile.device_id]
-            for device in device_tokens:
-                payload = {
-                    "to": device,
-                    "notification": {
-                        "title": "Tourzan",
-                        "body": "The trip was accepted!"
-                    },
-                    "data": {
-                        "custom_notification": {
-                            "body": "The trip was accepted!",
+                kwargs['guide_id'] = guide.user.guideprofile.id
+                kwargs['user_id'] = tourist
+                kwargs['start'] = datetime.now()
+                kwargs['number_persons'] = 2
+                response = Order().create_order(**kwargs)
+                order_id = response["order_id"]
+                order = Order.objects.get(id=order_id)
+                #setting agreed status to the order, skipping check for status flows inconsistancy.
+                #In this case "pending" status will be changed to "agreed" status, which can not be true in existing order, because a tour should be approved
+                #by guide as well
+                order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
+                GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
+                trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
+                                                        duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
+                                                        order_id=order_id)
+                device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.generalprofile.device_id]
+                for device in device_tokens:
+                    payload = {
+                        "to": device,
+                        "notification": {
                             "title": "Tourzan",
-                            "color": "#00ACD4",
-                            "priority": "high",
-                            "icon": "ic_launcher",
-                            "group": "GROUP",
-                            "sound": "default",
-                            "id": "id",
-                            "show_in_foreground": True,
-                            "extradata": {
-                                'trip_id': trip[0].id,
-                                'type': 2,
-                                'body': 'Get ready for an adventure!'
+                            "body": "The trip was accepted!"
+                        },
+                        "data": {
+                            "custom_notification": {
+                                "body": "The trip was accepted!",
+                                "title": "Tourzan",
+                                "color": "#00ACD4",
+                                "priority": "high",
+                                "icon": "ic_launcher",
+                                "group": "GROUP",
+                                "sound": "default",
+                                "id": "id",
+                                "show_in_foreground": True,
+                                "extradata": {
+                                    'trip_id': trip[0].id,
+                                    'type': 2,
+                                    'guide_generalprofile_id': trip[0].guide_id,
+                                    'tourist_general_profile_id': trip[0].user_id,
+                                    'body': 'Get ready for an adventure!'
+                                }
                             }
                         }
                     }
-                }
-                push_notify(payload)
-            return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
+                    push_notify(payload)
+                return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
         elif status == 'isCancelled' or status == 'isDeclined':
             """
             token
@@ -472,6 +477,9 @@ def update_trip(request):
                             "show_in_foreground": True,
                             "extradata":
                                 {'trip_id': trip_id,
+                                 'order_id': order.id,
+                                 'guide_generalprofile_id': trip_status.guide_id,
+                                 'tourist_general_profile_id': trip_status.user_id,
                                  'type': 3,
                                  'body': 'Your trip on tourzan has completed successfully.'}
                         }
@@ -481,8 +489,8 @@ def update_trip(request):
             return HttpResponse(json.dumps({'trip_id': trip_status.id,
                                             'order_id': order.id,
                                             'price': round(order.total_price, 2),
-                                            'tourist_id': order.tourist_id,
-                                            'guide_id': order.guide_id,
+                                            'tourist_id': trip_status.user_id,
+                                            'guide_id': trip_status.guide_id,
                                             'tourist_trip_fees': round(order.fees_tourist, 2),
                                             'guide_trip_fees': round(order.fees_guide, 2),
                                             'guide_pay': round(order.guide_payment, 2),

@@ -1,8 +1,10 @@
 from django.contrib import admin
 from .models import *
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 
-class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(ImportExportModelAdmin):#admin.ModelAdmin):
     list_display = [field.name for field in Country._meta.fields]
     readonly_fields = ["slug", "image_large", "image_medium", "image_small"]
 
@@ -12,7 +14,7 @@ class CountryAdmin(admin.ModelAdmin):
 admin.site.register(Country, CountryAdmin)
 
 
-class CityAdmin(admin.ModelAdmin):
+class CityAdmin(ImportExportModelAdmin):#admin.ModelAdmin):
     list_display = [field.name for field in City._meta.fields]
     readonly_fields = ["slug", "image_large", "image_medium", "image_small"]
 
