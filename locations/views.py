@@ -51,10 +51,11 @@ def location_guides(request, country_slug, city_slug=None):
 
 
 def location_search_router(request):
-    data = request.POST
-    print(data)
+    data = request.GET
     place_id = data.get("place_id")
     search_term = data.get("search_term")
+    if not search_term:
+        search_term = data.get("location_search_input")
     city = None
     country = None
     try:
@@ -72,7 +73,10 @@ def location_search_router(request):
         country = Country.objects.filter(place_id=place_id).last()
         return HttpResponseRedirect(reverse("country_guides", kwargs={"country_slug": country.slug}))
     else:
-        url = "%s?search_term=%s&place_id=%s" % (reverse("request_new_location_booking"), search_term, place_id)
+        if place_id and place_id != "undefined":
+            url = "%s?place_id=%s&search_term=%s" % (reverse("request_new_location_booking"), place_id, search_term)
+        else:
+            url = "%s?search_term=%s" % (reverse("request_new_location_booking"), search_term)
         return HttpResponseRedirect(url)
 
 
@@ -81,7 +85,9 @@ def request_new_location_booking(request):
     user = request.user
     search_term = request.GET.get("search_term")
     place_id = request.GET.get("place_id")
-    if place_id:
+    if search_term and len(search_term.split(",")) > 0:
+        location_name = search_term.split(", ")[0]
+    if place_id or search_term:
         form = NewLocationTourRequestForm(request.POST or None, user=user)
         if request.method == "POST":
             if form.is_valid() and request.recaptcha_is_valid:
