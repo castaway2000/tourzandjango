@@ -44,7 +44,7 @@
                     <div class="row">
                         {% with city.get_tours_6 as tours %}
                             {% if tours|length > 0 %}
-                                <div class="col-lg-12"><h3>{% trans 'Tours' %}</h3></div>
+                                <div class="col-lg-12"><h3>{% trans 'Tours in ' %}{{ city.name }}</h3></div>
                                 {% for tour in tours %}
                                     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                                         {% include 'tours/tour_in_panel.html' %}
@@ -60,7 +60,7 @@
                     <div class="row">
                         {% with city.get_guides_6 as guides %}
                             {% if guides|length > 0 %}
-                                <div class="col-lg-12"><h3>{% trans 'Guides' %}</h3></div>
+                                <div class="col-lg-12"><h3>{% trans 'Guides in ' %}{{ city.name }}</h3></div>
                                 {% for guide in guides %}
                                     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                                         {% include 'guides/guide_in_panel.html' %}
