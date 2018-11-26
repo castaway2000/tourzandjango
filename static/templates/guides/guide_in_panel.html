@@ -1,0 +1,52 @@
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+
+<div class="panel panel-default panel-guide">
+    <div class="panel-body">
+        <div class="text-center">
+            <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
+            target="_blank">
+                <img src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}">
+            </a>
+        </div>
+        <div class="mt10">
+            <h4 class="text-center">
+                {{ guide.user.generalprofile.first_name }}
+            </h4>
+        </div>
+        <div>
+            <ul class="list-unstyled">
+                <li><b>{% trans 'Rate' %}:</b> {{ guide.guide_rate }}</li>
+                <li><b>{% trans 'Min hours' %}:</b> {{ guide.min_hours }}</li>
+                <li>
+                    <b>{% trans 'Languages' %}</b>:
+                    {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
+                    {% if not user_languages %}
+                        <span class="label label-success label-tag">
+                            English
+                        </span>
+                    {% else %}
+                        {% for user_language in user_languages %}
+                            <span class="label label-success label-tag">
+                                {{ user_language.get_language_display }}
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </li>
+                <br>
+                <li>{{ guide.overview|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="text-center panel-button mb10">
+        <a class="btn btn-default"
+            href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
+            target="_blank"
+        >
+            {% trans 'View profile' %}
+        </a>
+    </div>
+</div>

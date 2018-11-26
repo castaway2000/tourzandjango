@@ -185,12 +185,28 @@ class City(models.Model):
 
         super(City, self).save(*args, **kwargs)
 
+    def get_tours(self, nmb=100):
+        tours = self.tour_set.filter(is_active=True).order_by("name")[:nmb]
+        return tours
+
+    def get_guides(self, nmb=100):
+        guides = self.guideprofile_set.filter(is_active=True)[:nmb]
+        return guides
+
     def get_tours_12(self):
-        tours = self.tour_set.filter(is_active=True).order_by("name")[:12]
+        tours = self.get_tours(12)
         return tours
 
     def get_guides_12(self):
-        guides = self.guideprofile_set.filter(is_active=True)[:12]
+        guides = self.get_guides(12)
+        return guides
+
+    def get_tours_6(self):
+        tours = self.get_tours(6)
+        return tours
+
+    def get_guides_6(self):
+        guides = self.get_guides(6)
         return guides
 
     def get_special_offer_tours(self):
