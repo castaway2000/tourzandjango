@@ -26,7 +26,6 @@
                             <br><br>
                             <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
                                 <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
-                                    {% csrf_token %}
                                     <div class="form-group form-group-lg">
                                         <label>{% trans 'Type your destination to find tours and local guides' %}</label>
                                         <input class="typeahead form-control" id="location_search_input" name="location_search_input">
@@ -43,9 +42,36 @@
             <section>
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-12">
-                            dsad
-                        </div>
+                        {% with city.get_tours_6 as tours %}
+                            {% if tours|length > 0 %}
+                                <div class="col-lg-12"><h3>{% trans 'Tours' %}</h3></div>
+                                {% for tour in tours %}
+                                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                        {% include 'tours/tour_in_panel.html' %}
+                                    </div>
+                                    {% if forloop.counter|divisibleby:3 %}
+                                        </div>
+                                        <div class="row">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="row">
+                        {% with city.get_guides_6 as guides %}
+                            {% if guides|length > 0 %}
+                                <div class="col-lg-12"><h3>{% trans 'Guides' %}</h3></div>
+                                {% for guide in guides %}
+                                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                        {% include 'guides/guide_in_panel.html' %}
+                                    </div>
+                                    {% if forloop.counter|divisibleby:3 %}
+                                        </div>
+                                        <div class="row">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
                     </div>
                 </div>
             </section>

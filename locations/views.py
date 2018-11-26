@@ -50,13 +50,10 @@ def location_guides(request, country_slug, city_slug=None):
 
 def location_search_router(request):
     data = request.GET
-    print(data)
     place_id = data.get("place_id")
     search_term = data.get("search_term")
-    print(search_term)
     if not search_term:
         search_term = data.get("location_search_input")
-        print(search_term)
     city, country = get_city_country(place_id=place_id)
     SearchLog().create(request, city, country, search_term)
     if city:
