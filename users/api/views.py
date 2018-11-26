@@ -207,7 +207,7 @@ def user_profile(request):
             if request.POST['user_id']:
                 print(request.POST)
                 user_id = request.POST['user_id']
-                user = GeneralProfile.objects.get(id=user_id).user
+                user = User.objects.get(id=user_id)
 
                 def get_tourist_representation_by_id(user):
                     tourist = TouristProfile.objects.get(user=user)
