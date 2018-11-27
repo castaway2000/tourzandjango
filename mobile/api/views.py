@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http.response import HttpResponse
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
@@ -495,7 +496,7 @@ def update_trip(request):
                                             'tourist_trip_fees': round(order.fees_tourist, 2),
                                             'guide_trip_fees': round(order.fees_guide, 2),
                                             'guide_pay': round(order.guide_payment, 2),
-                                            'isEnded': True}))
+                                            'isEnded': True}, cls=DjangoJSONEncoder))
         return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'incorrect status value'}]}))
     except Exception as err:
         print(err)
