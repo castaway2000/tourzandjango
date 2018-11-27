@@ -353,15 +353,18 @@ def update_trip(request):
             flag = request.POST['type']
             user_id = int(request.POST['user_id'])
             guide_id = int(request.POST['guide_id'])
-            guide = GeneralProfile.objects.get(user_id=guide_id)
-            tourist = GeneralProfile.objects.get(user_id=user_id)
-            check_trip = GeoTrip.objects.filter(user_id__in=[user_id, guide_id],
-                                                guide_id__in=[user_id, guide_id],
-                                                in_progress=True).count()
-            if check_trip == 0:  # make sure only one trip is ever accepted at a time.
+            double_t = GeoTrip.objects.filter(user_id=user_id, in_progress=True).count()
+            double_g = GeoTrip.objects.filter(user_id=guide_id, in_progress=True).count()
+            check_trip = GeoTrip.objects.filter(guide_id=guide_id, in_progress=True).count()
+            check_trip_inverse = GeoTrip.objects.filter(guide_id=user_id, in_progress=True).count()
+
+            if not check_trip and not check_trip_inverse and not double_g and not double_t:
+                print(True)# make sure only one trip is ever accepted at a time.
                 tdelta = 0
                 if hasattr(request.POST, 'time') and flag == 'manual':
                     tdelta = request.POST['time']
+                guide = GeneralProfile.objects.get(user_id=guide_id)
+                tourist = GeneralProfile.objects.get(user_id=user_id)
                 kwargs = dict()
                 kwargs['guide_id'] = guide.user.guideprofile.id
                 kwargs['user_id'] = tourist.user.touristprofile.user_id
