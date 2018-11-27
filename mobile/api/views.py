@@ -352,8 +352,8 @@ def update_trip(request):
             flag = request.POST['type']
             user_id = int(request.POST['user_id'])
             guide_id = int(request.POST['guide_id'])
-            # guide = GeneralProfile.objects.get(user_id=guide_id)
-            # tourist = GeneralProfile.objects.get(user_id=user_id)
+            guide = GeneralProfile.objects.get(user_id=guide_id)
+            tourist = GeneralProfile.objects.get(user_id=user_id)
             check_trip = GeoTrip.objects.filter(user_id__in=[user_id, guide_id],
                                                 guide_id__in=[user_id, guide_id],
                                                 in_progress=True).count()
@@ -362,8 +362,8 @@ def update_trip(request):
                 if hasattr(request.POST, 'time') and flag == 'manual':
                     tdelta = request.POST['time']
                 kwargs = dict()
-                kwargs['guide_id'] = user_id
-                kwargs['user_id'] = user_id
+                kwargs['guide_id'] = guide.user.guideprofile.id
+                kwargs['user_id'] = tourist.user.touristprofile.user_id
                 kwargs['start'] = datetime.now()
                 kwargs['number_persons'] = 2
                 print(kwargs)
