@@ -78,7 +78,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @list_route()
     def get_tourist_representation(self, request):
         user = request.user
-        qs = self.get_queryset().filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+        tourist = TouristProfile.objects.get(user=user)
+        qs = self.get_queryset().filter(order__tourist=tourist, is_guide_feedback=True).order_by('-id')
         qs = self.filter_queryset(qs)#it allows to use combination of filters in this view and in filter_class
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
@@ -87,7 +88,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_guide_representation(self, request):
         #requires logged in user
         user = request.user
-        qs = self.get_queryset().filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
+        guide = GuideProfile.objects.get(user=user)
+        qs = self.get_queryset().filter(order__guide=guide, is_tourist_feedback=True).order_by('-id')
         qs = self.filter_queryset(qs)#it allows to use combination of filters in this view and in filter_class
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)

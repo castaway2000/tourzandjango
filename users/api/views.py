@@ -210,7 +210,8 @@ def user_profile(request):
                 user = User.objects.get(id=user_id)
 
                 def get_tourist_representation_by_id(user):
-                    qs = Review.objects.filter(order__tourist__user=user, is_tourist_feedback=True).order_by('-id')
+                    tourist = TouristProfile.objects.get(user=user)
+                    qs = Review.objects.filter(order__tourist=tourist, is_guide_feedback=True).order_by('-id')
                     data = json.loads(serial.serialize('json', qs))
                     for d in data:
                         order = Order.objects.get(id=d['fields']['order'])
@@ -224,7 +225,8 @@ def user_profile(request):
                     return data
 
                 def get_guide_representation_by_id(user):
-                    qs = Review.objects.filter(order__guide__user=user, is_guide_feedback=True).order_by('-id')
+                    gp = GuideProfile.objects.get(user=user)
+                    qs = Review.objects.filter(order__guide=gp, is_tourist_feedback=True).order_by('-id')
                     data = json.loads(serial.serialize('json', qs))
                     for d in data:
                         order = Order.objects.get(id=d['fields']['order'])
