@@ -255,7 +255,6 @@ class GeneralProfile(models.Model):
 
     def get_languages(self):
         user_languages = UserLanguage.objects.filter(user=self.user, is_active=True)
-        print(user_languages)
         #Refactor this!!!
         user_language_native = None
         user_language_second = None
@@ -320,8 +319,8 @@ class GeneralProfile(models.Model):
             interest, created = Interest.objects.get_or_create(name=interest_name.lower())
             user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, defaults={"is_active": True})
             user_interest_ids.append(user_interest.id)
-            print(user_interest_ids)
-            print(user_interest.id)
+            # print(user_interest_ids)
+            # print(user_interest.id)
         UserInterest.objects.filter(user=user).exclude(id__in=user_interest_ids).update(is_active=False)
 
     def set_languages_from_list(self, languages_list):
