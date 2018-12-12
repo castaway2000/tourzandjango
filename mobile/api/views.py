@@ -336,9 +336,15 @@ def update_trip(request):
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=False, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked out'}))
         elif status == 'update_trip':
+            user = request.user
             trip_id = int(request.POST['trip_id'])
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
+            tracker = GeoTracker.objects.get(user=user)
+            tracker.latitude = lat
+            tracker.longitude = long
+            tracker.geo_point = Point(lat, long)
+            tracker.save(force_update=True)
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
@@ -348,9 +354,13 @@ def update_trip(request):
                 cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
                 gtrip = GeoTrip.objects.filter(id=trip_id, in_progress=True)
                 gtrip.update(duration=tdelta.total_seconds(), cost=cost_update)
-                # trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).values()
-                return HttpResponse(json.dumps({'latitude': lat, 'longitude': long, 'trip_status': list(gtrip.values())},
-                                               default=datetime_handler))
+                guide_tracker = GeoTracker.objects.get(guide_id=gtrip[0].guide_id)
+                tourist_tracker = GeoTracker.objects.get(tourist=gtrip[0].user_id)
+                return HttpResponse(json.dumps({'tourist_latitude': tourist_tracker.latitude,
+                                                'tourist_longitude': tourist_tracker.longitude,
+                                                'guide_latitude': guide_tracker.latitude,
+                                                'guide_longitude': guide_tracker.longitude,
+                                                'trip_status': list(gtrip.values())}, default=datetime_handler))
         elif status == 'isAccepted':
             """
             if accepted subscribe to other users channel
