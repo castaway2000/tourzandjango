@@ -18,3 +18,19 @@ class EmailMessageAdmin(admin.ModelAdmin):
         model = EmailMessage
 
 admin.site.register(EmailMessage, EmailMessageAdmin)
+
+
+# class DripMailerAdmin(admin.ModelAdmin):
+#     list_display = [field.name for field in DripMailer._meta.fields]
+#
+#     class Meta:
+#         model = DripMailer
+# admin.site.register(DripMailer, DripMailerAdmin)
+#
+#
+# class DripTypeAdmin(admin.ModelAdmin):
+#     list_display = [field.name for field in DripType._meta.fields]
+#
+#     class Meta:
+#         model = DripType
+# admin.site.register(DripType, DripTypeAdmin)
