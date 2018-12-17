@@ -5,7 +5,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 import django
 django.setup()
 from tours.models import Tour
-from utils.images_resizing import optimize_size
 
 
 def tour_deleted_but_still_active():
@@ -18,4 +17,4 @@ def tour_deleted_but_still_active():
 
 if __name__ == "__main__":
     # populate_uuids()
-    populate_missed_images_for_tours()
+    tour_deleted_but_still_active()
