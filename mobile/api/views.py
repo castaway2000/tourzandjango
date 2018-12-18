@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http.response import HttpResponse
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
@@ -37,10 +38,13 @@ def show_nearby_guides(request):
         range = int(request.POST['range'])
         units = request.POST['units']
         point = Point(long, lat)
-
-        GeoTracker.objects.get_or_create(user_id=user_id)
-        GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
+        print(point)
+        tracker = GeoTracker.objects.get_or_create(user_id=user_id)
+        print(tracker)
+        ref_tracker = GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, latitude=lat, longitude=long)
+        print(ref_tracker)
         field = no_geo_point_fields(GeoTracker)
+        print(field)
         if units == 'km':
             guides = GeoTracker.objects.filter(geo_point__dwithin=(point, D(km=range)),
                                                user__guideprofile__isnull=False,
@@ -150,32 +154,36 @@ def book_guide(request):
 
         user = GeneralProfile.objects.get(user_id=user_id)
         point = Point(long, lat)
-        user_interests = user.user.userinterest_set.values()
-        user_language = user.get_languages()
+        user_interests = [i['interest_id'] for i in user.user.userinterest_set.values()]
+        user_language = [l.language for l in user.get_languages() if l is not None]
         geotracker = GeoTracker.objects.filter(user__in=list_of_guides)\
             .filter(geo_point__dwithin=(point, D(km=50)))\
             .annotate(distance=Distance('geo_point', point))\
             .order_by('distance').values('user_id')
         general_profile = GeneralProfile.objects.filter(user_id__in=geotracker).values()
-        data_set = {'guide': None, 'interest': [], 'interest_size': 0, 'language': None, 'language_size': 0}
         guides = []
         for g in general_profile:
+            data_set = {'guide': None, 'interest': [], 'interest_size': 0, 'language': [], 'language_size': 0}
             gdata = GeneralProfile.objects.get(user_id=g['user_id'])
-            languages = [l for l in gdata.get_languages() if l in user_language]
-            interests = [i for i in gdata.user.userinterest_set.values() if i in user_interests]
+            languages = [l.language for l in gdata.get_languages() if l is not None and l.language in user_language]
+            interests = [i['interest_id'] for i in gdata.user.userinterest_set.values() if i['interest_id'] in user_interests]
             data_set['guide'] = g['user_id']
-            data_set['interest'] = interests
-            data_set['interest_size'] = len(interests)
-            data_set['language'] = languages
-            data_set['language_size'] = len(languages)
+            data_set['interest'].extend(interests)
+            data_set['interest_size'] = len(data_set['interest'])
+            data_set['language'].extend(languages)
+            data_set['language_size'] = len(data_set['language'])
             guides.append(data_set)
-        languages = sorted(guides, key=lambda k: k['language_size'], reverse=True)
-        aggregate = languages[0]
+        sorted_by_languages = sorted(guides, key=lambda k: k['language_size'], reverse=True)
+        print(sorted_by_languages)
+        aggregate = sorted_by_languages[0]
+        for l in sorted_by_languages:
+            if aggregate['language_size'] == 0:
+                if l['interest_size'] > aggregate['interest_size']:
+                    aggregate = l
+            else:
+                if l['interest_size'] > aggregate['interest_size'] and l['language_size'] > 0:
+                    aggregate = l
         print(aggregate)
-        for l in languages:
-            if l['interest_size'] > aggregate['interest_size'] and l['language_size'] > 0:
-                aggregate = l
-                break
         location = GeoTracker.objects.get(user_id=aggregate['guide'])
         guide = GeneralProfile.objects.get(user_id=aggregate['guide']).user.guideprofile
 
@@ -266,7 +274,6 @@ def create_review(request):
 
 @api_view(['POST'])
 def update_trip(request):
-    print("update trip")
     try:
         print(request.POST)
         status = request.POST['status']
@@ -329,9 +336,15 @@ def update_trip(request):
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=False, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked out'}))
         elif status == 'update_trip':
+            user = request.user
             trip_id = int(request.POST['trip_id'])
             lat = float(request.POST['latitude'])
             long = float(request.POST['longitude'])
+            tracker = GeoTracker.objects.get(user=user)
+            tracker.latitude = lat
+            tracker.longitude = long
+            tracker.geo_point = Point(lat, long)
+            tracker.save(force_update=True)
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
@@ -341,10 +354,13 @@ def update_trip(request):
                 cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
                 gtrip = GeoTrip.objects.filter(id=trip_id, in_progress=True)
                 gtrip.update(duration=tdelta.total_seconds(), cost=cost_update)
-                trip_status = GeoTrip.objects.filter(id=trip_id, in_progress=True).values()
-                print(trip_status)
-                return HttpResponse(json.dumps({'latitude': lat, 'longitude': long, 'trip_status': list(trip_status)},
-                                               default=datetime_handler))
+                guide_tracker = GeoTracker.objects.get(guide_id=gtrip[0].guide_id)
+                tourist_tracker = GeoTracker.objects.get(tourist=gtrip[0].user_id)
+                return HttpResponse(json.dumps({'tourist_latitude': tourist_tracker.latitude,
+                                                'tourist_longitude': tourist_tracker.longitude,
+                                                'guide_latitude': guide_tracker.latitude,
+                                                'guide_longitude': guide_tracker.longitude,
+                                                'trip_status': list(gtrip.values())}, default=datetime_handler))
         elif status == 'isAccepted':
             """
             if accepted subscribe to other users channel
@@ -352,19 +368,25 @@ def update_trip(request):
             flag = request.POST['type']
             user_id = int(request.POST['user_id'])
             guide_id = int(request.POST['guide_id'])
-            check_trip = GeoTrip.objects.filter(user_id=user_id, guide_id=guide_id, in_progress=True)
-            if len(check_trip) == 0:  # make sure only one trip is ever accepted at a time.
+            double_t = GeoTrip.objects.filter(user_id=user_id, in_progress=True).count()
+            double_g = GeoTrip.objects.filter(user_id=guide_id, in_progress=True).count()
+            check_trip = GeoTrip.objects.filter(guide_id=guide_id, in_progress=True).count()
+            check_trip_inverse = GeoTrip.objects.filter(guide_id=user_id, in_progress=True).count()
+            trip_progress = GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).count()
+
+            if not check_trip and not check_trip_inverse and not double_g and not double_t and not trip_progress:
+                print(True)# make sure only one trip is ever accepted at a time.
                 tdelta = 0
                 if hasattr(request.POST, 'time') and flag == 'manual':
                     tdelta = request.POST['time']
-                kwargs = dict()
                 guide = GeneralProfile.objects.get(user_id=guide_id)
-                tourist = GeneralProfile.objects.get(user_id=user_id).user.touristprofile.user_id
-
+                tourist = GeneralProfile.objects.get(user_id=user_id)
+                kwargs = dict()
                 kwargs['guide_id'] = guide.user.guideprofile.id
-                kwargs['user_id'] = tourist
+                kwargs['user_id'] = tourist.user.touristprofile.user_id
                 kwargs['start'] = datetime.now()
                 kwargs['number_persons'] = 2
+                print(kwargs)
                 response = Order().create_order(**kwargs)
                 order_id = response["order_id"]
                 order = Order.objects.get(id=order_id)
@@ -372,10 +394,10 @@ def update_trip(request):
                 #In this case "pending" status will be changed to "agreed" status, which can not be true in existing order, because a tour should be approved
                 #by guide as well
                 order.change_status(user_id=user_id, current_role="guide", status_id=2, skip_status_flow_checking=True)
-                GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).update(trip_in_progress=True)
                 trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                         duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                         order_id=order_id)
+                GeoTracker.objects.filter(user_id__in=[trip.user_id, trip.guide_id]).update(trip_in_progress=True)
                 device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.generalprofile.device_id]
                 for device in device_tokens:
                     payload = {
@@ -494,7 +516,7 @@ def update_trip(request):
                                             'tourist_trip_fees': round(order.fees_tourist, 2),
                                             'guide_trip_fees': round(order.fees_guide, 2),
                                             'guide_pay': round(order.guide_payment, 2),
-                                            'isEnded': True}))
+                                            'isEnded': True}, cls=DjangoJSONEncoder))
         return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'incorrect status value'}]}))
     except Exception as err:
         print(err)

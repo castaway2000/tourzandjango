@@ -761,6 +761,7 @@ def tour_deleting(request, tour_id):
     try:
         tour_for_delete = Tour.objects.get(id=tour_id, guide__user=user)
         tour_for_delete.is_deleted = True
+        tour_for_delete.is_active = False
         tour_for_delete.save(force_update=True)
         messages.success(request, 'Tour has been successfully deleted!')
     except:
