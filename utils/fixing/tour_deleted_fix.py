@@ -11,10 +11,10 @@ def tour_deleted_but_still_active():
     tours = Tour.objects.all()
     for tour in tours.iterator():
         if tour.is_deleted is True and tour.is_active is True:
+            print(tour.name)
             tour.is_active = False
             tour.save(force_update=True)
 
 
 if __name__ == "__main__":
-    # populate_uuids()
     tour_deleted_but_still_active()
