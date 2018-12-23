@@ -277,6 +277,8 @@ def update_trip(request):
     try:
         print(request.POST)
         status = request.POST['status']
+        print(status)
+
         if status == 'login' or status == 'update':
             """
             user_id
@@ -365,17 +367,13 @@ def update_trip(request):
             """
             if accepted subscribe to other users channel
             """
+            print(True)
             flag = request.POST['type']
             user_id = int(request.POST['user_id'])
             guide_id = int(request.POST['guide_id'])
-            double_t = GeoTrip.objects.filter(user_id=user_id, in_progress=True).count()
-            double_g = GeoTrip.objects.filter(user_id=guide_id, in_progress=True).count()
-            check_trip = GeoTrip.objects.filter(guide_id=guide_id, in_progress=True).count()
-            check_trip_inverse = GeoTrip.objects.filter(guide_id=user_id, in_progress=True).count()
-            trip_progress = GeoTracker.objects.filter(user_id__in=[user_id, guide_id]).count()
-
-            if not check_trip and not check_trip_inverse and not double_g and not double_t and not trip_progress:
-                print(True)# make sure only one trip is ever accepted at a time.
+            tourist_check = GeoTrip.objects.filter(user_id=user_id, in_progress=True).count()
+            guide_check = GeoTrip.objects.filter(guide_id=guide_id, in_progress=True).count()
+            if not any([guide_check, tourist_check]):
                 tdelta = 0
                 if hasattr(request.POST, 'time') and flag == 'manual':
                     tdelta = request.POST['time']
@@ -397,7 +395,11 @@ def update_trip(request):
                 trip = GeoTrip.objects.update_or_create(user_id=user_id, guide_id=guide_id, in_progress=True,
                                                         duration=0, cost=0, time_flag=flag, time_remaining=tdelta,
                                                         order_id=order_id)
-                GeoTracker.objects.filter(user_id__in=[trip.user_id, trip.guide_id]).update(trip_in_progress=True)
+                trackers = GeoTracker.objects.filter(user_id__in=[trip[0].user_id, trip[0].guide_id])
+                for t in trackers:
+                    t.trip_in_progress = True
+                    t.save(force_update=True)
+
                 device_tokens = [trip[0].user.generalprofile.device_id, trip[0].guide.generalprofile.device_id]
                 for device in device_tokens:
                     payload = {
@@ -429,6 +431,8 @@ def update_trip(request):
                     }
                     push_notify(payload)
                 return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
+            else:
+                return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'one of the users is already in a trip'}]}))
         elif status == 'isCancelled' or status == 'isDeclined':
             """
             token
