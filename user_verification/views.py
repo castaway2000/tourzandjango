@@ -195,9 +195,9 @@ def identity_verification_photo(request):
         f.open(mode='rb')
         files = {'file': (file_name, f, 'image/jpeg')} #('file.py', open('file.py', 'rb'), 'text/plain')
         r = requests.post(url, files=files,  data={"type": last_doc.document_type},  headers=headers)
-        f.close()#closing file after a call with it
-        print( r.json())
-        print ("ID scan was uploaded")
+        f.close() #closing file after a call with it
+        print(r.json())
+        print("ID scan was uploaded")
 
         #live photo uploading
         url = "https://api.onfido.com/v2/live_photos"

@@ -43,6 +43,7 @@ from .permissions import IsUserOwnerOrReadOnly
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from utils.api_helpers import FilterViewSet
+from utils.internalization_wrapper import languages_english
 
 
 class InterestViewSet(viewsets.ModelViewSet, FilterViewSet):
@@ -625,6 +626,13 @@ def get_my_profile_info(request):
 
         if hasattr(gp.user, 'guideprofile'):
             guide_profile = model_to_dict(gp.user.guideprofile)
+            try:
+                guide_profile['city_id'] = gp.user.guideprofile.city.id
+                guide_profile['city'] = gp.user.guideprofile.city.name
+            except Exception:
+                guide_profile['city_id'] = None
+                guide_profile['city'] = None
+
             for k, v in guide_profile.items():
                 if 'image' in k:
                     try:
@@ -638,7 +646,10 @@ def get_my_profile_info(request):
 
         user_languages = UserLanguage.objects.filter(user=user, is_active=True).all()
         for i in user_languages:
-            genp['languages'][str(i.level.name)] = i.language
+            lang = [l[1] for l in languages_english if l[0] == i.language][0]
+            genp['languages'][str(i.level.name)] = lang
+            genp['languages']['{}_language_id'.format(i.level.name)] = i.id
+
 
         data = {'tourist_profile': tp, 'guide_profile': gpd, 'general_profile': genp}
         return Response(data)
