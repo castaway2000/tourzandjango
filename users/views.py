@@ -96,7 +96,9 @@ def home(request):
         obj = HomePageContent.objects.last()
     except:
         obj = None
-    countries = Country.objects.filter(is_active=True).order_by("position_index")[:6]
+    countries = Country.objects.filter(is_active=True).order_by("position_index")
+    cities_count = City.objects.all().count()
+    print(countries.count())
     # special_offers_items = Tour.objects.filter(is_active=True)
     # special_offer_tours = list()
     # count = 0
@@ -119,7 +121,9 @@ def home(request):
     context = {
         "obj": obj,
         "current_page": current_page,
-        "countries": countries,
+        "countries": countries[:6],
+        "countries_count": countries.count(),
+        "cities_count": cities_count,
         "special_offer_tours": special_offer_tours,
     }
     if city:

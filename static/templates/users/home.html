@@ -27,8 +27,8 @@
                             <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
                                 <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
                                     <div class="form-group form-group-lg">
-                                        <label>{% trans 'Type your destination to find tours and local guides' %}</label>
-                                        <input class="typeahead form-control" id="location_search_input" name="location_search_input">
+                                        <label>Tours and local guides in {{ countries_count }} countries and {{ cities_count }} cities.</label>
+                                        <input class="typeahead form-control" id="location_search_input" name="location_search_input" placeholder="Type your destination to find tours and local guides">
                                         <input id="place_id" name="place_id" class="hidden">
                                     </div>
                                 </form>
