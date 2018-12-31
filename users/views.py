@@ -111,7 +111,7 @@ def home(request):
     #             break
     #         count += 1
     partners = IntegrationPartners.objects.filter(is_active=True)
-    featured_news = InTheNews.objects.filter(is_active=True)
+    featured_news = InTheNews.objects.filter(is_active=True)[:3]
     endorsements = Endorsement.objects.filter(is_active=True)
     #
     # now = datetime.datetime.now().date()

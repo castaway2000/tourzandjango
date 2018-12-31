@@ -23,6 +23,7 @@ admin.site.register(PageContent, PageContentAdmin)
 
 class ContactUsMessageAdmin(admin.ModelAdmin):
     list_display = [field.name for field in ContactUsMessage._meta.fields]
+
     class Meta:
             model = ContactUsMessage
 
@@ -31,7 +32,17 @@ admin.site.register(ContactUsMessage, ContactUsMessageAdmin)
 
 class InTheNewsAdmin(admin.ModelAdmin):
     list_display = [field.name for field in InTheNews._meta.fields]
+
     class Meta:
             model = InTheNews
 
 admin.site.register(InTheNews, InTheNewsAdmin)
+
+
+class PressPageAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in PressPage._meta.fields]
+
+    class Meta:
+            model = PressPage
+
+admin.site.register(PressPage, PressPageAdmin)
