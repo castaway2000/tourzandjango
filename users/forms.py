@@ -39,7 +39,9 @@ class VerificationCodeForm(forms.Form):
         # print (self.cleaned_data.get("phone_formatted"))
         phone = self.cleaned_data.get("phone_formatted")
         if user.generalprofile.phone == phone:
-            raise forms.ValidationError("New phone should be different from current phone !")
+            raise forms.ValidationError("New phone should be different from current phone!")
+        if GeneralProfile.objects.filter(phone=phone).exists():
+            raise forms.ValidationError("This phone belongs to other user!")
         return phone
 
 

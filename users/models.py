@@ -20,6 +20,7 @@ from utils.general import uuid_creating, uuid_size_6_creating
 from django.core.cache import cache
 import datetime
 from tourzan.settings import USER_ONLINE_TIMEOUT
+from orders.models import Order
 
 
 def user_login_function(sender, user, **kwargs):

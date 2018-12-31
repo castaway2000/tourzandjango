@@ -25,6 +25,7 @@ from guides.models import GuideService
 from locations.models import City
 from tourzan.settings import ILLEGAL_COUNTRIES
 
+
 if ON_PRODUCTION:
     braintree.Configuration.configure(braintree.Environment.Production,
         merchant_id=BRAINTREE_MERCHANT_ID,
@@ -482,7 +483,7 @@ class Order(models.Model):
                             "Date: {tour_date}".format(persons_nmb=order.number_persons,
                                                          tour_date=order.date_booked_for
                                                          ))
-            chat.create_message(user, message)
+            chat.create_message(user, message, is_automatic=True)
 
             #initial message of the user
             if initial_message:
@@ -823,7 +824,8 @@ saving ratings from review to Order object
 @disable_for_loaddata
 def order_post_save(sender, instance, created, **kwargs):
     if created or int(instance.status_id) != int(instance._original_fields["status"].id):
-        print("changing order status")
+        # instance.status shows old status
+        # only instance.status.id or instance.status_id work
         OrderStatusChangeHistory.objects.create(order=instance, status_id=instance.status_id)
 
     if instance.status_id in [4, "4"]: #completed
@@ -857,7 +859,7 @@ def order_post_save(sender, instance, created, **kwargs):
     else:
         is_guide_saving = False
 
-    if instance._original_fields["status"] and int(instance.status_id) != int(instance._original_fields["status"].id) and int(instance.status_id) != 1:#exclude pending status
+    if created or (instance._original_fields["status"] and int(instance.status_id) != int(instance._original_fields["status"].id)):
         # print ("pre sending")
         data = {"order": instance, "is_guide_saving": is_guide_saving}
         SendingEmail(data).email_for_order()
@@ -910,6 +912,13 @@ class OrderStatusChangeHistory(models.Model):
 def order_status_change_history_post_save(sender, instance, created, **kwargs):
     if created:
         instance.send_notifications()
+
+        # sending sms notification for order status changing
+        #TODO: sending email notification can be also moved here from Order post save method
+        from utils.sending_sms import SendingSMS
+        sms = SendingSMS()
+        sms.send_order_status_change_notification(order=instance.order, status=instance.status)
+
 post_save.connect(order_status_change_history_post_save, sender=OrderStatusChangeHistory)
 
 
