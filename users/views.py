@@ -6,6 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from .forms import *
 from .models import *
 from tours.models import Tour, ScheduledTour
+from partners.models import IntegrationPartners, Endorsement
+from website_management.models import InTheNews
 
 from locations.models import City
 from django.contrib.auth.models import User
@@ -108,15 +110,19 @@ def home(request):
     #         if count == 4:
     #             break
     #         count += 1
+    partners = IntegrationPartners.objects.filter(is_active=True)
+    featured_news = InTheNews.objects.filter(is_active=True)
+    endorsements = Endorsement.objects.filter(is_active=True)
+    #
+    # now = datetime.datetime.now().date()
+    # limit_days = now + datetime.timedelta(days=30)
+    # discount_scheduled_tours = ScheduledTour.objects.filter(is_active=True, seats_available__gt=0, discount__gt=0)
+    # special_offer_tours = list()
+    # for discount_scheduled_tour in discount_scheduled_tours.iterator():
+    #     tour = discount_scheduled_tour.tour
+    #     if not tour in special_offer_tours:
+    #         special_offer_tours.append(tour)
 
-    now = datetime.datetime.now().date()
-    limit_days = now + datetime.timedelta(days=30)
-    discount_scheduled_tours = ScheduledTour.objects.filter(is_active=True, seats_available__gt=0, discount__gt=0)
-    special_offer_tours = list()
-    for discount_scheduled_tour in discount_scheduled_tours.iterator():
-        tour = discount_scheduled_tour.tour
-        if not tour in special_offer_tours:
-            special_offer_tours.append(tour)
 
     context = {
         "obj": obj,
@@ -124,7 +130,10 @@ def home(request):
         "countries": countries[:6],
         "countries_count": countries.count(),
         "cities_count": cities_count,
-        "special_offer_tours": special_offer_tours,
+        # "special_offer_tours": special_offer_tours,
+        "partners": partners,
+        "featured_news": featured_news,
+        "endorsements": endorsements,
     }
     if city:
         context["city"] = city

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import PartnerForm
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from .models import IntegrationPartners
 
 
 # Create your views here.

@@ -48,3 +48,16 @@ class Partner(models.Model):
             SendingEmail(data=data).email_for_partners()
         super(Partner, self).save(*args, **kwargs)
 
+
+class IntegrationPartners(models.Model):
+    name = models.TextField(null=True)
+    url = models.URLField(null=True)
+    logo = models.ImageField(null=True)
+    is_active = models.BooleanField(default=False)
+
+
+class Endorsement(models.Model):
+    name = models.TextField(null=True)
+    url = models.URLField(null=True)
+    logo = models.ImageField(null=True)
+    is_active = models.BooleanField(default=False)
