@@ -4,13 +4,14 @@ from asgiref.sync import async_to_sync
 import datetime
 from django.contrib.auth.models import User
 
+
 class ChatHelper():
     layer = get_channel_layer()
     tourzan_user_name = "Tourzan bot"
     tourzan_user, created = User.objects.get_or_create(username=tourzan_user_name)
 
     def send_order_message_and_notification(self, chat, message):
-        chat.create_message(self.tourzan_user, message)
+        chat.create_message(self.tourzan_user, message, is_automatic=True)
         self.send_order_message(chat, message)
         # send message to general websockets
         uuids = [chat.guide.generalprofile.uuid, chat.tourist.generalprofile.uuid]

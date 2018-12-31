@@ -233,8 +233,8 @@ def general_settings(request):
                 #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
                 phone = data.get("phone_formatted")
 
-                sms = SendingSMS({"phone_to": phone, "user_id": user.id})
-                sms_sending_info = sms.send_validation_sms()
+                sms = SendingSMS()
+                sms_sending_info = sms.send_validation_sms(phone_to=phone, user_id=user.id)
                 if sms_sending_info["status"] == "success":
                     general_profile = user.generalprofile
                     general_profile.phone_pending = phone
