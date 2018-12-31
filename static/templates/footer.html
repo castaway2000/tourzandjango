@@ -40,15 +40,18 @@
             <div class="col-md-3">
                 <ul class="list list-footer">
                     <li>
-                        <a href="{% url 'faq' %}">
-                            {% blocktrans %}Frequently Asked Questions{% endblocktrans %}
+                        <a href="{% url 'waitlist' %}">{% blocktrans %}Mobile App{% endblocktrans %}</a>
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'api_partner_application' %}">{% blocktrans %}API Application{% endblocktrans %}</a>
+                        <a href="{% url 'api_partner_application' %}">{% blocktrans %}Develop with our API{% endblocktrans %}</a>
                     </li>
                     <li>
-                        <a href="{% url 'waitlist' %}">{% blocktrans %}Mobile App{% endblocktrans %}</a>
+                        <a href="{% url 'developer_documentation' %}">{% blocktrans %}Developer Documentation{% endblocktrans %}</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'faq' %}">
+                            {% blocktrans %}Frequently Asked Questions{% endblocktrans %}
                         </a>
                     </li>
                 <br/>
@@ -65,9 +68,17 @@
                     </li>
                     <li><a href="{% url 'tos' %}">{% blocktrans %}Terms of Service{% endblocktrans %}</a>
                     </li>
+                    <li>
+                        <a href="{% url 'press' %}">{% blocktrans %}Press{% endblocktrans %}</a>
+                        </a>
+                    </li>
                     <li><a href="{% url 'about_us' %}">{% blocktrans %}About Us{% endblocktrans %}</a>
                     </li>
-                    <li><a href="{% url 'contact_us' %}">{% blocktrans %}Contact US{% endblocktrans %}</a>
+                <br/>
+                    <li>
+                        <a href="{% url 'contact_us' %}">
+                            <p class="lead">{% blocktrans %}Contact US{% endblocktrans %}</p>
+                        </a>
                     </li>
                 </ul>
             </div>

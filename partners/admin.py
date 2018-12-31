@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Partner
+from .models import Partner, IntegrationPartners, Endorsement
 
 
 class PartnerAdmin(admin.ModelAdmin):
@@ -18,3 +18,21 @@ class PartnerAdmin(admin.ModelAdmin):
             return ""
 
 admin.site.register(Partner, PartnerAdmin)
+
+
+class IntegrationPartnersAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in IntegrationPartners._meta.fields]
+
+    class Meta:
+        model = IntegrationPartners
+
+admin.site.register(IntegrationPartners, IntegrationPartnersAdmin)
+
+
+class EndorsementAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Endorsement._meta.fields]
+
+    class Meta:
+        model = Endorsement
+
+admin.site.register(Endorsement, EndorsementAdmin)
