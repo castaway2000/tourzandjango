@@ -40,6 +40,11 @@ def press(request):
     return render(request, 'website_management/press.html', locals())
 
 
+def developer_documentation(request):
+    developer_docs = PageContent.objects.get(id=6, is_active=True)
+    return render(request, 'website_management/developer_documentation.html', locals())
+
+
 def contact_us(request):
     user = request.user
     if not user.is_anonymous():

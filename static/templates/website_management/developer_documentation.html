@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+    <div class="container">
+        <h1 class="page-title">{% blocktrans %}Developer Documentation{% endblocktrans %}</h1>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <h4>Topics Covered</h4>
+                <ul class="">
+                    <li>
+                       General Overview
+                    </li>
+                    <li>
+                        Requirements
+                    </li>
+                    <li>
+                        API Authentication
+                    </li>
+                    <li>
+                        DropIn UI
+                    </li>
+                    <li>
+                        Endpoints
+                    </li>
+                    <li>
+                        Tracking
+                    </li>
+                    <li>
+                        Ratelimiting
+                    </li>
+                    <li>
+                        POST vs GET
+                    </li>
+                    <li>
+                        Other limitations
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-md-10">
+                <aside class="sidebar-right">
+                    {{ developer_docs.text|safe }}
+                </aside>
+            </div>
+        </div>
+        <div class="gap"></div>
+    </div>
+{% endblock %}
+
+
+
+
