@@ -63,7 +63,7 @@ class SendingEmail(object):
         subject_tourist = None
         subject_guide = None
 
-        if order.status_id in [2, 3, 4, 5, 6]:
+        if order.status_id in [1, 2, 3, 4, 5, 6]:
             if tour:
                 order_naming = '"%s"' % order.tour.name
             else:

@@ -66,3 +66,14 @@ class ContactUsMessage(models.Model):
             return "%s" % self.user.username
         else:
             return "%s" % self.name
+
+
+class InTheNews(models.Model):
+    name = models.CharField(default=None, max_length=128)
+    logo = models.ImageField(null=True)
+    url = models.URLField(null=True)
+    is_active = models.BooleanField(default=False)
+
+
+class PressPage(models.Model):
+    presskit = models.FileField(null=True)

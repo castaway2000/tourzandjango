@@ -6,6 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from .forms import *
 from .models import *
 from tours.models import Tour, ScheduledTour
+from partners.models import IntegrationPartners, Endorsement
+from website_management.models import InTheNews
 
 from locations.models import City
 from django.contrib.auth.models import User
@@ -96,7 +98,9 @@ def home(request):
         obj = HomePageContent.objects.last()
     except:
         obj = None
-    countries = Country.objects.filter(is_active=True).order_by("position_index")[:6]
+    countries = Country.objects.filter(is_active=True).order_by("position_index")
+    cities_count = City.objects.all().count()
+    print(countries.count())
     # special_offers_items = Tour.objects.filter(is_active=True)
     # special_offer_tours = list()
     # count = 0
@@ -106,21 +110,30 @@ def home(request):
     #         if count == 4:
     #             break
     #         count += 1
+    partners = IntegrationPartners.objects.filter(is_active=True)
+    featured_news = InTheNews.objects.filter(is_active=True)[:3]
+    endorsements = Endorsement.objects.filter(is_active=True)
+    #
+    # now = datetime.datetime.now().date()
+    # limit_days = now + datetime.timedelta(days=30)
+    # discount_scheduled_tours = ScheduledTour.objects.filter(is_active=True, seats_available__gt=0, discount__gt=0)
+    # special_offer_tours = list()
+    # for discount_scheduled_tour in discount_scheduled_tours.iterator():
+    #     tour = discount_scheduled_tour.tour
+    #     if not tour in special_offer_tours:
+    #         special_offer_tours.append(tour)
 
-    now = datetime.datetime.now().date()
-    limit_days = now + datetime.timedelta(days=30)
-    discount_scheduled_tours = ScheduledTour.objects.filter(is_active=True, seats_available__gt=0, discount__gt=0)
-    special_offer_tours = list()
-    for discount_scheduled_tour in discount_scheduled_tours.iterator():
-        tour = discount_scheduled_tour.tour
-        if not tour in special_offer_tours:
-            special_offer_tours.append(tour)
 
     context = {
         "obj": obj,
         "current_page": current_page,
-        "countries": countries,
-        "special_offer_tours": special_offer_tours,
+        "countries": countries[:6],
+        "countries_count": countries.count(),
+        "cities_count": cities_count,
+        # "special_offer_tours": special_offer_tours,
+        "partners": partners,
+        "featured_news": featured_news,
+        "endorsements": endorsements,
     }
     if city:
         context["city"] = city
@@ -233,8 +246,8 @@ def general_settings(request):
                 #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
                 phone = data.get("phone_formatted")
 
-                sms = SendingSMS({"phone_to": phone, "user_id": user.id})
-                sms_sending_info = sms.send_validation_sms()
+                sms = SendingSMS()
+                sms_sending_info = sms.send_validation_sms(phone_to=phone, user_id=user.id)
                 if sms_sending_info["status"] == "success":
                     general_profile = user.generalprofile
                     general_profile.phone_pending = phone
