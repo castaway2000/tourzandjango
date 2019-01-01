@@ -9,9 +9,15 @@
 
     <div class="container">
         <div class="col-md-8">
-            <h3><a href="{{ press_kit.presskit.url }}" download rel="nofollow">
-                Click here to download our press kit
-            </a></h3>
+            <h4><a href="{{ press_kit.presskit.url }}" download rel="nofollow">
+                Click here to download our press kit.
+            </a></h4>
+            <h4><a href="{{ brand_assets.presskit.url }}" download rel="nofollow">
+                Click here to download our digital brand assets.
+            </a></h4>
+            <h4><a href="{% url 'blog' %}category/news/">
+                Click here to to read the latest internal news.
+            </a></h4>
         </div>
         <div class="row">
             <div class="col-md-8">
