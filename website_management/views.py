@@ -37,6 +37,7 @@ def press(request):
     press_page = PageContent.objects.get(id=5, is_active=True)
     featured_news = InTheNews.objects.filter(is_active=True)
     press_kit = PressPage.objects.get(id=1)
+    brand_assets = PressPage.objects.get(id=2)
     return render(request, 'website_management/press.html', locals())
 
 
