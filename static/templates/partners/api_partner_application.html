@@ -12,8 +12,12 @@
             <div class="col-md-5">
                 <aside>
                     <p>
-                        {% blocktrans %}To request access to our developer API please fill out the form{% endblocktrans %}
+                        {% blocktrans %}Welcome to the software development API request form!{% endblocktrans %}
                     </p>
+                    <p>
+                        {% blocktrans %}To request access to our developer API please fill out the form.{% endblocktrans %}
+                    </p>
+
                     <p>
                         {% blocktrans %}We will review your application and will be in touch with you soon.{% endblocktrans %}
                     </p>
@@ -90,6 +94,16 @@
                             <textarea required rows="5" maxlength="5000"
                                       name="{{ form.reason_requesting.html_name }}"
                                       class="form-control" >{{ request.POST.reason_requesting }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-icon-left">
+                        <label>{% blocktrans %}What is the daily traffic is your website or app is seeing?{% endblocktrans %}*:</label>
+                        <span class="text-error">{{ form.traffic.errors }}</span>
+                        <div class="div-input-icon">
+                            <i class="fa fa-lock input-icon"></i>
+                            <input required class="form-control" name="{{ form.traffic.html_name }}"
+                                   value="{{ request.POST.traffic }}">
                         </div>
                     </div>
 
