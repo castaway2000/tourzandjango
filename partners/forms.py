@@ -8,6 +8,7 @@ class PartnerForm(forms.ModelForm):
     tax_id = forms.CharField(required=False)
     website = forms.CharField(required=True)
     reason_requesting = forms.CharField(required=True, widget=forms.Textarea)
+    traffic = forms.CharField(required=True)
     requesting_person = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     is_agreed = forms.BooleanField(required=True)
@@ -15,4 +16,4 @@ class PartnerForm(forms.ModelForm):
     class Meta:
         model = Partner
 
-        fields = ("company_name", "billing_address", "tax_id", "website", "reason_requesting", "requesting_person", "email")
+        fields = ("company_name", "billing_address", "tax_id", "website", "reason_requesting", "traffic", "requesting_person", "email")
