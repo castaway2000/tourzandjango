@@ -588,9 +588,12 @@ def get_my_profile_info(request):
         tourist_profile = model_to_dict(gp.user.touristprofile)
         for k, v in tourist_profile.items():
             if k == 'image':
-                tp[k] = gp.user.touristprofile.image.url
-                if hasattr(v, 'url'):
-                    tp[k] = str(v.url) if v.url else ''
+                try:
+                    tp[k] = gp.user.touristprofile.image.url
+                    if hasattr(v, 'url'):
+                        tp[k] = str(v.url) if v.url else ''
+                except:
+                    tp[k] = None
             else:
                 tp[k] = v
         general_profile = model_to_dict(gp)
