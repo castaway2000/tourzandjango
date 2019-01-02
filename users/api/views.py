@@ -376,9 +376,11 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 tp.about = get['about']
                 # if get['profession']:
                 gp.profession = get['profession']
-                if get['dob'] != '0':
+                if get['dob'] != '0' and get['dob'] is not None and get['dob'] != 'null':
                     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
                     gp.date_of_birth = date_of_birth
+                else:
+                    gp.date_of_birth = None
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 tp.save(force_update=True)
@@ -457,9 +459,12 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                     print(err)
                     lat = None
                     lon = None
-                if get['dob'] != '0':
+                if get['dob'] != '0' and get['dob'] is not None and get['dob'] != 'null':
                     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
                     gup.date_of_birth = date_of_birth
+                else:
+                    gup.date_of_birth = None
+
                 gp.first_name = get['first_name']
                 gp.last_name = get['last_name']
                 gup.name = get['first_name']
@@ -646,7 +651,14 @@ def get_my_profile_info(request):
 
         user_languages = UserLanguage.objects.filter(user=user, is_active=True).all()
         for i in user_languages:
-            lang = [l[1] for l in languages_english if l[0] == i.language][0]
+            print(i.language)
+            for l in languages_english:
+                print(l)
+                if i.language == l[0]:
+                    lang = l[1]
+                    break
+            else:
+                lang = i.language
             genp['languages'][str(i.level.name)] = lang
             genp['languages']['{}_language_id'.format(i.level.name)] = i.id
 
