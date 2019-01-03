@@ -7,7 +7,7 @@ urlpatterns = [
 
     url(r'^after_login_router/$', views.after_login_router, name='after_login_router'),
 
-    url(r'^general_settings/$', views.general_settings, name='general_settings'),
+    url(r'^general-settings/$', views.general_settings, name='general_settings'),
     url(r'promotions/$', views.promotions, name='promotions'),
 
     url(r'^set_language/(?P<language>\w+)/$', views.set_language, name='set_language'),

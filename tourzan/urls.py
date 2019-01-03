@@ -46,7 +46,7 @@ def api_urls():
 # views.sitemap(request, sitemaps, section=None, template_name='sitemap.xml', content_type='application/xml')¶
 sitemaps = {'static': StaticSitemap, 'guides': GuideSitemap, 'tours': TourSitemap, 'blogs': BlogSitemap}
 #added here i18n_patterns for localization
-urlpatterns = i18n_patterns(
+urlpatterns = [ #i18n_patterns(
 
     url(r'^adminissomewherethere/', admin.site.urls),
     url(r'^robots\.txt', include('robots.urls')),
@@ -75,10 +75,10 @@ urlpatterns = i18n_patterns(
     url(r'^summernote/', include('django_summernote.urls')),
     url(r'^hijack/', include('hijack.urls', namespace='hijack')),
 
-)\
-              + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-              + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
-              +[
+#)\
+              # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+              # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
+              #+[
                 #for mobiles
                 #to access protected api urls you must include the Authorization: JWT <your_token> header.
                 #https://getblimp.github.io/django-rest-framework-jwt/
@@ -106,8 +106,9 @@ urlpatterns = i18n_patterns(
                 #django-rest-auth
                 url(r'^api/v1/rest-auth/', include('rest_auth.urls')),
                 url(r'^api/v1/rest-auth/registration/', include('rest_auth.registration.urls')),
-
-              ]
+              ]\
+              + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+              + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
