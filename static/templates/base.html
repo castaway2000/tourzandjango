@@ -2,7 +2,7 @@
 {% load hijack_tags %}
 
 <!DOCTYPE HTML>
-<html>
+<html lang="en" xml:lang="en">
 
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
@@ -113,6 +113,15 @@
 {#        modal for writing feedbacks for orders#}
         {% include 'orders/modals/writing_feedback_modal.html' %}
 
+        <script>
+            function init() {
+            var imgDefer = document.getElementsByName('dimg');
+            for (var i=0; i<imgDefer.length; i++) {
+            if(imgDefer[i].getAttribute('data-src')) {
+            imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+            } } }
+            window.onload = init;
+        </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>

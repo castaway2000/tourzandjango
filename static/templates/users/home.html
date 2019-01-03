@@ -112,7 +112,7 @@
                                 <div class="panel-body">
                                     <div>
                                         <a href="{% url 'country_guides' country.slug %}" target="_blank"
-                                        ><img src="{% get_sized_image country "small" %}" alt="{{ country.slug }}"></a>
+                                        ><img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="{% get_sized_image country "small" %}" alt="{{ country.slug }}" name="dimg"></a>
                                     </div>
                                     <div class="mt10">
                                         <h4 class="text-center">
@@ -214,3 +214,6 @@
     </script>
     <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 {% endblock %}
+
+
+<img  data-src="your-image-here">
