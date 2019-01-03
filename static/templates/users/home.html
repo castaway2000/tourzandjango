@@ -19,9 +19,8 @@
                         <img style="display: block; width: 120px; margin-left: auto; margin-right: auto;" class="center" src="{% static 'img/Tourzan-transparant.png' %}" alt="main-logo">
                         <div class="col-lg-8 col-lg-offset-2">
                             <div class="text text-center">
-                                Tourzan.com
-                                <br><br>
-                                {{ obj.motto|safe|linebreaks|default_if_none:"" }}
+                                <h1>Tourzan.com</h1>
+                                <h2>{{ obj.motto|safe|linebreaks|default_if_none:"" }}</h2>
                             </div>
                             <br><br>
                             <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">

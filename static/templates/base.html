@@ -11,7 +11,7 @@
     {% block seo_stuff %}
         <title>Tourzan.com | Experiences and tours with locals.</title>
         <meta name="description" content="The best online marketplace for getting a local experience.
-        Search for local experiences with trusted independent hosts to get the best vacation experience with us">
+        Search for local experiences with trusted hosts to get the best vacation experience with us">
 
     <meta property="og:title" content="Tourzan.com | Experiences and tours with locals" />
     {% if request.user.generalprofile.referral_code %}
@@ -21,7 +21,7 @@
     {% endif %}
     <meta property="og:image" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% static 'img/tourzan_main_image.jpg' %}" />
     <meta property="og:description" content="The best online marketplace for getting a local experience.
-        Search for local experiences with trusted independent hosts to get the best vacation experience with us">
+        Search for local experiences with trusted hosts to get the best vacation experience with us">
 {#    <meta property="og:image:height" content="640" />#}
 {#    <meta property="og:image:width" content="1200" />#}
     <meta property="og:type" content="website" />
