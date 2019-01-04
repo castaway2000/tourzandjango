@@ -56,7 +56,7 @@ class Tour(models.Model):
     hours = models.IntegerField(default=0)
 
     #for Private FIXED price tours
-    persons_nmb_for_min_price = models.IntegerField(default=2)
+    persons_nmb_for_min_price = models.IntegerField(default=1)
     max_persons_nmb = models.IntegerField(default=10)
     additional_person_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
@@ -91,7 +91,6 @@ class Tour(models.Model):
                 self._original_fields[field.name] = getattr(self, field.name)
             except:
                 pass
-
 
     def save(self, *args, **kwargs):
         if not self.payment_type:
@@ -244,10 +243,10 @@ class Tour(models.Model):
                 return []
 
     def get_persons_nmb_for_min_price(self):
-        return self.persons_nmb_for_min_price if self.persons_nmb_for_min_price > 0 else 3
+        return self.persons_nmb_for_min_price if self.persons_nmb_for_min_price > 0 else 1
 
     def get_additional_person_price(self):
-        return self.additional_person_price if self.additional_person_price > 0 else int(self.price_final/self.get_persons_nmb_for_min_price())
+        return self.additional_person_price# if self.additional_person_price > 0 else int(self.price_final/self.get_persons_nmb_for_min_price())
 
     def get_max_persons_nmb(self):
         return self.max_persons_nmb if self.max_persons_nmb > 0 else 5
