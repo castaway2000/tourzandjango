@@ -290,8 +290,8 @@ def tour(request, slug, tour_uuid, tour_new=None):
             # form = BookingPrivateTourForm(request.POST or None, tour=tour, initial={"tour_id": tour.id, "date": now})
             form = BookingPrivateTourForm(request.POST or None, tour=tour, initial={"tour_id": tour.id})
 
-        if request.method=="POST" and form.is_valid():
-            return  making_booking(request)
+        if request.method == "POST" and form.is_valid():
+            return making_booking(request)
 
         if tour_new == "new":
             return render(request, 'tours/tour_new2.html', locals())
@@ -501,7 +501,7 @@ def tour_edit_price(request, slug):
         return HttpResponseRedirect(reverse("tour_edit_general"))
 
     if tour.persons_nmb_for_min_price == 0:
-        tour.persons_nmb_for_min_price = 2
+        tour.persons_nmb_for_min_price = 1
         tour.save(force_update=True)
     if tour.max_persons_nmb == 0:
         tour.max_persons_nmb = 10
