@@ -81,12 +81,10 @@ class SendingSMS(object):
         guide_phone, guide_user_id, tourist_phone, tourist_user_id, tourist_sms_notificatons, guide_sms_notifications = self.get_info_from_order(order)
         #sending to guide
         if guide_phone and guide_sms_notifications:
-            print('firin my sms guide')
             self.sending_sms(message, phone_to=guide_phone, user_id=guide_user_id)
 
         #sending to tourist
         if tourist_phone and tourist_sms_notificatons:
-            print('firin my sms tourist')
             self.sending_sms(message, phone_to=tourist_phone, user_id=tourist_user_id)
         return True
 
@@ -98,7 +96,6 @@ class SendingSMS(object):
         self.subject = "Chat message notification"
         phone_to = user_to.generalprofile.phone
         if phone_to and user_to.generalprofile.sms_notifications:
-            print('firin my sms')
             self.sending_sms(message, phone_to=phone_to, user_id=user_to.id)
         return True
 
