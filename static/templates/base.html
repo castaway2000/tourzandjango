@@ -2,19 +2,18 @@
 {% load hijack_tags %}
 
 <!DOCTYPE HTML>
-<html>
+<html lang="en" xml:lang="en">
 
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% block seo_stuff %}
-        <title>Tourzan.com | Experiences with locals for the most memorable vacation</title>
+        <title>Tourzan.com | Experiences and tours with locals.</title>
         <meta name="description" content="The best online marketplace for getting a local experience.
-        only the best tours by locals, search through our genuine local guides and trusted independent hosts to
-        get the best vacation experience with us">
+        Search for local experiences with trusted hosts to get the best vacation experience with us">
 
-    <meta property="og:title" content="Tourzan.com | Experiences with locals for the most memorable vacation" />
+    <meta property="og:title" content="Tourzan.com | Experiences and tours with locals" />
     {% if request.user.generalprofile.referral_code %}
         <meta property="og:url" content="{{ request.build_absolute_uri }}?ref={{ request.user.generalprofile.referral_code }}" />
     {% else %}
@@ -22,8 +21,7 @@
     {% endif %}
     <meta property="og:image" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% static 'img/tourzan_main_image.jpg' %}" />
     <meta property="og:description" content="The best online marketplace for getting a local experience.
-        only the best tours by locals, search through our genuine local guides and trusted independent hosts to
-        get the best vacation experience with us">
+        Search for local experiences with trusted hosts to get the best vacation experience with us">
 {#    <meta property="og:image:height" content="640" />#}
 {#    <meta property="og:image:width" content="1200" />#}
     <meta property="og:type" content="website" />
@@ -41,17 +39,17 @@
     <!-- End Google Tag Manager -->
 
         {% if subdomain != 'api' %}
-            <!-- Hotjar Tracking Code for https://www.tourzan.com -->
-            <script>
-                (function(h,o,t,j,a,r){
-                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                    h._hjSettings={hjid:1022447,hjsv:6};
-                    a=o.getElementsByTagName('head')[0];
-                    r=o.createElement('script');r.async=1;
-                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                    a.appendChild(r);
-                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-            </script>
+{#            <!-- Hotjar Tracking Code for https://www.tourzan.com -->#}
+{#            <script>#}
+{#                (function(h,o,t,j,a,r){#}
+{#                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};#}
+{#                    h._hjSettings={hjid:1022447,hjsv:6};#}
+{#                    a=o.getElementsByTagName('head')[0];#}
+{#                    r=o.createElement('script');r.async=1;#}
+{#                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;#}
+{#                    a.appendChild(r);#}
+{#                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');#}
+{#            </script>#}
         {% endif %}
     {% endif %}
 
@@ -115,6 +113,15 @@
 {#        modal for writing feedbacks for orders#}
         {% include 'orders/modals/writing_feedback_modal.html' %}
 
+        <script>
+            function init() {
+            var imgDefer = document.getElementsByName('dimg');
+            for (var i=0; i<imgDefer.length; i++) {
+            if(imgDefer[i].getAttribute('data-src')) {
+            imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+            } } }
+            window.onload = init;
+        </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>

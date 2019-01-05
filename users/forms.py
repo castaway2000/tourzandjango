@@ -28,7 +28,6 @@ class VerificationCodeForm(forms.Form):
     sms_code = forms.CharField(required=False)
     phone_formatted = forms.CharField()
 
-
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(VerificationCodeForm, self).__init__(*args, **kwargs)
@@ -80,13 +79,14 @@ class VerificationCodeForm(forms.Form):
 class GeneralProfileAsGuideForm(forms.ModelForm):
     email = forms.EmailField(required=True)
     date_of_birth = forms.DateTimeField(input_formats=['%m.%d.%Y'], widget=forms.DateTimeInput(format='%d/%m/%Y %H:%M:%S'))
+    sms_notifications = forms.BooleanField(required=False, label='Enable text notifications?')
 
     class Meta:
         model = GeneralProfile
         fields = ("first_name", "last_name", "date_of_birth", "registration_country", "registration_state", "registration_city",
                   "registration_street",
                   "registration_building_nmb", "registration_flat_nmb", "registration_postcode", "is_company",
-                  "business_id",
+                  "business_id", "sms_notifications",
                   )
 
     def __init__(self, *args, **kwargs):
@@ -105,10 +105,10 @@ class GeneralProfileAsGuideForm(forms.ModelForm):
 
 class GeneralProfileAsTouristForm(forms.ModelForm):
     email = forms.EmailField(required=True)
-
+    sms_notifications = forms.BooleanField(required=False, label='Enable text notifications?')
     class Meta:
         model = GeneralProfile
-        fields = ("first_name", "last_name")
+        fields = ("first_name", "last_name", "sms_notifications",)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)

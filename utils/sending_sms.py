@@ -42,7 +42,9 @@ class SendingSMS(object):
         guide_user_id = order.guide.user.id
         tourist_phone = order.tourist.user.generalprofile.phone
         tourist_user_id = order.tourist.user.id
-        return (guide_phone, guide_user_id, tourist_phone, tourist_user_id)
+        tourist_sms_notifications = order.tourist.user.generalprofile.sms_notifications
+        guide_sms_notifications = order.guide.user.generalprofile.sms_notifications
+        return (guide_phone, guide_user_id, tourist_phone, tourist_user_id, tourist_sms_notifications, guide_sms_notifications)
 
     def creating_random_string(self):
         random_string = randint(1000, 9999)
@@ -76,13 +78,13 @@ class SendingSMS(object):
             self.order = order
             self.subject = "Order status change"
 
-        guide_phone, guide_user_id, tourist_phone, tourist_user_id = self.get_info_from_order(order)
+        guide_phone, guide_user_id, tourist_phone, tourist_user_id, tourist_sms_notificatons, guide_sms_notifications = self.get_info_from_order(order)
         #sending to guide
-        if guide_phone:
+        if guide_phone and guide_sms_notifications:
             self.sending_sms(message, phone_to=guide_phone, user_id=guide_user_id)
 
         #sending to tourist
-        if tourist_phone:
+        if tourist_phone and tourist_sms_notificatons:
             self.sending_sms(message, phone_to=tourist_phone, user_id=tourist_user_id)
         return True
 
@@ -93,7 +95,7 @@ class SendingSMS(object):
         self.chat = chat
         self.subject = "Chat message notification"
         phone_to = user_to.generalprofile.phone
-        if phone_to:
+        if phone_to and user_to.generalprofile.sms_notifications:
             self.sending_sms(message, phone_to=phone_to, user_id=user_to.id)
         return True
 

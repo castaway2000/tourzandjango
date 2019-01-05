@@ -16,12 +16,11 @@
                      style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;"></div>
                 <div class="bg-front">
                     <div class="row">
-                        <img style="display: block; width: 120px; margin-left: auto; margin-right: auto;" class="center" src="{% static 'img/Tourzan-transparant.png' %}">
+                        <img style="display: block; width: 120px; margin-left: auto; margin-right: auto;" class="center" src="{% static 'img/Tourzan-transparant.png' %}" alt="main-logo">
                         <div class="col-lg-8 col-lg-offset-2">
                             <div class="text text-center">
-                                Tourzan.com
-                                <br><br>
-                                {{ obj.motto|safe|linebreaks|default_if_none:"" }}
+                                <h1>Tourzan.com</h1>
+                                <h2>{{ obj.motto|safe|linebreaks|default_if_none:"" }}</h2>
                             </div>
                             <br><br>
                             <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
@@ -112,7 +111,7 @@
                                 <div class="panel-body">
                                     <div>
                                         <a href="{% url 'country_guides' country.slug %}" target="_blank"
-                                        ><img src="{% get_sized_image country "small" %}"></a>
+                                        ><img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="{% get_sized_image country "small" %}" alt="{{ country.slug }}" name="dimg"></a>
                                     </div>
                                     <div class="mt10">
                                         <h4 class="text-center">
