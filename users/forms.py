@@ -79,7 +79,7 @@ class VerificationCodeForm(forms.Form):
 class GeneralProfileAsGuideForm(forms.ModelForm):
     email = forms.EmailField(required=True)
     date_of_birth = forms.DateTimeField(input_formats=['%m.%d.%Y'], widget=forms.DateTimeInput(format='%d/%m/%Y %H:%M:%S'))
-    sms_notifications = forms.BooleanField(required=False, label='Enable text notifications?', initial=True)
+    sms_notifications = forms.BooleanField(required=False, label='Enable text notifications?')
 
     class Meta:
         model = GeneralProfile
@@ -105,7 +105,7 @@ class GeneralProfileAsGuideForm(forms.ModelForm):
 
 class GeneralProfileAsTouristForm(forms.ModelForm):
     email = forms.EmailField(required=True)
-    sms_notifications = forms.BooleanField(required=False, label='Enable text notifications?', initial=True)
+    sms_notifications = forms.BooleanField(required=False, label='Enable text notifications?')
     class Meta:
         model = GeneralProfile
         fields = ("first_name", "last_name", "sms_notifications",)
