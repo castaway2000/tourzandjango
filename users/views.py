@@ -174,8 +174,6 @@ def general_settings(request):
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':
-        print(request.POST)
-        # print(request.POST['sms_notifications'])
         #GeneralProfile form section
         if form.is_valid():
             new_form = form.save(commit=False)
