@@ -16,19 +16,18 @@
                      style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;"></div>
                 <div class="bg-front">
                     <div class="row">
-                        <img style="display: block; width: 120px; margin-left: auto; margin-right: auto;" class="center" src="{% static 'img/Tourzan-transparant.png' %}">
+                        <img style="display: block; width: 120px; margin-left: auto; margin-right: auto;" class="center" src="{% static 'img/Tourzan-transparant.png' %}" alt="main-logo">
                         <div class="col-lg-8 col-lg-offset-2">
                             <div class="text text-center">
-                                Tourzan.com
-                                <br><br>
-                                {{ obj.motto|safe|linebreaks|default_if_none:"" }}
+                                <h1>Tourzan.com</h1>
+                                <h2>{{ obj.motto|safe|linebreaks|default_if_none:"" }}</h2>
                             </div>
                             <br><br>
                             <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
                                 <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
                                     <div class="form-group form-group-lg">
-                                        <label>{% trans 'Type your destination to find tours and local guides' %}</label>
-                                        <input class="typeahead form-control" id="location_search_input" name="location_search_input">
+                                        <label>Tours and local guides in {{ countries_count }} countries and {{ cities_count }} cities.</label>
+                                        <input class="typeahead form-control" id="location_search_input" name="location_search_input" placeholder="Type your destination to find tours and local guides">
                                         <input id="place_id" name="place_id" class="hidden">
                                     </div>
                                 </form>
@@ -86,15 +85,25 @@
                                 {% trans 'WANT TO BE A GUIDE?' %}
                             </a>
                         </div>
+                        <br/>
+                    </div>
+                    {% if featured_news %}
+                            <div class="col-lg-12">
+                                <h3 class="mb30 text-center">{% trans 'We have been featured In' %}</h3>
+                            </div>
+                        {% include "users/featured_in_news.html" %}
+                        <br/>
+                    {% endif %}
                     </div>
                 </div>
-            </div>
         </section>
         <section class="cities-homepage">
             <div class="container container-equal-items">
+                <br/>
+                <br/>
                 <div class="row">
                     <div class="col-lg-12">
-                        <h3 class="mb30">{% trans 'Available countries' %}</h3>
+                        <h3 class="mb30">{% trans 'Available Countries' %}</h3>
                     </div>
                     {% for country in countries %}
                         <div class="col-lg-4 col-md-4 col-sm-6">
@@ -102,7 +111,7 @@
                                 <div class="panel-body">
                                     <div>
                                         <a href="{% url 'country_guides' country.slug %}" target="_blank"
-                                        ><img src="{% get_sized_image country "small" %}"></a>
+                                        ><img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="{% get_sized_image country "small" %}" alt="{{ country.slug }}" name="dimg"></a>
                                     </div>
                                     <div class="mt10">
                                         <h4 class="text-center">
@@ -126,8 +135,7 @@
                                 </div>
                                 <div class="text-center panel-button">
                                     <a class="btn btn-default"
-                                        href="{% url 'country_guides' country.slug %}" target="_blank"
-                                    >
+                                        href="{% url 'country_guides' country.slug %}" target="_blank">
                                         {% trans 'View details' %}
                                     </a>
                                 </div>
@@ -150,6 +158,36 @@
                 </div>
             </div>
         </section>
+        {% if partners %}
+        <section>
+            <div class="container">
+                <br/>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Our Integration Partners' %}</h3>
+                    </div>
+                </div>
+                {% include "partners/integration_partners.html" %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if endorsements %}
+        <section>
+            <div class="container">
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'We are endorsed by' %}</h3>
+                    </div>
+                </div>
+                {% include "partners/endorsements.html" %}
+            </div>
+        </section>
+        {% endif %}
 {#        {% if special_offer_tours %}#}
 {#            <section class="special-offers">#}
 {#                <div class="container">#}

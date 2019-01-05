@@ -300,14 +300,14 @@ class BookingPrivateTourForm(forms.Form):
             self.helper.layout.append(
                 HTML(
                     '<div class="tour-details-text">'
-                    '<div class="">1-{} {}: {} USD {}</div>'
+                    '<div class="">for {} {}: {} USD {}</div>'
                     '</div>'
                     '<div class="text-center tour-price">{}: <span class="price-value"><span id="price_total">{}</span> USD</span></div>'
                     '<div class="text-center">'
                     '<button name="action" class="btn btn-primary btn-lg" type="submit">'
                     '{}</button>'
                     '</div>'.format(self.persons_nmb_for_min_price, _("persons"),
-                                    remove_zeros_from_float(tour.price_final), _("for all"),
+                                    remove_zeros_from_float(tour.price_final), _(""),
                                     _("Total price"),
                                     tour.price_final, _('Submit'))
                 ),
@@ -316,7 +316,7 @@ class BookingPrivateTourForm(forms.Form):
             self.helper.layout.append(
                 HTML(
                     '<div class="tour-details-text">'
-                    '<div class="">1-{} {}: {} USD {}</div>'
+                    '<div class="">for {} {}: {} USD {}</div>'
                     '<div class="">{}: {} USD {}</div>'
                     '<div class="">{}: {}</div>'
                     '</div>'
@@ -324,7 +324,7 @@ class BookingPrivateTourForm(forms.Form):
                     '<div class="text-center">'
                     '<button name="action" class="btn btn-primary btn-lg" type="submit">'
                     '{}</button>'
-                    '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _("for all"),
+                    '</div>'.format(self.persons_nmb_for_min_price, _("persons"), remove_zeros_from_float(tour.price_final), _(""),
                                     _("Additional people"), remove_zeros_from_float(self.additional_person_price), _("for each person"),
                                     _("Maximum participants"), self.max_persons_nmb,
                                     _("Total price"),
@@ -342,13 +342,15 @@ class BookingPrivateTourForm(forms.Form):
 class PrivateTourPriceForm(forms.ModelForm):
     price = forms.DecimalField(required=True, min_value=1)
     discount = forms.DecimalField(required=True, min_value=0)
-    number_of_persons_for_minimum_price = forms.IntegerField(required=True, min_value=1)
-    maximum_number_of_persons = forms.IntegerField(required=True, min_value=1) #1 person more than persons_nmb_for_min_price
-    price_per_additional_person = forms.DecimalField(required=True, min_value=0)
+    persons_nmb_for_min_price = forms.IntegerField(required=True, min_value=1, label='number of persons for minimum price')
+    max_persons_nmb = forms.IntegerField(required=True, min_value=1, label='maximum number of persons') #1 person more than persons_nmb_for_min_price
+    additional_person_price = forms.DecimalField(required=True, min_value=0, label='price per additional person')
 
     class Meta:
         model = Tour
-        fields = ("price", "number_of_persons_for_minimum_price", "maximum_number_of_persons", "price_per_additional_person", "discount")
+        fields = ("price", "persons_nmb_for_min_price", "max_persons_nmb",
+                  "additional_person_price", "discount")
+
 
     def __init__(self, *args, **kwargs):
         super(PrivateTourPriceForm, self).__init__(*args, **kwargs)
@@ -365,19 +367,17 @@ class PrivateTourPriceForm(forms.ModelForm):
         )
 
     def clean_persons_nmb_for_min_price(self):
-        persons_nmb_for_min_price = self.cleaned_data.get("number_persons_for_min_price")
-        if persons_nmb_for_min_price < 2:
-            raise forms.ValidationError(_("Persons number for minimum price can not be less than 2"))
-        return self.cleaned_data.get("number_persons_for_min_price")
-
+        persons_nmb_for_min_price = self.cleaned_data.get("persons_nmb_for_min_price")
+        if persons_nmb_for_min_price < 1:
+            raise forms.ValidationError(_("Persons number for minimum price can not be less than 1"))
+        return self.cleaned_data.get("persons_nmb_for_min_price")
 
     def clean_max_persons_nmb(self):
-        persons_nmb_for_min_price = self.cleaned_data.get("number_persons_for_min_price")
-        max_persons_nmb = self.cleaned_data.get("max_number_of_persons")
+        persons_nmb_for_min_price = self.cleaned_data.get("persons_nmb_for_min_price")
+        max_persons_nmb = self.cleaned_data.get("max_persons_nmb")
         if persons_nmb_for_min_price > max_persons_nmb:
             raise forms.ValidationError(_("Persons number for minimum price can not be higher than maximum number of people in the tour"))
-        return self.cleaned_data.get("max_number_of_persons")
-
+        return self.cleaned_data.get("max_persons_nmb")
 
     def clean_discount(self):
         price = self.cleaned_data.get("price")

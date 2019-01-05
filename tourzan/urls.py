@@ -106,7 +106,6 @@ urlpatterns = i18n_patterns(
                 #django-rest-auth
                 url(r'^api/v1/rest-auth/', include('rest_auth.urls')),
                 url(r'^api/v1/rest-auth/registration/', include('rest_auth.registration.urls')),
-
               ]
 
 if settings.DEBUG:

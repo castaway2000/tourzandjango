@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="page-title">{% blocktrans %}Press Details{% endblocktrans %}</h1>
+    </div>
+
+    <div class="container">
+        <div class="col-md-8">
+            <h4><a href="{{ press_kit.presskit.url }}" download rel="nofollow">
+                Click here to download our press kit.
+            </a></h4>
+            <h4><a href="{{ brand_assets.presskit.url }}" download rel="nofollow">
+                Click here to download our digital brand assets.
+            </a></h4>
+            <h4><a href="{% url 'blog' %}category/news/">
+                Click here to to read the latest internal news.
+            </a></h4>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <p class="text-bigger">{{ press_page.text |safe }}</p>
+            </div>
+        </div>
+        {% if featured_news %}
+            <section class="platform-description">
+            <div class="col-lg-12">
+                <h3 class="mb30 text-center">{% trans 'We have been featured In' %}</h3>
+            </div>
+            {% include "users/featured_in_news.html" %}
+            <br/>
+            </section>
+        {% endif %}
+        <div class="gap"></div>
+    </div>
+{% endblock %}

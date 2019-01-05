@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^settings/guide/tour/(?P<slug>[-\w]+)/(?P<tour_id>\w+)/$', views.guide_settings_tour_edit,
         name='guide_settings_tour_edit'),
 
-    url(r'^settings/guide/tour_create/$', views.guide_settings_tour_edit_general, name='guide_settings_tour_create'),
+    url(r'^settings/guide/tour-create/$', views.guide_settings_tour_edit_general, name='guide_settings_tour_create'),
 
     url(r'^settings/guide/tour-new/(?P<slug>[-\w]+)/general/$',
         views.guide_settings_tour_edit_general, name='tour_edit_general'),

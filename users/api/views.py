@@ -43,6 +43,7 @@ from .permissions import IsUserOwnerOrReadOnly
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from utils.api_helpers import FilterViewSet
+from utils.internalization_wrapper import languages_english
 
 
 class InterestViewSet(viewsets.ModelViewSet, FilterViewSet):
@@ -375,9 +376,11 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 tp.about = get['about']
                 # if get['profession']:
                 gp.profession = get['profession']
-                if get['dob'] != '0':
+                if get['dob'] != '0' and get['dob'] is not None and get['dob'] != 'null':
                     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
                     gp.date_of_birth = date_of_birth
+                else:
+                    gp.date_of_birth = None
                 uo.save(force_update=True)
                 gp.save(force_update=True)
                 tp.save(force_update=True)
@@ -394,11 +397,16 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
                 if languages:
                     user_language = ast.literal_eval(languages)
+                    active_languages = [ast.literal_eval(languages)]
+                    for i in user_language:
+                        for l in languages_english:
+                            if i['name'] == l[1]:
+                                i['name'] = l[0]
+                                break
                     gp.set_languages_from_list(user_language)
-                active_languages = []
-                for idx, language in enumerate(gp.get_languages()):
-                    if language is not None:
-                        active_languages.append({'name': str(language), 'level': idx+1})
+                # for idx, language in enumerate(gp.get_languages()):
+                #     if language is not None:
+                #         active_languages.append({'name': str(language), 'level': idx+1})
 
                 res = {'id': user.generalprofile.id,
                         'profile_picture': None,
@@ -423,6 +431,7 @@ class EditProfileViewSet(viewsets.ModelViewSet):
             else:
                 return Response({'detail': 'bad credentials'})
         except Exception as err:
+            raise err
             return Response({'error': 400, 'detail': str(err)})
 
     @list_route()
@@ -456,9 +465,12 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                     print(err)
                     lat = None
                     lon = None
-                if get['dob'] != '0':
+                if get['dob'] != '0' and get['dob'] is not None and get['dob'] != 'null':
                     date_of_birth = datetime.datetime.strptime(get['dob'], '%m/%d/%Y')
                     gup.date_of_birth = date_of_birth
+                else:
+                    gup.date_of_birth = None
+
                 gp.first_name = get['first_name']
                 gp.last_name = get['last_name']
                 gup.name = get['first_name']
@@ -480,12 +492,17 @@ class EditProfileViewSet(viewsets.ModelViewSet):
                 languages = get['languages'] #requires format [ {"name": "english", "level": language_level_id} ]
                 if languages:
                     user_language = ast.literal_eval(languages)
+                    active_languages = [ast.literal_eval(languages)]
+                    for i in user_language:
+                        for l in languages_english:
+                            if i['name'] == l[1]:
+                                i['name'] = l[0]
+                                break
                     gp.set_languages_from_list(user_language)
-                active_languages = []
-                for idx, language in enumerate(gp.get_languages()):
-                    if language is not None:
-                        active_languages.append({'name': str(language), 'level': idx+1})
-
+                # active_languages = []
+                # for idx, language in enumerate(gp.get_languages()):
+                #     if language is not None:
+                #         active_languages.append({'name': str(language), 'level': idx+1})
 
                 res = {'id': user.generalprofile.id,
                        'profile_picture': None,
@@ -582,9 +599,12 @@ def get_my_profile_info(request):
         tourist_profile = model_to_dict(gp.user.touristprofile)
         for k, v in tourist_profile.items():
             if k == 'image':
-                tp[k] = gp.user.touristprofile.image.url
-                if hasattr(v, 'url'):
-                    tp[k] = str(v.url) if v.url else ''
+                try:
+                    tp[k] = gp.user.touristprofile.image.url
+                    if hasattr(v, 'url'):
+                        tp[k] = str(v.url) if v.url else ''
+                except:
+                    tp[k] = None
             else:
                 tp[k] = v
         general_profile = model_to_dict(gp)
@@ -625,6 +645,13 @@ def get_my_profile_info(request):
 
         if hasattr(gp.user, 'guideprofile'):
             guide_profile = model_to_dict(gp.user.guideprofile)
+            try:
+                guide_profile['city_id'] = gp.user.guideprofile.city.id
+                guide_profile['city'] = gp.user.guideprofile.city.name
+            except Exception:
+                guide_profile['city_id'] = None
+                guide_profile['city'] = None
+
             for k, v in guide_profile.items():
                 if 'image' in k:
                     try:
@@ -638,7 +665,14 @@ def get_my_profile_info(request):
 
         user_languages = UserLanguage.objects.filter(user=user, is_active=True).all()
         for i in user_languages:
-            genp['languages'][str(i.level.name)] = i.language
+            for l in languages_english:
+                if i.language == l[0]:
+                    lang = l[1]
+                    break
+            else:
+                lang = i.language
+            genp['languages'][str(i.level.name)] = lang
+            genp['languages']['{}_language_id'.format(i.level.name)] = i.id
 
         data = {'tourist_profile': tp, 'guide_profile': gpd, 'general_profile': genp}
         return Response(data)

@@ -1,0 +1,23 @@
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+<div class="row">
+    {% for n in featured_news %}
+        <div class="col-lg-3 col-md-3 col-sm-3">
+                <div class="text-center">
+                <ul class="list-unstyled">
+                    <a href="{{ n.url }}" >
+                        <img alt="{{ n.name }}" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                             data-src="{{n.logo.url}}" style="width: 200px;" name="dimg">
+{#                        <h5>{{ n.name }}</h5>#}
+                    </a>
+                </ul>
+                </div>
+        </div>
+        {% if forloop.counter|divisibleby:5 %}
+            </div>
+            <div class="row">
+        {% endif %}
+    {% endfor %}
+</div>

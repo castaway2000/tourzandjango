@@ -20,6 +20,7 @@ from utils.general import uuid_creating, uuid_size_6_creating
 from django.core.cache import cache
 import datetime
 from tourzan.settings import USER_ONLINE_TIMEOUT
+from orders.models import Order
 
 
 def user_login_function(sender, user, **kwargs):
@@ -144,6 +145,7 @@ class GeneralProfile(models.Model):
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
+    sms_notifications = models.BooleanField(default=False)
     device_id = models.CharField(blank=True, null=True, default=None, max_length=240)
 
     registration_country = models.CharField(max_length=256, blank=True, null=True, choices=COUNTRY_CHOICES)

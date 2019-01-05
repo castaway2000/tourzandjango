@@ -259,7 +259,6 @@
         <div class="col-md-4 col-md-offset-1">
             <h4>{% blocktrans %}Avatar{% endblocktrans %}</h4>
 
-
             <div>
                 {% if user.guideprofile and user.guideprofile.profile_image %}
                     <img src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}" class="img-responsive img-rounded">

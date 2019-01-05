@@ -12,6 +12,7 @@ class Partner(models.Model):
     tax_id = models.CharField(max_length=48, null=True)
     website = models.CharField(max_length=128, blank=True, null=True, default=None)
     reason_requesting = models.TextField(null=True)
+    traffic = models.CharField(max_length=256, null=True)
     requesting_person = models.CharField(max_length=256, null=True)
     email = models.EmailField(null=True)
     is_confirmed = models.BooleanField(default=False)
@@ -48,3 +49,16 @@ class Partner(models.Model):
             SendingEmail(data=data).email_for_partners()
         super(Partner, self).save(*args, **kwargs)
 
+
+class IntegrationPartners(models.Model):
+    name = models.TextField(null=True)
+    url = models.URLField(null=True)
+    logo = models.ImageField(null=True)
+    is_active = models.BooleanField(default=False)
+
+
+class Endorsement(models.Model):
+    name = models.TextField(null=True)
+    url = models.URLField(null=True)
+    logo = models.ImageField(null=True)
+    is_active = models.BooleanField(default=False)
