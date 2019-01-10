@@ -94,12 +94,14 @@
                         <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                             {% for guide_answer in guide_answers %}
                                 {% if guide_answer.image_medium %}
-                                    <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
+                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                         data-src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
                                          alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
                                          class="img-responsive"
                                          title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
                                 {% elif guide_answer.image %}
-                                    <img src="{% get_media_prefix %}{{ guide_answer.image }}"
+                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                         data-src="{% get_media_prefix %}{{ guide_answer.image }}"
                                          alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
                                          class="img-responsive"
                                          title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
@@ -221,12 +223,12 @@
                                     <div class="mb10">
                                         <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
                                             <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                                    {% if tour.image_small %}
-                                                        data-src="{% get_sized_image tour default_size="small" %}"
-                                                    {% else %}
-                                                        data-src="{% static 'img/300x300.png' %}"
-                                                    {% endif %}
-                                                     alt="{{ tour.name }}" title="{{ tour.name }}" />
+                                             {% if tour.image_small %}
+                                                data-src="{% get_sized_image tour default_size="small" %}"
+                                             {% else %}
+                                                data-src="{% static 'img/300x300.png' %}"
+                                             {% endif %}
+                                              alt="{{ tour.name }}" title="{{ tour.name }}" />
                                         </a>
                                         <h5 class="text-center">
                                             <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">{{ tour.name }}</a>
