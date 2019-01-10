@@ -454,9 +454,10 @@ class Order(models.Model):
                     calendar_item_guide.status_id = 1 #booked
                     calendar_item_guide.order = order
                     calendar_item_guide.save(force_update=True)
+
+        illegal_country = False
         try:
             country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-            illegal_country = False
             for i in ILLEGAL_COUNTRIES:
                 if i == country:
                     illegal_country = True
