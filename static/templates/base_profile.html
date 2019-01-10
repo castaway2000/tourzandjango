@@ -16,13 +16,13 @@
                     <aside class="user-profile-sidebar">
                         <div class="user-profile-avatar text-center">
                             {% if request.session.current_role == "guide" %}
-                                <img class=""
-                                 src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}"
+                                <img class="" name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                     data-src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}"
                                  alt="" title="" />
                             {% else %}
                                 {% if user.touristprofile.image %}
-                                    <img class=""
-                                     src="{{ user.touristprofile.image.url }}"
+                                    <img class="" name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                         data-src="{{ user.touristprofile.image.url }}"
                                      alt="" title="" />
                                 {% else %}
                                     <img src="">

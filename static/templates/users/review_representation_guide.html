@@ -7,7 +7,8 @@
     <div class="row">
         <div class="col-lg-2 col-sm-3 col-xs-3">
             <div class="booking-item-review-person">
-                <img src="{{ review.order.tourist.get_avatar }}"/>
+                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                     data-src="{{ review.order.tourist.get_avatar }}"/>
                 <div class="text-center">
                     {% if review.order.tourist.user.generalprofile.first_name %}
                         {{ review.order.tourist.user.generalprofile.first_name }}

@@ -69,7 +69,8 @@
                                 <div class="panel-body">
                                     <div>
                                         <a href="{% url 'city_guides' country_slug city.slug %}" target="_blank">
-                                            <img src="{% get_sized_image city "small" %}">
+                                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                 data-src="{% get_sized_image city "small" %}">
                                         </a>
                                     </div>
                                     <div class="mt10">
