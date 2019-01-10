@@ -271,7 +271,6 @@ def create_review(request):
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
-
 @api_view(['POST'])
 def update_trip(request):
     try:

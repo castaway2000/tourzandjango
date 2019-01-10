@@ -94,14 +94,12 @@
                         <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                             {% for guide_answer in guide_answers %}
                                 {% if guide_answer.image_medium %}
-                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                         data-src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
+                                    <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
                                          alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
                                          class="img-responsive"
                                          title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
                                 {% elif guide_answer.image %}
-                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                         data-src="{% get_media_prefix %}{{ guide_answer.image }}"
+                                    <img src="{% get_media_prefix %}{{ guide_answer.image }}"
                                          alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
                                          class="img-responsive"
                                          title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />

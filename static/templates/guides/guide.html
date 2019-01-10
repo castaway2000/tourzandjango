@@ -34,10 +34,10 @@
                         <div class="col-md-12">
                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                                 {% for photo in photos %}
-                                    <img sname='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                         data-src="{% get_media_prefix %}{{ photo.image }}" alt=""
+                                    <img src="{% get_media_prefix %}{{ photo.image }}"
+                                         alt="Image for booking item"
                                          class="img-responsive"
-                                         title="" />
+                                         title="Image for booking item" />
                                 {% endfor %}
                             </div>
                         </div>

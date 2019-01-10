@@ -454,13 +454,15 @@ class Order(models.Model):
                     calendar_item_guide.status_id = 1 #booked
                     calendar_item_guide.order = order
                     calendar_item_guide.save(force_update=True)
-
-        country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
-        illegal_country = False
-        for i in ILLEGAL_COUNTRIES:
-            if i == country:
-                illegal_country = True
-                break
+        try:
+            country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
+            illegal_country = False
+            for i in ILLEGAL_COUNTRIES:
+                if i == country:
+                    illegal_country = True
+                    break
+        except Exception:
+            pass
         #got rid of returning data for ajax calls
 
         if (order.tour and order.tour.type == "2") or not order.tour:#private tours and guide booking leads to chat page
