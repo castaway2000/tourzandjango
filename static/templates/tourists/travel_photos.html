@@ -18,7 +18,8 @@
                         <div class="col-md-3">
                             <a class="hover-img popup-gallery-image" href="{% get_media_prefix %}{{ travel_photo.image }}"
                                data-effect="mfp-zoom-out">
-                                <img src="{% get_media_prefix %}{{ travel_photo.image }}"
+                                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                     data-src="{% get_media_prefix %}{{ travel_photo.image }}"
                                      alt="Image Alternative text"
                                      title="Gaviota en el Top" />
                                 <i class="fa fa-plus round box-icon-small hover-icon i round"></i>

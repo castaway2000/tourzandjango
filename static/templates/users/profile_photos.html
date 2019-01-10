@@ -24,7 +24,8 @@
                 {% for travel_image in travel_images %}
                     <div class="col-md-3">
                         <a class="hover-img popup-gallery-image" href="{{ travel_image.image.url }}" data-effect="mfp-zoom-out">
-                            <img src="{{ travel_image.image.url }}" alt="" title="" />
+                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                 data-src="{{ travel_image.image.url }}" alt="" title="" />
                         </a>
                     </div>
                 {% endfor %}

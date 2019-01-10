@@ -34,9 +34,10 @@
                         <div class="col-md-12">
                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                                 {% for photo in photos %}
-                                    <img src="{% get_media_prefix %}{{ photo.image }}" alt=""
+                                    <img src="{% get_media_prefix %}{{ photo.image }}"
+                                         alt="Image for booking item"
                                          class="img-responsive"
-                                         title="" />
+                                         title="Image for booking item" />
                                 {% endfor %}
                             </div>
                         </div>
@@ -49,7 +50,8 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     {% if guide.profile_image %}
-                                        <img src="{{ guide.profile_image.url }}" class="img-responsive">
+                                        <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                             data-src="{{ guide.profile_image.url }}" class="img-responsive">
                                     {% endif %}
                                     <div class="mt10 text-center">
                                         {% if guide == request.user.guideprofile %}

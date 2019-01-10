@@ -271,7 +271,6 @@ def create_review(request):
         return HttpResponse(json.dumps({'errors': [{'status': 400, 'detail': str(err)}]}))
 
 
-
 @api_view(['POST'])
 def update_trip(request):
     try:
@@ -350,14 +349,15 @@ def update_trip(request):
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.get(user_id=trip_status.guide_id).user
+            guide_profile = GeneralProfile.objects.get(user_id=trip_status.user.id).user
+
             if hasattr(guide_profile, 'guideprofile'):
                 price = float(guide_profile.guideprofile.rate)
                 cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
                 gtrip = GeoTrip.objects.filter(id=trip_id, in_progress=True)
                 gtrip.update(duration=tdelta.total_seconds(), cost=cost_update)
-                guide_tracker = GeoTracker.objects.get(guide_id=gtrip[0].guide_id)
-                tourist_tracker = GeoTracker.objects.get(tourist=gtrip[0].user_id)
+                guide_tracker = GeoTracker.objects.get(user_id=gtrip[0].guide_id)
+                tourist_tracker = GeoTracker.objects.get(user_id=gtrip[0].user_id)
                 return HttpResponse(json.dumps({'tourist_latitude': tourist_tracker.latitude,
                                                 'tourist_longitude': tourist_tracker.longitude,
                                                 'guide_latitude': guide_tracker.latitude,

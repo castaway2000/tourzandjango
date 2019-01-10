@@ -28,7 +28,8 @@
                         </div>
                         {% if question.answer_object.image  %}
                             <div class="form-group">
-                                <img src="{% get_sized_image question.answer_object default_size="small" %}" class="w100">
+                                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                     data-src="{% get_sized_image question.answer_object default_size="small" %}" class="w100">
                             </div>
                         {% endif %}
                         <div class="form-group">

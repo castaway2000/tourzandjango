@@ -223,7 +223,8 @@
                                         <div class="booking-item-img mb10">
                                             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}">
                                                 {% if guide.profile_image %}
-                                                    <img src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}"/>
+                                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                         data-src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}"/>
 {#                                                {% else %}#}
 {#                                                    <img src="{% static 'img/default_tour_image.jpg' %}">#}
                                                 {% endif %}

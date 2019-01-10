@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from .models import PageContent, InTheNews, PressPage
+from partners.models import Endorsement, IntegrationPartners
 from .forms import ContactUsMessageNotSignedInForm, ContactUsMessageSignedInForm
 from django.contrib import messages
 
@@ -36,6 +37,8 @@ def faq(request):
 def press(request):
     press_page = PageContent.objects.get(id=5, is_active=True)
     featured_news = InTheNews.objects.filter(is_active=True)
+    endorsements = Endorsement.objects.filter(is_active=True)
+    partners = IntegrationPartners.objects.filter(is_active=True)
     press_kit = PressPage.objects.get(id=1)
     brand_assets = PressPage.objects.get(id=2)
     return render(request, 'website_management/press.html', locals())

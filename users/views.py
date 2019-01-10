@@ -110,9 +110,9 @@ def home(request):
     #         if count == 4:
     #             break
     #         count += 1
-    partners = IntegrationPartners.objects.filter(is_active=True)
-    featured_news = InTheNews.objects.filter(is_active=True)[:3]
-    endorsements = Endorsement.objects.filter(is_active=True)
+    partners = IntegrationPartners.objects.filter(is_active=True)[:8]
+    featured_news = InTheNews.objects.filter(is_active=True)[:4]
+    endorsements = Endorsement.objects.filter(is_active=True)[:8]
     #
     # now = datetime.datetime.now().date()
     # limit_days = now + datetime.timedelta(days=30)
