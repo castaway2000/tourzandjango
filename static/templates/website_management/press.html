@@ -27,12 +27,32 @@
         {% if featured_news %}
             <section class="platform-description">
             <div class="col-lg-12">
-                <h3 class="mb30 text-center">{% trans 'We have been featured In' %}</h3>
+                <h3 class="mb30 text-center">{% trans 'We have been featured In:' %}</h3>
             </div>
             {% include "users/featured_in_news.html" %}
             <br/>
             </section>
         {% endif %}
+        {% if endorsements %}
+        <section>
+            <section class="platform-description">
+                <div class="col-lg-12">
+                    <h3 class="mb30">{% trans 'We are endorsed by:' %}</h3>
+                </div>
+                {% include "partners/endorsements.html" %}
+                <br>
+            </section>
+        {% endif %}
+        {% if partners %}
+            <section>
+            <section class="platform-description">
+                <div class="col-lg-12">
+                    <h3 class="mb30">{% trans 'Our services are integrated with:' %}</h3>
+                </div>
+                {% include "partners/integration_partners.html" %}
+            </section>
+        {% endif %}
+
         <div class="gap"></div>
     </div>
 {% endblock %}

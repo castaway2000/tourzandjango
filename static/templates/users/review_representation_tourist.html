@@ -9,7 +9,8 @@
         <div class="col-lg-2 col-sm-3 col-xs-3">
             <div class="booking-item-review-person">
                 <a href="{% url 'guide_new' review.order.guide.user.generalprofile.first_name review.order.guide.user.generalprofile.uuid 'new' %}">
-                    <img src="{% get_sized_image review.order.guide default_size="small" image_base_field_name="profile_image" %}"/>
+                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                         data-src="{% get_sized_image review.order.guide default_size="small" image_base_field_name="profile_image" %}"/>
                     <div class="guide-name">
                         {{ review.order.guide.user.generalprofile.get_name }}
                     </div>

@@ -7,7 +7,8 @@
     <div class="panel-body">
         <div>
             <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
-                <img src="{% get_sized_image tour default_size="small" %}">
+                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                     data-src="{% get_sized_image tour default_size="small" %}">
             </a>
         </div>
         <div class="mt10">

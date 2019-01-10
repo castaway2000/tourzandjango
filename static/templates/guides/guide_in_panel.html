@@ -8,7 +8,8 @@
         <div class="text-center">
             <a href="{% url 'guide_new' guide.user.generalprofile.first_name guide.user.generalprofile.uuid "new" %}"
             target="_blank">
-                <img src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}">
+                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                     data-src="{% get_sized_image guide default_size="small" image_base_field_name="profile_image" %}">
             </a>
         </div>
         <div class="mt10">
