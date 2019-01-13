@@ -102,6 +102,9 @@ class GuideProfile(models.Model):
         if not self.pk and self.user.generalprofile.referred_by:
             self.add_statistics_for_referrer()
 
+        if self._original_fields["city"] != self.city and self.city:
+            # not in save method to prevent triggereing of the logic in save method
+            self.get_tours().update(city=self.city)
 
         if self._original_fields["profile_image"] != self.profile_image or (self.profile_image and (not self.profile_image_large or not self.profile_image_medium or not self.profile_image_small)):
             self.profile_image_small = optimize_size(self.profile_image, "small")
@@ -135,7 +138,7 @@ class GuideProfile(models.Model):
             referred_by.generalprofile.save(force_update=True)
 
     def get_tours(self):
-        return self.tour_set.filter(is_active=True, is_deleted=False)
+        return self.tour_set.filter(is_active=True, is_deleted=False).order_by("-order_priority", "id")
 
     @property
     def guide_rate(self):
@@ -158,6 +161,10 @@ class GuideProfile(models.Model):
             if hasattr(order, "review") and order.review.is_tourist_feedback == True:
                 reviews.append(order.review)
         return reviews
+
+    def get_answers(self):
+        guide_answers = GuideAnswer.objects.filter(guide=self, is_active=True).order_by("-question__order_priority", "question__id")
+        return guide_answers
 
 
 class Service(models.Model):
@@ -191,6 +198,7 @@ class GuideService(models.Model):
 class Question(models.Model):
     text = models.TextField()
     is_active = models.BooleanField(default=True)
+    order_priority = models.IntegerField(default=0)
 
     def __str__(self):
         return "%s" % self.text

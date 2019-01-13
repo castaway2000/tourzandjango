@@ -58,6 +58,7 @@
                                             {% else %}
                                                 <span class="label label-danger label-sm">{% blocktrans %}Not Active{% endblocktrans %}</span>
                                             {% endif %}
+                                            <span class="label label-primary label-sm">Priority: {{ tour.order_priority }}</span>
                                         </div>
                                         <div class="tour-name mt5">
                                             {{ tour.name }}
