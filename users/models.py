@@ -95,6 +95,7 @@ class UserInterest(models.Model):
 
 class LanguageLevel(models.Model):
     name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    order_priority = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
@@ -269,6 +270,10 @@ class GeneralProfile(models.Model):
             else:
                 user_language_second = user_language
         return (user_language_native, user_language_second, user_language_third)
+
+    def get_languages_for_profile(self):
+        user_languages = UserLanguage.objects.filter(user=self.user, is_active=True).order_by("-level__order_priority", "id")
+        return user_languages
 
     def last_seen(self):
         return cache.get('seen_%s' % self.user.id)
