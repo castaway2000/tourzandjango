@@ -313,6 +313,7 @@ def update_trip(request):
                 user_data['trip_in_progress'] = True
             user_data['trip_id'] = trip_id
             return HttpResponse(json.dumps(user_data))
+
         elif status == 'clockin':
             """
             guide_id
@@ -325,6 +326,7 @@ def update_trip(request):
             GeoTracker.objects.get_or_create(user_id=user_id)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=True, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked in'}))
+
         elif status == 'clockout':
             """
             guide_id
@@ -336,6 +338,7 @@ def update_trip(request):
             point = Point(long, lat)
             GeoTracker.objects.filter(user_id=user_id).update(geo_point=point, is_online=False, latitude=lat, longitude=long)
             return HttpResponse(json.dumps({'status': 200, 'detail': 'user clocked out'}))
+
         elif status == 'update_trip':
             user = request.user
             trip_id = int(request.POST['trip_id'])
@@ -349,20 +352,19 @@ def update_trip(request):
             trip_status = GeoTrip.objects.get(id=trip_id, in_progress=True)
             trip_status.save(force_update=True) #AS: it refreshes the time last updated in the db
             tdelta = trip_status.updated - trip_status.created
-            guide_profile = GeneralProfile.objects.get(user_id=trip_status.user.id).user
 
-            if hasattr(guide_profile, 'guideprofile'):
-                price = float(guide_profile.guideprofile.rate)
-                cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
-                gtrip = GeoTrip.objects.filter(id=trip_id, in_progress=True)
-                gtrip.update(duration=tdelta.total_seconds(), cost=cost_update)
-                guide_tracker = GeoTracker.objects.get(user_id=gtrip[0].guide_id)
-                tourist_tracker = GeoTracker.objects.get(user_id=gtrip[0].user_id)
-                return HttpResponse(json.dumps({'tourist_latitude': tourist_tracker.latitude,
-                                                'tourist_longitude': tourist_tracker.longitude,
-                                                'guide_latitude': guide_tracker.latitude,
-                                                'guide_longitude': guide_tracker.longitude,
-                                                'trip_status': list(gtrip.values())}, default=datetime_handler))
+            guide_profile = GeneralProfile.objects.get(user_id=trip_status.guide.id).user
+            price = float(guide_profile.guideprofile.rate)
+            cost_update = round(float(tdelta.total_seconds() / 3600) * price, 2)
+            gtrip = GeoTrip.objects.filter(id=trip_id, in_progress=True)
+            gtrip.update(duration=tdelta.total_seconds(), cost=cost_update)
+            guide_tracker = GeoTracker.objects.get(user_id=gtrip[0].guide_id)
+            tourist_tracker = GeoTracker.objects.get(user_id=gtrip[0].user_id)
+            return HttpResponse(json.dumps({'tourist_latitude': tourist_tracker.latitude,
+                                            'tourist_longitude': tourist_tracker.longitude,
+                                            'guide_latitude': guide_tracker.latitude,
+                                            'guide_longitude': guide_tracker.longitude,
+                                            'trip_status': list(gtrip.values())}, default=datetime_handler))
         elif status == 'isAccepted':
             """
             if accepted subscribe to other users channel
@@ -433,6 +435,7 @@ def update_trip(request):
                 return HttpResponse(json.dumps({'trip_id': trip[0].id, 'order_id': order_id}))
             else:
                 return HttpResponse(json.dumps({'errors': [{'status': 412, 'detail': 'one of the users is already in a trip'}]}))
+
         elif status == 'isCancelled' or status == 'isDeclined':
             """
             token
@@ -453,6 +456,7 @@ def update_trip(request):
                 if response_data["status"] == "success":
                     GeoTracker.objects.filter(user_id__in=[trip.user_id, trip.guide_id]).update(trip_in_progress=False)
             return HttpResponse(json.dumps({'status': status, 'user_id': user_id, 'user_type': user_type}))
+
         elif status == 'ended':
             """
             status

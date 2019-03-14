@@ -7,12 +7,12 @@
 
 
 {% block seo_stuff %}
-    <title>{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}</title>
+    <title>{{ guide.first_name }} - {% trans 'Your guide in' %} {{ guide.city.name }}</title>
 
     <meta name="description" content="{{ guide.overview|remove_newlines }}"/>
     <meta property="og:description" content="{{ guide.overview|remove_newlines }}" />
 
-    <meta property="og:title" content="{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}" />
+    <meta property="og:title" content="{{ guide.first_name }} - {% trans 'Your guide in' %} {{ guide.city.name }}" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:image" content="{{ guide.profile_image_medium.url }}" />
     <meta property="og:image:height" content="640" />
@@ -109,13 +109,7 @@
                             {% endfor %}
                         </div>
                     </div>
-{#                    <div class="location">#}
-{#                        {% if guide.city.name %}#}
-{#                            {{ guide.city.name }}#}
-{#                        {% elif guide.city.original_name %}#}
-{#                            {{ guide.city.original_name }}#}
-{#                        {% endif %}#}
-{#                    </div>#}
+
                     <div class="general-info mt30" id="guide_general_info">
                         <span class="name">{{ guide.user.generalprofile.get_name }}</span>
                         {% if guide.user.generalprofile.age > 0 %}
@@ -213,56 +207,63 @@
 
                     {% endif %}
 
+
                 </div>
                 <div class="mb20">
                     {% with guide.get_tours as guide_tours %}
                         {% if guide_tours %}
                             <h4 class="text-center">{% trans 'My tours' %}</h4>
-                            {% for tour in guide.get_tours %}
-                                <div class="col-lg-4">
-                                    <div class="mb10">
-                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
-                                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                             {% if tour.image_small %}
-                                                data-src="{% get_sized_image tour default_size="small" %}"
-                                             {% else %}
-                                                data-src="{% static 'img/300x300.png' %}"
-                                             {% endif %}
-                                              alt="{{ tour.name }}" title="{{ tour.name }}" />
-                                        </a>
-                                        <h5 class="text-center">
-                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">{{ tour.name }}</a>
-                                        </h5>
-                                        <p>{% trans 'Duration' %}: {{ tour.hours }}
-                                            {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %}</p>
-                                        <p>{% trans 'Price' %}:
-                                            {% if tour.type == "1" %}
-                                                {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
-                                            {% else %}
-                                                {% if tour.payment_type_id == 1 %}
-                                                    {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
-                                                {% elif tour.payment_type_id == 2 %}
-                                                    {% if not tour.discount %}
-                                                        {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
-                                                    {% else %}
-                                                        <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
-                                                        <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
-                                                    {% endif %}
-                                                {% elif tour.payment_type_id == 3 %}
-                                                    {% blocktrans %}Free!{% endblocktrans %}
-                                                {% else  %}
-                                                    {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
-                                                {% endif %}
-                                            {% endif %}
-                                        </p>
-                                        <div class="text-center">
-                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary" target="_blank">
-                                                {% trans 'View Details' %}
+                            <div class="row">
+                                {% for tour in guide.get_tours %}
+                                    <div class="col-lg-4">
+                                        <div class="mb10">
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
+                                                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                 {% if tour.image_small %}
+                                                    data-src="{% get_sized_image tour default_size="small" %}"
+                                                 {% else %}
+                                                    data-src="{% static 'img/300x300.png' %}"
+                                                 {% endif %}
+                                                  alt="{{ tour.name }}" title="{{ tour.name }}" />
                                             </a>
+                                            <h5 class="text-center">
+                                                <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">{{ tour.name }}</a>
+                                            </h5>
+                                            <p>{% trans 'Duration' %}: {{ tour.hours }}
+                                                {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %}</p>
+                                            <p>{% trans 'Price' %}:
+                                                {% if tour.type == "1" %}
+                                                    {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
+                                                {% else %}
+                                                    {% if tour.payment_type_id == 1 %}
+                                                        {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
+                                                    {% elif tour.payment_type_id == 2 %}
+                                                        {% if not tour.discount %}
+                                                            {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                        {% else %}
+                                                            <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
+                                                            <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                        {% endif %}
+                                                    {% elif tour.payment_type_id == 3 %}
+                                                        {% blocktrans %}Free!{% endblocktrans %}
+                                                    {% else  %}
+                                                        {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </p>
+                                            <div class="text-center">
+                                                <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary" target="_blank">
+                                                    {% trans 'View Details' %}
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                    {% if forloop.counter|divisibleby:3 %}
+                                        </div>
+                                        <div class="row">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
                         {% endif %}
                     {% endwith %}
                 </div>
