@@ -3,19 +3,18 @@
 {% load i18n %}
 {% load utils_tags %}
 
-{% block header_stuff %}
-    <title>Tourzan.com | Local Guides to Show You Around.</title>
+{% block seo_stuff %}
+    <title>{% trans "Local Guides to Show You Around. | Tourzan.com"%}</title>
     <meta name="description" content="Travel with a professional local guide who know the best sites
     for your vacation. Avoid the tourist traps with a showaround service or local expert by using Tourzan.">
-
-     <meta property="og:description" content="Travel with a professional local guide who know the best sites
+    <meta property="og:description" content="Travel with a professional local guide who know the best sites
     for your vacation. Avoid the tourist traps with a showaround service or local expert by using Tourzan." />
 
-    <meta property="og:title" content="Tourzan.com | Local Guides to Show You Around." />
+    <meta property="og:title" content="Local Guides to Show You Around. | Tourzan.com" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:type" content="website" />
-
-
+{% endblock %}
+{% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 {% endblock %}
 

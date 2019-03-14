@@ -5,13 +5,13 @@
 
 
 {% block seo_stuff %}
-    <title>{% trans 'Local guides in' %} {{ obj.name }}</title>
+    <title>{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com</title>
     <meta name="description" content="Tourzan is the best showaround service online with only the best tours by locals,
          search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
     <meta property="og:description" content="Tourzan is the best showaround service online with only the best tours by locals,
          search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
 
-    <meta property="og:title" content="{% trans 'Local guides in' %} {{ obj.name }}" />
+    <meta property="og:title" content="{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:image" content="{% get_sized_image obj %}" />
     <meta property="og:image:height" content="640" />
