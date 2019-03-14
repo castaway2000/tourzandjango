@@ -41,6 +41,7 @@ class TourForm(forms.ModelForm):
 
 class TourGeneralForm(forms.ModelForm):
     name = forms.CharField()
+    order_priority = forms.IntegerField(required=False, label=_("Priority (higher priority will be shown first)"))
     overview_short = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 2}))
     overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
     image = forms.ImageField(label=_('Tour main image'),
@@ -52,7 +53,8 @@ class TourGeneralForm(forms.ModelForm):
 
     class Meta:
         model = Tour
-        fields = ("name", "overview_short", "overview", "hours", "included", "excluded", "image", "is_active", "type")
+        fields = ("name", "order_priority", "language", "overview_short", "overview", "hours", "included", "excluded",
+                  "image", "is_active", "type")
 
     def __init__(self, *args, **kwargs):
         super(TourGeneralForm, self).__init__(*args, **kwargs)
@@ -67,10 +69,30 @@ class TourGeneralForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field('is_active'),
             Field('type'),
+            Div(
+                Div(
+                    Field('order_priority'),
+                    css_class="col-lg-4"
+                ),
+                css_class="row"
+            ),
+            Div(
+                Div(
+                    Field('language'),
+                    css_class="col-lg-4"
+                ),
+                css_class="row"
+            ),
+            Div(
+                Div(
+                    Field('hours'),
+                    css_class="col-lg-4"
+                ),
+                css_class="row"
+            ),
             Field('name'),
             Field('overview_short'),
             Field('overview'),
-            Field('hours'),
             Field('included'),
             Field('excluded'),
             Field('image'),

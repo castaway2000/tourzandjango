@@ -5,13 +5,13 @@
 
 
 {% block seo_stuff %}
-    <title>{% trans 'Find guides in' %} {{ obj.name }}</title>
-    <meta name="description" content="Tourzan is the best showaround service online and only the best tours by locals,
+    <title>{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com</title>
+    <meta name="description" content="Tourzan is the best showaround service online with only the best tours by locals,
          search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
-    <meta property="og:description" content="Tourzan is the best showaround service online and only the best tours by locals,
+    <meta property="og:description" content="Tourzan is the best showaround service online with only the best tours by locals,
          search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
 
-    <meta property="og:title" content="{% trans 'Find guides in' %} {{ obj.name }}" />
+    <meta property="og:title" content="{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:image" content="{% get_sized_image obj %}" />
     <meta property="og:image:height" content="640" />
@@ -115,7 +115,7 @@
             <div class="container container-equal-items">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h3>{% trans 'Tours in' %} {{ obj.name }}</h3>
+                        <h3>{% trans 'Tours by locals in' %} {{ obj.name }}</h3>
                         {% with obj.get_average_tour_price as average_tour_price %}
                         {% if average_tour_price %}
                             <div class="mt10 mb10">
@@ -144,7 +144,7 @@
             <div class="container container-equal-items">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h3>{% trans 'Guides in' %} {{ obj.name }}</h3>
+                        <h3>{% trans 'local guides in' %} {{ obj.name }} {% trans 'who can show you around.' %}</h3>
                         {% with obj.get_average_guide_rate as average_guide_rate %}
                         {% if average_guide_rate %}
                             <div class="mt10 mb10">

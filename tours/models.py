@@ -13,6 +13,7 @@ import datetime
 from utils.general import uuid_creating
 from django.utils.translation import ugettext as _
 from django.db.models import Sum, Min, Avg
+from utils.internalization_wrapper import languages_english
 
 
 class PaymentType(models.Model):
@@ -31,6 +32,9 @@ class Tour(models.Model):
         (SCHEDULED, _("Scheduled - this tour must take place with any number of participants on schedule.")),
         (PRIVATE, _("Private - this tour must take place in the custom date and time after your negotiation with a tourist and approve it."))
     )
+
+    order_priority = models.IntegerField(default=0)
+    language = models.CharField(max_length=8, choices=languages_english, null=True)
 
     uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
@@ -105,8 +109,8 @@ class Tour(models.Model):
 
         self.price_final = self.price - self.discount
 
-        if not self.city and self.guide.city:
-            self.city == self.guide.city
+        if self.guide.city:
+            self.city = self.guide.city
 
         if not self.uuid:
             self.uuid = uuid_creating()
@@ -192,7 +196,7 @@ class Tour(models.Model):
         return self.get_nearest_available_dates(30)
 
     def get_tours_images(self):
-        return self.tourimage_set.filter(is_active=True).values()
+        return self.tourimage_set.filter(is_active=True).order_by("id").values()
 
     def get_reviews(self):
         tour_orders = self.order_set.all().order_by("-id")

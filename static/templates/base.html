@@ -9,11 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% block seo_stuff %}
-        <title>Tourzan.com | Experiences and tours with locals.</title>
+        <title>Experiences and tours with locals. | Tourzan.com</title>
         <meta name="description" content="The best online marketplace for getting a local experience.
         Search for local experiences with trusted hosts to get the best vacation experience with us">
 
-    <meta property="og:title" content="Tourzan.com | Experiences and tours with locals" />
+    <meta property="og:title" content="Experiences and tours with locals | Tourzan.com" />
     {% if request.user.generalprofile.referral_code %}
         <meta property="og:url" content="{{ request.build_absolute_uri }}?ref={{ request.user.generalprofile.referral_code }}" />
     {% else %}
