@@ -118,17 +118,17 @@
                             {% trans 'About me' %}
                         </div>
                         <div>
-                            {% with guide.user.generalprofile.get_user_proficient_languages as user_languages %}
+                            {% with guide.user.generalprofile.get_languages_for_profile as user_languages %}
                                 {% if user_languages %}
                                     <div class="mb10">
                                         <div>{% trans 'Languages' %}: </div>
-                                        <div>
-                                            {% for user_language in user_languages %}
-                                                <span class="label label-default label-tag">
-                                                    {{ user_language.get_language_display }}
-                                                </span>
+                                        {% regroup user_languages by level.name as level_names_list %}
+                                        {% for level_name in level_names_list %}
+                                            <b>{{ level_name.grouper|capfirst }}:</b>
+                                            {% for user_language in level_name.list %}
+                                                <span class="label label-success label-tag">{{ user_language.get_language_display }}</span>
                                             {% endfor %}
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 {% endif %}
                             {% endwith %}
@@ -139,7 +139,7 @@
                                         <div>{% trans 'Interests' %}: </div>
                                         <div>
                                             {% for item in user_interests %}
-                                                <span class="label label-default label-tag">
+                                                <span class="label label-success label-tag">
                                                     {{ item.interest.name }}
                                                 </span>
                                             {% endfor %}
@@ -169,7 +169,7 @@
                             {% if guide_answers|length > 1 %}
                                 <div class="images">
                                     <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
-                                        {% for guide_answer in guide_answers.reverse %}
+                                        {% for guide_answer in guide_answers %}
                                             {% if guide_answer.image_medium %}
                                                 <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
                                                      alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
@@ -273,7 +273,7 @@
                                                     <div class="tour-img-container img-container-background"
                                                          style="
                                                         {% if tour.image_small %}
-                                                            background: url(' {% get_sized_image tour default_size="small" %} ')
+                                                            background: url('{% get_sized_image tour default_size="small" %}')
                                                          {% else %}
                                                             background: url('{% static "img/300x300.png" %}')
                                                          {% endif %}
@@ -312,6 +312,10 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% if forloop.counter|divisibleby:3 %}
+                                            </div>
+                                            <div class="row">
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>

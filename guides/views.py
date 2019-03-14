@@ -289,7 +289,8 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
         "guide_services": guide_services
     }
 
-    guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True).order_by("order_priority", "id")
+    guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True)\
+        .order_by("-question__order_priority", "question__id")
     social_app = SocialApp.objects.filter(provider="facebook").last()
     if social_app:
         app_id = social_app.client_id
@@ -478,30 +479,23 @@ def profile_questions_guide(request):
 
     if request.POST:
         guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True).values()
-        print(guide_answers)
         existing_answers_question_ids = [item["question_id"] for item in guide_answers]
-        print(existing_answers_question_ids)
 
         data = request.POST
-        print(data)
         files = request.FILES
         for k, v in data.items():
             if "-" in k:
                 field, question_id = k.split("-")
-                print(field)
                 if field == "answer":
                     question_id = int(question_id)
-                    print(question_id)
-                    print(question_id in existing_answers_question_ids)
-                    if question_id in existing_answers_question_ids or len(v)>0:#if guide answer is already exists or if answer is more than 0 symbols
+                    # if guide answer is already exists or if answer is more than 0 symbols
+                    if question_id in existing_answers_question_ids or len(v)>0:
                         default_kwargs = {"text": v}
-                        print(v)
                         file_name = "file-%s" % question_id
                         if file_name in files:
                             image = files.get(file_name)
                             default_kwargs["image"] = image
                         GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
-
         messages.success(request, _('Successfully updated!'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -514,7 +508,7 @@ def profile_questions_guide(request):
         obj_dict["answer_object"] = answer
         answers_dict[answer.question.id] = obj_dict
 
-    questions = Question.objects.filter(is_active=True)
+    questions = Question.objects.filter(is_active=True).order_by("id")
     questions_list = list()
     for question in questions.iterator():
         obj_dict = dict()
