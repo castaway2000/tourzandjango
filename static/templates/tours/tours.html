@@ -32,17 +32,24 @@
             </li>
         </ul>
     {% endif %}
+        <div class="row">
+            <div class="col">
+                <h2 class="col-lg-12 col-md-8, col-sm-8" style="font-size: 2em;">Find My Local Experience</h2>
+                <p class="col-lg-12 col-md-8, col-sm-8">
+                    Use our custom search filter on this page to sort through hundreds of current local experience options. Filter by hourly or fixed cost pricing, search for specific locations or trusted local guides, view free offers or local experiences sourced through companies, or just plow through the results if you want to dream or get ideas for your next trip abroad. You can click on any of the tour options to learn more about the specifics, who to contact, and the cost. Questions on how it all works? Learn more about Tourzan and using the platform <a rel='canonical' href="{% url 'faq' %}">here.</a>
+                </p>
+            </div>
+        </div>
         <h3 class="booking-title">
             {% if tours_nmb == 0 %}
                 {% blocktrans %}No tours were found{% endblocktrans %}
             {% elif tours_nmb == 1 %}
-                {{ tours_nmb }}  {% blocktrans %}tours by locals{% endblocktrans %}
+                {{ tours_nmb }}  {% blocktrans %}Tours By Locals{% endblocktrans %}
             {% elif tours_nmb > 1 %}
-                {{ tours_nmb }} {% blocktrans %}tours by locals{% endblocktrans %}
+                {{ tours_nmb }} {% blocktrans %}Tours By Locals{% endblocktrans %}
             {% else %}
                 {% blocktrans %}No tours were found{% endblocktrans %}
             {% endif %}
-
         </h3>
         <div class="row">
             <div class="col-md-3">
@@ -334,6 +341,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+                <h1 class="col-lg-12 col-md-8, col-sm-8" style="font-size: 2em;">Local Experiences</h1>
+                <p class="col-lg-12 col-md-8, col-sm-8">
+                    One of the best parts of visiting a new and different part of the world is the chance to meet new people, make new friends, and experience things that you never could at home. That’s why Tourzan is proud of not only the local guides that connect with friendly travelers through our platform, but the plethora of amazing local experiences that our guides offer for you to book for your upcoming vacation. From outdoor excursions ranging from day hikes to week-long safaris for the adventurous traveler, to wining and dining excursions in some of the culinary capitals of the world, our range of local experiences offer memorable moments and trips that fit your travel budget, big or small. Looking for a specific local guide to explore more options that you don’t see here? Then feel free to visit our <a rel="canonical" href="{% url 'guides' %}">local guides</a> page to see the many friendly, experienced, and awesome local tour guides that are ready to host you and help you plan your visit to their homes.
+                </p>
         </div>
         <div class="gap"></div>
     </div>
