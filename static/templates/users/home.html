@@ -78,13 +78,15 @@
         <section class="platform-description">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-                        {{ obj.description|safe|linebreaks|default_if_none:"" }}
-                        <div>
-                            <a rel='nofollow' href="{% url 'guide_registration_welcome' %}">
-                                {% trans 'WANT TO BE A GUIDE?' %}
-                            </a>
-                        </div>
+                    <h1 class="text-center">What Is Tourzan?</h1>
+                    <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+                        <p>At Tourzan, we connect travelers with local guides and local experiences that can take your vacation from good to once-in-a-lifetime. We take pride in connecting travelers with the best local tour guides around the world - like having your own personal concierge service, interactive guide book, and translator all at the same time. Our platform features local guides from over {{ countries_count }} different countries, with new local guides and local experiences added every single day.
+
+
+<br>
+<br>
+Interested in being a local guide and connecting with visitors and tourists in your home country? Tourzan is here for you too! We offer a dynamic platform, absolutely free, for anyone interested in registering and listing their services and experience for our potential travelers. We can help you get your services out to the masses, connect and communicate with new clients from around the world, and offer you a verified and secure method for handling bookings and providing local tour experiences on a bigger scale than ever before.</p>
+{#                        {{ obj.description|safe|linebreaks|default_if_none:"" }}#}
                         <br/>
                     </div>
                     {% if featured_news %}
@@ -94,13 +96,28 @@
                         {% include "users/featured_in_news.html" %}
                         <br/>
                     {% endif %}
-                    </div>
                 </div>
+            </div>
         </section>
+        <section>
+        <div class="container">
+            <div class="row">
+                <h2 class="text-center">Why Choose A Local Guide?</h2>
+                <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+                    <p>
+                        Simply put, Tourzan takes pride in offering travelers unfiltered, off-the-beaten path local experiences no matter where your itinerary and travel plans take you. If you are sick of waiting in lines and dodging out of group photos or selfies, prefer destinations that are secluded, and want to make new friends instead of following someone with a flag through a mob, Tourzan can help you find the right local guide to take your vacation off the grid and into something memorable.
+
+                        Our local guides not only hail from a <a rel="canonical" href="{% url 'all_countries' %}">variety of countries</a> from around the globe, but offer a variety of services and local tour experiences - from airport pickup and experience planning to specific expertise in cultural excursions and local destinations. All of our <a rel="canonical" href="{% url 'guides' %}">guides</a> are fully vetted and verified, and with our personal profile feature, you can get to know them (and they can get to know you) before you even step on the plane, to make your experience more personal.
+                    </p>
+{#                    <br/>#}
+                </div>
+            </div>
+        </div>
+    </section>
         <section class="cities-homepage">
             <div class="container container-equal-items">
-                <br/>
-                <br/>
+{#                <br/>#}
+{#                <br/>#}
                 <div class="row">
                     <div class="col-lg-12">
                         <h3 class="mb30">{% trans 'Available Countries' %}</h3>
@@ -158,12 +175,31 @@
                 </div>
             </div>
         </section>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <h2 class="text-center">Want To Be A Local Tour Guide?</h2>
+                    <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+                        <p>
+                            Awesome! We’d love for you to join our growing community and help you connect with travelers and visitors for you to show around and introduce to your home. It is 100% free for you to join and we can help with initial marketing and publicity for your guide profile. Once you join, you’ll have access to a dynamic personal dashboard to help you manage bookings, communicate with clients, and keep all of your key information in one place. Visit our <a rel="canonical" href="{% url 'guide_registration_welcome' %}">local guide registration</a> page to get started today.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                    <a class="btn btn-primary btn-lg" rel="canonical" href="{% url 'guide_registration_welcome' %}">
+                        {% trans 'Become a guide today' %}
+                    </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
         {% if partners %}
         <section>
             <div class="container">
-                <br/>
-                <br/>
-                <br/>
                 <div class="row">
                     <div class="col-lg-12">
                         <h3 class="mb30">{% trans 'Our Integration Partners' %}</h3>
@@ -186,7 +222,6 @@
                 </div>
                 {% include "partners/endorsements.html" %}
             </div>
-        </section>
         {% endif %}
 {#        {% if special_offer_tours %}#}
 {#            <section class="special-offers">#}
