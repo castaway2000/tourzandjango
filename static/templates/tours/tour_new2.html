@@ -136,7 +136,7 @@
                                 {% trans 'What is included' %}
                             </div>
                             <div>
-                                {{ tour.included|linebreaks }}
+                                {{ tour.included|safe|linebreaks }}
                             </div>
                         </div>
                     </div>
@@ -148,7 +148,7 @@
                                 {% trans 'What is excluded' %}
                             </div>
                             <div>
-                                {{ tour.excluded|linebreaks }}
+                                {{ tour.excluded|safe|linebreaks }}
                             </div>
                         </div>
                     </div>

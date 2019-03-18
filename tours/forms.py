@@ -12,7 +12,28 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from utils.general import remove_zeros_from_float
 import string
+from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
 
+
+class SummernoteWidgetWithCustomToolbar(SummernoteWidget):
+    def template_contexts(self):
+        contexts = super(SummernoteWidgetWithCustomToolbar, self).template_contexts()
+        contexts['toolbar'] = [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['fontsize', ['fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link']]
+        ]
+        return contexts
+
+class SummernoteWidgetWithBullets(SummernoteWidget):
+    def template_contexts(self):
+        contexts = super(SummernoteWidgetWithBullets, self).template_contexts()
+        contexts['toolbar'] = [
+            ['style', ['bold', 'italic', 'clear']],
+            ['para', ['ul', 'ol']]
+        ]
+        return contexts
 
 class PictureWidget(forms.widgets.Widget):
     def render(self, name, value, attrs=None):
@@ -43,12 +64,13 @@ class TourGeneralForm(forms.ModelForm):
     name = forms.CharField()
     order_priority = forms.IntegerField(required=False, label=_("Priority (higher priority will be shown first)"))
     overview_short = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 2}))
-    overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
+    # overview = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5}))
+    overview = forms.CharField(widget=SummernoteWidgetWithCustomToolbar())
     image = forms.ImageField(label=_('Tour main image'),
                              error_messages ={'invalid':_("Image files only")})
     hours = forms.DecimalField(required=True, min_value=1)
-    included = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is included?"))
-    excluded = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label=_("What is excluded?"))
+    included = forms.CharField(required=False, widget=SummernoteWidgetWithBullets(), label=_("What is included?"))
+    excluded = forms.CharField(required=False, widget=SummernoteWidgetWithBullets(), label=_("What is excluded?"))
     type = forms.ChoiceField(choices=Tour().TOUR_TYPES, widget=forms.RadioSelect)
 
     class Meta:
