@@ -3,10 +3,18 @@
 {% load i18n %}
 {% load utils_tags %}
 
-{% block header_stuff %}
-    <title>Tourzan.com | Only local guides can give you the best experience</title>
+{% block seo_stuff %}
+    <title>{% trans "Local Guides to Show You Around. | Tourzan.com"%}</title>
     <meta name="description" content="Travel with a professional local guide who know the best sites
-    for your vacation. Avoid the tourist traps with us">
+    for your vacation. Avoid the tourist traps with a showaround service or local expert by using Tourzan.">
+    <meta property="og:description" content="Travel with a professional local guide who know the best sites
+    for your vacation. Avoid the tourist traps with a showaround service or local expert by using Tourzan." />
+
+    <meta property="og:title" content="Local Guides to Show You Around. | Tourzan.com" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+{% endblock %}
+{% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 {% endblock %}
 
@@ -24,14 +32,20 @@
             </li>
         </ul>
     {% endif %}
+        <div class="row">
+            <h2 class="col-lg-12 col-md-8, col-sm-8" style="font-size: 2em;">How Do I Find My Local Guide?</h2>
+            <p class="col-lg-12 col-md-8, col-sm-8">
+                It’s easy! All of our guides create profile pages that can let you get to know them, the services they provide, the languages they speak, and their interests. This way, you can match yourself (like a dating app for tour guides and travelers) with the best local tour guide for your own interests and travel plans. Our search filter allows you to sort through our hundreds of guides by costs, interests, or locations, or you can simply wander through and get a sense for the awesome people who are ready and waiting to show you around their home. If you want a sense for some of the things our guides can help you do, you can also take a wander over to our <a  rel='canonical' href="{% url 'tours' %}">local experiences</a> page, where you can search through hundreds of experiences around the world that you can book easily and quickly through Tourzan.
+            </p>
+        </div>
         {#        <div class="col-md-7 col-sm-7 col-xs-7">#}
         <h3 class="booking-title">
             {% if items_nmb == 0 %}
                 {% blocktrans %}No guides were found{% endblocktrans %}
             {% elif items_nmb == 1 %}
-                {{ items_nmb }}  {% blocktrans %}guide was found!{% endblocktrans %}
+                {{ items_nmb }}  {% blocktrans %}Local Guides To Show You Around{% endblocktrans %}
             {% elif items_nmb > 1 %}
-                {{ items_nmb }} {% blocktrans %}guides were found{% endblocktrans %}
+                {{ items_nmb }} {% blocktrans %}Local Guides To Show You Around{% endblocktrans %}
             {% else %}
                 {% blocktrans %}No guides were found{% endblocktrans %}
             {% endif %}
@@ -378,6 +392,10 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <h1 class="col-lg-12 col-md-8, col-sm-8" style="font-size: 2em;">Local Guides</h1>
+            <p class="col-lg-12 col-md-8, col-sm-8">
+            Tourzan takes pride in connecting travelers with local guides who know their home better than any big tour company ever could. For travelers looking to experience something new, original, or just find someone to help them get away from the crowds and lines at the tourist traps, finding the best local guide can be the key that unlocks an incredible vacation. Even better, with our platform, not only can you search through hundreds of local guides based in locations all over the world, but our vetting and verification process ensures that you when you book, you will get a guide you can trust and fully relax and enjoy your vacation.        </div>
         <div class="gap"></div>
     </div>
 {% endblock %}

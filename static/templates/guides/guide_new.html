@@ -7,12 +7,12 @@
 
 
 {% block seo_stuff %}
-    <title>{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}</title>
+    <title>{{ guide.first_name }} - {% trans 'Your guide in' %} {{ guide.city.name }}</title>
 
     <meta name="description" content="{{ guide.overview|remove_newlines }}"/>
     <meta property="og:description" content="{{ guide.overview|remove_newlines }}" />
 
-    <meta property="og:title" content="{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}" />
+    <meta property="og:title" content="{{ guide.first_name }} - {% trans 'Your guide in' %} {{ guide.city.name }}" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:image" content="{{ guide.profile_image_medium.url }}" />
     <meta property="og:image:height" content="640" />
