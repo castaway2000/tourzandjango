@@ -102,7 +102,7 @@ class GuideProfile(models.Model):
         if not self.pk and self.user.generalprofile.referred_by:
             self.add_statistics_for_referrer()
 
-        if self._original_fields["city"] != self.city and self.city:
+        if self.pk and self._original_fields["city"] != self.city and self.city:
             # not in save method to prevent triggereing of the logic in save method
             self.get_tours().update(city=self.city)
 
