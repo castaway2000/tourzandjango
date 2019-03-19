@@ -103,7 +103,7 @@ class GuideProfile(models.Model):
             self.add_statistics_for_referrer()
 
         if self.pk and self._original_fields["city"] != self.city and self.city:
-            # not in save method to prevent triggereing of the logic in save method
+            # not in save method to prevent triggering of the logic in save method
             self.get_tours().update(city=self.city)
 
         if self._original_fields["profile_image"] != self.profile_image or (self.profile_image and (not self.profile_image_large or not self.profile_image_medium or not self.profile_image_small)):
