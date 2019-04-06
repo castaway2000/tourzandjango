@@ -22,6 +22,21 @@
                     <h3 class="text-center">{% trans 'Thank you' %}!</h3>
                     {% if not order.coupon and not order.discount > 0 and not order.tour.is_free %}
                         <h5 class="text-center">{% trans 'The payment has been successfully reserved' %}</h5>
+                        <script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+                        <script>
+                          window.renderOptIn = function() {
+                            window.gapi.load('surveyoptin', function() {
+                              window.gapi.surveyoptin.render(
+                                {
+                                  "merchant_id": 133867904,
+                                  "order_id": {{ order.uuid }},
+                                  "email": {{ tourist_email }},
+                                  "delivery_country": {{ order.guide.city.country }},
+                                  "estimated_delivery_date": {{ order.date_booked_for }}
+                                });
+                            });
+                          }
+                        </script>
                     {% else %}
                     {% endif %}
 
@@ -68,7 +83,7 @@
                             <div class="text-center">
                                 <form class="" method="post" >{% csrf_token %}
                                     <div class="form-group">
-                                        <h3>{% trans 'Please click a button below to confirm booking' %}</h3>
+                                        <h3>{% trans 'Please click a button below to confirm your booking' %}</h3>
                                     </div>
                                     <div class="mb10">
                                         <p>
@@ -82,11 +97,8 @@
                             </div>
                         {% endif %}
                     {% endif %}
-
                 {% endif %}
-
             </div>
-
         </div>
     </div>
 
