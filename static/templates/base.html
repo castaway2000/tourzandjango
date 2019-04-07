@@ -10,7 +10,7 @@
 
     {% block seo_stuff %}
         <title>Experiences and tours with locals. | Tourzan.com</title>
-        <meta name="description" content="The best online marketplace for getting a local experience.
+        <meta name="description" content="The best online marketplace for booking tours by locals.
         Search for local experiences with trusted hosts to get the best vacation experience with us">
 
     <meta property="og:title" content="Experiences and tours with locals | Tourzan.com" />
@@ -20,12 +20,12 @@
         <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     {% endif %}
     <meta property="og:image" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% static 'img/tourzan_main_image.jpg' %}" />
-    <meta property="og:description" content="The best online marketplace for getting a local experience.
+    <meta property="og:description" content="The best online marketplace for booking tours by locals.
         Search for local experiences with trusted hosts to get the best vacation experience with us">
 {#    <meta property="og:image:height" content="640" />#}
 {#    <meta property="og:image:width" content="1200" />#}
     <meta property="og:type" content="website" />
-    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" hreflang="en" />
 
     {% endblock seo_stuff %}
     {% if on_prod %}
@@ -58,27 +58,27 @@
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
     <!-- GOOGLE FONTS -->
-    <link href='//fonts.googleapis.com/css?family=Roboto:400,300,100,500,700' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Roboto:400,300,100,500,700' rel='stylesheet' type='text/css' hreflang="en">
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css' hreflang="en">
 
     <!-- /GOOGLE FONTS -->
 {#    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">#}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" hreflang="en">
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
-    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/icomoon.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/icomoon.css" hreflang="en">
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" hreflang="en">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" hreflang="en">
 
-    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/styles.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/styles.css" hreflang="en">
 
-    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css">
-    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css" hreflang="en">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css" hreflang="en">
 
-    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" hreflang="en" />
 
-    <link rel="stylesheet" href="{% static 'css/mystyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mystyles.css' %}" hreflang="en">
     <script src='https://www.google.com/recaptcha/api.js'></script>
     {% block header_stuff %}
     {% endblock %}
