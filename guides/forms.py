@@ -31,11 +31,11 @@ class BookingGuideForm(forms.Form):
     date = forms.DateTimeField(required=True, widget=forms.TimeInput(format='%m/%d/%Y %H:%M'), label=_("Propose date and time"))
     guide_id = forms.ChoiceField(required=True)
     hours = forms.IntegerField(required=True, min_value=1)
-    number_people = forms.IntegerField(required=True, min_value=2)
+    number_people = forms.IntegerField(required=True, min_value=1)
     message = forms.CharField(required=False, widget=forms.Textarea({"rows": 3}), label=_("Your initial message to guide"))
 
     def __init__(self, *args, **kwargs):
-        self.max_persons_nmb = 3
+        self.max_persons_nmb = 30
         guide = kwargs.pop("guide")
         self.guide = guide
 
