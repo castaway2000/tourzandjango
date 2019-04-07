@@ -86,6 +86,17 @@
                 <h4>{% blocktrans %}Have Questions?{% endblocktrans %}</h4>
                 <h4><a href="mailto:contactus@tourzan.com" class="text-color">contactus@tourzan.com</a></h4>
                 <p>{% blocktrans %}Dedicated customer support will make sure your needs are met{% endblocktrans %}</p>
+
+                <script src="https://apis.google.com/js/platform.js?onload=renderBadge" async defer></script>
+                <script>
+                  window.renderBadge = function() {
+                    var ratingBadgeContainer = document.createElement("div");
+                    document.body.appendChild(ratingBadgeContainer);
+                    window.gapi.load('ratingbadge', function() {
+                      window.gapi.ratingbadge.render(ratingBadgeContainer, {"merchant_id": 133867904});
+                    });
+                  }
+                </script>
             </div>
 
         </div>

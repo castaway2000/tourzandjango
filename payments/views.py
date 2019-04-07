@@ -148,10 +148,8 @@ def order_payment_checkout(request, order_uuid):
         if message:
             chat_message = ChatMessage.objects.create(chat=chat, message=message, user=user)
         if not illegal_country:
-            print(555)
-            print(order.tour.type)
+            tourist_email = order.tourist.user.email
             if order.tour and order.tour.type == "1":  # scheduled tour -> pay full amount from the beginning
-                print(1)
                 payment_processed = order.make_payment(user.id, True)
             else:
                 payment_processed = order.reserve_payment(user.id)  # method on order model
