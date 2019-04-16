@@ -104,28 +104,28 @@ class Country(models.Model):
 
     def get_absolute_url(self):
         # return reverse('guides', kwargs={'name': self.name, 'uuid': self.uuid, 'overview': 'overview'})
-        return '/guides/in/{}/'.format(self.name.lower()).replace(' ', '%20')
+        return '/guides/in/{}/'.format(self.name).replace(' ', '%20').lower()
 
     def get_country_tourism_url(self):
-        return '/{}-tourism/'.format(self.name.lower()).replace(' ', '-')
+        return '/{}-tourism/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_visit_country_url(self):
-        return '/visit-{}/'.format(self.name.lower()).replace(' ', '-')
+        return '/visit-{}/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_country_travel_guide_url(self):
-        return '/{}-travel-guide/'.format(self.name.lower()).replace(' ', '-')
+        return '/{}-travel-guide/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_country_guided_tours_url(self):
-        return '/{}-guided-tours/'.format(self.name.lower()).replace(' ', '-')
+        return '/{}-guided-tours/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_guided_tours_of_country_url(self):
-        return '/guided-tours-of-{}/'.format(self.name.lower()).replace(' ', '-')
+        return '/guided-tours-of-{}/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_private_tours_of_country_url(self):
-        return '/private-tours-of-{}/'.format(self.name.lower()).replace(' ', '-')
+        return '/private-tours-of-{}/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_country_tours_url(self):
-        return '/{}-tours/'.format(self.name.lower()).replace(' ', '-')
+        return '/{}-tours/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
 
 
@@ -272,25 +272,25 @@ class City(models.Model):
         return '/guides/in/{}/{}/'.format(self.country, self.name).lower().replace(' - ', '-').replace(', ', '-').replace(' ', '-')
 
     def get_city_tourism_url(self):
-        return '/{}-tourism/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/{}-tourism/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_visit_city_url(self):
-        return '/visit-{}/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/visit-{}/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_city_travel_guide_url(self):
-        return '/{}-travel-guide/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/{}-travel-guide/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_city_guided_tours_url(self):
-        return '/{}-guided-tours/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/{}-guided-tours/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_guided_tours_of_city_url(self):
-        return '/guided-tours-of-{}/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/guided-tours-of-{}/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_private_tours_of_city_url(self):
-        return '/private-tours-of-{}/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/private-tours-of-{}/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
     def get_city_tours_url(self):
-        return '/{}-tours/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+        return '/{}-tours/'.format(self.name).replace(' - ', '-').replace(', ', '-').replace(' ', '-').lower()
 
 
 #cities, countries currencies are needed to be remade for using external packages later
