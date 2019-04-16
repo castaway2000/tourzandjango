@@ -33,7 +33,7 @@ from .api_router import SharedAPIRootRouter
 from axes.decorators import watch_login
 from django.contrib.auth.views import login as admin_login
 
-from .sitemaps import BlogSitemap, TourSitemap, GuideSitemap, StaticSitemap
+from .sitemaps import BlogSitemap, TourSitemap, GuideSitemap, StaticSitemap, CountrySitemap, CitySitemap
 
 schema_view = get_schema_view(title='Pastebin API')
 
@@ -44,7 +44,7 @@ def api_urls():
     return SharedAPIRootRouter.shared_router.urls
 
 # views.sitemap(request, sitemaps, section=None, template_name='sitemap.xml', content_type='application/xml')¶
-sitemaps = {'static': StaticSitemap, 'guides': GuideSitemap, 'tours': TourSitemap, 'blogs': BlogSitemap}
+sitemaps = {'static': StaticSitemap, 'guides': GuideSitemap, 'tours': TourSitemap, 'blogs': BlogSitemap, 'cities': CitySitemap, 'countries': CountrySitemap}
 #added here i18n_patterns for localization
 urlpatterns = i18n_patterns(
 
