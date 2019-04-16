@@ -168,6 +168,21 @@ class Tour(models.Model):
         # return reverse('tour', kwargs={'name': self.name, 'tour_id': self.id})
         return '/tour/%s/%s/' % (self.slug, self.id)
 
+    def get_tours_by_locals_url(self):
+        return '/tours-by-locals/'
+
+    def get_affordable_tours_url(self):
+        return '/affordable-tours/'
+
+    def get_toursbylocals_url(self):
+        return '/toursbylocals/'
+
+    def get_tour_companies_url(self):
+        return '/tour-companies/'
+
+    def get_guided_travel_tours_url(self):
+        return '/guided-travel-tours/'
+
     def get_included_items(self):
         included_items = self.tourincludeditem_set.filter(is_active=True).order_by("order_priority", "id")
         return included_items

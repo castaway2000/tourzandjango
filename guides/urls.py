@@ -3,6 +3,14 @@ from . import views
 
 urlpatterns = [
     url(r'^guides/$', views.guides, name='guides'),
+    # SEO purposes
+    url(r'^local-tour-guide/$', views.guides, name='local_tour_guides'),
+    url(r'^world-travel-guide/$', views.guides, name='world_travel_guide'),
+    url(r'^private-tour-guide/$', views.guides, name='private_tour_guide'),
+    url(r'^private-guide/$', views.guides, name='private_guide'),
+    url(r'^travel-tour-guide/$', views.guides, name='travel_tour_guide'),
+    url(r'^tour-guide/$', views.guides, name='tour_guide'),
+
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/$', views.guide, name='guide'),
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/(?P<new_view>\w+)/$', views.guide,
         name='guide_new'),
