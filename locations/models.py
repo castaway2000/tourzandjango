@@ -102,6 +102,32 @@ class Country(models.Model):
     def get_blog_posts(self):
         return self.blogpost_set.filter(is_active=True)
 
+    def get_absolute_url(self):
+        # return reverse('guides', kwargs={'name': self.name, 'uuid': self.uuid, 'overview': 'overview'})
+        return '/guides/in/{}/'.format(self.name.lower()).replace(' ', '%20')
+
+    def get_country_tourism_url(self):
+        return '/{}-tourism/'.format(self.name.lower()).replace(' ', '-')
+
+    def get_visit_country_url(self):
+        return '/visit-{}/'.format(self.name.lower()).replace(' ', '-')
+
+    def get_country_travel_guide_url(self):
+        return '/{}-travel-guide/'.format(self.name.lower()).replace(' ', '-')
+
+    def get_country_guided_tours_url(self):
+        return '/{}-guided-tours/'.format(self.name.lower()).replace(' ', '-')
+
+    def get_guided_tours_of_country_url(self):
+        return '/guided-tours-of-{}/'.format(self.name.lower()).replace(' ', '-')
+
+    def get_private_tours_of_country_url(self):
+        return '/private-tours-of-{}/'.format(self.name.lower()).replace(' ', '-')
+
+    def get_country_tours_url(self):
+        return '/{}-tours/'.format(self.name.lower()).replace(' ', '-')
+
+
 
 class City(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True, default=None)
@@ -240,6 +266,31 @@ class City(models.Model):
 
     def get_blog_posts(self):
         return self.blogpost_set.filter(is_active=True)
+
+    def get_absolute_url(self):
+        # return reverse('guides', kwargs={'name': self.name, 'uuid': self.uuid, 'overview': 'overview'})
+        return '/guides/in/{}/{}/'.format(self.country, self.name).lower().replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_city_tourism_url(self):
+        return '/{}-tourism/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_visit_city_url(self):
+        return '/visit-{}/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_city_travel_guide_url(self):
+        return '/{}-travel-guide/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_city_guided_tours_url(self):
+        return '/{}-guided-tours/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_guided_tours_of_city_url(self):
+        return '/guided-tours-of-{}/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_private_tours_of_city_url(self):
+        return '/private-tours-of-{}/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
+
+    def get_city_tours_url(self):
+        return '/{}-tours/'.format(self.name.lower()).replace(' - ', '-').replace(', ', '-').replace(' ', '-')
 
 
 #cities, countries currencies are needed to be remade for using external packages later

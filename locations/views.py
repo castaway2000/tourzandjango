@@ -37,7 +37,7 @@ def all_countries(request):
     return render(request, 'locations/all_countries.html', locals())
 
 
-def location_guides(request, country_slug, city_slug=None):
+def location_guides(request, country_slug=None, city_slug=None):
     kwargs = dict()
     if city_slug:
         kwargs["slug"] = city_slug
@@ -46,6 +46,27 @@ def location_guides(request, country_slug, city_slug=None):
     else:
         kwargs["slug"] = country_slug
         obj = get_object_or_404(Country, **kwargs)
+    return render(request, 'locations/location_guides.html', locals())
+
+
+def country_city_guides(request, country_slug):
+    kwargs = dict()
+    try:
+        kwargs["slug"] = country_slug
+        obj = get_object_or_404(Country, **kwargs)
+    except:
+        kwargs["slug"] = str(country_slug).lower()
+        country = City.objects.filter(slug=country_slug)[0].country.name
+        kwargs["country__slug"] = str(country).lower()
+        obj = get_object_or_404(City, **kwargs)
+    return render(request, 'locations/location_guides.html', locals())
+
+
+def machu_picchu(request):
+    kwargs = dict()
+    kwargs["slug"] = 'cusco'
+    kwargs["country__slug"] = 'peru'
+    obj = get_object_or_404(Country, **kwargs)
     return render(request, 'locations/location_guides.html', locals())
 
 

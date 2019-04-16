@@ -3,6 +3,12 @@ from . import views
 
 urlpatterns = [
     url(r'^tours/$', views.tours, name='tours'),
+    # SEO purposes
+    url(r'^tours-by-locals/$', views.tours, name='tours_by_locals'),
+    url(r'^affordable-tours/$', views.tours, name='affordable_tours'),
+    url(r'^toursbylocals/$', views.tours, name='toursbylocals'),
+    url(r'^tour-companies/$', views.tours, name='tour_companies'),
+    url(r'^guided-travel-tours/$', views.tours, name='guided_travel_tours'),
 
     url(r'^tour/(?P<slug>[-\w]+)/(?P<tour_id>\w+)/$', views.tour, name='tour'),
     url(r'^tour/(?P<slug>[-\w]+)/(?P<tour_uuid>\w+)/(?P<tour_new>\w+)/$', views.tour, name='tour_new'),
