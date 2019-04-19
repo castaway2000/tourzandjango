@@ -97,7 +97,10 @@
                                     <i class="fa fa-user"></i>{% blocktrans %}Guide Profile Questions{% endblocktrans %}</a>
                                 </li>
                                 <li {% if page == "identity_verification" %}class="active"{% endif %}>
-                                    <a href="{% url 'identity_verification_router' %}">
+{#                                    <a href="{% url 'identity_verification_router' %}" #}
+                                    <a data-balloon="Identity Verifications are undergoing updates.
+                                    In the mean time if you are interested in getting a verified badge
+                                    please send your tour guide licence along with your username to customer support." data-balloon-length='large' data-balloon-pos="down-right">
                                         <i class="fa fa-cog"></i>{% blocktrans %}Identity verification{% endblocktrans %}
                                     </a>
                                 </li>

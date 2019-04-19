@@ -36,14 +36,14 @@ class TourSitemap(Sitemap):
     priority = 0.8
 
     def items(self):
-        return Tour.objects.all()
+        return Tour.objects.filter(is_active=True)
 
 class GuideSitemap(Sitemap):
     changefreq = "daily"
     priority = 0.9
 
     def items(self):
-        return GuideProfile.objects.all()
+        return GuideProfile.objects.filter(is_active=True)
 
 
 class CitySitemap(Sitemap):

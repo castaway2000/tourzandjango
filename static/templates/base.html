@@ -26,7 +26,36 @@
 {#    <meta property="og:image:width" content="1200" />#}
     <meta property="og:type" content="website" />
     <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" hreflang="en" />
-
+    <script type="application/ld+json">
+    {
+       "@context": "http://schema.org",
+       "@type": "Organization",
+       "name": "Tourzan",
+       "url": "https://www.tourzan.com/en/",
+       "logo": "https://www.tourzan.com/static/img/Tourzan-transparant.png",
+       "contactPoint": [
+           {
+               "@type": "ContactPoint",
+               "telephone": "+1(844)8433815",
+               "contactType": "customer service",
+               "email": "contactus@tourzan.com",
+               "areaServed": [
+                   "Worldwide"
+               ],
+               "availableLanguage": [
+                   "English"
+               ]
+           }
+       ],
+       "sameAs": [
+           "https://www.instagram.com/tourzanhq/",
+           "https://twitter.com/tourzanhq",
+           "https://www.facebook.com/tourzanHQ/",
+           "https://www.linkedin.com/company/tourzan-com/",
+           "https://www.youtube.com/channel/UCFjdoTb1c5G0D_e2P7sm9GQ"
+       ]
+    }
+    </script>
     {% endblock seo_stuff %}
     {% if on_prod %}
 
@@ -76,7 +105,9 @@
     <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css" hreflang="en">
     <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css" hreflang="en">
 
-    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" hreflang="en" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" hreflang="en" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css">
 
     <link rel="stylesheet" href="{% static 'css/mystyles.css' %}" hreflang="en">
     <script src='https://www.google.com/recaptcha/api.js'></script>
