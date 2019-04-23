@@ -647,7 +647,8 @@ a{
 }
 
 .top-area.show-onload{
-    min-height: 700px;
+    /*min-height: 700px;*/
+    max-height: 450px;
 }
 
 .navbar-brand{
@@ -1494,6 +1495,10 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     color: #565656;;
 }
 
+.top-area {
+    max-height: 450px;
+}
+
 .homepage-hero .bg-img{
     background-color: white!important;
 }
@@ -1687,7 +1692,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
 @media (max-width:992px) {
 
     .top-area{
-        height: 700px;
+        height: 450px;
     }
 
     .top-area p{
