@@ -1499,6 +1499,10 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     max-height: 450px;
 }
 
+.top-area-home{
+    max-height: 550px;
+}
+
 .homepage-hero .bg-img{
     background-color: white!important;
 }
