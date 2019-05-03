@@ -43,14 +43,20 @@ def location_guides(request, country_slug=None, city_slug=None):
         kwargs["slug"] = city_slug
         kwargs["country__slug"] = country_slug
         obj = get_object_or_404(City, **kwargs)
+        meta_title = obj.meta_title
+        meta_descr = obj.meta_description
     else:
         kwargs["slug"] = country_slug
         obj = get_object_or_404(Country, **kwargs)
+        meta_title = obj.meta_title
+        meta_descr = obj.meta_description
     return render(request, 'locations/location_guides.html', locals())
 
 
 def country_city_guides(request, country_slug):
     kwargs = dict()
+
+
     try:
         kwargs["slug"] = country_slug
         obj = get_object_or_404(Country, **kwargs)

@@ -5,13 +5,26 @@
 
 
 {% block seo_stuff %}
-    <title>{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com</title>
-    <meta name="description" content="Tourzan is the best showaround service online with only the best tours by locals,
-         search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
-    <meta property="og:description" content="Tourzan is the best showaround service online with only the best tours by locals,
-         search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
+    {% if meta_title %}
+        <title>{{ meta_title }}</title>
+        <meta property="og:title" content="{{ meta_title }}" />
+        <meta name="description" content="{{ meta_descr }}">
+        <meta property="og:description" content="{{ meta_descr }}" />
+    {% else %}
+        <title>{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com</title>
+        <meta property="og:title" content="{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com" />
+    {% endif %}
 
-    <meta property="og:title" content="{% trans 'Local guides in' %} {{ obj.name }} | Tourzan.com" />
+    {% if meta_descr %}
+        <meta name="description" content="{{ meta_descr }}">
+        <meta property="og:description" content="{{ meta_descr }}" />
+    {% else %}
+        <meta name="description" content="Tourzan is the best showaround service online with only the best tours by locals,
+             search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
+        <meta property="og:description" content="Tourzan is the best showaround service online with only the best tours by locals,
+             search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
+    {% endif %}
+
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:image" content="{% get_sized_image obj %}" />
     <meta property="og:image:height" content="640" />
