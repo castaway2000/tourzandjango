@@ -49,6 +49,8 @@ class Country(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(blank=True, null=True, default=random_string_creating)
     description = models.TextField(blank=True, null=True)
+    meta_title = models.TextField(blank=True, null=True)
+    meta_description = models.TextField(blank=True, null=True)
     position_index = models.IntegerField(default=0)
     place_id = models.CharField(max_length=128)
     is_featured = models.BooleanField(default=False)#for showing on Homepage
@@ -134,6 +136,8 @@ class City(models.Model):
     slug = models.SlugField(blank=True, null=True, default=random_string_creating)
     country = models.ForeignKey(Country, blank=True, null=True, default=None)
     description = models.TextField(blank=True, null=True)
+    meta_title = models.TextField(blank=True, null=True)
+    meta_description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to=upload_path_handler_city, blank=True, null=True, default=None)
     image_large = models.ImageField(upload_to=upload_path_handler_city_large, blank=True, null=True, default=None)
     image_medium = models.ImageField(upload_to=upload_path_handler_city_medium, blank=True, null=True, default=None)

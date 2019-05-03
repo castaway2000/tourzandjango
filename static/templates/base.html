@@ -9,11 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% block seo_stuff %}
-        <title>Experiences and tours with locals. | Tourzan.com</title>
-        <meta name="description" content="The best online marketplace for booking tours by locals.
-        Search for local experiences with trusted hosts to get the best vacation experience with us">
+        <title>Find The Best Local Tour Guides Globally at Tourzan.com</title>
+        <meta name="description" content="We are one of the most affordable private local tour guide companies
+        connecting travelers with local guides across {{ countries_count|default:301 }} countries and
+        {{ cities_count|default:309 }} cities.">
 
-    <meta property="og:title" content="Experiences and tours with locals | Tourzan.com" />
+    <meta property="og:title" content="Find The Best Local Tour Guides Globally at Tourzan.com" />
     {% if request.user.generalprofile.referral_code %}
         <meta property="og:url" content="{{ request.build_absolute_uri }}?ref={{ request.user.generalprofile.referral_code }}" />
     {% else %}
