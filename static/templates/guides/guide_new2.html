@@ -7,10 +7,10 @@
 
 
 {% block seo_stuff %}
-    <title>{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}</title>
+    <title>{{ guide.first_name }} - {% trans 'your local tour guide in' %} {{ guide.city.name }}</title>
 
-    <meta name="description" content="{{ guide.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}"/>
-    <meta property="og:description" content="{{ guide.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}" />
+    <meta name="description" content="{{ guide.overview|remove_newlines|truncatewords_html:80|default_if_none:""}}"/>
+    <meta property="og:description" content="{{ guide.overview|remove_newlines|truncatewords_html:80|default_if_none:"" }}" />
 
     <meta property="og:title" content="{{ guide.first_name }} - {% trans 'your guide in' %} {{ guide.city.name }}" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />

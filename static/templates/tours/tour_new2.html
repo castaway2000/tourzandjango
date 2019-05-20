@@ -12,8 +12,8 @@
         <meta name="description" content="{{ tour.overview_short|remove_newlines }}"/>
         <meta property="og:description" content="{{ tour.overview_short|remove_newlines }}" />
     {% else %}
-        <meta name="description" content="{{ tour.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}"/>
-        <meta property="og:description" content="{{ tour.overview|remove_newlines|truncatewords_html:20|default_if_none:"" }}" />
+        <meta name="description" content="{{ tour.overview|remove_newlines|truncatewords_html:80|default_if_none:"" }}"/>
+        <meta property="og:description" content="{{ tour.overview|remove_newlines|truncatewords_html:80|default_if_none:"" }}" />
     {% endif %}
 
     <meta property="og:title" content="{% trans 'Tour in' %} {{ tour.city.name }}: {{ tour.name }}" />
