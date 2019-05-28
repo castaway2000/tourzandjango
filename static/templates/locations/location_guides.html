@@ -74,7 +74,7 @@
             <div class="container container-equal-items">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h3>{% trans 'Find tours and private guides in the following cities' %}</h3>
+                        <h1 class="h3">{% trans 'Find tours and private guides in the following cities' %}</h1>
                     </div>
                     {% for city in cities %}
                         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
@@ -128,7 +128,7 @@
             <div class="container container-equal-items">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h3>{% trans 'Tours by locals in' %} {{ obj.name }}</h3>
+                        <h1 class="h3">{% trans 'Tours by locals in' %} {{ obj.name }}</h1>
                         {% with obj.get_average_tour_price as average_tour_price %}
                         {% if average_tour_price %}
                             <div class="mt10 mb10">

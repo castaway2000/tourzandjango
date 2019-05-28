@@ -28,6 +28,7 @@ from users.api.views import login_api_view, signup_api_view, get_jwt_user, user_
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from rest_framework.schemas import get_schema_view
 from rest_framework.documentation import include_docs_urls
+from allauth.account.views import confirm_email
 
 from .api_router import SharedAPIRootRouter
 from axes.decorators import watch_login
@@ -106,6 +107,8 @@ urlpatterns = i18n_patterns(
                 #django-rest-auth
                 url(r'^api/v1/rest-auth/', include('rest_auth.urls')),
                 url(r'^api/v1/rest-auth/registration/', include('rest_auth.registration.urls')),
+                url(r"^rest-auth/registration/account-confirm-email/(?P<key>[\s\d\w().+-_',:&]+)/$", confirm_email,
+                    name="account_confirm_email"),
               ]
 
 if settings.DEBUG:

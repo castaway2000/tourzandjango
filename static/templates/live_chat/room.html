@@ -82,7 +82,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="text-left">
-                                    <a data-toggle="collapse" href="#emoticons_container" role="button">{% trans 'smiles' %}</a>
+                                    <a data-toggle="collapse" href="#emoticons_container" role="button">{% trans 'emoji' %}</a>
                                 </div>
                                 <div id="emoticons_container" class="emoticons-container collapse">
                                     {% emoticons_index as emoticons_list %}
@@ -94,6 +94,12 @@
                             <div class="form-group text-right">
                                 {% trans 'Press ctrl+Enter or "Submit" button to send a message' %}
                                 <button id="chat_message_submit_btn" type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Submit{% endblocktrans %}</button>
+                                <a data-balloon="Sometimes people can be slow to reply. please keep a look out for notifications from us in your email.
+                            Please feel free to contact more than one guide in the area if you are looking to book a guide.
+                            Solicitations other than consumer bookings through tourzan are not welcome on tourzan and will cause immediate ban."
+                               data-balloon-length='large' data-balloon-pos="up">
+                                <i class="fa fa-info-circle"></i>
+                            </a>
                             </div>
                         </form>
                     </div>

@@ -24,9 +24,8 @@
         <div class="col-lg-7">
             {% if guide %}
                 <div class="mt20">
-                    <h4>{% trans 'Attention! We are swithcing to a new style of profile page.' %}</h4>
                     <div>
-                        {% trans 'It represents you in a more personal way.' %}
+                        {% trans 'Your profile now represents you in a more personal way.' %}
                         {% trans 'check out and answer a few' %} <a rel=nofollow href="{% url 'profile_questions_guide' %}" target="_blank">{% trans 'guide profile questions.' %}</a>
                     </div>
                 </div>
@@ -120,12 +119,14 @@
             </div>
 
             <div class="form-group form-group-icon-left">
-                <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %} *:
+                <label>{% blocktrans %}Hourly rate{% endblocktrans %}, {% blocktrans %}USD/hour{% endblocktrans %}* <a data-balloon="An hourly rate is required to be booked out individually. If you would like to not be individually booked out please set your profile to not be visible." data-balloon-length='large' data-balloon-pos="right">
+                        <i class="fa fa-info-circle"></i>
+                    </a>:
                     <p id="average-rate"></p>
                     <span class="text-error">{{ form.rate.errors }}</span>
                 </label>
                 <div class="div-input-icon">
-                    <i class="fa fa-money input-icon"></i>
+                <i class="fa fa-money input-icon" aria-hidden="true"></i>
                     <input required type="number" min="0" step="1" name="{{ form.rate.html_name }}" class="form-control w100"
                         {% if request.POST.rate %}
                            value="{{ request.POST.rate|safe }}"
@@ -133,9 +134,12 @@
                            value="{{ guide.rate|safe }}"
                         {% endif %}
                     >
+                    </i>
                 </div>
                 <div class="form-group form-group-icon-left">
-                    <label>{% blocktrans %}Min hours{% endblocktrans %}*:
+                    <label>{% blocktrans %}Min hours{% endblocktrans %}* <a data-balloon="This is the minimum number of hours you are willing to accept for an hourly booking." data-balloon-length='large' data-balloon-pos="right">
+                        <i class="fa fa-info-circle"></i>
+                    </a>:
                         <span class="text-error">{{ form.min_hours.errors }}</span>
                     </label>
                     <div class="div-input-icon">
@@ -159,7 +163,10 @@
             </div>
 
             <div class="form-group form-group-icon-left">
-                <label>{% blocktrans %}Date of birth{% endblocktrans %}*:</label>
+                <label>{% blocktrans %}Date of birth{% endblocktrans %}* <a data-balloon="For legal purposes we require that every guide is at least 18 years of age." data-balloon-length='large' data-balloon-pos="right">
+                        <i class="fa fa-info-circle"></i>
+                    </a>:
+                </label>
                 <span class="text-error">{{ form.date_of_birth.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-lock input-icon"></i>
@@ -176,7 +183,10 @@
             </div>
 
             <div class="form-group">
-                <label>{% blocktrans %}Interests{% endblocktrans %}*:</label>
+                <label>{% blocktrans %}Interests{% endblocktrans %}* <a data-balloon="Setting interests like food, walking, history, etc. will help you standout and connect to travelers who are filtering their search for a guide." data-balloon-length='large' data-balloon-pos="right">
+                        <i class="fa fa-info-circle"></i>
+                    </a>:
+                </label>
 
                 <select required multiple class="form-control select2"
                     id="interest_input" name="interests"
@@ -189,13 +199,21 @@
             </div>
 
             <div class="form-group form-group-icon-left">
-                <label>{% blocktrans %}Overview{% endblocktrans %}*:</label>
+                <label>{% blocktrans %}Overview{% endblocktrans %}* <a data-balloon="Get creative with your overview, standout with injecting some personality. This is going to represent your initial public interaction with a tourist. We reccomend a minumum of 400 words with a greeting at the beginning and personalize it with your hobbies and aspirations." data-balloon-length='large' data-balloon-pos="right">
+                        <i class="fa fa-info-circle"></i>
+                    </a>:
+                </label>
                 <span class="text-error">{{ form.overview.errors }}</span>
                 <div class="div-input-icon">
                     <i class="fa fa-envelope input-icon"></i>
                     <textarea required rows="5" maxlength="50000"
                               placeholder="Write here some info about yourself (5000 characters limit)"
-                              name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
+                              name="{{ form.overview.html_name }}" class="form-control" >
+                        {% if form.overview.value %}
+                            {{ form.overview.value }}
+                        {% elif tourist_about and not form.overview.value %}
+                            {{ tourist_about|safe }}
+                        {% endif %}</textarea>
                 </div>
             </div>
 

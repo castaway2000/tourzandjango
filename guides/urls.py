@@ -10,6 +10,9 @@ urlpatterns = [
     url(r'^private-guide/$', views.guides, name='private_guide'),
     url(r'^travel-tour-guide/$', views.guides, name='travel_tour_guide'),
     url(r'^tour-guide/$', views.guides, name='tour_guide'),
+    url(r'^get-your-guide/$', views.guides, name='get_your_guide'),
+    url(r'^travel-guide/$', views.guides, name='travel_guide'),
+    url(r'^local-expert/$', views.guides, name='tour_guide'),
 
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/$', views.guide, name='guide'),
     url(r'^guides/(?P<guide_name>.*)/(?P<general_profile_uuid>.*)/overview/(?P<new_view>\w+)/$', views.guide,

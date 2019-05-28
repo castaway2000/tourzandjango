@@ -247,7 +247,7 @@ def guide_tours(request, username):
     return render(request, 'tours/guide_tours.html', context)
 
 @never_cache
-def tour(request, slug, tour_uuid, tour_new=None):
+def tour(request, slug, tour_uuid, tour_id=None, tour_new=None):
     user = request.user
 
     #referal id for partner to track clicks in iframe
@@ -281,7 +281,7 @@ def tour(request, slug, tour_uuid, tour_new=None):
     except EmptyPage:
         reviews = paginator.page(paginator.num_pages)
 
-    if tour_new == "new" or tour_new =="new-old":
+    if tour_new == "new" or tour_new == "new-old":
         nearest = tour.get_nearest_available_dates(180)
         if tour.type == "1" and len(nearest) > 0:
             form = BookingScheduledTourForm(request.POST or None, tour=tour)
