@@ -444,7 +444,7 @@ def profile_settings_guide(request, guide_creation=True):
             gp = GuideProfile.objects.get(user=user)
             gp.is_default_guide = True
             gp.save()
-            return render(request, 'users/profile_settings_guide.html', locals())
+            return HttpResponseRedirect(reverse("profile_settings_guide"))
             # TODO: check this redirection fix. below is the redirect for identity verification.
             # return HttpResponseRedirect(reverse("identity_verification_router"))
         else:
