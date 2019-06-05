@@ -441,7 +441,12 @@ def profile_settings_guide(request, guide_creation=True):
                 del request.session["guide_registration_welcome_page_seen"]
             request.session["current_role"] = "guide"
             messages.success(request, 'Profile has been created! Please complete identity verification process!')
-            return HttpResponseRedirect(reverse("identity_verification_router"))
+            gp = GuideProfile.objects.get(user=user)
+            gp.is_default_guide = True
+            gp.save()
+            return HttpResponseRedirect(reverse("profile_settings_guide"))
+            # TODO: check this redirection fix. below is the redirect for identity verification.
+            # return HttpResponseRedirect(reverse("identity_verification_router"))
         else:
             messages.success(request, 'Profile has been updated!')
     else:
@@ -462,6 +467,7 @@ def profile_settings_guide(request, guide_creation=True):
         if service["id"] in guide_services_dict:
             service["guide_service"] = guide_services_dict[service["id"]]
 
+    tourist_about = str(user.touristprofile.about)
     #PAY attention: if a guide is new - the template with form should be guides/guide_registration.html
     #for tourist it is always one template for new tourists and for editing of tourist profile,
     # which is users/profile_settings_tourist.html
