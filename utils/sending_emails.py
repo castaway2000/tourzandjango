@@ -18,6 +18,7 @@ class SendingEmail(object):
     from_email = FROM_EMAIL
     reply_to_emails = [from_email]
     bcc_emails = [from_email]
+    email_type_id = 1
     order = None
     chat = None
 
@@ -46,7 +47,7 @@ class SendingEmail(object):
         msg.send()
 
         kwargs = dict()
-        kwargs = {"type_id":self.email_type_id, "email": ''.join(to_email), "user": to_user}
+        kwargs = {"type_id": self.email_type_id, "email": ''.join(to_email), "user": to_user}
         if self.order:
             kwargs["order_id"] = self.order.id
         if hasattr(self, "chat_message"):
