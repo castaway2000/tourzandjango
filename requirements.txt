@@ -1,4 +1,4 @@
-django==1.11.20  # .15
+django==1.11.21  # .15
 pillow==4.0.0
 django-allauth==0.37.1
 django-crequest==2016.3.16
@@ -9,7 +9,7 @@ django-summernote==0.8.7
 django-cors-headers==2.1.0
 django-extensions==1.9.9
 
-djangorestframework==3.8.2
+djangorestframework>=3.9.1
 markdown==2.6.8
 django-filter==1.0.4
 djangorestframework-jwt==1.10.0
