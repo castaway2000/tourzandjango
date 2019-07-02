@@ -884,6 +884,12 @@ def order_post_save(sender, instance, created, **kwargs):
             message = _("Order details were changed: hours: %s, persons: %s, tour starts at: %s"
                         % (instance.hours_nmb, instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
             chat_helper.send_order_message_and_notification(instance.chat, message)
+    order_title = "Tour %s" % instance.tour.name if instance.tour else "Tour with %s" % instance.guide.user.generalprofile.get_name()
+    msg = 'Order "{} with order ID {} status has been changed to <b>{}</b> experience is provided by {}'\
+        .format(order_title, instance.id, instance.status, instance.guide.name)
+    subject = "update to order %s" % instance.id if instance.status_id != 1 else 'new tourzan order created - order %s' % instance.id
+    data = {"order": instance}
+    SendingEmail(data).sending_email(None, ['contactus@tourzan.com'], subject, msg)
 post_save.connect(order_post_save, sender=Order)
 
 
@@ -892,7 +898,6 @@ class OrderStatusChangeHistory(models.Model):
     status = models.ForeignKey(OrderStatus)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
     def __str__(self):
         return "%s" % (self.id)
 
@@ -904,8 +909,7 @@ class OrderStatusChangeHistory(models.Model):
         topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
         chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user, guide=order.guide.user,
                                                    order=order, defaults={"topic": topic})
-
-        order_title = "Tour %s" % (self.order.tour.name) if self.order.tour  else "Tour with %s" % order.guide.user.generalprofile.get_name()
+        order_title = "Tour %s" % self.order.tour.name if self.order.tour else "Tour with %s" % order.guide.user.generalprofile.get_name()
         message = 'Order  "%s" status has been changed to <b>%s</b>' % (order_title, status_name)
         chat_helper = ChatHelper()
         chat_helper.send_order_message_and_notification(chat, message)
