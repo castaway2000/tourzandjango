@@ -13,8 +13,9 @@
 
 {% block content %}
     <div class="container">
+    {% if subdomain != 'api' %}
         <ul class="breadcrumb">
-            <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
+            <li><a rel="nofollow" href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
 {#            <li><a href="/">Some country</a>#}
 {#            <li><a href="/">{{ guide.city.name }}</a></li>#}
@@ -22,6 +23,7 @@
             <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>
             <li class="active">{{ guide.user.generalprofile.first_name }}</li>
         </ul>
+    {% endif %}
 
         <div class="booking-item-details">
 
@@ -32,9 +34,10 @@
                         <div class="col-md-12">
                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                                 {% for photo in photos %}
-                                    <img src="{% get_media_prefix %}{{ photo.image }}" alt=""
+                                    <img src="{% get_media_prefix %}{{ photo.image }}"
+                                         alt="Image for booking item"
                                          class="img-responsive"
-                                         title="" />
+                                         title="Image for booking item" />
                                 {% endfor %}
                             </div>
                         </div>
@@ -47,11 +50,12 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     {% if guide.profile_image %}
-                                        <img src="{{ guide.profile_image.url }}" class="img-responsive">
+                                        <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                             data-src="{{ guide.profile_image.url }}" class="img-responsive">
                                     {% endif %}
                                     <div class="mt10 text-center">
                                         {% if guide == request.user.guideprofile %}
-                                            <a href="{% url 'chat_creation_guide' guide.id %}"
+                                            <a href="{% url 'chat_creation_guide' guide.uuid %}"
                                                class="btn btn-default btn-sm" disabled="">
                                                 {% blocktrans %}Send Message{% endblocktrans %}
                                             </a>
@@ -63,7 +67,7 @@
                                                     {% blocktrans %}Write Review{% endblocktrans %}
                                                 </a>
                                             {% endif %}
-                                            <a href="{% url 'chat_creation_guide' guide.id %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
+                                            <a href="{% url 'chat_creation_guide' guide.uuid %}" class="btn btn-default btn-sm">{% blocktrans %}Send Message{% endblocktrans %}</a>
                                         {% endif %}
                                     <br/>
 

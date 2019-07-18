@@ -1,30 +1,43 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load crispy_forms_tags %}
+{% load emoticons_tags %}
 
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-lg-6">
 
                 <div class="box bg-gray chat-item single-chat">
+                    <div id="current_user_name">{{ request.user.generalprofile.get_name }}</div>
                     <div>
-{#                        <h3>{{ chat.topic }}</h3>#}
                         <h3>
-                            {% blocktrans %}Chat {% endblocktrans %}
-                            {% blocktrans %}with {% endblocktrans %}
+                            {% trans 'Chat with' %}
                             {% if request.user != chat.guide %}
-                                <a href="{% url 'guide' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid %}">
+                                <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
                                     {% if chat.guide.generalprofile.first_name %}
                                         {{ chat.guide.generalprofile.first_name }}
                                     {% else %}
                                         {{ chat.guide.username }}
                                     {% endif %}
-                                a {{ chat }}
                                 </a>
-                                {% blocktrans %}(guide){% endblocktrans %}
-                            {% else %}
+                                ({% trans 'guide' %})
+                            {% elif request.user == chat.tourist %}
+                                <a href="{% url 'guide_new' chat.guide.generalprofile.first_name chat.guide.generalprofile.uuid "new" %}">
+                                    {% if chat.guide.generalprofile.first_name %}
+                                        {{ chat.guide.generalprofile.first_name }}
+                                    {% else %}
+                                        {{ chat.guide.username }}
+                                    {% endif %}
+                                </a>
+                                ({% trans 'guide' %})
+                            {% elif request.user == chat.guide %}
                                  <a href="{% url 'tourist' chat.tourist.generalprofile.uuid %}">
                                     {% if chat.tourist.generalprofile.first_name %}
                                         {{ chat.tourist.generalprofile.first_name }}
@@ -32,32 +45,30 @@
                                         {{ chat.tourist.username }}
                                     {% endif %}
                                 </a>
-                                {% blocktrans %}(tourist){% endblocktrans %}
+                                ({% trans 'tourist' %})
                             {% endif %}
                         </h3>
-                    </div>
-                    <div>
-{#                        <b>{% blocktrans %}with {% endblocktrans %}</b>#}
-                         <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
                     </div>
 
                     <div id="messages_area">
                         {% if chat_messages %}
                             {% for message in chat_messages %}
-                                <div class="chat-message small">
+                                <div class="chat-message small
+                                    {% if message.user__username == "Tourzan bot" or message.user__username == "tourzan" %}system{% endif %}
+                                ">
                                     <div class="message-meta-info">
                                         {% if request.user.username == message.user__username %}
-                                            me
+                                            {% trans 'me' %}
                                         {% else %}
                                             {% if message.user__generalprofile__first_name %}
                                                 {{ message.user__generalprofile__first_name }}
                                             {% else %}
                                                 {{ message.user__username }}
                                             {% endif %}
-                                        {% endif %}, {{ message.created|date:"m.d.Y H:i:s" }}
+                                        {% endif %}, {{ message.created|date:"m/d/Y H:i:s" }}
                                     </div>
                                     <div class="chat-message-text">
-                                        {{ message.message|linebreaks }}
+                                        {{ message.message|safe|emoticons }}
                                     </div>
                                 </div>
                             {% endfor %}
@@ -69,13 +80,92 @@
                             <div class="form-group">
                                 <textarea id="message_textarea" rows="3" class="form-control" name="message"></textarea>
                             </div>
+                            <div class="form-group">
+                                <div class="text-left">
+                                    <a data-toggle="collapse" href="#emoticons_container" role="button">{% trans 'emoji' %}</a>
+                                </div>
+                                <div id="emoticons_container" class="emoticons-container collapse">
+                                    {% emoticons_index as emoticons_list %}
+                                    {% for emoticons in emoticons_list %}
+                                    <span class="emoticon-item" data-emoticon="{{ emoticons.0 }}">{{ emoticons.0|emoticons }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
                             <div class="form-group text-right">
+                                {% trans 'Press ctrl+Enter or "Submit" button to send a message' %}
                                 <button id="chat_message_submit_btn" type="submit" class="btn btn-primary btn-lg">{% blocktrans %}Submit{% endblocktrans %}</button>
+                                <a data-balloon="Sometimes people can be slow to reply. please keep a look out for notifications from us in your email.
+                            Please feel free to contact more than one guide in the area if you are looking to book a guide.
+                            Solicitations other than consumer bookings through tourzan are not welcome on tourzan and will cause immediate ban."
+                               data-balloon-length='large' data-balloon-pos="up">
+                                <i class="fa fa-info-circle"></i>
+                            </a>
                             </div>
                         </form>
                     </div>
 
                 </div>
+            </div>
+
+            <div class="col-lg-6">
+                {% if not_scheduled_tour %}
+                    <h3 class="text-center">
+                        {% trans 'Order details' %}
+                    </h3>
+                    <div>
+                        {% if order %}
+                            <div class="row">
+                                {% if not order.is_canceled %}
+                                    {% if request.user == order.guide.user %}
+                                        <div class="col-lg-4">
+                                            {% include 'orders/guide_order_details.html' %}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {% include 'orders/guide_order_payment_details.html' %}
+                                        </div>
+                                    {% else %}
+                                        <div class="col-lg-4">
+                                            {% include 'orders/tourist_order_details.html' %}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {% include 'orders/tourist_order_payment_details.html' %}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                <div class="col-lg-4">
+                                    {% if not order.is_canceled %}
+                                        <div class="mb10"><b>{% trans 'Order actions' %}: </b></div>
+                                        {% include 'orders/order_actions.html' %}
+                                    {% else %}
+                                        <b>{% trans 'Status' %}: </b><br> {{ order.status.name }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% elif order %}
+                    <h3 class="text-center">
+                        {% trans 'Order details' %}
+                    </h3>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {% include 'orders/tourist_order_details.html' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% include 'orders/tourist_order_payment_details.html' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if not order.is_canceled %}
+                                <div class="mb10"><b>{% trans 'Order actions' %}: </b></div>
+                                {% include 'orders/order_actions.html' %}
+                            {% else %}
+                                <b>{% trans 'Status' %}: </b><br> {{ order.status.name }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                {% endif %}
             </div>
         </div>
     </div>
@@ -83,5 +173,14 @@
 
 
 {% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $('#id_date_booked_for').datetimepicker({
+            minDate: new Date(),
+            format: 'MM/DD/YYYY HH:mm',
+            stepping: 15
+        });
+    </script>
     <script src="{% static 'js/custom_scripts/chat_on_sockets.js' %}"></script>
 {% endblock js_stuff %}

@@ -20,6 +20,7 @@ from utils.general import uuid_creating, uuid_size_6_creating
 from django.core.cache import cache
 import datetime
 from tourzan.settings import USER_ONLINE_TIMEOUT
+from orders.models import Order
 
 
 def user_login_function(sender, user, **kwargs):
@@ -57,7 +58,8 @@ creating user profile after user is created (mostly for login with Facebook)
 @disable_for_loaddata
 def user_post_save(sender, instance, created, **kwargs):
     user = instance
-    GeneralProfile.objects.get_or_create(user=user)
+    GeneralProfile.objects.update_or_create(user=user, defaults={"first_name": user.first_name,
+                                                                 "last_name": user.last_name})
     if created:
         kwargs = dict()
         kwargs["user"] = user
@@ -82,6 +84,7 @@ class Interest(models.Model):
 class UserInterest(models.Model):
     user = models.ForeignKey(User)
     interest = models.ForeignKey(Interest)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         if self.interest.name:
@@ -92,6 +95,7 @@ class UserInterest(models.Model):
 
 class LanguageLevel(models.Model):
     name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    order_priority = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
@@ -105,6 +109,7 @@ class UserLanguage(models.Model):
     level = models.ForeignKey(LanguageLevel, blank=True, null=True, default=1)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return "%s" % self.language
@@ -123,7 +128,7 @@ class GeneralProfile(models.Model):
     profession = models.CharField(max_length=256, blank=True, null=True)
 
     referred_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name="referred_by")
-    referral_code = models.CharField(max_length=8, null=True, blank=True)
+    referral_code = models.CharField(max_length=64, null=True, blank=True)
     tourists_referred_nmb = models.IntegerField(default=0)
     tourists_with_purchases_referred_nmb = models.IntegerField(default=0)
     guides_referred_nmb = models.IntegerField(default=0)
@@ -141,6 +146,8 @@ class GeneralProfile(models.Model):
     phone = models.CharField(max_length=64, blank=True, null=True, default=None)
     phone_is_validated = models.BooleanField(default=False)
     phone_pending = models.CharField(max_length=64, blank=True, null=True, default=None)
+    sms_notifications = models.BooleanField(default=False)
+    device_id = models.CharField(blank=True, null=True, default=None, max_length=240)
 
     registration_country = models.CharField(max_length=256, blank=True, null=True, choices=COUNTRY_CHOICES)
     registration_country_ISO_3_digits = models.CharField(max_length=8, blank=True, null=True)
@@ -155,6 +162,8 @@ class GeneralProfile(models.Model):
     business_id = models.CharField(max_length=64, blank=True, null=True, default=None)
 
     is_previously_logged_in = models.BooleanField(default=False)
+    is_express_signup_initial = models.BooleanField(default=False)
+    is_express_signup_current = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -226,6 +235,20 @@ class GeneralProfile(models.Model):
         super(GeneralProfile, self).save(*args, **kwargs)
 
 
+    def get_name(self):
+        if self.first_name:
+            return self.first_name
+        elif self.user:
+            if self.user.first_name:
+                return self.user.first_name
+            else:
+                return self.user.username
+        else:
+            return ""
+
+    def get_default_payment_method(self):
+        return PaymentMethod.objects.filter(user=self.user, is_active=True).order_by('is_default', '-id').first()
+
     def create_referral_code(self):
         referral_code = uuid_size_6_creating()
         if GeneralProfile.objects.filter(referral_code__iexact=referral_code).exists():
@@ -234,8 +257,7 @@ class GeneralProfile(models.Model):
             return referral_code
 
     def get_languages(self):
-        user_languages = UserLanguage.objects.filter(user=self.user)
-        print(user_languages)
+        user_languages = UserLanguage.objects.filter(user=self.user, is_active=True)
         #Refactor this!!!
         user_language_native = None
         user_language_second = None
@@ -247,8 +269,11 @@ class GeneralProfile(models.Model):
                 user_language_third = user_language
             else:
                 user_language_second = user_language
-
         return (user_language_native, user_language_second, user_language_third)
+
+    def get_languages_for_profile(self):
+        user_languages = UserLanguage.objects.filter(user=self.user, is_active=True).order_by("-level__order_priority", "id")
+        return user_languages
 
     def last_seen(self):
         return cache.get('seen_%s' % self.user.id)
@@ -290,6 +315,43 @@ class GeneralProfile(models.Model):
         else:
             coupons = None
         return coupons
+
+    def get_user_proficient_languages(self):
+        return self.user.userlanguage_set.filter(level_id__in=[1, 2]).order_by("language")#native, advances - maybe to change their titles or add upper intermediate?
+
+    def set_interests_from_list(self, interests_list):
+        user = self.user
+        user_interest_ids = list()
+        for interest_name in interests_list:
+            interest, created = Interest.objects.get_or_create(name=interest_name.lower())
+            user_interest, created = UserInterest.objects.update_or_create(user=user, interest=interest, defaults={"is_active": True})
+            user_interest_ids.append(user_interest.id)
+            # print(user_interest_ids)
+            # print(user_interest.id)
+        UserInterest.objects.filter(user=user).exclude(id__in=user_interest_ids).update(is_active=False)
+
+    def set_languages_from_list(self, languages_list):
+        user = self.user
+        user_language_ids = list()
+        for language in languages_list:
+            language_name = language['name']
+            language_level_id = language['level']
+            user_language, created = UserLanguage.objects.update_or_create(language=language_name, user=user,
+                                                                           level_id=language_level_id, defaults={"is_active": True})
+            user_language_ids.append(user_language.id)
+        UserLanguage.objects.filter(user=user).exclude(id__in=user_language_ids).update(is_active=False)
+
+    def apply_referral_code(self, referral_code):
+        if not self.referred_by: #to prevent double changing for cases when referral program is used in some bounties or perks or ratings
+            try:
+                referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
+                referred_by_user = referred_by_gp.user
+                self.referred_by = referred_by_user
+                self.save(force_update=True)
+            except Exception as e:
+                print(e)
+        return True
+
 
 def general_profile_post_save(sender, instance, **kwargs):
     if hasattr(instance.user, "guideprofile"):

@@ -19,15 +19,14 @@
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand navbar-logo" href="/">
+                    <a class="navbar-brand navbar-logo" href="/" rel="nofollow">
                         <span>
                             <img src="{% static 'img/Tourzan-transparant.png' %}" class="navbar-logo"
                              alt="Tourzan logo" title="Tourzan logo" />
                         </span>
                     </a>
-                    <a class="navbar-brand" href="/">Tourzan</a>
+                    <a class="navbar-brand" href="/" rel="canonical nofollow">Tourzan&reg;</a>
                   </div>
-
 
         {#        <div class="collapse navbar-collapse navbar-right">#}
         {#          <!--                      pull-right keeps the drop-down in line -->#}
@@ -47,11 +46,12 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_anonymous %}
-                            <li><a href="{% url 'login' %}">{% blocktrans %}Sign In/Sign Up{% endblocktrans %}</a>
+                            <li><a href="{% url 'account_login' %}">{% trans 'Sign In' %}</a></li>
+                            <li><a href="{% url 'account_signup' %}">{% trans 'Sign Up' %}</a></li>
                         {% else %}
                             <li class="top-user-area-avatar">
                                 <a href="{% url 'settings_router' %}">
-                                    Hi, {{ request.user.username }}
+                                    Hi, {% if request.user.first_name %}{{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}!
                                 </a>
                             </li>
                             <li><a href="{% url 'logout' %}">{% blocktrans %}Logout{% endblocktrans %}</a>
@@ -61,18 +61,26 @@
                     <li class="dropdown">
                             <a href="#" class="change-language-link dropdown-toggle" data-toggle="dropdown" role="button"
                             aria-haspopup="true" aria-expanded="false">
-                                {{ LANGUAGE_CODE }}<i class="caret"></i>
+{#                                {{ LANGUAGE_CODE }}#}
+                                <i class="fa fa-lg fa-language"></i>
                             </a>
                             <ul class="dropdown-menu">
-                                {% for language in languages %}
-                                    {% if language.code != LANGUAGE_CODE %}
-                                        <li>
-                                            <a href="{% url 'set_language' language.code %}" class="change-language-link">
-                                                {{ language.code }}
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                {% endfor %}
+                                <div id="google_translate_element"></div><script type="text/javascript">
+                                function googleTranslateElementInit() {
+                                new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, gaTrack: true, gaId: 'UA-110088140-1'}, 'google_translate_element');
+                                }</script>
+                                 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+{#                                {% for language in languages %}#}
+{#                                    {% if language.code != LANGUAGE_CODE %}#}
+{#                                        <li>#}
+{#                                            <a href="{% url 'set_language' language.code %}" hreflang="{{ language.code }}"#}
+{#                                               class="change-language-link" rel="alternate">#}
+{#                                                {{ language.code }}#}
+{#                                            </a>#}
+{#                                        </li>#}
+{#                                    {% endif %}#}
+{#                                {% endfor %}#}
 
                             </ul>
                         </li>

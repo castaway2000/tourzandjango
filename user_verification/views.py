@@ -195,9 +195,9 @@ def identity_verification_photo(request):
         f.open(mode='rb')
         files = {'file': (file_name, f, 'image/jpeg')} #('file.py', open('file.py', 'rb'), 'text/plain')
         r = requests.post(url, files=files,  data={"type": last_doc.document_type},  headers=headers)
-        f.close()#closing file after a call with it
-        print( r.json())
-        print ("ID scan was uploaded")
+        f.close() #closing file after a call with it
+        print(r.json())
+        print("ID scan was uploaded")
 
         #live photo uploading
         url = "https://api.onfido.com/v2/live_photos"
@@ -284,6 +284,8 @@ def identity_verification_photo(request):
                                                       report_url=report_url,
                                                       type=report_type, defaults = defaults_kwargs
                                                       )
+            user.generalprofile.is_verified = True
+            user.generalprofile.save(force_update=True)
         print ("Onfido API integration is finished")
         return HttpResponseRedirect(reverse("identity_verification_router"))
     else:
@@ -324,6 +326,10 @@ def identity_verification_webhook(request):
         # print(report_status)
         # print(report_result)
 
+        if report_status == 'complete' and report.type == 'document' and report_result != 'clear' or report_result != 'consider':
+            general_profile = report.identification_checking.applicant.general_profile
+            general_profile.is_verified = False
+            general_profile.save(force_update=True)
         report.status = report_status
         report.result = report_result
         report.save(force_update=True)

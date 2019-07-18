@@ -50,3 +50,4 @@ $(document).ready(function() {
     scrolling();
     //End of chats area
 });
+console.log('chats');

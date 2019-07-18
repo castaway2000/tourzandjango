@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+
+{% block seo_stuff %}
+    {% if meta_title %}
+        <title>{{ meta_title }}</title>
+        <meta property="og:title" content="{{ meta_title }}" />
+        <meta name="description" content="{{ meta_descr }}">
+        <meta property="og:description" content="{{ meta_descr }}" />
+    {% else %}
+        <title>{% trans 'Local tour guides in' %} {{ obj.name }} | Tourzan.com</title>
+        <meta property="og:title" content="{% trans 'Expert locals to show you around in' %} {{ obj.name }} | Tourzan.com" />
+    {% endif %}
+
+    {% if meta_descr %}
+        <meta name="description" content="{{ meta_descr }}">
+        <meta property="og:description" content="{{ meta_descr }}" />
+    {% else %}
+        <meta name="description" content="Tourzan is the best showaround service online with only the best tours by locals,
+             search our genuine local guides and trusted independent hosts, get the best vacation experience with us">
+        <meta property="og:description" content="Tourzan is the best showaround service online with only the best tours by locals,
+             search our genuine local guides and trusted independent hosts, get the best vacation experience with us" />
+    {% endif %}
+
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:image" content="{% get_sized_image obj %}" />
+    <meta property="og:image:height" content="640" />
+{#    <meta property="og:image:width" content="1200" />#}
+    <meta property="og:type" content="website" />
+{% endblock seo_stuff %}
+
+
+{% block content %}
+    <div class="top-area show-onload mask-wrapper">
+        <div class="bg-holder full text-center text-white">
+            <div class="bg-mask"></div>
+            <div class="bg-img"
+                 style="background:url('{% get_sized_image obj %}') no-repeat center center fixed; background-size: cover;">
+            </div>
+            <div class="bg-front full-center">
+                <div class="owl-cap">
+                    <div class="text">{% trans 'Plan your trip to' %}</div>
+                    <h2 class="owl-cap-title fittext">
+                        {{ obj.name }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="breadcrumb mb10">
+                    <li>
+                        <a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a>
+                    </li>
+                    {% if obj|get_class == "Country" %}
+                        <li class="active">{{ obj.name }}</li>
+                    {% else %}
+                        <li><a href="{% url 'country_guides' country_slug %}">{{ obj.country.name }}</a>
+                        <li class="active">{{ obj.name }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% if obj|get_class == "Country" %}
+        {% with obj.get_cities as cities %}
+        {% if cities|length > 0 %}
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="h3">{% trans 'Find tours and private guides in the following cities' %}</h1>
+                    </div>
+                    {% for city in cities %}
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div>
+                                        <a href="{% url 'city_guides' country_slug city.slug %}" target="_blank">
+                                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                 data-src="{% get_sized_image city "small" %}">
+                                        </a>
+                                    </div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ city.name }}
+                                        </h4>
+                                        <div>
+                                            {{ city.description|safe|linebreaks|truncatewords_html:30|default_if_none:"" }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'city_guides' country_slug city.slug %}" target="_blank"
+                                    >
+                                        {% trans 'View details' %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div>
+                            <div class="row">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>{% trans 'There is no guides for this country in our database' %}</p>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+    {% else %}
+        {% with obj.get_tours_12 as tours %}
+        {% if tours|length > 0 %}
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="h3">{% trans 'Tours by locals in' %} {{ obj.name }}</h1>
+                        {% with obj.get_average_tour_price as average_tour_price %}
+                        {% if average_tour_price %}
+                            <div class="mt10 mb10">
+                                <b>{% trans 'Average price per person' %}: </b> {{ average_tour_price }} USD
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                        {% for tour in tours %}
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                {% include 'tours/tour_in_panel.html' %}
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div>
+                                <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with obj.get_guides_12 as guides %}
+        {% if guides|length > 0 %}
+            <div class="container container-equal-items">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'local guides in' %} {{ obj.name }} {% trans 'who can show you around.' %}</h3>
+                        {% with obj.get_average_guide_rate as average_guide_rate %}
+                        {% if average_guide_rate %}
+                            <div class="mt10 mb10">
+                                <b>{% trans 'Average hourly rate' %}: </b> {{ average_guide_rate }} USD
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                        {% for guide in guides %}
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                {% include 'guides/guide_in_panel.html' %}
+                            </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div>
+                                <div class="row">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with obj.get_special_offer_tours as special_offer_tours %}
+        {% if special_offer_tours %}
+            <div class="container mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="mb30">{% trans 'Special offers' %}</h3>
+                    </div>
+                </div>
+                {% include "tours/special_offers_section.html" %}
+            </div>
+        {% endif %}
+        {% endwith %}
+    {% endif %}
+
+    {% with obj.get_blog_posts as blog_posts%}
+        {% if blog_posts %}
+            <div class="container container-equal-items mt30 mb30">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>{% trans 'Blog posts about' %} {{ obj.name }}</h3>
+                    </div>
+                    {% for blog_post in blog_posts %}
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                            <div class="panel panel-default panel-guide">
+                                <div class="panel-body">
+                                    <div class="text-center">
+                                        <a href="{% url 'blog_post' blog_post.slug %}"
+                                        target="_blank">
+                                            <img src="{{ blog_post.image.url }}" class="img-responsive">
+                                        </a>
+                                    </div>
+                                    <div class="mt10">
+                                        <h4 class="text-center">
+                                            {{ blog_post.name }}
+                                        </h4>
+                                    </div>
+                                    <div>
+                                       {{ blog_post.text|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}
+                                    </div>
+                                </div>
+                                <div class="text-center panel-button">
+                                    <a class="btn btn-default"
+                                        href="{% url 'blog_post' blog_post.slug %}"
+                                        target="_blank"
+                                    >
+                                        {% trans 'Read More' %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div>
+                            <div class="row">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if obj.description %}
+        <div class="container mt30 mb30">
+            <div class="row">
+                <div class="col-lg-6 col-lg-offset-3">
+                    <h3>{% trans 'General information' %}</h3>
+                    <div>
+                        {{ obj.description|safe|linebreaks|default_if_none:"" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock content %}

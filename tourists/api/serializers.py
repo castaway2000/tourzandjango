@@ -24,6 +24,7 @@ class TouristProfileSerializer(serializers.ModelSerializer):
     chats = ChatSerializer(source='user.tourist', many=True)
 
     class Meta:
+        print("im in")
         model = TouristProfile
         fields = '__all__'
 

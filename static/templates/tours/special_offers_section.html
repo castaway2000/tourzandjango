@@ -1,0 +1,60 @@
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+<div class="row">
+    {% for tour in special_offer_tours %}
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="discount-box">
+                <ul class="list-unstyled">
+                    {% if tour.type == "1" %}
+                        <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
+                        <li class="tour-name">{{ tour.name }} {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price.normalize }} {{ tour.currency }} {% trans 'per person' %}!</li>
+                        <li class="mb10">{% trans 'by' %} {{ tour.guide.user.generalprofile.first_name }}</li>
+
+                        <li class="normal-price"><span class="item-title">{% trans 'Average price' %}:</span> {{ tour.get_average_scheduled_tour_price }} {{ tour.currency }} {% trans 'per person' %}</li>
+                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span>
+                            {% trans 'starting from' %} {{ tour.get_lowest_scheduled_tour_price.normalize }} {{ tour.currency }} {% trans 'per person' %}
+                        </li>
+                        <li class="dates-available">
+                            <span class="item-title">{% trans 'Dates' %}: </span>
+                            {% for item in tour.available_discount_tours %}
+                                {{ item.dt|date:"m/d/Y" }} ({{ item.seats_available }}
+                                {% if item.seats_available == 1 %}
+                                    {% trans 'spot' %}{% else %}{% trans 'spots' %}
+                                {% endif %}
+                                {% trans 'available' %}
+                                )
+                                {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </li>
+                    {% else %}
+                        <li class="location">{{ tour.city.name }}, {{ tour.city.country.name }}</li>
+                        <li class="tour-name">{{ tour.name }} {% trans 'only for' %} {{ tour.price_final }} {{ tour.currency.name }}!</li>
+                        <li class="mb10">{% trans 'by' %} {{ tour.guide.user.generalprofile.first_name }}</li>
+
+                        <li class="normal-price">
+                            <span class="item-title">{% trans 'Normal price' %}:</span> {{ tour.price }} {{ tour.currency.name }} {% trans 'for' %} 1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}
+                        </li>
+                        <li class="promotion-price"><span class="item-title">{% trans 'Promotion price' %}:</span> {{ tour.price_final }} {{ tour.currency.name }} {% trans 'for' %} 1-{{ tour.persons_nmb_for_min_price }} {% trans 'persons' %}</li>
+                        <li class="additional-description">
+                            {% trans 'Additional person' %}: {{ tour.price }} {{ tour.currency.name }}<br>
+                            {% trans 'Maximum participants' %}: {{ tour.max_persons_nmb }}
+                        </li>
+                        <li class="dates-available">
+                            <span class="item-title">{% trans 'Dates' %}: </span>
+                            {{ tour.available_discount_tours.0 }}
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="text-center mt10">
+                    <a href="{% url 'tour_new' tour.slug tour.uuid 'new' %}" class="btn btn-primary">{% trans 'Details' %}</a>
+                </div>
+            </div>
+        </div>
+        {% if forloop.counter|divisibleby:2 %}
+            </div>
+            <div class="row">
+        {% endif %}
+    {% endfor %}
+</div>

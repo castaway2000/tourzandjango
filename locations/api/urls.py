@@ -14,6 +14,7 @@ from tourzan.api_router import SharedAPIRootRouter
 router = SharedAPIRootRouter()
 router.register(r'location_types', views.LocationTypeViewSet)
 router.register(r'locations', views.LocationViewSet)
+router.register(r'countries', views.CountryViewSet)
 router.register(r'cities', views.CityViewSet)
 router.register(r'currencies', views.CurrencyViewSet)
 

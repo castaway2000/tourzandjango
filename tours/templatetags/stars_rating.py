@@ -3,7 +3,6 @@ import math
 
 register = template.Library()
 
-
 """
 This custom template tag is needed for rendering "stars" rating based on decimal number of rating.
 It should be placed within ul tag in a template with additional |s template tag.

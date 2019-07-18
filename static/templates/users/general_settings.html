@@ -15,11 +15,9 @@
             <div class="col-md-7">
                 <div>
                     <form class="" name="general_profile_form" method="post" autocomplete="off">{% csrf_token %}
-
                         <div>
                             <h4>{% trans 'Your Personal Info' %}</h4>
                         </div>
-
                         {% if request.session.current_role != "guide" %}
                             {{ form|crispy }}
                         {% endif %}
@@ -40,6 +38,21 @@
                                         <label>{% trans 'Last Name' %}*</label>
                                         <input required class="form-control" name="last_name"
                                                    value="{{ general_profile.last_name|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label>
+                                              <input type="checkbox" class=""
+                                                    name="{{ form.sms_notifications.html_name }}"
+                                                    {% if form.sms_notifications.value %}checked{% endif %}
+                                                     id="sms_notifications"
+                                              >{% blocktrans %}Enable text notifications?{% endblocktrans %}
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +89,6 @@
                             <div>
                                 <h4>{% trans 'Company Info' %}</h4>
                             </div>
-
                             <div class="form-group">
                                 <div class="checkbox">
                                     <label>
@@ -106,8 +118,8 @@
                                     <div class="col-lg-6">
                                         <label>{% trans 'Country' %}*</label>
                                         <select required class="form-control" name="registration_country">
+                                            <option>{% trans 'Select a country' %}</option>
                                             {% for country in countries %}
-                                                <option>{% trans 'Select a country' %}</option>
                                                 <option value="{{ country }}"
                                                         {% if country == general_profile.registration_country %}selected{% endif %}>
                                                     {{ country }}
@@ -116,8 +128,8 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-6">
-                                        <label>{% trans 'State' %}</label>
-                                        <input class="form-control" name="registration_state"
+                                        <label>{% trans 'State' %}*</label>
+                                        <input required class="form-control" name="registration_state"
                                                value="{{ general_profile.registration_state|default_if_none:"" }}">
                                     </div>
                                     <div class="col-lg-6">
@@ -229,98 +241,71 @@
 
                                 {% endif %}
                             </li>
-                            <li>Google:
-                                {% if general_profile.google %}
-                                    your profile is
-                                    <a href="https://plus.google.com/{{ general_profile.google }}" target="_blank">
-                                        {% blocktrans %}connected{% endblocktrans %}
-                                    </a>
-                                    <a title="Google" class="link_lead"
-                                       href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
-                                    >
-                                        {% blocktrans %}
-                                            <i class="fa fa-plus" aria-hidden="true"></i> connect new?
-                                        {% endblocktrans %}
-                                    </a>
-                                {% else %}
-                                    {% blocktrans %}connect your google account {% endblocktrans %}
-                                    <a title="Google" class=""
-                                       href="{% provider_login_url "google" method="oauth2"  next=request.get_full_path %}"
-                                    >
-                                        {% blocktrans %}here{% endblocktrans %}
-                                    </a>
-                                {% endif %}
-                            </li>
                         </ul>
-                        <form id="phone_form" class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
+                        <div class="col-lg-9">
+                            <form id="phone_form" class="form-horizontal" method="post" name="phone_form">{% csrf_token %}
+                                {% if not request.session.pending_validating_phone and general_profile.phone_is_validated and general_profile.phone %}
+                                    <label>{% blocktrans %}Phone{% endblocktrans %}</label>
+                                    <span>{{ general_profile.phone }}</span>
+                                    <button type="submit" class="btn btn-success btn-xs"
+                                            id="edit_phone" name="edit_phone"
+                                    >
+                                        {% blocktrans %}Edit{% endblocktrans %}
+                                    </button>
+                                {% else %}
+                                    <div class="form-group">
+                                        <label>{% blocktrans %}Phone {% endblocktrans %}</label>
+                                        <span id="phone_error_message" class="text-error"></span>
+                                        <input type="text" class="form-control intl-phone-input" name="{{ verification_form.phone.html_name }}"
+                                               id="{{ verification_form.phone.html_name }}"
 
-                                <div class="col-lg-9">
-                                    {% if not request.session.pending_validating_phone and general_profile.phone_is_validated and general_profile.phone %}
-                                        <label>{% blocktrans %}Phone{% endblocktrans %}</label>
-                                        <span>{{ general_profile.phone }}</span>
-                                        <button type="submit" class="btn btn-success btn-xs"
-                                                id="edit_phone" name="edit_phone"
+                                               {% if general_profile.phone_is_validated  and general_profile.phone %}
+                                               value="{{ general_profile.phone }}"
+                                               {% elif request.session.pending_validating_phone %}
+                                               value="{{ request.session.pending_validating_phone }}"
+                                               {% endif %}
+                                               >
+
+                                        <button type="submit"
+                                            class="btn btn-primary btn-xs"
+                                            name="submit_phone_btn" id="submit_phone_btn"
+                                            data-link="{% url 'sending_sms_code' %}"
                                         >
-                                            {% blocktrans %}Edit{% endblocktrans %}
-                                        </button>
-                                    {% else %}
-                                        <div class="form-group">
-                                            <label>{% blocktrans %}Phone {% endblocktrans %}</label>
-                                            <span id="phone_error_message" class="text-error"></span>
-                                            <input type="text" class="form-control intl-phone-input" name="{{ verification_form.phone.html_name }}"
-                                                   id="{{ verification_form.phone.html_name }}"
-
-                                                   {% if general_profile.phone_is_validated  and general_profile.phone %}
-                                                   value="{{ general_profile.phone }}"
-                                                   {% elif request.session.pending_validating_phone %}
-                                                   value="{{ request.session.pending_validating_phone }}"
-                                                   {% endif %}
-                                                   >
-
-                                            <button type="submit"
-                                                class="btn btn-primary btn-xs"
-                                                name="submit_phone_btn" id="submit_phone_btn"
-                                                data-link="{% url 'sending_sms_code' %}"
-                                            >
-                                                {% if not request.session.pending_validating_phone %}
-                                                    {% blocktrans %}Add{% endblocktrans %}
-                                                {% elif not request.session.pending_sms_code %}
-                                                    {% blocktrans %}Submit{% endblocktrans %}
-                                                {% else %}
-                                                    {% blocktrans %}Re-send{% endblocktrans %}
-                                                {% endif %}
-                                            </button>
-
-
-                                            {% if request.session.pending_validating_phone %}
-                                                <button type="submit"
-                                                    class="btn btn-danger btn-xs"
-                                                    name="phone_verification_cancel_btn" id="phone_verification_cancel_btn"
-                                                >
-                                                    {% blocktrans %}Cancel{% endblocktrans %}
-                                                </button>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-
-                                    {% if request.session.pending_sms_code and request.session.pending_validating_phone %}
-                                        <div class="form-group" id="sms_code_container">
-                                            <label>{% blocktrans %}Enter validation code here{% endblocktrans %}</label>
-                                            <span class="text-error">{{ verification_form.sms_code.errors }}</span>
-                                            <input class="form-control w100" id="{{ verification_form.sms_code.html_name }}"
-                                                   name="{{ verification_form.sms_code.html_name }}">
-                                            <button type="submit"
-                                                    class="btn btn-primary btn-xs"
-                                                    name="validate_phone_btn" id="validate_phone">
+                                            {% if not request.session.pending_validating_phone %}
+                                                {% blocktrans %}Add{% endblocktrans %}
+                                            {% elif not request.session.pending_sms_code %}
                                                 {% blocktrans %}Submit{% endblocktrans %}
+                                            {% else %}
+                                                {% blocktrans %}Re-send{% endblocktrans %}
+                                            {% endif %}
+                                        </button>
+
+                                        {% if request.session.pending_validating_phone %}
+                                            <button type="submit"
+                                                class="btn btn-danger btn-xs"
+                                                name="phone_verification_cancel_btn" id="phone_verification_cancel_btn"
+                                            >
+                                                {% blocktrans %}Cancel{% endblocktrans %}
                                             </button>
-                                        </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
 
-                                    {% endif %}
-
-                                </div>
-
-                        </form>
+                                {% if request.session.pending_sms_code and request.session.pending_validating_phone %}
+                                    <div class="form-group" id="sms_code_container">
+                                        <label>{% blocktrans %}Enter validation code here{% endblocktrans %}</label>
+                                        <span class="text-error">{{ verification_form.sms_code.errors }}</span>
+                                        <input class="form-control w100" id="{{ verification_form.sms_code.html_name }}"
+                                               name="{{ verification_form.sms_code.html_name }}">
+                                        <button type="submit"
+                                                class="btn btn-primary btn-xs"
+                                                name="validate_phone_btn" id="validate_phone">
+                                            {% blocktrans %}Submit{% endblocktrans %}
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

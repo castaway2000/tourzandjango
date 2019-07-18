@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
+{% load utils_tags %}
 
         <div class="container">
 {#            <h1 class="page-title">{% blocktrans %}Account Settings{% endblocktrans %}</h1>#}
@@ -11,30 +12,26 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     <aside class="user-profile-sidebar">
                         <div class="user-profile-avatar text-center">
                             {% if request.session.current_role == "guide" %}
-                                {% if user.guideprofile.profile_image %}
-                                    <img class=""
-                                         src="{{ user.guideprofile.profile_image.url }}"
-                                         alt="" title="" />
-                                {% else %}
-                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
-                                {% endif %}
+                                <img class="" name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                     data-src="{% get_sized_image user.guideprofile default_size="small" image_base_field_name="profile_image" %}"
+                                 alt="" title="" />
                             {% else %}
                                 {% if user.touristprofile.image %}
-                                    <img class=""
-                                         src="{{ user.touristprofile.image.url }}"
-                                         alt="" title="" />
+                                    <img class="" name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                         data-src="{{ user.touristprofile.image.url }}"
+                                     alt="" title="" />
                                 {% else %}
-                                    <img src="{% static 'img/300x300.png' %}" alt="" title="">
+                                    <img src="">
                                 {% endif %}
                             {% endif %}
 
-                            <h5>{{ user.username }}</h5>
+                            <h5>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}</h5>
 
-                            <p>Member Since {{ user.date_joined|date:"M Y"}}</p>
+                            <p>{% trans 'Member Since' %} {{ user.date_joined|date:"M Y"}}</p>
 
                             {% if request.session.current_role == "tourist" and request.user.guideprofile %}
                                 <a href="{% url 'change_role_settings' 'guide' %}">{% blocktrans %}Switch to Guide Profile{% endblocktrans %}</a>
@@ -96,8 +93,14 @@
                                 <li {% if page == "profile_settings_guide" %}class="active"{% endif %}><a href="{% url 'profile_settings_guide' %}">
                                     <i class="fa fa-user"></i>{% blocktrans %}Guide Profile Settings{% endblocktrans %}</a>
                                 </li>
+                                <li {% if page == "profile_questions_guide" %}class="active"{% endif %}><a href="{% url 'profile_questions_guide' %}">
+                                    <i class="fa fa-user"></i>{% blocktrans %}Guide Profile Questions{% endblocktrans %}</a>
+                                </li>
                                 <li {% if page == "identity_verification" %}class="active"{% endif %}>
-                                    <a href="{% url 'identity_verification_router' %}">
+{#                                    <a href="{% url 'identity_verification_router' %}" #}
+                                    <a data-balloon="Identity Verifications are undergoing updates.
+                                    In the mean time if you are interested in getting a verified badge
+                                    please send your tour guide licence along with your username to customer support." data-balloon-length='large' data-balloon-pos="down-right">
                                         <i class="fa fa-cog"></i>{% blocktrans %}Identity verification{% endblocktrans %}
                                     </a>
                                 </li>
@@ -114,9 +117,9 @@
                                     </a>
                                 </li>
 
-                                <li {% if page == "calendar" %}class="active"{% endif %}><a href="{% url 'guide_calendar' %}">
-                                    <i class="fa fa-calendar"></i>{% blocktrans %}Schedule / Availability{% endblocktrans %}</a>
-                                </li>
+{#                                <li {% if page == "calendar" %}class="active"{% endif %}><a href="{% url 'guide_calendar' %}">#}
+{#                                    <i class="fa fa-calendar"></i>{% blocktrans %}Schedule / Availability{% endblocktrans %}</a>#}
+{#                                </li>#}
 
                                 <li {% if page == "settings_tours" %}class="active"{% endif %}>
                                     <a href="{% url 'guide_settings_tours' %}">

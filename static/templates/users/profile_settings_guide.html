@@ -4,6 +4,7 @@
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.css" rel=stylesheet type=text/css>
 {% endblock %}
 
 {% block content_profile %}
@@ -14,11 +15,14 @@
 
 
 {% block js_stuff %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/custom_scripts/image_cropper.js' %}"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
 
     <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+            src="//maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
     </script>
     <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
 

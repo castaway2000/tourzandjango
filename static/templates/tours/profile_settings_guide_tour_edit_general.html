@@ -1,0 +1,25 @@
+{% extends 'tours/profile_settings_guide_tour_edit.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.css" rel=stylesheet type=text/css>
+{% endblock %}
+
+{% block tour_edit_content %}
+    <div class="row">
+        <div class="col-lg-10">
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock tour_edit_content %}
+
+{% block js_stuff %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script>
+        console.log("123");
+        $(".select").select2();
+    </script>
+{% endblock js_stuff %}

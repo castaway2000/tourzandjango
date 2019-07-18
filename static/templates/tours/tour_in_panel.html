@@ -1,0 +1,99 @@
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div>
+            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
+                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                     data-src="{% get_sized_image tour default_size="small" %}">
+            </a>
+        </div>
+        <div class="mt10">
+            <h4 class="text-center">
+                {{ tour.name }}
+            </h4>
+        </div>
+        <div>
+            <ul class="list-unstyled">
+                {% if tour.type == "1" %}
+                    <li><b>{% trans 'Type' %}:</b> {{ tour.type_name }} {% trans ' tour' %}</li>
+                    <li>
+                        <b>{% trans 'Languages' %}</b>:
+                        {% with tour.get_languages as tour_languages %}
+                        {% if not tour_languages %}
+                            <span class="label label-success label-tag">
+                                English
+                            </span>
+                        {% else %}
+                            {% for tour_language in tour_languages %}
+                                <span class="label label-success label-tag">
+                                    {{ tour_language.name }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </li>
+                    <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
+                    <li><b>{% trans 'Price' %}:</b> {{ tour.get_lowest_scheduled_tour_price }} USD</li>
+                    <li>
+                        <b>{% trans 'Closest date' %}:</b>
+                        {% with  tour.get_nearest_available_dates as nearest_available_dates %}
+                            {% if nearest_available_dates %}
+                                {% for nearest_available_date in nearest_available_dates %}
+                                    <span class="label label-success label-tag">
+                                        {{ nearest_available_date.dt|date:"m/d/Y h:i" }}
+                                         - {{ nearest_available_date.seats_available }}
+                                        {% if nearest_available_date.seats_available == 1 %}
+                                            {% trans 'available spot' %}{% else %}{% trans 'available spots' %}
+                                        {% endif %}
+                                    </span>
+                                {% endfor %}
+                            {% else %}
+                                {% trans 'No free dates for the nearest 30 days' %}
+                            {% endif %}
+                        {% endwith %}
+
+                    </li>
+                {% else %}
+                    <li><b>{% trans 'Type' %}:</b> {{ tour.type_name }} {% trans 'tour' %}</li>
+                    <li>
+                        <b>{% trans 'Languages' %}</b>:
+                        {% with tour.get_languages as tour_languages %}
+                        {% if not tour_languages %}
+                            <span class="label label-success label-tag">
+                                English
+                            </span>
+                        {% else %}
+                            {% for tour_language in tour_languages %}
+                                <span class="label label-success label-tag">
+                                    {{ tour_language.name }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </li>
+                    <li><b>{% trans 'Hours' %}:</b> {{ tour.hours }}</li>
+                    <li><b>{% trans 'Price' %}:</b>
+                        1-{{ tour.get_persons_nmb_for_min_price }} {% trans 'persons' %}: {{ tour.price_final }} USD {% trans 'for all' %},<br>
+                    </li>
+                    <li><b>{% trans 'Additional people' %}: </b> {{ tour.get_additional_person_price }} USD {% trans 'for each person' %}</li>
+                    <li><b>{% trans 'Maximum participants' %}: </b> {{ tour.get_max_persons_nmb }}</li>
+                    <li class="mt10">{% trans 'Contact guide directly to book a tour' %}</li>
+                {% endif %}
+                <br>
+                <li>{{ tour.overview_short|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="text-center panel-button mb10">
+        <a class="btn btn-default"
+            href="{% url 'tour_new' tour.slug tour.uuid "new" %}"
+            target="_blank"
+        >
+            {% trans 'View details' %}
+        </a>
+    </div>
+</div>

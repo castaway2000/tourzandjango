@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from utils.uploadings import upload_path_handler_tourist_profile_image, upload_path_handler_tourist_travel_pictures
 from utils.images_resizing import optimize_size
 from django.core.validators import FileExtensionValidator
+from tourzan.settings import STATIC_URL
 
 
 #tourist profile which is created by default for all users
@@ -35,6 +36,11 @@ class TouristProfile(models.Model):
             self.image = optimize_size(self.image, "medium")
         super(TouristProfile, self).save(*args, **kwargs)
 
+    def get_avatar(self):
+        if self.image:
+            return self.image.url
+        else:
+            return "%simg/%s" % (STATIC_URL, "no-avatar.png")
 
 
 class TouristTravelPhoto(models.Model):

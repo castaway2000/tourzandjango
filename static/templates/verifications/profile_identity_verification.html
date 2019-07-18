@@ -19,13 +19,17 @@
             <div class="well">
                 {% if general_profile.is_verified %}
                     <h3>{% trans 'Your profile has been verified' %}</h3>
-                {% else %}
-                    <h3>{% trans 'Your profile verification is pending' %}.</h3>
                     <p>
-                        {% trans 'You will see a confirmation here, as soon as you are verified.' %}
-                        <br>
-                        {% trans 'In the meantime, set up your schedule in the' %}
-                        <a href="{% url 'guide_calendar' %}">{% trans 'calendar tab' %}</a>.
+                        {% trans 'We are running the report in the background. if it comes back as fuzzy or rejected, ' %}
+                        {% trans 'you will no longer be verified and will have to redo your verification' %}
+                    </p>
+                {% else %}
+                    <h3>{% trans 'Your verification results came up fuzzy we need you to resubmit proper information' %}.</h3>
+                    <p>
+                        {% trans 'One possible reason for this is that tourzan probationally verifies all users. ' %}
+                        {% trans 'Till the results of the verification come back. it could be that your documents or picture were not clear enough. ' %}
+                        <br><br>
+                        {% trans 'Please send an email to' %} <a href="emailto:contactus@tourzan.com">contactus@tourzan.com</a> {% trans 'to reset this page or request a review' %}
                     </p>
                 {% endif %}
             </div>

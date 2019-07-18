@@ -8,12 +8,13 @@
         <div class="booking-item-details">
 
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-lg-6 col-lg-offset-3">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
                                 {% for travel_photo in travel_photos %}
-                                    <img src="{% get_media_prefix %}{{ travel_photo.image }}" alt=""
+                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                         data-src="{% get_media_prefix %}{{ travel_photo.image }}" alt=""
                                          class="img-responsive"
                                          title="" />
                                 {% endfor %}
@@ -27,6 +28,8 @@
                         <div class="col-md-4">
                             {% if tourist.image %}
                                 <img src="{{ tourist.image.url }}" class="img-responsive">
+                            {% else %}
+                                <img src="{% static 'img/300x300.png' %}" class="img-responsive">
                             {% endif %}
 
                             <div class="gap gap-small"></div>
@@ -77,18 +80,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <h3 class="mb20">{% trans 'Tours' %}</h3>
-                    {% if tours %}
-                        <ul class="booking-list">
-                            {% for order in orders %}
-                                {% include 'order_tour_item_representation.html' %}
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>{% trans 'No tours so far' %}...</p>
-                    {% endif %}
-                </div>
+{#                <div class="col-md-4">#}
+{#                    <h3 class="mb20">{% trans 'Tours' %}</h3>#}
+{#                    {% if tours %}#}
+{#                        <ul class="booking-list">#}
+{#                            {% for order in orders %}#}
+{#                                {% include 'order_tour_item_representation.html' %}#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                    {% else %}#}
+{#                        <p>{% trans 'No tours so far' %}...</p>#}
+{#                    {% endif %}#}
+{#                </div>#}
             </div>
 
         </div>

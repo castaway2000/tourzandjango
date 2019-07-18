@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 
     'locations',
     'tours',
@@ -64,6 +65,9 @@ INSTALLED_APPS = [
     'user_verification',
     'utils',
     'coupons',
+    'mobile',
+    'notifications',
+    'emoticons',
 
     #external packages
     'allauth',
@@ -81,20 +85,28 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework.schemas',
     'rest_framework.documentation',
+    'rest_framework.decorators',
+    'django_filters',
+    'rest_auth',
     'storages',
     'axes',
     'phonenumber_field',
     'drip',
     'django_social_share',
+    'hijack',
+    'compat',
+    'hijack_admin',
+    'import_export',
 
     # 'corsheaders',
     'django_extensions',
     'django_user_agents',
     'crispy_forms',
+    'robots',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -117,7 +129,9 @@ MIDDLEWARE = [
     'users.middleware.TrackingActiveUserMiddleware',
     'users.middleware.ReferralCodesGettingMiddleware',
 
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    'users.middleware.ReferralCodesGettingMiddleware',
+
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 
 ]
 
@@ -148,7 +162,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'users.context_processors.site'
+                'users.context_processors.site',
+                'users.context_processors.get_subdomain',
+                'users.context_processors.on_prod',
+                'users.context_processors.if_banner',
+                'users.context_processors.get_or_create_session_key',
             ],
         },
     },
@@ -258,11 +276,21 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+}
+
+LOGOUT_ON_PASSWORD_CHANGE = False
+REST_SESSION_LOGIN = False
+REST_USE_JWT = True
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.api.serializers.UserDetailsSerializerCustom',
+    'PASSWORD_RESET_SERIALIZER': 'users.api.serializers.PasswordResetSerializerCustom',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'users.api.serializers.PasswordResetConfirmSerializerCustom',
 }
 
 
@@ -272,12 +300,12 @@ JWT_AUTH = {
 LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('en', _('English')),
-    ('es', _('Spanish')),
-    ('fr', _('French')),
-    ('de', _('German')),
-    ('pt', _('Portuguese')),
-    ('ja', _('Japanese')),
-    ('ru', _('Russian')),
+    # ('es', _('Spanish')),
+    # ('fr', _('French')),
+    # ('de', _('German')),
+    # ('pt', _('Portuguese')),
+    # ('ja', _('Japanese')),
+    # ('ru', _('Russian')),
 )
 
 LOCALE_PATHS = (
@@ -305,8 +333,9 @@ EMAIL_USE_TLS = True
 DRIP_FROM_EMAIL = 'contactus@tourzan.com'
 FROM_EMAIL = "noreply@tourzan.com"
 
-
-GOOGLE_RECAPTCHA_SECRET_KEY = "6LcH3h4TAAAAABBUj4ci88yDIaM_A1A2YYt4IeTr"
+GOOGLE_RECAPTCHA_SITE_KEY = "6LdGbGgUAAAAANpsXrF3-JikS3mDRlwH1sVuBok3"
+# GOOGLE_RECAPTCHA_SECRET_KEY = "6LcH3h4TAAAAABBUj4ci88yDIaM_A1A2YYt4IeTr"
+GOOGLE_RECAPTCHA_SECRET_KEY = "6LdGbGgUAAAAALDT1U-vUeu5HygXxFiuYb1RFN28"
 
 TWILIO_ACCOUNT_SID = "AC9c724976ac8617d597ddf08ea76e522b"
 TWILIO_AUTH_TOKEN = "b39c735874f5e41f2bf9e64b7960617b"
@@ -316,9 +345,7 @@ USER_SMS_NMB_LIMIT = 3
 PHONE_SMS_NMB_LIMIT = 3
 DAILY_SMS_NMB_LIMIT = 10000 #to limit expenses in case of unexpected issues
 
-
 AXES_COOLOFF_TIME = 3
-
 
 # Number of seconds of inactivity before a user is marked offline
 USER_ONLINE_TIMEOUT = 5*60
@@ -326,7 +353,6 @@ USER_ONLINE_TIMEOUT = 5*60
 # Number of seconds that we will keep track of inactive users for before
 # their last seen is removed from the cache
 USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
@@ -343,6 +369,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static", "media")
 
 ON_PRODUCTION = False #in prod_settings it is ON_PRODUCTION=True. This is used for braintree and possibly some other settings
 GOOGLE_MAPS_KEY = os.environ.get("GOOGLE_MAPS_KEY", "AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw")
+FCM_API_KEY = 'AAAAYMNPZ9o:APA91bEcE9auTZKHvLakXzlybFFJdw6fsJoGSCBiiy4dldOW7u5RNW81cjygtW9vWh7jOgt7OcKPkQ9Zkn3vSYs7dy1-N9znlZCpUgZiY5yNd2R3E7Hbhi4WHuQrvCHF5EvtXOSqHf0Akgu9No48B4E-H4oUk9qdpQ'
+
+ROBOTS_USE_SCHEME_IN_HOST = True
+ROBOTS_USE_HOST = False
+ROBOTS_SITEMAP_VIEW_NAME = 'django.contrib.sitemaps.views.sitemap'
+
+HIJACK_LOGIN_REDIRECT_URL = '/'  # Where admins are redirected to after hijacking a user
+HIJACK_LOGOUT_REDIRECT_URL = '/adminissomewherethere/'
+HIJACK_USE_BOOTSTRAP = True
+HIJACK_ALLOW_GET_REQUESTS = True
+
 
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'
@@ -378,11 +415,11 @@ except:
 try:
     #local settings, specific for your machine
     from .local_settings_2 import *
-
-    #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
-    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
-        .remove("django.middleware.cache.FetchFromCacheMiddleware")
 except Exception as e:
     print(e)
     pass
+
+# #removing this 2 caching middlewares to allow to see immediately changes, made to html pages while coding
+# MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")\
+#     .remove("django.middleware.cache.FetchFromCacheMiddleware")
 

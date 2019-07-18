@@ -11,28 +11,43 @@
             </div>
 
             <div class="col-lg-4 col-sm-12 col-xs-12 pull-right">
+
                 {% include 'orders/payment_details.html' %}
+
                 <div class="gap"></div>
             </div>
 
             <div class="col-lg-8 col-sm-12 col-xs-12">
-
-                {% if order.payment_status.id == 2 %}
+                {% if order.payment_status.id == 2 or order.payment_status.id == 4 %}
                     <h3 class="text-center">{% trans 'Thank you' %}!</h3>
-                    <h5 class="text-center">{% trans 'The payment has been successfully reserved' %}</h5>
+                    {% if not order.coupon and not order.discount > 0 and not order.tour.is_free %}
+                        <h5 class="text-center">{% trans 'The payment has been successfully reserved' %}</h5>
+                        <script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+                        <script>
+                          window.renderOptIn = function() {
+                            window.gapi.load('surveyoptin', function() {
+                              window.gapi.surveyoptin.render(
+                                {
+                                  "merchant_id": 133867904,
+                                  "order_id": {{ order.uuid }},
+                                  "email": {{ tourist_email }},
+                                  "delivery_country": {{ order.guide.city.country }},
+                                  "estimated_delivery_date": {{ order.date_booked_for }}
+                                });
+                            });
+                          }
+                        </script>
+                    {% else %}
+                    {% endif %}
 
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-12">
                             <div class="text-center">
-                                <a href="{% url 'chat_creation_guide' order.guide.id %}">
-                                    {% trans 'Go to Chat' %}
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="text-center">
-                                <a href="{% url 'payments' %}">
+                                <a class="btn btn-default" href="{% url 'payments' %}">
                                     {% trans 'Go to Payments Page' %}
+                                </a>
+                                 <a class="btn btn-primary" href="{% url 'chat_creation_order' order.uuid %}">
+                                    {% trans 'Go to chat' %}
                                 </a>
                             </div>
                         </div>
@@ -64,40 +79,26 @@
                                 {% endblocktrans %}
                             </p>
                             <br><br>
-                        {% endif %}
-                        <h3>{% trans 'Send a message to your guide' %}</h3>
-
-                        {% trans 'Tell your guide a little about yourself' %}
-                        <ul>
-                            <li>
-                                {% trans 'what are your hobbies or interests' %}?
-                            </li>
-                            <li>
-                                {% trans 'what drove you to book them out' %}?
-                            </li>
-                            <li>
-                                {% trans 'what interests you most about the city they live in' %}?
-                            </li>
-                        </ul>
-                        <form class="" method="post" >{% csrf_token %}
-                            <input class="hidden" id="order_id" value="{{ order.id }}">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <textarea class="form-control" name="message"></textarea>
+                        {% else %}
+                            <div class="text-center">
+                                <form class="" method="post" >{% csrf_token %}
+                                    <div class="form-group">
+                                        <h3>{% trans 'Please click a button below to confirm your booking' %}</h3>
                                     </div>
-                                </div>
+                                    <div class="mb10">
+                                        <p>
+                                            {% trans 'The needed amount will be reserved on your card' %}
+                                        </p>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-lg">{% trans 'Confirm' %}</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">{% trans 'Send and Confirm' %}</button>
-                            </div>
-                        </form>
+                        {% endif %}
                     {% endif %}
-
                 {% endif %}
-
             </div>
-
         </div>
     </div>
 
@@ -111,7 +112,7 @@
         var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
         data["csrfmiddlewaretoken"] = csrf_token;
         data["coupon"] = $("#coupon_id").val();
-        data["order_id"] = $("#order_id").val();
+        data["order_id"] = {{ order.id }};
         var url = $(this).attr("action");
 
         $.ajax({
@@ -136,5 +137,6 @@
         });
 
     });
+
   </script>
 {% endblock js_stuff %}

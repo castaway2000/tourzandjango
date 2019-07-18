@@ -4,6 +4,7 @@
 
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.css" rel=stylesheet type=text/css>
 
     <!-- Event snippet for post guide register conversion page -->
     <script>
@@ -23,8 +24,10 @@
     </div>
 {% endblock %}
 
-
 {% block js_stuff %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/custom_scripts/image_cropper.js' %}"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
     <script type="text/javascript"

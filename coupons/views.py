@@ -3,11 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from coupons.models import Coupon, CouponUser
 from orders.models import Order
+from datetime import datetime
 
 
 @login_required()
 def coupon_validation(request):
+    print("coupon validation")
     data = request.POST
+    print(data)
     order_id = data.get("order_id")
     coupon_code = data.get('coupon', None)
     user = request.user
@@ -18,7 +21,9 @@ def coupon_validation(request):
             order = Order.objects.get(id=order_id)
         except:
             pass
-        if order and not order.coupon and order.status.id == 1:#coupons can be applied for orders only in pending status
+        if order and not order.coupon:  # and order.status.id == 2:#coupons can be applied for orders only in agreed status.
+            # AT0411: TODO validate that the check for order status is on template side? Think about putting it here as well
+            #TODO and about moving this all to model method at all for API re-usage
             coupon = None
             if coupon_code:
                 try:
@@ -34,19 +39,21 @@ def coupon_validation(request):
                     if coupon.get_if_more_users_available():
                         coupon_user, created = CouponUser.objects.get_or_create(user_id=user.id, coupon=coupon)
                         redeemed = coupon_user.redeemed_at
-                        discount = coupon_user.coupon.value
-                        coupon_type = coupon_user.coupon.type.name
+                        coupon_type = coupon_user.coupon.type.name #AT 04112018 TODO switch to id here
 
-                        #setting coupon to order:
-                        order.coupon = coupon
-                        order.save(force_update=True)
-                        order = Order.objects.get(id=order.id)
-
+                        """
+                        AT 03112018: extend this with our types, when they will be implemented, like absolute amount or target amount
+                        """
                         if coupon_type == 'percentage':
                             data["result"] = "success" #for reloading a page in ajax
 
-                        if redeemed:
-                            data = {'is_used': True}
+                            if redeemed:
+                                data = {'is_used': True}
+                            else:
+                                coupon_user.redeemed_at = datetime.now()
+                                # setting coupon to order:
+                                order.coupon = coupon
+                                order.save(force_update=True)
                     else:
                         data = {'is_used': True}
 

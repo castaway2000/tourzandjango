@@ -1,12 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import *
 from .models import *
-from tours.models import Tour
-from orders.models import Review
+from tours.models import Tour, ScheduledTour
+from partners.models import IntegrationPartners, Endorsement
+from website_management.models import InTheNews
+
 from locations.models import City
 from django.contrib.auth.models import User
 from django.utils.translation import activate, get_language
@@ -19,10 +21,10 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from orders.models import Order
 from guides.models import GuideProfile
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from utils.internalization_wrapper import languages_english
-from allauth.account.views import SignupView, _ajax_response
-from tourzan.settings import GOOGLE_RECAPTCHA_SECRET_KEY
+from allauth.account.views import SignupView, LoginView, _ajax_response
+from tourzan.settings import GOOGLE_RECAPTCHA_SITE_KEY, GOOGLE_RECAPTCHA_SECRET_KEY
 import requests
 from utils.sending_sms import SendingSMS
 import datetime
@@ -34,40 +36,13 @@ from allauth.account.utils import complete_signup
 from allauth.account import app_settings
 from allauth.exceptions import ImmediateHttpResponse
 import time
-
-
-def login_view(request):
-    """
-    this funtion re-applies /login funtion from django-allauth/
-    Login redirects are handled here
-    """
-    form = LoginForm(request.POST or None)
-    if not "next" in request.GET:
-        request.GET.next = reverse("home")
-    if request.method == 'POST' and form.is_valid():
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(username=username, password=password)
-        if user:
-            if user.is_active:
-                login(request, user)
-                if request.GET:
-                    next_url = request.GET.get("next")
-                    if next_url:
-                        return HttpResponseRedirect(next_url)
-                if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
-                    request.session["current_role"] = "guide"
-                elif not hasattr(user, "guideprofile"):
-                    messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (reverse("guide_registration_welcome"), _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
-                if request.session.get("pending_order_creation"):
-                    return HttpResponseRedirect(reverse("making_booking"))
-                return HttpResponseRedirect(reverse("home"))
-            else:
-                return HttpResponse("Your account is disabled.")
-        else:
-            messages.error(request, 'Login credentials are incorrect!')
-    return render(request, 'users/login_register.html', {"form": form})
+from website_management.models import HomePageContent
+from locations.models import Country
+import urllib.parse as urlparse
+from .forms import ExpressSignupForm
+from utils.sending_emails import SendingEmail
+from allauth.account.utils import get_next_redirect_url
+from utils.locations import get_city_country
 
 
 def logout_view(request):
@@ -80,14 +55,21 @@ def logout_view(request):
 @login_required()
 def after_login_router(request):
     user = request.user
-    print("after_login_router")
-    print(HttpResponseRedirect(request.META.get('HTTP_REFERER')))
     pending_guide_registration = request.session.get("guide_registration_welcome_page_seen")
     if pending_guide_registration:
         return HttpResponseRedirect(reverse("guide_registration"))
     else:
         if user.generalprofile.is_previously_logged_in:
-            return HttpResponseRedirect(reverse("home"))
+            if hasattr(user, "guideprofile") and user.guideprofile.is_default_guide:
+                request.session["current_role"] = "guide"
+            elif not hasattr(user, "guideprofile"):
+                messages.success(request, "<h4><a href='https://www.tourzan.com%s'>%s</a></h4>" % (
+                    reverse("guide_registration_welcome"),
+                    _("We see you are not a guide yet, you should consider being a guide!")), 'safe')
+            if request.session.get("pending_order_creation"):
+                return HttpResponseRedirect(reverse("making_booking"))
+            else:
+                return HttpResponseRedirect(reverse("home"))
         else:
             user.generalprofile.is_previously_logged_in = True
             user.generalprofile.save(force_update=True)
@@ -96,16 +78,66 @@ def after_login_router(request):
 
 def home(request):
     current_page = "home"
-    guides = GuideProfile.objects.filter(is_active=True)\
-        .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
+    # guides = GuideProfile.objects.filter(is_active=True)\
+    #     .values("user__generalprofile__first_name", "user__generalprofile__uuid", "user__username", "profile_image", "overview")[:4]
+    #
+    # tours = Tour.objects.filter(is_active=True).order_by("-rating")
+    # all_tours = tours.order_by("-rating")[:4]
+    # hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
+    # fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
+    # free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
+    # cities = City.objects.filter(is_active=True, is_featured=True)\
+    #              .values("original_name", "image", "image_medium", "name", "slug", "country__slug")[:10]
 
-    tours = Tour.objects.filter(is_active=True).order_by("-rating")
-    all_tours = tours.order_by("-rating")[:4]
-    hourly_tours = tours.filter(payment_type_id=1).order_by("-rating")[:4]
-    fixed_payment_tours = tours.filter(payment_type_id=2).order_by("-rating")[:4]
-    free_tours = tours.filter(is_free=True).order_by("-rating")[:4]
-    cities = City.objects.filter(is_active=True, is_featured=True).values("original_name", "image", "image_medium", "name")[:5]
-    return render(request, 'users/home.html', locals())
+    src = request.GET.get("src")
+    city = None
+    if src:
+        city_slug = src
+        city, country = get_city_country(city_slug=city_slug)
+    try:
+        obj = HomePageContent.objects.last()
+    except:
+        obj = None
+    countries = Country.objects.filter(is_active=True).order_by("position_index")
+    cities_count = City.objects.all().count()
+    print(countries.count())
+    # special_offers_items = Tour.objects.filter(is_active=True)
+    # special_offer_tours = list()
+    # count = 0
+    # for special_offers_item in special_offers_items.iterator():
+    #     if len(special_offers_item.available_discount_tours()) > 0:
+    #         special_offer_tours.append(special_offers_item)
+    #         if count == 4:
+    #             break
+    #         count += 1
+    partners = IntegrationPartners.objects.filter(is_active=True)[:8]
+    featured_news = InTheNews.objects.filter(is_active=True)[:4]
+    endorsements = Endorsement.objects.filter(is_active=True)[:8]
+    #
+    # now = datetime.datetime.now().date()
+    # limit_days = now + datetime.timedelta(days=30)
+    # discount_scheduled_tours = ScheduledTour.objects.filter(is_active=True, seats_available__gt=0, discount__gt=0)
+    # special_offer_tours = list()
+    # for discount_scheduled_tour in discount_scheduled_tours.iterator():
+    #     tour = discount_scheduled_tour.tour
+    #     if not tour in special_offer_tours:
+    #         special_offer_tours.append(tour)
+
+
+    context = {
+        "obj": obj,
+        "current_page": current_page,
+        "countries": countries[:6],
+        "countries_count": countries.count(),
+        "cities_count": cities_count,
+        # "special_offer_tours": special_offer_tours,
+        "partners": partners,
+        "featured_news": featured_news,
+        "endorsements": endorsements,
+    }
+    if city:
+        context["city"] = city
+    return render(request, 'users/home.html', context)
 
 
 @login_required()
@@ -142,12 +174,11 @@ def general_settings(request):
     verification_form = VerificationCodeForm(user, request.POST or None) #pass extra parameter here "user"
 
     if request.method == 'POST':
-        # print(request.POST)
-
         #GeneralProfile form section
         if form.is_valid():
             new_form = form.save(commit=False)
             new_form = form.save()
+            messages.success(request, 'profile saved')
 
             user_email = user.email
             email = form.cleaned_data.get("email")
@@ -157,7 +188,9 @@ def general_settings(request):
 
                 #additional check to cope with lowercase emails, etc
                 email_in_user_exists = User.objects.filter(is_active=True, email=email).exclude(id=user.id).exists()
+
                 if email_address_exists or email_in_user_exists:
+
                     # print("ERROR")
                     pass
                 else:
@@ -166,11 +199,11 @@ def general_settings(request):
 
                     #there is no email field on GeneralProfile model, so the logic for changing email is in this view only.
                     #this code is for triggering sending confirmation email function from django allauth
-                    email_address = EmailAddress.objects.create(
+                    email_address = EmailAddress.objects.update_or_create(  # TODO make this better
                         user=request.user,
                         email=email,
                     )
-                    email_address.send_confirmation(request)
+                    email_address[0].send_confirmation(request)
 
                 #this message is here to prevent signup users emails leaking
                 messages.success(request, _('Your email address has been changed, please check you mailbox to confirm a new email address!'))
@@ -211,8 +244,8 @@ def general_settings(request):
                 #phone_formatted field is a hidden input field where js intl-tel-input plugin puts data
                 phone = data.get("phone_formatted")
 
-                sms = SendingSMS({"phone_to": phone, "user_id": user.id})
-                sms_sending_info = sms.send_validation_sms()
+                sms = SendingSMS()
+                sms_sending_info = sms.send_validation_sms(phone_to=phone, user_id=user.id)
                 if sms_sending_info["status"] == "success":
                     general_profile = user.generalprofile
                     general_profile.phone_pending = phone
@@ -240,13 +273,14 @@ def general_settings(request):
                     if "pending_sms_code" in request.session:
                         del request.session["pending_sms_code"]
                     messages.success(request, 'Phone was successfully validated!')
+                    general_profile.sms_notifications = True
+                    general_profile.save(force_update=True)
                 else:
                     messages.error(request, 'Please enter validation code!')
 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request, 'users/general_settings.html', locals())
-
 
 
 #this view is a based on the code of django view (django.views.i18n.py set_language() ), because there were [roblems with utf-8
@@ -277,6 +311,7 @@ def set_language(request, language):
 @login_required()
 def change_role(request, new_role=None):
     user = request.user
+    new_role = False
     if not user.is_anonymous() and hasattr(user, 'guideprofile'):
         current_role = request.session.get("current_role")
         if current_role == "tourist" or not current_role:
@@ -285,20 +320,16 @@ def change_role(request, new_role=None):
         else:
             request.session["current_role"] = "tourist"
             messages.success(request, 'Switched to tourist profile!')
+        return HttpResponseRedirect(reverse("settings_router"))
     else:
         request.session["current_role"] = "tourist"
         return HttpResponseRedirect(reverse("guide_registration_welcome"))
-
-    #new_role option is goes from settings page switching to another user
-    if new_role:
-        return HttpResponseRedirect(reverse("settings_router"))
-    else:
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required()
 def settings_router(request):
     current_role = request.session.get("current_role")
+    print(current_role)
     if current_role == "guide":
         return HttpResponseRedirect(reverse("profile_settings_guide"))
     elif current_role == "tourist" or not current_role:
@@ -353,8 +384,34 @@ def search_language(request):
     return JsonResponse(response_data, safe=False)
 
 
+class LoginViewCustom(LoginView):
+
+    def get_success_url(self):
+        self.success_url = reverse("after_login_router")
+        ret = (get_next_redirect_url(
+            self.request,
+            self.redirect_field_name) or self.success_url)
+        return ret
+
 #redefining allauth SignUp view to cope with a bug when at login page user tries to signup and then to log in
 class SignupViewCustom(SignupView):
+
+    def get_success_url(self):
+        request = self.request
+        if request.session.get("pending_order_creation"):
+            self.success_url = reverse("making_booking")
+
+        # Explicitly passed ?next= URL takes precedence
+        ret = (
+            get_next_redirect_url(
+                self.request,
+                self.redirect_field_name) or self.success_url)
+        return ret
+
+    def get_context_data(self, **kwargs):
+        context = super(SignupViewCustom, self).get_context_data(**kwargs)
+        context["recaptcha_site_key"] = GOOGLE_RECAPTCHA_SITE_KEY
+        return context
 
     def form_valid(self, form):
         # By assigning the User to a property on the view, we allow subclasses
@@ -406,14 +463,8 @@ class SignupViewCustom(SignupView):
                 #in this step not only tourists can be referred, but guides as well, so reffered by is set to generalprofile,
                 #which is related to user by OneToOne field
                 #Dublicate this logic for API singup functionality later
-                try:
-                    referred_by_gp = GeneralProfile.objects.get(referral_code=referral_code)
-                    referred_by_user = referred_by_gp.user
-                    request.user.generalprofile.referred_by = referred_by_user
-                    request.user.generalprofile.save(force_update=True)
-                except Exception as e:
-                    print(e)
-                    pass
+                #AT 04112018: it is implemented, because this flow is used in at least one more place (completing express signup)
+                request.user.generalprofile.apply_referral_code(referral_code)
 
             #creating Tourist Profile (moved here from
             if u"login_btn" in request.POST:
@@ -454,3 +505,62 @@ def sending_sms_code(request):
 @login_required()
 def promotions(request):
     return render(request, 'users/promotions.html', locals())
+
+
+def authorization_options(request):
+    user = request.user
+    if not user.is_anonymous():
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse("home")))
+    else:
+        form = ExpressSignupForm(request.POST or None)
+        if request.POST and form.is_valid():
+            first_name = form.cleaned_data.get("first_name")
+            email = form.cleaned_data.get("email")
+            user = User.objects.create(username=email, email=email)
+            user.set_unusable_password()
+
+            general_profile = user.generalprofile
+            general_profile.first_name = first_name
+            general_profile.is_express_signup_initial = True
+            general_profile.is_express_signup_current = True
+            general_profile.save(force_update=True)
+
+            #sending email with link to continue checkout
+            SendingEmail({"user": user}).email_for_express_signup()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            if request.session.get("pending_order_creation"):
+                return HttpResponseRedirect(reverse("making_booking"))
+            else:
+                return HttpResponseRedirect(reverse("home"))
+        return render(request, 'users/authorization_options.html', locals())
+
+
+def express_signup_completing(request, uuid):
+    general_profile = get_object_or_404(GeneralProfile, uuid=uuid)
+    user = general_profile.user
+    if user.has_usable_password():
+        return HttpResponseForbidden()
+    else:
+        form = ExpressSignupCompletingForm(request.POST or None, initial={"email": user.email, "first_name": user.first_name})
+    if request.POST and form.is_valid():
+        print(request.POST)
+        password = form.cleaned_data["password1"]
+        username = form.cleaned_data["username"]
+        first_name = form.cleaned_data["first_name"]
+        referral_code = form.cleaned_data["referral_code"]
+
+        #updating info for user
+        user.set_password(password)
+        user.username = username
+        user.save(force_update=True)
+
+        #updating info for user profile
+        general_profile = user.generalprofile
+        general_profile.first_name = first_name
+        general_profile.is_express_signup_current = False
+        general_profile.save(force_update=True)
+        general_profile.apply_referral_code(referral_code)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, _('Successfully signed up!'))
+        return HttpResponseRedirect(reverse("home"))
+    return render(request, 'users/express_signup_completing.html', locals())

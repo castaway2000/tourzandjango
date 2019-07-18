@@ -31,13 +31,7 @@ def profile_settings_tourist(request):
         interests = request.POST.getlist("interests")
         user_interest_list = list()
         if interests:
-            for interest in interests:
-                interest, created = Interest.objects.get_or_create(name=interest)
-
-                #adding to bulk create list for faster creation all at once
-                user_interest_list.append(UserInterest(interest=interest, user=user))
-        UserInterest.objects.filter(user=user).delete()
-        UserInterest.objects.bulk_create(user_interest_list)
+            user.generalprofile.set_interests_from_list(interests)
 
         # Languages assigning
         # it is the same peace of code as at guide view - maybe to remake this in the future
@@ -64,7 +58,8 @@ def profile_settings_tourist(request):
 
         new_form_profile = form.save(commit=False)
         new_form_profile = form.save()
-        user_interests = UserInterest.objects.filter(user=user)
+        user_interests = UserInterest.objects.filter(user=user, is_active=True)
+        messages.success(request, 'profile saved')
 
         #redirect to pending order if tourist account was created
         if request.session.get("pending_order_creation"):
@@ -75,7 +70,7 @@ def profile_settings_tourist(request):
     language_levels = LanguageLevel.objects.all().values()
     user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
 
-    user_interests = UserInterest.objects.filter(user=user)
+    user_interests = UserInterest.objects.filter(user=user, is_active=True)
     return render(request, 'users/profile_settings_tourist.html', locals())
 
 

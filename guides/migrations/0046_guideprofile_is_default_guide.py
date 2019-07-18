@@ -6,15 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+    pass
 
-    dependencies = [
-        ('guides', '0045_guideprofile_license_image'),
-    ]
+    #AT: commented out 27.07.2018 due to issue with migrations merging. The same operations is in the migration guides 0045
 
-    operations = [
-        migrations.AddField(
-            model_name='guideprofile',
-            name='is_default_guide',
-            field=models.BooleanField(default=False),
-        ),
-    ]
+    # dependencies = [
+    #     ('guides', '0045_guideprofile_license_image'),
+    # ]
+    #
+    # operations = [
+    #     migrations.AddField(
+    #         model_name='guideprofile',
+    #         name='is_default_guide',
+    #         field=models.BooleanField(default=False),
+    #     ),
+    # ]

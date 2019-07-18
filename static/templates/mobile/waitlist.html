@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+
+
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+
+    <!-- Event snippet for post guide register conversion page -->
+    <script>
+        gtag('event', 'conversion', {'send_to': 'AW-855709588/CoqrCN2q3XkQlK-EmAM'});
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="container">
+        <div class="container-fluid">
+            <div class="col-lg-4 col-lg-offset-1" style="padding-top: 50px;">
+                <h4 class="text-center">Sign up to hear about the Tourzan app when its available in your area!</h4>
+                <br>
+                <strong>
+                Interested in being part of the test market for our real time tour guide hailing application?
+                    Sign up today! the more people in each location the more likely it will be to come to your area!
+                </strong>
+                <br/>
+                <br/>
+                <form method="post" enctype="multipart/form-data" action="{% url 'waitlist' %}">{% csrf_token %}
+                    <div class="form-group text-center">
+                        <br>
+                        <input required type="text" name="full_name" placeholder="full name">
+                        <br><br>
+                        <input required type="email" name="email" placeholder="your@email.com">
+                        <br><br>
+                        <input required type="text" name="city" placeholder="city">
+                        <br><br>
+                        <input required type="text" name="country" placeholder="country">
+                        <br><br>
+                        <label>Comments:</label>
+                        <textarea class="form-control" name="comments" placeholder="Put your comments here"></textarea>
+                        <br/><br/>
+                        <input type="submit" class="btn btn-primary" value="Send me news when its ready!">
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-7" style="padding-bottom: 50px">
+                <h4 style="padding-top: 50px; padding-left: 100px">Real local guides at the tip of your fingers!</h4>
+                <img src="{% static 'img/mockup.png' %}">
+            </div>
+        </div>
+    <div class="container">
+        <div class="container-fluid">
+            <div class="text-center">
+                <h2 style="padding-top: 100px">The Complete Tourzan Experience</h2>
+                <img src="{% static 'img/placeit.png' %}" style="position: relative; top: -100px;">
+                <strong style="position: relative; top: -100px;">
+                    Book in advance or on the ground, the control is in your hands with the only
+                    end to end experience platform. Have a blast meeting locals or make side cash showing travelers around!
+                    This is the future of travel!
+                </strong>
+            </div>
+        </div>
+
+    </div>
+    </div>
+{% endblock %}

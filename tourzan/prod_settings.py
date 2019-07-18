@@ -2,10 +2,13 @@ import os
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 ON_PRODUCTION = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'testingdb',
         'USER': 'tourzandbuser',
         'PASSWORD': 'TourzanTravelling12#$',
@@ -28,7 +31,7 @@ AWS_S3_ENCRYPTION = True
 # AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 # AWS_PRIVATE_MEDIA_LOCATION = "media/private"
 
-MEDIA_URL = 'https://tourzan.s3.amazonaws.com/'
+MEDIA_URL = 'https://d3n77qih6h0cff.cloudfront.net/'
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }

@@ -1,87 +1,123 @@
 {% load static %}
+{% load hijack_tags %}
 
 <!DOCTYPE HTML>
-<html>
+<html lang="en" xml:lang="en">
 
 <head>
-    <title>Tourzan</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta name="keywords" content="Travel, tourism, guide services, local guides, tour guide" />
-    <meta name="description" content="Tourzan.com - Your source for local guides">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="twitter:image" content="https://www.tourzan.com/static/img/Tourzan-transparant.png">
+    <meta name="twitter:card" content="The best online marketplace for booking tours by locals.">
+    <meta name="twitter:title" content="Find The Best Local Tour Guides Globally at Tourzan.com">
+    <meta name="twitter:description" content="The most affordable private local tour guide companies
+        connecting travelers with local guides across the world">
+    <meta name="twitter:site" content="@tourzanHQ">
+
+    {% block seo_stuff %}
+        <title>Find The Best Local Tour Guides Globally at Tourzan.com</title>
+        <meta name="description" content="We are one of the most affordable private local tour guide companies
+        connecting travelers with local guides across {{ countries_count|default:301 }} countries and
+        {{ cities_count|default:309 }} cities.">
+
+    <meta property="og:title" content="Find The Best Local Tour Guides Globally at Tourzan.com" />
+    {% if request.user.generalprofile.referral_code %}
+        <meta property="og:url" content="{{ request.build_absolute_uri }}?ref={{ request.user.generalprofile.referral_code }}" />
+    {% else %}
+        <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    {% endif %}
+    <meta property="og:image" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% static 'img/tourzan_main_image.jpg' %}" />
+    <meta property="og:description" content="The best online marketplace for booking tours by locals.
+        Search for local experiences with trusted hosts to get the best vacation experience with us">
+{#    <meta property="og:image:height" content="640" />#}
+{#    <meta property="og:image:width" content="1200" />#}
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" hreflang="en" />
+    <script type="application/ld+json">
+    {
+       "@context": "http://schema.org",
+       "@type": "Organization",
+       "name": "Tourzan",
+       "url": "https://www.tourzan.com/en/",
+       "logo": "https://www.tourzan.com/static/img/Tourzan-transparant.png",
+       "contactPoint": [
+           {
+               "@type": "ContactPoint",
+               "telephone": "+1(844)8433815",
+               "contactType": "customer service",
+               "email": "contactus@tourzan.com",
+               "areaServed": [
+                   "Worldwide"
+               ],
+               "availableLanguage": [
+                   "English"
+               ]
+           }
+       ],
+       "sameAs": [
+           "https://www.instagram.com/tourzanhq/",
+           "https://twitter.com/tourzanhq",
+           "https://www.facebook.com/tourzanHQ/",
+           "https://www.linkedin.com/company/tourzan-com/",
+           "https://www.youtube.com/channel/UCFjdoTb1c5G0D_e2P7sm9GQ"
+       ]
+    }
+    </script>
+    {% endblock seo_stuff %}
+    {% if on_prod %}
+
+     <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P734KVD');</script>
+    <!-- End Google Tag Manager -->
+
+        {% if subdomain != 'api' %}
+            <!-- Hotjar Tracking Code for https://www.tourzan.com -->
+            <script>
+                (function(h,o,t,j,a,r){
+                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+                    h._hjSettings={hjid:1022447,hjsv:6};
+                    a=o.getElementsByTagName('head')[0];
+                    r=o.createElement('script');r.async=1;
+                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+                    a.appendChild(r);
+                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+            </script>
+        {% endif %}
+    {% endif %}
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
-        <!-- Twitter universal website tag code -->
-    <script>
-        !function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
-        },s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='//static.ads-twitter.com/uwt.js',
-        a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
-        // Insert Twitter Pixel ID and Standard Event data below
-        twq('init','nzdaq');
-        twq('track','PageView');
-    </script>
-    <!-- End Twitter universal website tag code -->
-    
-        <!-- linkedin Pixel Code -->
-    <script type="text/javascript">
-        _linkedin_data_partner_id = "320916";
-        </script><script type="text/javascript">
-        (function(){var s = document.getElementsByTagName("script")[0];
-        var b = document.createElement("script");
-        b.type = "text/javascript";b.async = true;
-        b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
-        s.parentNode.insertBefore(b, s);})();
-    </script>
-    <noscript>
-        <img height="1" width="1" style="display:none;" alt="" src="https://dc.ads.linkedin.com/collect/?pid=320916&fmt=gif" />
-    </noscript>
-
-    <!-- Facebook Pixel Code -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '499325567116776');
-      fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=499325567116776&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Facebook Pixel Code -->
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110088140-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'UA-110088140-1');
-    </script>
-
-
     <!-- GOOGLE FONTS -->
-    <link href='//fonts.googleapis.com/css?family=Roboto:400,300,100,500,700' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Roboto:400,300,100,500,700' rel='stylesheet' type='text/css' hreflang="en">
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css' hreflang="en">
 
     <!-- /GOOGLE FONTS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+{#    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/bootstrap.css">#}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" hreflang="en">
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
-    <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/icomoon.css" hreflang="en">
 
-    <link rel="stylesheet" href="{% static 'css/theme_reapply.css' %}">
-    <link rel="stylesheet" href="{% static 'css/social_buttons_styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/mystyles.css' %}">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" hreflang="en">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" hreflang="en">
+
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/styles.css" hreflang="en">
+
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/theme_reapply.css" hreflang="en">
+    <link rel="stylesheet" href="//dwuzgckm5n8u8.cloudfront.net/css/social_buttons_styles.css" hreflang="en">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" hreflang="en" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/mystyles.css' %}" hreflang="en">
     <script src='https://www.google.com/recaptcha/api.js'></script>
     {% block header_stuff %}
     {% endblock %}
@@ -89,21 +125,26 @@
 </head>
 
 <body>
+{% hijack_notification %}
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P734KVD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <!-- FACEBOOK WIDGET -->
     <div id="fb-root"></div>
     <!-- /FACEBOOK WIDGET -->
 
     <div class="global-wrap">
-
-        {% include 'navbar.html' %}
-
-        {% include 'topbar_notifications.html' %}
-
+        {% if subdomain != 'api' %}
+            {% include 'navbar.html' %}
+            {% include 'topbar_notifications.html' %}
+        {% endif %}
         {% block content %}
         {% endblock %}
-
-        {% include 'footer.html' %}
+        {% if subdomain != 'api' %}
+            {% include 'footer.html' %}
+        {% endif %}
 
         <form id="csrf_getting_form" class="hidden">{% csrf_token %}
         </form>
@@ -111,42 +152,61 @@
 {#        modal for writing feedbacks for orders#}
         {% include 'orders/modals/writing_feedback_modal.html' %}
 
+        <script>
+            function init() {
+            var imgDefer = document.getElementsByName('dimg');
+            for (var i=0; i<imgDefer.length; i++) {
+            if(imgDefer[i].getAttribute('data-src')) {
+            imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+            } } }
+            window.onload = init;
+        </script>
 
-{#        <script src="{% static 'js/jquery.js' %}"></script>#}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
-        <script src="{% static 'js/modernizr.js' %}"></script>
-        <script src="{% static 'js/bootstrap.js' %}"></script>
-        <script src="{% static 'js/slimmenu.js' %}"></script>
-{#        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>#}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
-        <script src="{% static 'js/bootstrap-timepicker.js' %}"></script>
-        <script src="{% static 'js/nicescroll.js' %}"></script>
-        <script src="{% static 'js/dropit.js' %}"></script>
-        <script src="{% static 'js/ionrangeslider.js' %}"></script>
-{#        <script src="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.2.0/js/ion.rangeSlider.min.js"></script>#}
 
-        <script src="{% static 'js/icheck.js' %}"></script>
-        <script src="{% static 'js/fotorama.js' %}"></script>
-{#        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>#}
-        <script src="{% static 'js/typeahead.js' %}"></script>
-        <script src="{% static 'js/card-payment.js' %}"></script>
-        <script src="{% static 'js/magnific.js' %}"></script>
-        <script src="{% static 'js/owl-carousel.js' %}"></script>
-        <script src="{% static 'js/fitvids.js' %}"></script>
-        <script src="{% static 'js/tweet.js' %}"></script>
-{#        <script src="{% static 'js/countdown.js' %}"></script>#}
-        <script src="{% static 'js/gridrotator.js' %}"></script>
-        <script src="{% static 'js/custom.js' %}"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/modernizr.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/bootstrap.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/slimmenu.js"></script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/nicescroll.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/dropit.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/ionrangeslider.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/icheck.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/fotorama.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/typeahead.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/card-payment.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/magnific.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/owl-carousel.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/fitvids.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/tweet.js"></script>
+        <script src="https://dwuzgckm5n8u8.cloudfront.net/js/gridrotator.js"></script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script src="{% static 'js/custom_scripts/toastr_settings.js' %}"></script>
+        {% if messages %}
+            <script type="text/javascript">
+                {% for message in messages %}
+                    toastr.{{ message.tags }}("{{ message }}");
+                {% endfor %}
+            </script>
+        {% endif %}
+
+
+        <script src="{% static 'js/custom_scripts/general_ws.js' %}"></script>
+
+        <script src="//dwuzgckm5n8u8.cloudfront.net/js/custom.js"></script>
 
         <script src="{% static 'js/custom_scripts/scripts.js' %}"></script>
+
 
         {% block js_stuff %}
         {% endblock %}
     </div>
 </body>
-
 </html>
-
 

@@ -6,6 +6,7 @@
 
 {% block content %}
     <div class="container">
+        {% if subdomain != 'api' %}
         <ul class="breadcrumb">
             <li><a href="{% url 'home' %}">{% blocktrans %}Home{% endblocktrans %}</a>
             </li>
@@ -13,10 +14,11 @@
             <li><a href="{% url 'tours' %}?city_input={{ tour.city.original_name }}">{{ tour.city.original_name }}</a>
             </li>
             <li>
-                <a href="{% url 'guide' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid %}">{{ tour.guide.user.generalprofile.first_name }}</a>
+                <a href="{% url 'guide_new' tour.guide.user.generalprofile.first_name tour.guide.user.generalprofile.uuid  'new' %}">{{ tour.guide.user.generalprofile.first_name }}</a>
             </li>
             <li class="active">{{ tour.name }}</li>
         </ul>
+        {% endif %}
 
         <div class="booking-item-details">
             <header class="booking-item-header">
@@ -100,7 +102,6 @@
             </div>
 
             <div class="gap gap-small"></div>
-
 
             <div class="row row-wrap">
                 <div class="col-md-8">

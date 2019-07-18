@@ -11,9 +11,10 @@ from rest_framework.response import Response
 from ..models import *
 from .serializers import *
 from django.db.models import Q
+from utils.api_helpers import FilterViewSet
 
 
-class BlogCategoryViewSet(viewsets.ModelViewSet):
+class BlogCategoryViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = BlogCategory.objects.all()
     serializer_class = BlogCategorySerializer
     permission_classes = (AllowAny,)
@@ -24,7 +25,7 @@ class BlogCategoryViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class BlogTagViewSet(viewsets.ModelViewSet):
+class BlogTagViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = BlogTag.objects.all()
     serializer_class = BlogTagSerializer
     permission_classes = (AllowAny,)
@@ -35,7 +36,7 @@ class BlogTagViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class BlogPostViewSet(viewsets.ModelViewSet):
+class BlogPostViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
     permission_classes = (AllowAny,)
@@ -46,7 +47,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class BlogPostTagViewSet(viewsets.ModelViewSet):
+class BlogPostTagViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = BlogPostTag.objects.all()
     serializer_class = BlogPostTagSerializer
     permission_classes = (AllowAny,)

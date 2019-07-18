@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import *
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 
 class OrderStatusAdmin(admin.ModelAdmin):
@@ -20,13 +22,28 @@ class PaymentStatusAdmin(admin.ModelAdmin):
 admin.site.register(PaymentStatus, PaymentStatusAdmin)
 
 
-class OrderAdmin(admin.ModelAdmin):
+class OrderResource(resources.ModelResource):
+    class Meta:
+        model = Order
+
+
+class OrderAdmin(ImportExportModelAdmin):#admin.ModelAdmin):
+    resource_class = OrderResource
     list_display = [field.name for field in Order._meta.fields]
 
     class Meta:
         model = Order
 
 admin.site.register(Order, OrderAdmin)
+
+
+class OrderStatusChangeHistoryAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in OrderStatusChangeHistory._meta.fields]
+
+    class Meta:
+        model = OrderStatusChangeHistory
+
+admin.site.register(OrderStatusChangeHistory, OrderStatusChangeHistoryAdmin)
 
 
 class ServiceInOrderAdmin(admin.ModelAdmin):
@@ -45,3 +62,12 @@ class ReviewAdmin(admin.ModelAdmin):
         model = Review
 
 admin.site.register(Review, ReviewAdmin)
+
+
+class OtherReviewsAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in OtherReviews._meta.fields]
+
+    class Meta:
+        model = OtherReviews
+
+admin.site.register(OtherReviews, OtherReviewsAdmin)

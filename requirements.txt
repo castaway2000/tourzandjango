@@ -1,6 +1,6 @@
-django==1.11
+django==1.11.22
 pillow==4.0.0
-django-allauth==0.31.0
+django-allauth==0.37.1
 django-crequest==2016.3.16
 django-language-field==0.0.3
 Babel==2.4.0
@@ -9,7 +9,7 @@ django-summernote==0.8.7
 django-cors-headers==2.1.0
 django-extensions==1.9.9
 
-djangorestframework==3.7.7
+djangorestframework>=3.9.1
 markdown==2.6.8
 django-filter==1.0.4
 djangorestframework-jwt==1.10.0
@@ -17,7 +17,7 @@ coreapi==2.3.1
 coreapi-cli==1.0.9
 
 Unidecode==0.4.20
-requests==2.18.1
+requests==2.20.0
 braintree==3.37.2
 
 gunicorn==19.7.1
@@ -46,3 +46,17 @@ channels==2.1.1
 # pypiwin32==223
 channels_redis==2.2.1
 daphne==2.1.2
+django-rest-auth==0.9.3
+pyfcm==1.4.5
+txfcm==0.0.1
+baseapi==0.1.1
+requests-toolbelt==0.8.0
+redis==2.10.6
+
+django-emoticons==1.2
+django-robots==3.1.0
+tldextract==2.2.0
+django-hijack==2.1.10
+django-hijack-admin==2.1.10
+selenium==3.12.0
+django-import-export==1.1.0

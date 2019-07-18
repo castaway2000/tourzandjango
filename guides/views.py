@@ -18,6 +18,12 @@ from utils.payment_rails_auth import PaymentRailsWidget, PaymentRailsAuth
 from django.views.decorators.clickjacking import xframe_options_exempt
 from users.models import GeneralProfile
 import time
+import json
+from orders.views import making_booking
+from allauth.socialaccount.models import SocialApp
+from payments.models import Payment
+from orders.models import Order
+from django.utils.translation import ugettext as _
 
 
 @xframe_options_exempt
@@ -48,12 +54,8 @@ def guides(request):
     print(request.GET)
     location_input = request.GET.get("location_search_input")
     is_country = request.GET.get("is_country")
-    print(11111)
-    print(location_input)
-    print(filtered_cities)
 
     place_id = request.GET.get("place_id")
-    print(place_id)
 
     guide_input = request.GET.getlist(u'guide_input')
     interest_input = request.GET.getlist(u'interest_input')
@@ -66,6 +68,7 @@ def guides(request):
     #a way to filter tuple of tuples
     languages_english_dict = dict(languages_english)
     languages = [(x,languages_english_dict[x]) for x in language_input]
+    language_list = [languages_english_dict[l] for l in language_input]
 
     order_results = request.GET.get('order_results')
 
@@ -82,8 +85,6 @@ def guides(request):
             hourly_price_kwargs["rate__lte"] = hourly_price_max
 
     #filtering by location
-    print(location_input)
-    print(is_country)
     if location_input and is_country:
         # base_kwargs["city__original_name__in"] = city_input
         try:
@@ -110,9 +111,12 @@ def guides(request):
         guide = GuideProfile.objects.get(uuid__in=guide_input)
     if interest_input:
         base_user_interests_kwargs["interest__name__in"] = interest_input
+        base_user_interests_kwargs["is_active"] = True
     if service_input:
         base_guide_service_kwargs["service__name__in"] = service_input
-
+    # if languages:  # TODO: later n stuff
+    #     user.generalprofile.
+    #     base_kwargs["user__generalprofile__getlanguages__in"] = language_list
     if filter_form_data and not is_company:
         base_kwargs["user__generalprofile__is_company"] = False
 
@@ -147,15 +151,12 @@ def guides(request):
 
     guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
     # print("base kwargs")
-    print (base_kwargs)
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
         base_kwargs_mixed = base_kwargs.copy()
         base_kwargs_mixed.update(hourly_price_kwargs)
         guides = guides_initial.filter(**base_kwargs_mixed)
     elif place_id or location_input or guide_input:
-        print(base_kwargs)
-        time.sleep(10)
         guides = guides_initial.filter(**base_kwargs).order_by(*order_results)
     elif request.GET and request.GET.get("ref_id")==False:#there are get parameters
         guides = GuideProfile.objects.none()
@@ -207,7 +208,6 @@ def guides(request):
 
 def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     user = request.user
-    print("new view %s" % new_view)
     #referal id for partner to track clicks in iframe
     ref_id = request.GET.get("ref_id")
     if ref_id and not "ref_id" in request.session:
@@ -229,12 +229,17 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     tours = guide.tour_set.filter(is_active=True, is_deleted=False)
     tours_nmb = tours.count()
 
-    country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
     illegal_country = False
-    for i in ILLEGAL_COUNTRIES:
-        if i == country:
-            illegal_country = True
-            break
+    countries = City.objects.filter(id=guide.city_id).values()
+    if countries:
+        try:
+            country = countries[0]['full_location'].split(',')[-1].strip()
+            for i in ILLEGAL_COUNTRIES:
+                if i == country:
+                    illegal_country = True
+                    break
+        except:
+            pass
     try:
         tourist = user.touristprofile
         current_order = guide.order_set.filter(status_id=1, tourist=tourist).last()
@@ -245,23 +250,27 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
 
     guide_services = GuideService.objects.filter(guide=guide)
 
-    if request.POST:
-        data = request.POST
-        if data.get("text") and user:
-            kwargs = dict()
-            kwargs["text"] = data.get("text")
-            if data.get("name"):
-                kwargs["name"] = data.get("name")
-
-            kwargs["rating"] = 5
-
-            review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
-
-            if created:
-                #add messages here
-                pass
-
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    now = datetime.datetime.now().date()
+    # form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id, "date": now})
+    form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id})
+    if request.POST and form.is_valid():
+        return making_booking(request)
+        # data = request.POST
+        # if data.get("text") and user:
+        #     kwargs = dict()
+        #     kwargs["text"] = data.get("text")
+        #     if data.get("name"):
+        #         kwargs["name"] = data.get("name")
+        #
+        #     kwargs["rating"] = 5
+        #
+        #     review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
+        #
+        #     if created:
+        #         #add messages here
+        #         pass
+        #
+        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
     page = request.GET.get('page', 1)
@@ -280,9 +289,14 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
         "guide_services": guide_services
     }
 
-    guide_answers = GuideAnswer.objects.filter(guide=guide).order_by("order_priority", "id")
-
-    if new_view=="new":
+    guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True)\
+        .order_by("-question__order_priority", "question__id")
+    social_app = SocialApp.objects.filter(provider="facebook").last()
+    if social_app:
+        app_id = social_app.client_id
+    if new_view == "new":
+        return render(request, 'guides/guide_new2.html', locals())
+    elif new_view == "new-old":
         return render(request, 'guides/guide_new.html', locals())
     else:
         return render(request, 'guides/guide.html', locals())
@@ -305,7 +319,7 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     #         for interest_name in interests_list:
     #             Interest.objects.get_or_create(name=interest_name)
     #
-    #     messages.success(request, 'New artist was successfully created!')
+    #     messages.success(request, 'New interest was successfully created!')
     #
     # # for pictures: http://ashleydw.github.io/lightbox/
     # context = {
@@ -315,12 +329,12 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     # return render(request, 'users/profile_settings.html', locals())
 
 
-@login_required()
+@login_required(login_url='/accounts/signup/')  # AS: this is for routing after clicking become a guide
 def profile_settings_guide(request, guide_creation=True):
     page = "profile_settings_guide"
     user = request.user
     ref_code = user.generalprofile.referral_code
-    user_languages = UserLanguage.objects.filter(user=user)
+    user_languages = UserLanguage.objects.filter(user=user, is_active=True)
     language_levels = LanguageLevel.objects.all().values()
 
     # duplication of this peace of code below in POST area - remake it later
@@ -365,13 +379,7 @@ def profile_settings_guide(request, guide_creation=True):
         interests = request.POST.getlist("interests")
         user_interest_list = list()
         if interests:
-            for interest in interests:
-                interest, created = Interest.objects.get_or_create(name=interest)
-                #adding to bulk create list for faster creation all at once
-                user_interest_list.append(UserInterest(interest=interest, user=user))
-        UserInterest.objects.filter(user=user).delete()
-        UserInterest.objects.bulk_create(user_interest_list)
-
+            user.generalprofile.set_interests_from_list(interests)
         # Languages assigning
         language_native = request.POST.get("language_native")
         language_second = request.POST.get("language_second")
@@ -413,12 +421,10 @@ def profile_settings_guide(request, guide_creation=True):
         #saving services
         guide = new_form
         guide_services_ids_list = list()
-        print(request.POST)
         for name, value in request.POST.items():
             string_key = "service_"
             if name.startswith(string_key):
                 cleared_name = name.partition(string_key)[2]#getting part of the variable name which is field name
-                print(cleared_name)
                 service = Service.objects.get(html_field_name=cleared_name)
                 price_field_name = "serviceprice_%s" % cleared_name
                 price = request.POST.get(price_field_name, 0)
@@ -435,7 +441,12 @@ def profile_settings_guide(request, guide_creation=True):
                 del request.session["guide_registration_welcome_page_seen"]
             request.session["current_role"] = "guide"
             messages.success(request, 'Profile has been created! Please complete identity verification process!')
-            return HttpResponseRedirect(reverse("identity_verification_router"))
+            gp = GuideProfile.objects.get(user=user)
+            gp.is_default_guide = True
+            gp.save()
+            return HttpResponseRedirect(reverse("profile_settings_guide"))
+            # TODO: check this redirection fix. below is the redirect for identity verification.
+            # return HttpResponseRedirect(reverse("identity_verification_router"))
         else:
             messages.success(request, 'Profile has been updated!')
     else:
@@ -445,7 +456,7 @@ def profile_settings_guide(request, guide_creation=True):
     language_levels = LanguageLevel.objects.all().values()
     user_language_native, user_language_second, user_language_third = user.generalprofile.get_languages()
 
-    user_interests = UserInterest.objects.filter(user=user)
+    user_interests = UserInterest.objects.filter(user=user, is_active=True)
     services = list(Service.objects.all().values())
     guide_services = GuideService.objects.filter(guide=guide)
     guide_services_dict = dict()
@@ -456,6 +467,7 @@ def profile_settings_guide(request, guide_creation=True):
         if service["id"] in guide_services_dict:
             service["guide_service"] = guide_services_dict[service["id"]]
 
+    tourist_about = str(user.touristprofile.about)
     #PAY attention: if a guide is new - the template with form should be guides/guide_registration.html
     #for tourist it is always one template for new tourists and for editing of tourist profile,
     # which is users/profile_settings_tourist.html
@@ -463,6 +475,60 @@ def profile_settings_guide(request, guide_creation=True):
         return render(request, 'guides/guide_registration.html', locals())
     else:
         return render(request, 'users/profile_settings_guide.html', locals())
+
+
+@login_required
+def profile_questions_guide(request):
+    user = request.user
+    guide = user.guideprofile
+    page = "profile_questions_guide"
+
+    if request.POST:
+        guide_answers = GuideAnswer.objects.filter(guide=guide, is_active=True).values()
+        existing_answers_question_ids = [item["question_id"] for item in guide_answers]
+
+        data = request.POST
+        files = request.FILES
+        for k, v in data.items():
+            if "-" in k:
+                field, question_id = k.split("-")
+                if field == "answer":
+                    question_id = int(question_id)
+                    # if guide answer is already exists or if answer is more than 0 symbols
+                    if question_id in existing_answers_question_ids or len(v)>0:
+                        default_kwargs = {"text": v}
+                        file_name = "file-%s" % question_id
+                        if file_name in files:
+                            image = files.get(file_name)
+                            default_kwargs["image"] = image
+                        GuideAnswer.objects.update_or_create(question_id=question_id, guide=guide, defaults=default_kwargs)
+        messages.success(request, _('Successfully updated!'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    answers = GuideAnswer.objects.filter(guide=guide, is_active=True)
+    answers_dict = dict()
+    for answer in answers.iterator():
+        obj_dict = dict()
+        obj_dict["answer"] = answer.text
+        obj_dict["image"] = answer.image_small
+        obj_dict["answer_object"] = answer
+        answers_dict[answer.question.id] = obj_dict
+
+    questions = Question.objects.filter(is_active=True).order_by("id")
+    questions_list = list()
+    for question in questions.iterator():
+        obj_dict = dict()
+        obj_dict["id"] = question.id
+        obj_dict["text"] = question.get_text_with_city(guide)
+        if answers_dict.get(question.id):
+            obj_dict.update(answers_dict.get(question.id))
+            questions_list.append(obj_dict)
+        else:
+            if question.is_active:
+                questions_list.append(obj_dict)
+            else:
+                continue #if there is no guide's answer for is_active=False question, it will not be displayed
+    return render(request, 'guides/profile_questions_guide.html', locals())
 
 
 def search_guide(request):
@@ -498,27 +564,40 @@ def guide_registration_welcome_confirmation(request):
 
 def earnings(request):
     user = request.user
-    try:
-        guide = user.guideprofile
 
-        if request.session.get("current_role") != "guide":
-            return HttpResponseRedirect(reverse("home"))
+    guide = user.guideprofile
 
-        kwargs = dict()
-        kwargs["payment_status_id"] = 4
-
-        if request.GET:
-            data = request.GET
-            date_start = data.get("date_start")
-            date_end = data.get("date_end")
-            if date_start:
-                kwargs["dt_paid__gte"] = date_start
-            if date_end:
-                kwargs["dt_paid__lte"] = date_end
-
-        orders = guide.order_set.filter(**kwargs).order_by("-id")
-    except:
+    if request.session.get("current_role") != "guide":
         return HttpResponseRedirect(reverse("home"))
+
+    kwargs = dict()
+    kwargs["payment_status_id"] = 4
+
+    if request.GET:
+        data = request.GET
+        date_start = data.get("date_start")
+        date_end = data.get("date_end")
+        if date_start:
+            kwargs["dt_paid__gte"] = date_start
+        if date_end:
+            kwargs["dt_paid__lte"] = date_end
+
+    orders = guide.order_set.filter(**kwargs).order_by("-id")
+    orders_completed = orders.filter(status_id=4)#completed
+    orders_pending = orders.filter(status_id=5)  # payment reserved
+
+    # Amount reserved
+    orders_pending_aggr = orders_pending.aggregate(amount=Sum("guide_payment"))
+    orders_pending_amount = orders_pending_aggr.get("amount") if orders_pending_aggr.get("amount") else 0
+
+    #Completed and not paid
+    orders_completed_not_paid_aggr = orders_completed.filter(guide_payout_date__isnull=True).aggregate(amount=Sum("guide_payment"))
+    orders_completed_not_paid_amount = orders_completed_not_paid_aggr.get("amount") if orders_completed_not_paid_aggr.get("amount") else 0
+
+    #Completed and paid
+    orders_completed_paid_aggr = orders_completed.filter(guide_payout_date__isnull=False).aggregate(amount=Sum("guide_payment"))
+    orders_completed_paid_amount = orders_completed_paid_aggr.get("amount") if orders_completed_paid_aggr.get("amount") else 0
+
     return render(request, 'guides/earnings.html', locals())
 
 
@@ -570,3 +649,16 @@ def guides_for_clients(request):
 
 def tours_for_clients(request):
     return render(request, 'guides/tours_for_clients.html', locals())
+
+
+def get_average_rate(request):
+    loc = request.GET.get('location')
+    rates = None
+    if request.is_ajax():
+        try:
+            rates = GuideProfile.objects.filter(city__original_name=loc).aggregate(Avg('rate'))
+            print(rates)
+        except Exception as err:
+            print(err)
+    rate = {"rates": rates}
+    return JsonResponse(rate)

@@ -16,8 +16,12 @@ router.register(r'interests', views.InterestViewSet)
 router.register(r'user_interests', views.UserInterestViewSet)
 router.register(r'language_levels', views.LanguageLevelViewSet)
 router.register(r'user_languages', views.UserLanguageViewSet)
-
+router.register(r'edit_profile', views.EditProfileViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^user_profile/', views.user_profile, name='user_profile'),
+    url(r'^user_mixins/', views.user_mixins, name='user_mixins'),
+    url(r'^get_my_profile_info/', views.get_my_profile_info, name='get_my_profile_info'),
+    url(r'^upload_profile_image/', views.upload_profile_image, name='upload_profile_image')
 ]

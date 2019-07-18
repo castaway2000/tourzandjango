@@ -1,0 +1,240 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content_profile %}
+    <div class="col-md-9">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="row">
+
+                <div class="col-md-8">
+                    <h4>{% blocktrans %}Tour Editing page{% endblocktrans %}</h4>
+
+                    <span id="tour_id" class="hidden">{{ tour.id }}</span>
+
+                    <div class="form-group">
+                        <label>{% blocktrans %}Name:{% endblocktrans %}</label>
+                        <div>{{ form.name.errors }}</div>
+                        <input class="form-control" name="{{ form.name.html_name }}"
+                            {% if form.name.value %}
+                               value="{{ form.name.value }}"
+                            {% endif %}
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>{% blocktrans %}Overview{% endblocktrans %}</label>
+                        <textarea rows="7" maxlength="50000"
+                                  placeholder="Add here tour overview"
+                                  name="{{ form.overview.html_name }}" class="form-control" >{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>{% blocktrans %}Whats Included?{% endblocktrans %}</label>
+                        <textarea rows="7" maxlength="50000"
+                                  placeholder="Let your customers know what is included"
+                                  name="{{ form.included.html_name }}" class="form-control" >{% if form.included.value %}{{ form.included.value }}{% endif %}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>{% blocktrans %}Whats Not Included?{% endblocktrans %}</label>
+                        <textarea rows="7" maxlength="50000"
+                                  placeholder="Set expectations by letting your customers know what is not included"
+                                  name="{{ form.excluded.html_name }}" class="form-control" >{% if form.excluded.value %}{{ form.excluded.value }}{% endif %}</textarea>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                          <input type="checkbox" name="{{ form.is_active.html_name }}"
+                              {% if form.is_active.value %}checked{% endif %}
+                          >{% blocktrans %} Is active{% endblocktrans %}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h4>{% blocktrans %}Pricing{% endblocktrans %}</h4>
+
+                    <div class="form-group">
+                        <label>{% blocktrans %}Payment type: {% endblocktrans %}</label>
+                        <select class="form-control" id="payment_type" name="{{ form.payment_type.html_name }}">
+                            {% for payment_type in payment_types %}
+                                <option value="{{ payment_type.id }}"
+                                        {% if payment_type.id == tour.payment_type.id %}selected{% endif %}>
+                                    {{ payment_type.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="hourly_area" class="hidden">
+                        <div class="form-group">
+                            <label>{% blocktrans %}Currency: {% endblocktrans %}</label>
+                            <select class="form-control" id="currency" name="currency">
+                                {% for currency in currencies %}
+                                    <option value="{{ currency.id }}">{{ currency.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>{% blocktrans %}Price Hourly:{% endblocktrans %}</label>
+                            <input type="number" step="0.01" class="form-control"
+                                   name="price_hourly" value="{{ tour.price_hourly|safe }}">
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>{% blocktrans %}Minimum Hours duration:{% endblocktrans %}</label>
+                            <input type="number" class="form-control"
+                                   name="min_hours" value="{{ tour.min_hours }}">
+                        </div>
+
+                    </div>
+
+                    <div id="fixed_area" class="hidden">
+
+                        <div class="form-group">
+                            <label>{% blocktrans %}Currency: {% endblocktrans %}</label>
+                            <select class="form-control" id="currency" name="currency">
+                                {% for currency in currencies %}
+                                    <option value="{{ currency.id }}">{{ currency.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>{% blocktrans %}Price:{% endblocktrans %}</label>
+                            <input type="number" step="0.01" class="form-control"
+                                   name="price" value="{{ tour.price|safe }}">
+                        </div>
+                        <p>{% blocktrans %}Please keep in mind that we charge a 13% service fee and our payout processor
+                            might also charge a processing fee. Please charge for services accordingly.
+                        {% endblocktrans %}</p>
+
+                        <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon"></i>
+                            <label>{% blocktrans %}Hours duration:{% endblocktrans %}</label>
+                            <input type="number" class="form-control"
+                                   name="hours" value="{{ tour.hours }}">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label>{% blocktrans %}Add Image (multiple upload is available){% endblocktrans %}</label>
+                        <input type="file" name="images" multiple>
+                    </div>
+
+                    <div class="form-group">
+                        <a href="{% url 'guide_settings_tours' %}" class="btn btn-default">
+                            {% blocktrans %}Cancel{% endblocktrans %}
+                        </a>
+                        <button type="submit" class="btn btn-primary">{% blocktrans %}Save{% endblocktrans %}</button>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    {% if tour %}
+                        <div class="form-group" id="tour_images_container">
+                            {% if tours_images %}
+                                <button class="btn btn-danger" id="button_delete_image" data-action="{% url 'deactivate_tour_image' %}">{% blocktrans %}Delete Image{% endblocktrans %}</button>
+                                <button class="btn btn-success" id="button_make_main_image" data-action="{% url 'make_main_tour_image' %}">{% blocktrans %}Make main{% endblocktrans %}</button>
+                                <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                    {% for tour_image in tours_images %}
+                                        <img src="{% get_media_prefix %}{{ tour_image.image }}" alt="Image for {{ tour.name }}"
+                                             data-imgid="{{ tour_image.id }}"
+                                             class="img-responsive"
+                                             title="Image for {{ tour.name }}"
+                                        >
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+{% block js_stuff %}
+    <script>
+        $(document).ready(function(){
+            $(document).on("click", "#button_delete_image", function(e){
+                e.preventDefault();
+                var fotoramaDiv = $('.fotorama').fotorama();
+                var data = fotoramaDiv.data('fotorama').activeFrame;
+                active_image = $(".fotorama__nav__shaft .fotorama__active");
+
+                if($(".fotorama__nav.fotorama__nav--thumbs").length>0){
+                    img_index = active_image.parent('.fotorama__nav__shaft').find('.fotorama__nav__frame').index(active_image);
+                    fotoramaDiv.data('fotorama').splice(img_index, 1);
+                }else{
+                    $("#tour_images_container").addClass("hidden");
+                };
+
+                var img_id = data.imgid;
+
+                if(fotoramaDiv.data('fotorama').size==0) {
+{#                    $('.fotorama').addClass('hidden');#}
+                    $('#button_make_main_image').addClass('hidden');
+                    $('#button_delete_image').addClass('hidden');
+                };
+
+
+                var tour_id = $('#tour_id').text();
+                var url = $(this).data("action");
+
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["img_id"] = img_id;
+                data["tour_id"] = tour_id;
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: data,
+                    cache: true,
+
+                    success: function (data) {
+                    },
+                    error: function(){
+                    }
+                })
+
+            });
+
+            $(document).on("click", "#button_make_main_image", function(e){
+                e.preventDefault();
+                var fotoramaDiv = $('.fotorama').fotorama();
+                var data = fotoramaDiv.data('fotorama').activeFrame;
+                var img_id= data.imgid;
+
+                var tour_id = $('#tour_id').text();
+                var url = $(this).data("action");
+
+                data = {};
+                var csrf_token = $('#csrf_getting_form [name="csrfmiddlewaretoken"]').val();
+                data["csrfmiddlewaretoken"] = csrf_token;
+                data["img_id"] = img_id;
+                data["tour_id"] = tour_id;
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: data,
+                    cache: true,
+
+                    success: function (data) {
+                    },
+                    error: function(){
+                    }
+                })
+
+            });
+
+        });
+    </script>
+{% endblock %}

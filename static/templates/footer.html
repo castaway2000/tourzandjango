@@ -5,33 +5,33 @@
     <div class="container">
         <div class="row row-wrap">
             <div class="col-md-3">
-                <a class="logo" href="/">
+                <a class="logo" href="/" rel="nofollow">
                     <img src="{% static 'img/Tourzan-LinedLogoTransparentTeal.png' %}"
                          alt="Tourzan logo" title="Tourzan logo" />
                 </a>
-                <h4>Tourzan&trade;</h4>
+                <h4>Tourzan&reg;</h4>
                 <p class="mb20">
                     {% blocktrans %}Book local guides, while travelling!{% endblocktrans %}
                 </p>
                 <ul class="list list-horizontal list-space">
                     <li>
-                        <a class="fa fa-facebook box-icon-normal round animate-icon-bottom-to-top"
+                        <a title="facebook" rel="external" class="fa fa-facebook box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.facebook.com/tourzanHQ/" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-twitter box-icon-normal round animate-icon-bottom-to-top"
+                        <a title="twitter" rel="external" class="fa fa-twitter box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.twitter.com/tourzanhq" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-instagram box-icon-normal round animate-icon-bottom-to-top"
+                        <a title="instagram" rel="external" class="fa fa-instagram box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.instagram.com/tourzanhq/" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-youtube box-icon-normal round animate-icon-bottom-to-top"
+                        <a title="youtube" rel="external" class="fa fa-youtube box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.youtube.com/channel/UCFjdoTb1c5G0D_e2P7sm9GQ" target="_blank"></a>
                     </li>
                     <li>
-                        <a class="fa fa-pinterest box-icon-normal round animate-icon-bottom-to-top"
+                        <a title="pinterest" rel="external" class="fa fa-pinterest box-icon-normal round animate-icon-bottom-to-top"
                            href="https://www.pinterest.com/tourzan/" target="_blank"></a>
                     </li>
                 </ul>
@@ -40,37 +40,63 @@
             <div class="col-md-3">
                 <ul class="list list-footer">
                     <li>
-                        <a href="{% url 'faq' %}">
-                            {% blocktrans %}Frequently Asked Questions{% endblocktrans %}
+                        <a title="Tourzan mobile app waitlist" href="{% url 'waitlist' %}">{% blocktrans %}Mobile App{% endblocktrans %}</a>
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'api_partner_application' %}">{% blocktrans %}API Application{% endblocktrans %}</a>
+                        <a title="API application" href="{% url 'api_partner_application' %}">{% blocktrans %}Develop with our API{% endblocktrans %}</a>
                     </li>
-                <br>
                     <li>
-                        <a href="{% url 'blog' %}">
-                            <p class="lead">{% blocktrans %}News{% endblocktrans %}</p>
+                        <a title="Developer Documentation" href="{% url 'developer_documentation' %}">{% blocktrans %}Developer Documentation{% endblocktrans %}</a>
+                    </li>
+                    <li>
+                        <a title="FAQ" href="{% url 'faq' %}">
+                            {% blocktrans %}Frequently Asked Questions{% endblocktrans %}
+                        </a>
+                    </li>
+                <br/>
+                    <li>
+                        <a title="Blog" href="{% url 'blog' %}">
+                            <p class="lead">{% blocktrans %}Blog{% endblocktrans %}</p>
                         </a>
                     </li>
                 </ul>
             </div>
             <div class="col-md-2">
                 <ul class="list list-footer">
-                    <li><a href="{% url 'privacy_policy' %}">{% blocktrans %}Privacy Policy{% endblocktrans %}</a>
+                    <li><a title="Privacy Policy" href="{% url 'privacy_policy' %}">{% blocktrans %}Privacy Policy{% endblocktrans %}</a>
                     </li>
-                    <li><a href="{% url 'tos' %}">{% blocktrans %}Terms of Service{% endblocktrans %}</a>
+                    <li><a title="Terms of Service" href="{% url 'tos' %}">{% blocktrans %}Terms of Service{% endblocktrans %}</a>
                     </li>
-                    <li><a href="{% url 'about_us' %}">{% blocktrans %}About Us{% endblocktrans %}</a>
+                    <li>
+                        <a title="Press Page" href="{% url 'press' %}">{% blocktrans %}Press{% endblocktrans %}</a>
+                        </a>
                     </li>
-                    <li><a href="{% url 'contact_us' %}">{% blocktrans %}Contact US{% endblocktrans %}</a>
+                    <li><a title="About Us" href="{% url 'about_us' %}">{% blocktrans %}About Us{% endblocktrans %}</a>
+                    </li>
+                <br/>
+                    <li>
+                        <a title="Contact Us" href="{% url 'contact_us' %}">
+                            <p class="lead">{% blocktrans %}Contact US{% endblocktrans %}</p>
+                        </a>
                     </li>
                 </ul>
             </div>
             <div class="col-md-4">
                 <h4>{% blocktrans %}Have Questions?{% endblocktrans %}</h4>
-                <h4><a href="#" class="text-color">contactus@tourzan.com</a></h4>
+                <h4><a href="mailto:contactus@tourzan.com" class="text-color">contactus@tourzan.com</a></h4>
                 <p>{% blocktrans %}Dedicated customer support will make sure your needs are met{% endblocktrans %}</p>
+
+                <script src="https://apis.google.com/js/platform.js?onload=renderBadge" async defer></script>
+                <script>
+                  window.renderBadge = function() {
+                    var ratingBadgeContainer = document.createElement("div");
+                    document.body.appendChild(ratingBadgeContainer);
+                    window.gapi.load('ratingbadge', function() {
+                      window.gapi.ratingbadge.render(ratingBadgeContainer, {"merchant_id": 133867904});
+                    });
+                  }
+                </script>
             </div>
 
         </div>

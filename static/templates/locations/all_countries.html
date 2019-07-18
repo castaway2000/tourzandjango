@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="container container-equal-items mt20">
+        <div class="row">
+            <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
+                <form id="search_form" class="homepage-form" method="get" action="{% url 'location_search_router' %}">
+                    <div class="form-group form-group-lg">
+                        <div class="text-center">
+                            <label>{% trans 'Type your destination to find tours and local guides from ' %}{{ countries_count }} {% trans 'countries' %} </label>
+                        </div>
+                        <input class="form-control" id="location_search_input" name="search_term">
+
+                        <input id="place_id" name="place_id" class="hidden">
+                        <a data-balloon="Select your destination from the dropdown for the best effect."
+                           data-balloon-length='large' data-balloon-pos="down">
+                            <i class="fa fa-info-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+            {% if form %}
+                <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
+                    {% crispy form %}
+                </div>
+            {% endif %}
+            <div class="col-lg-12">
+                <h3 class="text-center">{% trans 'All Destinations' %}</h3>
+            </div>
+            {% for country in countries %}
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div>
+                                <a href="{% url 'country_guides' country.slug %}" target="_blank">
+                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                         data-src="{% get_sized_image country "small" %}">
+                                </a>
+                            </div>
+                            <div class="mt10">
+                                <h4 class="text-center">
+                                    {{ country.name }}
+                                </h4>
+                                <div class="mb10">
+                                    {% with country.get_cities as cities %}
+                                    {% if cities %}
+                                        <b>{% trans 'Available cities' %}: </b>
+                                        {% for city in country.get_cities %}
+                                            <a href="{% url 'city_guides' city.country.slug city.slug %}" target="_blank">
+                                                {{ city.name }}{% if not forloop.last %}, {% endif %}
+                                            </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% trans 'We are looking for guides in' %} {{ country.name }}
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div>
+                                    {{ country.description|safe|linebreaks|truncatewords_html:20|default_if_none:"" }}
+                                </div>
+                            </div>
+                        </div>
+                         <div class="text-center panel-button">
+                            <a class="btn btn-default"
+                                href="{% url 'country_guides' country.slug %}" target="_blank"
+                            >
+                                {% trans 'View details' %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% if forloop.counter|divisibleby:3 %}
+                    </div>
+                    <div class="row">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_stuff %}
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
+{% endblock %}

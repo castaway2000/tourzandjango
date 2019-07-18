@@ -8,14 +8,18 @@
 {% endblock %}
 
 {% block content_profile %}
-    <div class="col-md-9" xmlns="http://www.w3.org/1999/html">
+    <div class="col-lg-9" xmlns="http://www.w3.org/1999/html">
         <div class="row">
 
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <h4>
                     {% blocktrans %}Your Payments{% endblocktrans %}
                 </h4>
-
+            </div>
+            <div class="col-lg-12">
+                <ul class="list-unstyled">
+                    <li><b>{% trans 'Total amount' %}: </b> {{ payments_total_amount }} USD</li>
+                </ul>
             </div>
         </div>
 
@@ -25,29 +29,26 @@
             </div>
             {% if payments %}
                 <div class="col-lg-12">
-                    <table class="table table-bordered table-center" width="100%">
+                    <table id="payments_table" class="table table-bordered table-center" width="100%">
                         <thead>
                             <tr>
                                 <th>
-                                    Date
+                                    {% trans 'Tour date' %}
+                                </th>
+                                <th width="30%">
+                                    {% trans 'Order' %}
                                 </th>
                                 <th>
-                                    Payment Uuid
+                                    {% trans 'Amount' %}
                                 </th>
                                 <th>
-                                    Order
+                                    {% trans 'Currency' %}
                                 </th>
                                 <th>
-                                    Amount
+                                    {% trans 'Payment method' %}
                                 </th>
                                 <th>
-                                    Currency
-                                </th>
-                                <th>
-                                    Payment method
-                                </th>
-                                <th>
-                                    Status
+                                    {% trans 'Status' %}
                                 </th>
                             </tr>
                         </thead>
@@ -55,31 +56,14 @@
                             {% for payment in payments %}
                                 <tr>
                                     <td>
-                                        <span class="hidden">{{ payment }}</span>
+                                        <span class="hidden">{{ payment.created|date:"YmdHi" }}</span>
                                         {{ payment.created|date:"m/d/Y H:i" }}
                                     </td>
                                     <td>
-                                        <a href="{% url 'order_payment_checkout' payment.order.id %}">
-                                            {{ payment.uuid }}
+                                        {{ payment.order.get_name }}<br>
+                                        {% trans 'Status' %}: <a href="{% url 'order_completing' payment.order.uuid %}">
+                                            {{ payment.order.status.name }}
                                         </a>
-                                    </td>
-                                    <td>
-                                        {% if payment.order.tour %}
-                                            <a href="{% url 'tour' payment.order.tour.slug payment.order.tour.id %}">
-                                                {{ payment.order.tour.name }}
-                                            </a>
-                                                 {% blocktrans %}by{% endblocktrans %}
-
-                                            <a href="{% url 'guide' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid %}">
-                                                {{ payment.order.guide.user.generalprofile.first_name }}
-                                            </a>
-
-                                        {% else %}
-                                            Tour with
-                                            <a href="{% url 'guide' payment.order.guide.user.generalprofile.first_name payment.order.guide.user.generalprofile.uuid %}">
-                                                {{ payment.order.guide.user.generalprofile.first_name }}
-                                            </a>
-                                        {% endif %}
                                     </td>
                                     <td>
                                         {{ payment.amount|safe }}
@@ -88,7 +72,11 @@
                                         {{ payment.currency.name }}
                                     </td>
                                     <td>
-                                        {{ payment.payment_method.card_number }}
+                                        {% if payment.payment_method.card_number %}
+                                            {{ payment.payment_method.card_number }}
+                                        {% else %}
+                                            {% trans 'Paypal' %}: {{ payment.payment_method.paypal_email }}
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {{ payment.order.payment_status.name }}
@@ -101,7 +89,7 @@
             {% else %}
                 <div class="col-lg-12">
                     <p>
-                        You have no payments so far...
+                        {% trans 'You have no payments so far' %}.
                     </p>
                 </div>
             {% endif %}
@@ -115,7 +103,9 @@
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function(){
-            $("#earnings_table").DataTable();
+            $("#payments_table").DataTable({
+                "aaSorting": [ [0,'desc'] ]
+            });
         })
     </script>
 {% endblock %}

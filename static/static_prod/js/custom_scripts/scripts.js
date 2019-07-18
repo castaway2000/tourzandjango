@@ -136,10 +136,6 @@ $(document).ready(function(){
 
     });
 
-    $(document).on('click', '.close-alert', function(){
-        $(this).closest('.booking-result-message').addClass('hidden');
-    });
-
 
     if ($('#amount_container').length > 0){
         priceCalculation();
@@ -281,6 +277,13 @@ window.setTimeout(function() {
   });
 }, 2500);
 
+$(document).on('click', '.close-alert', function(){
+    $(this).closest('.booking-result-message').addClass('hidden');
+});
+
+$(document).on('click', '.alert', function(){
+    $(this).addClass('hidden');
+});
 
 $(document).ready(function(){
     $(document).on('click', '#toggle_left_menu', function(e) {

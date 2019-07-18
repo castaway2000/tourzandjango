@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load emoticons_tags %}
 
 
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-lg-6 col-lg-offset-3">
                 {% if chats %}
                     <div class="chat-container" id="chats_list">
                         {% for chat in chats %}
@@ -17,7 +18,7 @@
                                         {% blocktrans %}Chat {% endblocktrans %}
                                         {% blocktrans %}with {% endblocktrans %}
                                         {% if request.user.username != chat.guide__username %}
-                                            <a href="{% url 'guide' chat.guide__generalprofile__first_name chat.guide__generalprofile__uuid %}">
+                                            <a href="{% url 'guide_new' chat.guide__generalprofile__first_name chat.guide__generalprofile__uuid 'new' %}">
                                                 {% if chat.guide__generalprofile__first_name %}
                                                     {{ chat.guide__generalprofile__first_name }}
                                                 {% else %}
@@ -37,24 +38,28 @@
                                         {% endif %}
                                     </h3>
                                 </div>
-                                <div>
-                                     <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}
-                                </div>
-                                <br>
+{#                                <div>#}
+{#                                     <b>{% blocktrans %}started at: {% endblocktrans %}</b> {{ chat.created|date:"m.d.Y" }}#}
+{#                                </div>#}
+{#                                <br>#}
                                 {% if chat.last_message.text %}
                                     <div>
                                         <b>{% blocktrans %}Last Message:{% endblocktrans %}</b>
                                     </div>
-                                    <div class="chat-message">
+                                    <div class="chat-message
+                                        {% if chat.last_message.from_username == "Tourzan bot" or chat.last_message.from_username == "tourzan" %}system{% endif %}
+                                    ">
                                         <div class="message-meta-info">
-                                            {% if request.user.username  == chat.last_message.from %}
+                                            {% if request.user.username  == chat.last_message.from_username %}
                                                 me
-                                            {% else %}
+                                            {% elif chat.last_message.from %}
                                                 {{ chat.last_message.from }}
-                                            {% endif %}, {{ chat.last_message.created|date:"m.d.Y H:i:s" }}
+                                            {% else %}
+                                                {{ chat.last_message.from_username }}
+                                            {% endif %}, {{ chat.last_message.created|date:"m/d/Y H:i:s" }}
                                         </div>
                                         <div class="chat-message-text">
-                                            {{ chat.last_message.text|linebreaks }}
+                                            {{ chat.last_message.text|safe|emoticons }}
                                         </div>
                                     </div>
                                 {% else %}

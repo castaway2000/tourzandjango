@@ -7,6 +7,12 @@
 
 
 {% if request.session.current_role != "guide"  %}
+    <li class="{% if current_page == "all_countries" %}active{% endif %}">
+        <a href="{% url 'all_countries' %}">
+            <i class="fa fa-search" aria-hidden="true"></i>
+            {% blocktrans %}EXPLORE LOCATIONS{% endblocktrans %}
+        </a>
+    </li>
     <li class="{% if current_page == "guides" %}active{% endif %}">
         <a href="{% url 'guides' %}">{% blocktrans %}GUIDES{% endblocktrans %}</a>
     </li>
@@ -17,18 +23,26 @@
 {% endif %}
 
 {% if not user.is_anonymous %}
+
+    {% if request.session.current_role == "guide" %}
+        <li><a href="{% url 'guide_settings_tours' %}" rel="nofollow">{% blocktrans %}MY TOURS{% endblocktrans %}</a>
+    {% endif %}
+
+    <li class="{% if current_page == "chat" %}active{% endif %}">
+        <a href="{% url 'chats' %}" rel="nofollow">{% blocktrans %}CHATS{% endblocktrans %}</a>
+    </li>
+
     {% if request.session.current_role == "tourist" or not request.session.current_role %}
         <li class="{% if current_page == "bookings" %}active{% endif %}">
-            <a href="{% url 'my_bookings' %}">{% blocktrans %}MY BOOKINGS{% endblocktrans %}</a>
+            <a href="{% url 'my_bookings' %}" rel="nofollow">{% blocktrans %}MY BOOKINGS{% endblocktrans %}</a>
         </li>
     {% else %}
         <li class="{% if current_page == "orders" %}active{% endif %}">
-            <a href="{% url 'orders' %}">{% blocktrans %}ORDERS{% endblocktrans %}</a>
+            <a href="{% url 'orders' %}" rel="nofollow">{% blocktrans %}ORDERS{% endblocktrans %}</a>
         </li>
     {% endif %}
 
 
-    <li><a href="{% url 'chats' %}">{% blocktrans %}CHATS{% endblocktrans %}</a>
 
 
     <li class="dropdown">
@@ -37,40 +51,40 @@
         </a>
         <ul class="dropdown-menu">
             {% if request.session.current_role == "tourist" or not request.session.current_role %}
-                <li><a href="{% url 'profile_settings_tourist' %}">{% blocktrans %}PROFILE{% endblocktrans %}</a>
+                <li><a href="{% url 'profile_settings_tourist' %}" rel="nofollow">{% blocktrans %}PROFILE{% endblocktrans %}</a>
                 </li>
             {% else %}
-                <li><a href="{% url 'profile_settings_guide' %}">{% blocktrans %}PROFILE{% endblocktrans %}</a>
+                <li><a href="{% url 'profile_settings_guide' %}" rel="nofollow">{% blocktrans %}PROFILE{% endblocktrans %}</a>
                 </li>
             {% endif %}
 
             <li>
-                <a href="{% url 'general_settings' %}">{% blocktrans %}ACCOUNT{% endblocktrans %}</a>
+                <a href="{% url 'general_settings' %}" rel="nofollow">{% blocktrans %}ACCOUNT{% endblocktrans %}</a>
             </li>
 
             {% if request.session.current_role == "tourist" or not request.session.current_role %}
                 <li>
-                    <a href="{% url 'payments' %}">{% blocktrans %}MY PAYMENTS{% endblocktrans %}</a>
+                    <a href="{% url 'payments' %}" rel="nofollow">{% blocktrans %}MY PAYMENTS{% endblocktrans %}</a>
                 </li>
-            {% elif  request.session.current_role == "guide" %}
+            {% elif request.session.current_role == "guide" %}
                 <li>
-                    <a href="{% url 'earnings' %}">{% blocktrans %}MY EARNINGS{% endblocktrans %}</a>
+                    <a href="{% url 'earnings' %}" rel="nofollow">{% blocktrans %}MY EARNINGS{% endblocktrans %}</a>
                 </li>
             {% endif %}
 
             <li>
                 {% if request.session.current_role == "tourist" or not request.session.current_role %}
                     {% if user.guideprofile %}
-                        <a href="{% url 'change_role' %}">
+                        <a href="{% url 'change_role' %}" rel="nofollow">
                             {% blocktrans %}SWITCH TO GUIDE{% endblocktrans %}
                         </a>
                     {% else %}
-                        <a href="{% url 'guide_registration_welcome' %}">
+                        <a href="{% url 'guide_registration_welcome' %}" rel="nofollow">
                             {% blocktrans %}WANT TO BE A GUIDE?{% endblocktrans %}
                         </a>
                     {% endif %}
                 {% else %}
-                    <a href="{% url 'change_role' %}">
+                    <a href="{% url 'change_role' %}" rel="nofollow">
                         {% blocktrans %}SWITCH TO TOURIST{% endblocktrans %}
                     </a>
                 {% endif %}
@@ -78,7 +92,7 @@
         </ul>
     </li>
 {% else %}
-    <li class="{% if current_page != "guides" and current_page != "tours" %}active{% endif %}">
+    <li class="{% if current_page != "guides" and current_page != "tours" and current_page != "all_countries" %}active{% endif %}">
          <a href="{% url 'guide_registration_welcome' %}">
             {% blocktrans %}SIGN UP TO BE A GUIDE!{% endblocktrans %}
          </a>

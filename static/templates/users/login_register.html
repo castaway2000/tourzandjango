@@ -4,6 +4,7 @@
 {% load socialaccount %}
 {% get_providers as socialaccount_providers %}
 {% get_current_language as LANGUAGE_CODE %}
+{% load crispy_forms_tags %}
 
 {% block header_stuff %}
     <!-- Event snippet for register tourist conversion page -->
@@ -67,36 +68,7 @@
             </div>
             <div class="col-md-4">
                 <h3>{% trans 'New to Tourzan?' %}</h3>
-                <form method="post" action="{% url 'account_signup' %}" id="register-form">{% csrf_token %}
-                    <div class="form-group form-group-icon-left"><i class="fa fa-user input-icon input-icon-show"></i>
-                        <label>{% trans 'Username' %}</label>
-                        <input class="form-control" placeholder="e.g. johndoe" type="text" name="username"
-                        value="">
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-envelope input-icon input-icon-show"></i>
-                        <label>{% trans 'Email' %}</label>
-                        <input class="form-control" placeholder="e.g. johndoe@gmail.com" type="email" name="email"
-                        value="">
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>{% trans 'Password' %}</label>
-                        <input class="form-control" type="password" placeholder="my secret password" name="password1"
-                        value="">
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-lock input-icon input-icon-show"></i>
-                        <label>{% trans 'Password (re-enter)' %}</label>
-                        <input class="form-control" type="password" placeholder="my secret password again" name="password2"
-                        value="">
-                    </div>
-                    <div class="form-group form-group-icon-left"><i class="fa fa-thumbs-up input-icon input-icon-show"></i>
-                        <label>{% trans 'Referal Code (optional)' %}</label>
-                        <input class="form-control" type="text" placeholder="code" name="referral_code"
-                        {% if request.session.referral_code %}value="{{ request.session.referral_code }}"{% else %}value=""{% endif %}>
-                    </div>
-                    <div class="g-recaptcha form-group form-group-icon-left" data-sitekey="6LcH3h4TAAAAAF9LtA65w6p2ojP0Ltaoq5ShZ5Bl">
-                    </div>
-                    <input class="btn btn-primary" type="submit" value="{% trans 'Sign Up for Tourzan' %}" />
-                </form>
+                {% crispy signup_form %}
             </div>
         </div>
     </div>
