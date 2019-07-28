@@ -90,7 +90,7 @@ class SendingSMS(object):
 
     def send_new_message_notification(self, user_to, order=None, chat=None):
         message = "You have received new message from %s! Click the link below to see the details: %s%s" % \
-                  (user_to.generalprofile.get_name(), self.domain, reverse("livechat_room", kwargs={"chat_uuid": order.chat.uuid}))
+                  (user_to.generalprofile.get_name(), self.domain, reverse("livechat_room", kwargs={"chat_uuid": chat.uuid}))
         self.order = order
         self.chat = chat
         self.subject = "Chat message notification"
