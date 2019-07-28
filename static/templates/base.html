@@ -196,8 +196,9 @@
             </script>
         {% endif %}
 
-
-        <script src="{% static 'js/custom_scripts/general_ws.js' %}"></script>
+        {% if not request.user.is_anonymous %}
+            <script src="{% static 'js/custom_scripts/general_ws.js' %}"></script>
+        {% endif %}
 
         <script src="//dwuzgckm5n8u8.cloudfront.net/js/custom.js"></script>
 
