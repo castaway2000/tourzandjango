@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'rest_framework.schemas',
     'rest_framework.documentation',
     'rest_framework.decorators',
+    'django_filters',
     'rest_auth',
     'storages',
     'axes',

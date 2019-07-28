@@ -41,7 +41,7 @@ from utils.api_helpers import FilterViewSet
 class TouristProfileViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = TouristProfile.objects.all()
     serializer_class = TouristProfileSerializer
-    permission_classes = (IsUserOwnerOrReadOnly,)
+    permission_classes = (IsUserOwnerOrReadOnly, IsAuthenticated,)
 
     def get_queryset(self):
         print("get queryset")
@@ -67,7 +67,7 @@ class TouristProfileViewSet(viewsets.ModelViewSet, FilterViewSet):
 class TouristTravelPhotoViewSet(viewsets.ReadOnlyModelViewSet, FilterViewSet):
     queryset = TouristTravelPhoto.objects.all()
     serializer_class = TouristTravelPhotoSerializer
-    permission_classes = (IsUserOwnerOrReadOnly, )
+    permission_classes = (IsUserOwnerOrReadOnly, IsAuthenticated,)
 
     def get_queryset(self):
         user = self.request.user
