@@ -8,6 +8,7 @@ http://www.django-rest-framework.org/api-guide/relations/
 https://stackoverflow.com/questions/14573102/how-do-i-include-related-model-fields-using-django-rest-framework
 """
 
+
 class LocationTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -20,6 +21,13 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
+        fields = '__all__'
+
+
+class CountrySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Country
         fields = '__all__'
 
 

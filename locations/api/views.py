@@ -31,6 +31,12 @@ class CityViewSet(viewsets.ModelViewSet, FilterViewSet):
     permission_classes = (AllowAny,)
     http_method_names = ('get', 'create',)
 
+class CountryViewSet(viewsets.ModelViewSet, FilterViewSet):
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer
+    permission_classes = (AllowAny,)
+    http_method_names = ('get', 'create',)
+
 
 class CurrencyViewSet(viewsets.ModelViewSet, FilterViewSet):
     queryset = Currency.objects.all()

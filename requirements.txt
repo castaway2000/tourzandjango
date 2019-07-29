@@ -1,4 +1,4 @@
-django==1.11.21  # .15
+django==1.11.22
 pillow==4.0.0
 django-allauth==0.37.1
 django-crequest==2016.3.16
@@ -60,3 +60,4 @@ django-hijack==2.1.10
 django-hijack-admin==2.1.10
 selenium==3.12.0
 django-import-export==1.1.0
+django-environ==0.4.5
