@@ -15,6 +15,11 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 from django.utils.translation import gettext_lazy as _
 import datetime
+import environ
+
+root = environ.Path(__file__) - 2 # two folderss back (/a/b/ - 3 = /)
+env = environ.Env()
+environ.Env.read_env('.env') # reading .env file
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -383,11 +388,12 @@ HIJACK_ALLOW_GET_REQUESTS = True
 
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'
+REDIS_URL_WITH_PASSWORD = os.environ.get("REDIS_URL_WITH_PASSWORD") #redis://[:password]@localhost:6379/0
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [(REDIS_URL_WITH_PASSWORD)],
         },
     },
 }
