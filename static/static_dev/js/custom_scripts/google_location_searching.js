@@ -119,4 +119,4 @@ if ($("#city_search_input").length > 0 && !$("#search_form").length > 0) {
         })
     });
 }
-//known working
+//this is known to be working
