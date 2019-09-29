@@ -272,7 +272,6 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
         #
         #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
     page = request.GET.get('page', 1)
     paginator = Paginator(reviews, 10)
     try:

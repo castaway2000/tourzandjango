@@ -393,7 +393,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(REDIS_URL_WITH_PASSWORD, 6379)],
+            "hosts": [REDIS_URL_WITH_PASSWORD],
         },
     },
 }
