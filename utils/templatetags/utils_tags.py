@@ -27,20 +27,26 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
 
     image_base_field_name - name of the field for image without _size tag
     """
+    print(image_base_field_name)
     request = context["request"]
     if hasattr(obj, image_base_field_name):
+        print(1)
         img = getattr(obj, image_base_field_name)
         if len(str(img)) == 0 or str(img)[0] == '/':  # error with old default image and a leading /
+            print(2)
             default_media = 'tours/small_size/default_tour_image.jpg'
             return "%s%s" % (MEDIA_URL, default_media)
         if request and request.user_agent.is_mobile:
+            print(3)
             image_field_name = "%s_%s" % (image_base_field_name, "medium")
             if hasattr(obj, image_field_name):
                 img = getattr(obj, image_field_name)
         else:
+            print(4)
             image_field_name = "%s_%s" % (image_base_field_name, default_size)
             if hasattr(obj, image_field_name):
                 img = getattr(obj, image_field_name)
+        print(MEDIA_URL)
         return "%s%s" % (MEDIA_URL, img)
     else:
         page = request.path.split('/')[2]

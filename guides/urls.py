@@ -37,5 +37,5 @@ urlpatterns = [
     url(r'^guides-for-clients/$', views.guides_for_clients, name='guides_for_clients'),
     url(r'^tours-for-clients/$', views.tours_for_clients, name='tours_for_clients'),
     url(r'^ajax/rate_agregate/$', views.get_average_rate, name='get_average_rate'),
-
+    url(r'^ajax/get-booked-dates/$', views.get_booked_dates, name='get_booked_dates'),
 ]

@@ -28,7 +28,9 @@ AWS_STORAGE_BUCKET_NAME = 'tourzan'
 AWS_S3_FILE_OVERWRITE = False #to append extra characters to the file with the same name as existing file
 AWS_S3_ENCRYPTION = True
 
-# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+"""19.01.2020 Important: without AWS_S3_CUSTOM_DOMAIN images without custom media url replacing do not
+form the correct url."""
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 # AWS_PRIVATE_MEDIA_LOCATION = "media/private"
 
 MEDIA_URL = 'https://d3n77qih6h0cff.cloudfront.net/'

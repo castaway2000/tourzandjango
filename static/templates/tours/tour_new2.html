@@ -109,7 +109,9 @@
     </div>
 
     <div class="tour-section-divider orange">
-        <a href="#" class="book-private-tour">{% trans 'Book a tour for your date' %}&thinsp;&thinsp;> </a>
+        {% if tour.is_active and request.user != tour.guide.user %}
+            <a href="#" class="book-private-tour">{% trans 'Book a tour for your date' %}&thinsp;&thinsp;> </a>
+        {% endif %}
     </div>
 
     {% if tour.overview or tour.included or tour.excluded%}

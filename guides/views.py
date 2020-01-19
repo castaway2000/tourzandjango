@@ -661,3 +661,20 @@ def get_average_rate(request):
             print(err)
     rate = {"rates": rates}
     return JsonResponse(rate)
+
+def get_booked_dates(request):
+    data = request.GET
+    print("guide_uuid")
+    guid_uuid = data.get("guide_uuid")
+    print(guid_uuid)
+    guide = GuideProfile.objects.get(uuid=guid_uuid)
+    booked_dates = [
+        {
+            "date": "2020-01-20",
+            "badge": False,
+            "classname": "bg-"
+        },
+    ]
+    return_data = {"booked_dates": booked_dates}
+    print(return_data)
+    return JsonResponse(return_data)
