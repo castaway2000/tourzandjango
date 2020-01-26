@@ -1683,6 +1683,10 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     border-radius: 0!important;
 }
 
+.booking-title{
+    line-height: 1.5;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;

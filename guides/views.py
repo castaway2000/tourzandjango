@@ -149,7 +149,7 @@ def guides(request):
     # even if some filters are not available for the current list of tours
     #if it is one element in tuple, * is not needed
 
-    guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
+    guides_initial = GuideProfile.objects.filter(is_active=True)
     # print("base kwargs")
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
@@ -165,12 +165,12 @@ def guides(request):
 
     if base_user_interests_kwargs:
         user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)
-        interests_user_ids = [item.user.id for item in user_interests]
+        interests_user_ids = [item["user_id"] for item in user_interests.values()]
         guides = guides.filter(user_id__in=interests_user_ids)
 
     if base_guide_service_kwargs:
         guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
-        guide_services_guides_ids = [item.guide.id for item in guide_services]
+        guide_services_guides_ids = [item["guide_id"] for item in guide_services.values()]
         guides = guides.filter(id__in=guide_services_guides_ids)
 
     items_nmb = guides.count()
@@ -648,7 +648,6 @@ def guides_for_clients(request):
 
 def tours_for_clients(request):
     return render(request, 'guides/tours_for_clients.html', locals())
-
 
 def get_average_rate(request):
     loc = request.GET.get('location')
