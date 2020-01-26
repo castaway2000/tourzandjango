@@ -337,9 +337,12 @@
                                       {% endif %}
                                 {% endfor %}
                                 {% if tours.has_next %}
-                                    <li class="next"><a rel="next" href="?{% url_replace page=tours.next_page_number %}">{% trans 'Next Page' %}</a></li>
+                                    <li class="next">
+                                        <a rel="next" href="?{% url_replace page=tours.next_page_number %}">
+                                            {% trans 'Next Page' %} {% trans 'of' %} {{ paginator.num_pages }}
+                                        </a>
+                                    </li>
                                 {% endif %}
-                                <li><a>{% trans 'of' %} {{ paginator.num_pages }}</a></li>
                             </ul>
                         {% endif %}
                     </div>
@@ -349,7 +352,16 @@
         <div class="row">
                 <h1 class="col-lg-12 col-md-8, col-sm-8" style="font-size: 2em;">Local Experiences</h1>
                 <p class="col-lg-12 col-md-8, col-sm-8">
-                    One of the best parts of visiting a new and different part of the world is the chance to meet new people, make new friends, and experience things that you never could at home. That’s why Tourzan is proud of not only the local guides that connect with friendly travelers through our platform, but the plethora of amazing local experiences that our guides offer for you to book for your upcoming vacation. From outdoor excursions ranging from day hikes to week-long safaris for the adventurous traveler, to wining and dining excursions in some of the culinary capitals of the world, our range of local experiences offer memorable moments and trips that fit your travel budget, big or small. Looking for a specific local guide to explore more options that you don’t see here? Then feel free to visit our <a rel="canonical" href="{% url 'guides' %}">local guides</a> page to see the many friendly, experienced, and awesome local tour guides that are ready to host you and help you plan your visit to their homes.
+                    One of the best parts of visiting a new and different part of the world is the chance to meet new people,
+                    make new friends, and experience things that you never could at home.
+                    That’s why Tourzan is proud of not only the local guides that connect with friendly travelers through
+                    our platform, but the plethora of amazing local experiences that our guides offer for you to book
+                    for your upcoming vacation. From outdoor excursions ranging from day hikes to week-long safaris
+                    for the adventurous traveler, to wining and dining excursions
+                    in some of the culinary capitals of the world, our range of local experiences offer memorable moments and trips that fit your travel budget,
+                    big or small. Looking for a specific local guide to explore more options that you don’t see here?
+                    Then feel free to visit our <a rel="canonical" href="{% url 'guides' %}">local guides</a> page to see the many friendly,
+                    experienced, and awesome local tour guides that are ready to host you and help you plan your visit to their homes.
                 </p>
         </div>
         <div class="gap"></div>

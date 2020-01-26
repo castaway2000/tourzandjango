@@ -224,9 +224,10 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+"""Run 'python manage.py createcachetable' to make this database caching work for the first time"""
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'uuid-malloc01',
         'TIMEOUT': 61000,
     }

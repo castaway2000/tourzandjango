@@ -21,10 +21,13 @@ import datetime
 import tldextract
 from dateutil.rrule import rrule, DAILY
 from orders.views import making_booking
+import time
 
 
 @xframe_options_exempt
 def tours(request):
+    print("tours")
+    time_start = time.time()
     current_page = "tours"
     user = request.user
     base_kwargs = dict()
@@ -181,16 +184,16 @@ def tours(request):
         tours = tours_initial.filter(**base_kwargs).order_by(*order_results)
 
     tours_nmb = tours.count()
-    cities_ids = list(set([item.city.id for item in tours_initial]))
+    cities_ids = list(set([item["city_id"] for item in tours_initial.values()]))
     cities = City.objects.filter(id__in=cities_ids, is_active=True)
-    guides_ids = list(set([item.guide.id for item in tours_initial]))
+    guides_ids = list(set([item["guide_id"] for item in tours_initial.values()]))
     guides = GuideProfile.objects.filter(id__in=guides_ids, is_active=True)
 
     #getting min and max price for prices range slider
     tours_rate_info = tours.aggregate(Min("price"), Max("price"), Min("price_hourly"), Max("price_hourly"))
     if not request.session.get("tours_rates_cached"):
-        if tours.count()>0:
-            if tours.count() == 1:
+        if tours_nmb > 0:
+            if tours_nmb == 1:
                 request.session["tours_rate_fixed_min"] = 0
                 request.session["tours_rate_fixed_max"] = int(tours_rate_info["price__max"]) if float(tours_rate_info["price__max"]).is_integer() else float(tours_rate_info["price__max"])
                 request.session["tours_rate_hourly_min"] = 0
@@ -221,6 +224,9 @@ def tours(request):
     except EmptyPage:
         tours = paginator.page(paginator.num_pages)
 
+    time_end = time.time()
+    duration = time_end - time_start
+    print(duration)
     if request.GET.get("ref_id"):
         return render(request, 'tours/tours_iframe.html', locals())
     else:
