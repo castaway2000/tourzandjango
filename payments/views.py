@@ -150,7 +150,8 @@ def order_payment_checkout(request, order_uuid):
         if not illegal_country:
             tourist_email = order.tourist.user.email
             if order.tour and order.tour.type == "1":  # scheduled tour -> pay full amount from the beginning
-                payment_processed = order.make_payment(user.id, True)
+                # order status id 2 - Agreed
+                payment_processed = order.make_payment(user.id, pay_without_pre_reservation=True, new_order_status_id=2)
             else:
                 payment_processed = order.reserve_payment(user.id)  # method on order model
             message = payment_processed["message"]

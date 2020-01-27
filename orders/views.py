@@ -408,6 +408,10 @@ def order_completing(request, order_uuid):
                     order = Order.objects.get(uuid=order_uuid)
                     messages.success(request, _("Created!"))
                 else:
+                    """order.make_payment(user.id) is deleted from here, because payments are made automatically 
+                    at the day of a tour"""
+
+                    """
                     response = order.make_payment(user.id)
                     message = response["message"]
                     if response["status"] == "success":
@@ -416,7 +420,15 @@ def order_completing(request, order_uuid):
                         order = Order.objects.get(uuid=order_uuid)
                     elif response["status"] == "error":
                         messages.error(request, message)
+                    """
+                    messages.success(request, _("Done!"))
+                    Review.objects.update_or_create(order=order, defaults=kwargs)
+                    order = Order.objects.get(uuid=order_uuid)
 
+                    """AT 26012020: This is put here from the Order's method make payment, because payment will be made there
+                    earlier rather than writing a review and putting score (this current function)"""
+                    order.status_id = 4
+                    order.save(force_update=True)
         else:
             messages.error(request, _('You do not have permissions to access to this page!'))
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

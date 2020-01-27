@@ -639,6 +639,7 @@ class Order(models.Model):
                 is that such orders require from the user to add some payment method anyway.
                 TODO: improve the logic on payment_checkout page to show after applying buttons, as it is after successful payment
                 """
+                """AT 26.01.2020: It is not clear, why do we have Bunch() here"""
                 result = Bunch()
                 result.is_success = True
                 result.transaction = Bunch()
@@ -674,7 +675,7 @@ class Order(models.Model):
         order.save(force_update=True)
         return {"result": True}
 
-    def make_payment(self, user_id, pay_without_pre_reservation=False):
+    def make_payment(self, user_id, pay_without_pre_reservation=False, new_order_status_id=None):
         """
         Params:
             user_id,
@@ -689,11 +690,11 @@ class Order(models.Model):
 
         dt_now = datetime.datetime.now()
 
-
-        if not (self.tour and self.tour.type == "1"):#not scheduled
-            #Marking orders as completed when make_payment function is triggered
-            self.status_id = 4 #completed
-            self.save(force_update=True)
+        """AT 26012019: Setting completed status is removed to the payment view"""
+        # if not (self.tour and self.tour.type == "1"):  # not scheduled
+        #     # Marking orders as completed when make_payment function is triggered
+        #     self.status_id = 4  # completed
+        #     self.save(force_update=True)
 
         if pay_without_pre_reservation == True:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
@@ -715,8 +716,12 @@ class Order(models.Model):
                     Payment.objects.get_or_create(order=self, payment_method=payment_method,
                                            uuid=payment_uuid, amount=amount, currency=currency)
 
-                    self.status_id = 4 #completed
-                    payment_status = PaymentStatus.objects.get(id=4)#fully paid
+                    """AT 26.01.2020: review why status is completed for such cases. Maybe "agreed" is better? """
+                    if new_order_status_id:
+                        self.status_id = new_order_status_id
+                    else:
+                        self.status_id = 4  # completed
+                    payment_status = PaymentStatus.objects.get(id=4)  # fully paid
                     self.payment_status = payment_status
                     self.save(force_update=True)
                     message = _("Full payment has been processed!")
@@ -730,30 +735,18 @@ class Order(models.Model):
 
         elif self.payment_status.id in [2, 3]:
             payments = self.payment_set.all()
-            all_payment_successful = True
-            payments_errors = str()
+            """AT 26.01.2020: the previous logic below is not clear, because theoretically all the payments should be 
+            blocked at the card beforehand and the code below should only "process" blocked payments."""
             for payment in payments.iterator():
                 transaction_id = payment.uuid
-                result = braintree.Transaction.submit_for_settlement(transaction_id)
-                if not result.is_success:
-                    all_payment_successful = False
-                    payments_errors += '%s ' % result.errors
-                    # print(result.errors)
-                else:
-                    self.status_id = 3 #partial payment reserved
-                    payment.dt_paid = dt_now
-                    payment.save(force_update=True)
-            if all_payment_successful:
-                self.status_id = 4 #completed
-                payment_status = PaymentStatus.objects.get(id=4)#fully paid
-                self.payment_status = payment_status
-                self.save(force_update=True)
-                message = _("Full payment has been processed and review has been successfully created!")
-                return {"status": "success", "message": message}
-            else:
-                #this can be relevant only for cases when some order has several payment instances - 11.08.2018 this case is not possible
-                message = _("We have not processed full amount! Please check you card balance")
-                return {"status": "error", "message": message}
+                braintree.Transaction.submit_for_settlement(transaction_id)
+                payment.dt_paid = dt_now
+                payment.save(force_update=True)
+            payment_status = PaymentStatus.objects.get(id=4)  # fully paid
+            self.payment_status = payment_status
+            self.save(force_update=True)
+            message = _("OK")
+            return {"status": "success", "message": message}
         else:
             #AT 11112018: a case for full payment processed case for 100% discount
             message = _("Success")
@@ -881,15 +874,16 @@ def order_post_save(sender, instance, created, **kwargs):
         from utils.chat_utils import ChatHelper
         chat_helper = ChatHelper()
         if hasattr(instance, "chat") and instance.chat:
-            message = _("Order details were changed: hours: %s, persons: %s, tour starts at: %s"
-                        % (instance.hours_nmb, instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
-            chat_helper.send_order_message_and_notification(instance.chat, message)
-    order_title = "Tour %s" % instance.tour.name if instance.tour else "Tour with %s" % instance.guide.user.generalprofile.get_name()
-    msg = 'Order "{} with order ID {} status has been changed to <b>{}</b> experience is provided by {}'\
-        .format(order_title, instance.id, instance.status, instance.guide.name)
-    subject = "update to order %s" % instance.id if instance.status_id != 1 else 'new tourzan order created - order %s' % instance.id
-    data = {"order": instance}
-    SendingEmail(data).sending_email(None, ['contactus@tourzan.com'], subject, msg)
+            chat = instance.chat
+            message = _("Order details were changed: hours: %s, persons: %s, tour starts at: %s" % (instance.hours_nmb, instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
+            chat_helper.send_order_message_and_notification(chat, message)
+    if instance._original_fields["status"].id != int(instance.status_id):
+        order_title = "Tour %s" % instance.tour.name if instance.tour else "Tour with %s" % instance.guide.user.generalprofile.get_name()
+        msg = 'Order "{} with order ID {} status has been changed to <b>{}</b> experience is provided by {}'\
+            .format(order_title, instance.id, instance.status, instance.guide.name)
+        subject = "update to order %s" % instance.id if instance.status_id != 1 else 'new tourzan order created - order %s' % instance.id
+        data = {"order": instance}
+        SendingEmail(data).sending_email(None, ['contactus@tourzan.com'], subject, msg)
 post_save.connect(order_post_save, sender=Order)
 
 
