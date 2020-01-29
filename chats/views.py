@@ -91,14 +91,14 @@ def sending_chat_message(request):
 
 
 @login_required()
-def chat_creation(request, tour_id=None, guide_uuid=None, order_uuid=None):
+def chat_creation(request, tour_uuid=None, guide_uuid=None, order_uuid=None, is_tour_query=None):
     user = request.user
 
-    if tour_id:
-        tour = Tour.objects.get(id=tour_id)
+    if tour_uuid:
+        tour = Tour.objects.get(uuid=tour_uuid)
         guide_user = tour.guide.user
         topic = "Query about the tour %s" % tour.name
-        chat, created = Chat.objects.get_or_create(tour_id=tour_id, tourist=user, guide=guide_user, order__isnull=True,
+        chat, created = Chat.objects.get_or_create(tour__uuid=tour_uuid, tourist=user, guide=guide_user, order__isnull=True,
                                                    defaults={"topic": topic})
 
     elif guide_uuid:
