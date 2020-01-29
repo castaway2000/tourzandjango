@@ -41,9 +41,9 @@ def get_sized_image(context, obj, default_size="large", image_base_field_name="i
             image_field_name = "%s_%s" % (image_base_field_name, default_size)
             if hasattr(obj, image_field_name):
                 img = getattr(obj, image_field_name)
+        # print(MEDIA_URL)
         return "%s%s" % (MEDIA_URL, img)
     else:
-        page = request.path.split('/')[2]
         default_media = 'tours/small_size/default_tour_image.jpg'
         media = "%s%s" % (MEDIA_URL, default_media)
         return media

@@ -321,8 +321,86 @@ $(document).ready(function(){
         }else{
             $('#business_id_container').addClass("hidden");
         }
-    })
+    });
 
+    var sticker_unstick_height = $('#booking_proposal_container').height();
+    var width = $(window).width(); // width of window
+    if (width >= 960) {
+        $("#booking_proposal_container").sticky({
+            topSpacing: 5,
+            zIndex: 500,
+            responsiveWidth: true,
+            bottomSpacing: sticker_unstick_height + 235
+        });
+    } else{
+        $("#booking_proposal_container").unstick()
+    }
+
+    function modifyDate(dateObject, add_default_time, format) {
+        var d = new Date(dateObject);
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if(format == "Y-m-d"){
+            date = year + "-" + month + "-" + day;
+        }else{
+            if(add_default_time){
+                date = month + "/" + day + "/" + year + " 10:00";
+            }else{
+                date = month + "/" + day + "/" + year;
+            }
+        }
+        return date;
+    };
+
+    function myDateFunction(id, fromModal) {
+        date_cell = $("#" + id);
+        booking_date = $("#id_date");
+        if(booking_date.length > 0){
+            var cell_date = date_cell.data("date");
+            cell_date_obj = new Date(cell_date);
+            var today_date = new Date();
+            if(!date_cell.find("div").hasClass("date-today") && cell_date_obj>today_date){
+                $(".dow-clickable.active").removeClass("active");
+                date_cell.addClass("active");
+                cell_date = modifyDate(cell_date, add_default_time=true);
+                booking_date.val(cell_date);
+            }
+            return true;
+        }
+    }
+
+    if($("#calendar").length > 0){
+        calendar = $("#calendar");
+        calendar.zabuto_calendar({
+            language: "en",
+            show_previous: false,
+            action: function () {
+                return myDateFunction(this.id, false);
+            },
+            data: [
+              {
+                "date": moment().format('YYYY-MM-DD'),
+                "badge":false,
+                "classname":"date-today"
+              },
+              {
+                "date": moment().add('days', 1).format('YYYY-MM-DD'),
+                "classname": "date-hard-to-process"
+              },
+              {
+                "date": moment().add('days', 2).format('YYYY-MM-DD'),
+                "classname": "date-hard-to-process"
+              }
+            ]
+        });
+    }
 });
 
 $('.datepicker').datepicker();
@@ -398,5 +476,3 @@ function elementsResizing(){
 $(window).resize(function () {
     elementsResizing();
 });
-
-console.log(2);

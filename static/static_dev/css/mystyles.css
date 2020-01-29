@@ -668,11 +668,14 @@ a{
 }
 
 .booking-proposal-container{
-    position: fixed;
-    right: 20px;
-    padding: 25px 15px!important;
+    padding-right: 10px;
     font-size: 18px;
     z-index: 1000;
+}
+
+.booking-proposal-container .panel{
+    background-color: #fdfdfd;
+    border-color: #ddd;
 }
 
 .booking-proposal-container a,
@@ -705,6 +708,33 @@ a{
     position: absolute;
     right: 20px;
     top: 0;
+}
+
+.date-today{
+    background: red;
+    color: white;
+}
+
+.date-hard-to-process{
+    background: #ffff56;
+}
+
+.day:not(.date-today),
+.day:not(.date-hard-to-process){
+    cursor: pointer;
+}
+
+.dow-clickable.active > div{
+    background-color: #0e8534;
+    color: white;
+}
+
+.fa.square-red{
+    color: red;
+}
+
+.fa.square-yellow{
+    color: #ffff56;
 }
 
 .homepage-form .select2-container--default .select2-selection--multiple .select2-selection__rendered{
@@ -1281,6 +1311,7 @@ a{
 .tour-section-new.my-tours,
 .tour-section-new.reviews-section,
 .tour-section-new.booking-section{
+    padding-top: 30px;
     padding-bottom: 30px;
 }
 
@@ -1324,10 +1355,10 @@ a{
 .guide-tour-item .tour-img-container,
 .guide-tour-item .tour-info-container{
     display: inline-block;
-    width: 48%;
+    width: 49%;
     vertical-align: top;
-    min-height: 160px;
-
+    height: 180px;
+    overflow: auto;
 }
 
 .guide-tour-item .tour-img-container{
@@ -1632,7 +1663,6 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     margin-bottom: 3em;
 }
 
-
 /*.breadcumbs-container{*/
     /*background: #f3f3f3;*/
     /*min-height: 50px;*/
@@ -1651,6 +1681,10 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     background-color: #fff!important;
     border: 1px solid #ccc!important;
     border-radius: 0!important;
+}
+
+.booking-title{
+    line-height: 1.5;
 }
 
 @media (min-width: 768px) {
@@ -1847,6 +1881,11 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
         text-align: center!important;
         margin-top: 15px;
     }
+
+    .about-me .about-me-content{
+        text-align: left;
+    }
+
     .container-equal-items .panel img {
         height: inherit;
         width: 100%;

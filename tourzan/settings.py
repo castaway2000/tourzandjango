@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'django_user_agents',
     'crispy_forms',
     'robots',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -224,9 +225,10 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+"""Run 'python manage.py createcachetable' to make this database caching work for the first time"""
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'uuid-malloc01',
         'TIMEOUT': 61000,
     }
@@ -385,10 +387,10 @@ HIJACK_LOGOUT_REDIRECT_URL = '/adminissomewherethere/'
 HIJACK_USE_BOOTSTRAP = True
 HIJACK_ALLOW_GET_REQUESTS = True
 
-
 # Channels
 ASGI_APPLICATION = 'tourzan.routing.application'
-REDIS_URL_WITH_PASSWORD = os.environ.get("REDIS_URL_WITH_PASSWORD") #redis://[:password]@localhost:6379/0
+# redis://[:password]@localhost:6379/0
+REDIS_URL_WITH_PASSWORD = os.environ.get("REDIS_URL_WITH_PASSWORD", default="redis://127.0.0.1:6379/1")
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -397,6 +399,17 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# for django-apscheduler
+SCHEDULER_CONFIG = {
+    "apscheduler.jobstores.default": {
+        "class": "django_apscheduler.jobstores:DjangoJobStore"
+    },
+    'apscheduler.executors.processpool': {
+        "type": "threadpool"
+    },
+}
+SCHEDULER_AUTOSTART = env.bool("SCHEDULER_AUTOSTART", default=False)
 
 try:
     from .allauth_settings import *
