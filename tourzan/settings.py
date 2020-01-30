@@ -405,11 +405,13 @@ SCHEDULER_CONFIG = {
     "apscheduler.jobstores.default": {
         "class": "django_apscheduler.jobstores:DjangoJobStore"
     },
-    'apscheduler.executors.processpool': {
-        "type": "threadpool"
+    "apscheduler.executors.processpool": {
+        "type": "processpool"
     },
+    "apscheduler.timezone": "UTC"
 }
-SCHEDULER_AUTOSTART = env.bool("SCHEDULER_AUTOSTART", default=False)
+SCHEDULER_AUTOSTART = env.bool("SCHEDULER_AUTOSTART", default=True)
+NOTIFICATION_EMAILS = ["contactus@tourzan.com", "Aleks.Terentyev@gmail.com"]
 
 try:
     from .allauth_settings import *
