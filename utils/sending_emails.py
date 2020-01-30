@@ -227,8 +227,7 @@ class SendingEmail(object):
         email_type, created = EmailMessageType.objects.get_or_create(name="Orders payment processing notification")
         kwargs = {"type": email_type, "email": ''.join(to_email), "created__date": current_date}
         emails_nmb = OwnEmailMessage.objects.filter(**kwargs).count()
-        print(emails_nmb)
-        if emails_nmb < 5:
+        if emails_nmb <= 3:
             kwargs.pop("created__date")
             OwnEmailMessage.objects.create(**kwargs)
             subject = "Order payment batch on {}".format(current_date)
