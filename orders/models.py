@@ -393,7 +393,6 @@ class Order(models.Model):
                     "redirect": "current_page",
                     "message": _('Some selected time slots are not available anymore!')
                 }
-        print(date_booked_for)
         if not isinstance(date_booked_for, datetime.datetime):
             try:
                 date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A')
@@ -773,7 +772,6 @@ class Order(models.Model):
 
     def get_is_full_payment_processed(self):
         a = self._original_fields
-        print(a)
         if (not self._original_fields["payment_status"] or self._original_fields["payment_status"].id != 4) \
             and self.payment_status.id == 4:
             #full payment processed

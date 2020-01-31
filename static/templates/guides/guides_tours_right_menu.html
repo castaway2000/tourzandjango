@@ -1,0 +1,68 @@
+{% load i18n %}
+
+<div id="booking_proposal_container" class="booking-proposal-container">
+    <div class="panel panel-primary">
+        <div class="panel-body">
+            <div class="mb10">
+                <div class="mb5">
+                    {% if app_id %}
+                        <a class="btn btn-social btn-facebook"
+                           href="https://www.facebook.com/dialog/feed?app_id={{ app_id }}
+                            &link={{ request.build_absolute_uri }}{% if request.user.generalprofile.referral_code %}?ref={{ request.user.generalprofile.referral_code }}{% endif %}
+                            &display=popup">
+                            <i class="fa fa-facebook"></i>{% trans 'Share on Facebook' %}
+                        </a>
+                    {% endif %}
+                </div>
+                {% if request.user != guide.user %}
+                    <div class="mb5">
+                        <a class="btn btn-orange" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                            {% trans 'Chat' %}</a>
+                    </div>
+                    <div>
+                        <a href="#booking_area" class="btn btn-orange btn-booking-proposal">
+                            {% trans 'Book now' %}!
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            {% if request.user != guide.user %}
+                <div>
+                    <div id="calendar" class="mt10">
+                    </div>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-square square-red" aria-hidden="true"></i> -
+                            Booking for today is not possible</li>
+                        <li><i class="fa fa-square square-yellow" aria-hidden="true"></i> -
+                            Booking for the nearest 2 days is likely to be cancelled by the guide</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="guide-action-container">
+    <div class="main-buttons">
+        <a class="btn btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
+            &link={{ request.build_absolute_uri }}{% if request.user.generalprofile.referral_code %}?ref={{ request.user.generalprofile.referral_code }}{% endif %}
+            &display=popup">
+            <i class="fa fa-facebook"></i> {% trans 'Share' %}
+        </a>
+        {% if tour %}
+            <a class="btn btn-orange" href="{% url 'chat_creation_tour' tour.uuid %}" target="_blank">
+                {% trans 'Chat' %}
+            </a>
+        {% else %}
+            <a class="btn btn-orange" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                {% trans 'Chat' %}
+            </a>
+        {% endif %}
+        <a href="#booking_area" class="btn btn-orange btn-booking-proposal">{%  trans 'Book now' %}</a>
+    </div>
+    <div class="scroll-top-container">
+        <a href="#profile_container" class="btn btn-orange" id="scroll_top">
+            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
