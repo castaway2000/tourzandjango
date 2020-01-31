@@ -1687,6 +1687,11 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     line-height: 1.5;
 }
 
+.tour-page .sticky-wrapper{
+    width: 300px;
+    float: right;
+}
+
 @media (min-width: 768px) {
     .navbar .navbar-nav {
         display: inline-block;
@@ -1718,7 +1723,7 @@ a .panel-default, a .panel-default:hover, a .panel-default:focus{
     }
 
     .booking-proposal-container{
-        visibility: hidden;
+        display: none;
     }
 
     .guide-action-container{
