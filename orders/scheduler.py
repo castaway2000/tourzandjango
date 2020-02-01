@@ -20,7 +20,7 @@ def start():
     # - The job will execute a model class method at midnight each day
     # - replace_existing in combination with the unique ID prevents duplicate copies of the job
     scheduler.add_job("orders:scheduled_jobs.getting_orders_payments.GetOrdersPayments",
-                      "cron", hour=2, minute=2, id="getting_orders_payments", replace_existing=True)
+                      "cron", hour=2, minute=0, id="getting_orders_payments", replace_existing=True)
 
     # Add the scheduled jobs to the Django admin interface
     register_events(scheduler)

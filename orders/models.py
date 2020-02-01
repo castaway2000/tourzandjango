@@ -24,6 +24,10 @@ from django.utils.translation import ugettext as _
 from guides.models import GuideService
 from locations.models import City
 from tourzan.settings import ILLEGAL_COUNTRIES
+import logging
+logger = logging.getLogger(__name__)
+import time
+from django.core.exceptions import ValidationError
 
 
 if ON_PRODUCTION:
@@ -74,7 +78,7 @@ class PaymentStatus(models.Model):
 
 class Order(models.Model):
     uuid = models.CharField(max_length=48, blank=True, null=True, default=None)
-    status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1) #pending (initiated, but not paid)
+    status = models.ForeignKey(OrderStatus, blank=True, null=True, default=1) #  pending (initiated, but not paid)
 
     guide = models.ForeignKey(GuideProfile, blank=True, null=True, default=None)
     tourist = models.ForeignKey(TouristProfile, blank=True, null=True, default=None)
@@ -82,6 +86,8 @@ class Order(models.Model):
 
     tour = models.ForeignKey(Tour, blank=True, null=True, default=None)
     tour_scheduled = models.ForeignKey(ScheduledTour, blank=True, null=True, default=None)
+
+    initial_message = models.TextField(blank=True, null=True, default=None)
 
     #if a guide is booked directly or hourly tour was booked, here goes hourly price and final nmb of hours
     price_hourly = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -146,8 +152,8 @@ class Order(models.Model):
             return "%s" % (self.id)
 
     def save(self, *args, **kwargs):
-        #preventing creating of the order if guide and tourist is the same user
-        # if not self.pk and self.guide.user == self.tourist.user:
+        #  preventing creating of the order, if guide and tourist is the same user
+        #  if not self.pk and self.guide.user == self.tourist.user:
         #     return False
 
 
@@ -195,22 +201,7 @@ class Order(models.Model):
                 else:#free tours
                     pass
 
-            else:#guide
-
-                #only for guides, not for tours
-                #AT 04092018: Guides are booked hour with max number of people limit,
-                #so this feature is not necessary now.
-                #ToDo: exclude additional persons price on guide's profile form
-                """
-                if number_people >= 2 and ((tour and tour.payment_type.id==1) or not tour):#hourly tour or hourly payment for guides
-                    guide_additional_person_cost = guide.additional_person_cost
-                    self.number_additional_persons = (number_people-1)
-                    additional_person_total = guide_additional_person_cost * (number_people-1)#excluding one initial person
-                    self.price_per_additional_person = guide.additional_person_cost
-                    self.additional_person_total = additional_person_total
-                """
-
-
+            else:  # guide
                 self.price_hourly = guide.rate
                 #price as hourly_price*nmb_hours is recalculated below outside of if not self.pk statement
 
@@ -238,7 +229,7 @@ class Order(models.Model):
             if self.coupon:
                 self.discount = self.coupon.get_discount_amount_for_amount(self.total_price_initial)
                 if self.discount == self.total_price_initial:
-                    self.status = OrderStatus.objects.get(id=5)#payment reserved
+                    self.status = OrderStatus.objects.get(id=5)  # payment reserved
                     self.payment_status = PaymentStatus.objects.get(id=4)#status fully processed
         elif not self.coupon and self._original_fields["coupon"]:
             # this flow is unlikely (user can not cancel coupon now), but for debugging and for future implementation of cancellation
@@ -289,7 +280,7 @@ class Order(models.Model):
         referred_by = self.tourist.user.generalprofile.referred_by
         if referred_by:
             self.add_statistics_for_referrer()
-            self.add_coupon_for_referrer()#checking conditions for possible adding any coupons to referrer
+            self.add_coupon_for_referrer()  # checking conditions for possible adding any coupons to referrer
 
         if self.get_is_full_payment_processed() and self.tour_scheduled:
             self.tour_scheduled.seats_booked += 1
@@ -298,6 +289,14 @@ class Order(models.Model):
         if (self.status.id == 4 or (self.status.id == "4")) and not self._original_fields["status"] in [4, "4"]:
             now = datetime.datetime.now()
             self.date_toured = now
+
+        if self.pk and int(self.status.id) == 5 and (self.hours_nmb != self._original_fields["hours_nmb"]
+                            or self.number_persons != self._original_fields["number_persons"]):
+            self.void_payment()
+            reserve_payment_data = self.reserve_payment(self.tourist.user.id, update_order_status=False)
+            if reserve_payment_data:
+                if reserve_payment_data["status"] == "error":
+                    raise ValidationError(reserve_payment_data["message"])
         super(Order, self).save(*args, **kwargs)
 
     @property
@@ -333,25 +332,18 @@ class Order(models.Model):
             start - datetime object or '%m/%d/%Y %H:%M',
             number_people
 
-
         Response has the following format:
             status,
             redirect,
             message
         """
-        from guides_calendar.models import CalendarItemGuide
-        from chats.models import Chat
-
         kwargs = dict()
         user_id = data.get("user_id")
         tour_id = data.get("tour_id")
         guide_id = data.get("guide_id")
         tour_scheduled_id = data.get("tour_scheduled_id")
         tour_scheduled_uuid = data.get("tour_scheduled_uuid")
-
         user = User.objects.get(id=user_id)
-
-        #ADD HERE MINIMUM HOURS REQUIREMENETS CHECKING
         tour = None
         if tour_id:
             tour = Tour.objects.get(id=tour_id)
@@ -381,18 +373,6 @@ class Order(models.Model):
                 date_booked_for = data.get("date")
             kwargs["guide"] = guide
 
-        #creating booked time slots in guide's schedule
-        #if some of selected time slots is already booked or unavailable - return an error
-        time_slots_chosen = None
-        if not tour and guide.is_use_calendar and data.get("time_slots_chosen"):
-            time_slots_chosen = data.get("time_slots_chosen").split(",")#workaround to conver string to list. ToDo: improve jQuery to sent list
-            is_unavailable_or_booked_timeslot = CalendarItemGuide.objects.filter(id__in=time_slots_chosen, status_id__in=[1, 3]).exists()
-            if is_unavailable_or_booked_timeslot == True:
-                return {
-                    "status": "error",
-                    "redirect": "current_page",
-                    "message": _('Some selected time slots are not available anymore!')
-                }
         if not isinstance(date_booked_for, datetime.datetime):
             try:
                 date_booked_for = datetime.datetime.strptime(date_booked_for, '%Y, %B %d, %A')
@@ -416,16 +396,16 @@ class Order(models.Model):
         tourist = TouristProfile.objects.get(user=user)
         kwargs["tourist"] = tourist
 
+        kwargs["initial_message"] = data.get("message")
+
         if user.is_anonymous():
             pass
         else:
             order = Order.objects.create(**kwargs)
 
-            try:#maybe to delete this at all
+            try:  # maybe to delete this at all
                 services_ids = data.getlist("additional_services_select[]", data.getlist("additional_services_select"))
-                # print ("services ids: %s" % services_ids)
                 guide_services = GuideService.objects.filter(id__in=services_ids)
-
                 services_in_order=[]
                 additional_services_price = float(0)
                 for guide_service in guide_services:
@@ -441,19 +421,6 @@ class Order(models.Model):
             order.save(force_update=True)
             print('SUCCESS!! >> ', order)
 
-        if time_slots_chosen:#no time slots for tours with fixed price
-            for time_slot_chosen in time_slots_chosen:
-                #get or update functionality, but without applying for booked items
-                # print ("try")
-                # print(time_slot_chosen)
-                calendar_item_guide = CalendarItemGuide.objects.get(id=time_slot_chosen, guide=guide)
-                # print(calendar_item_guide.id)
-                # print(calendar_item_guide.calendar_item)
-                if calendar_item_guide.status_id == 2: #available
-                    calendar_item_guide.status_id = 1 #booked
-                    calendar_item_guide.order = order
-                    calendar_item_guide.save(force_update=True)
-
         illegal_country = False
         try:
             country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
@@ -463,19 +430,29 @@ class Order(models.Model):
                     break
         except Exception:
             pass
-        #got rid of returning data for ajax calls
+        return {
+            "order_id": order.id,
+            "status": "success",
+            "redirect": reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}),
+            "message": _("Make a payment of your order")
+        }
 
-        if (order.tour and order.tour.type == "2") or not order.tour:#private tours and guide booking leads to chat page
-            topic = "Chat with %s" % guide.user.generalprofile.first_name
-            chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=user, guide=guide.user, order=order,
+    def create_initial_chat_message(self):
+        from chats.models import Chat
+        order = self
+        # private tours and guide booking leads to chat page
+        if (order.tour and order.tour.type == "2") or not order.tour:
+            topic = "Chat with %s" % order.guide.user.generalprofile.first_name
+            chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user,
+                                                       guide=order.guide.user, order=order,
                                                        defaults={"topic": topic})
-            initial_message = data.get("message")
+            initial_message = order.initial_message
 
             #message about creation of the order
             if order.tour:
                 message = _("Tour: {tour_name} \n"
                             "Persons number: {persons_nmb}\n"
-                            "Date: {tour_date}".format(tour_name=tour.name,
+                            "Date: {tour_date}".format(tour_name=order.tour.name,
                                                          persons_nmb=order.number_persons,
                                                          tour_date=order.date_booked_for
                                                          ))
@@ -485,11 +462,11 @@ class Order(models.Model):
                             "Date: {tour_date}".format(persons_nmb=order.number_persons,
                                                          tour_date=order.date_booked_for
                                                          ))
-            chat.create_message(user, message, is_automatic=True)
+            chat.create_message(order.tourist.user, message, is_automatic=True)
 
-            #initial message of the user
+            # the initial message of the user
             if initial_message:
-                chat.create_message(user, initial_message)
+                chat.create_message(order.tourist.user, initial_message)
 
             return {
                 "order_id": order.id,
@@ -497,14 +474,7 @@ class Order(models.Model):
                 "redirect": reverse("livechat_room", kwargs={"chat_uuid": chat.uuid}),
                 "message": _("We have successfully sent your request to a guide.")
             }
-
-        else:
-            return {
-                "order_id": order.id,
-                "status": "success",
-                "redirect": reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}),
-                "message": _("We have successfully sent your request to a guide. ")
-            }
+        return True
 
     def checking_statuses(self, current_status_id, new_status_id, current_role):
         current_status_id = int(current_status_id)
@@ -582,28 +552,27 @@ class Order(models.Model):
 
         checking_status, message = self.checking_statuses(current_status_id=self.status.id, new_status_id=status_id,
                                                                       current_role=current_role)
-        print("checking: %s" % checking_status)
         if skip_status_flow_checking == True:
             response_dict["message"] = message if message else _('Order status has been updated!')
             response_dict["status"] = "success"
-            self.status_id = status_id
+            self.status = OrderStatus.objects.get(id=status_id)
             self.save(force_update=True)
         elif checking_status == "error":
             response_dict["message"] = message if message else _('Order status can not be changed!')
             response_dict["status"] = checking_status
         elif status_id == "4":
-            self.status_id = status_id
+            self.status = OrderStatus.objects.get(id=status_id)
             self.save(force_update=True)
             response_dict["message"] = _('Order has been successfully marked as completed!')
             response_dict["status"] = "success"
         else:
-            self.status_id = status_id
+            self.status = OrderStatus.objects.get(id=status_id)
             self.save(force_update=True)
             response_dict["message"] = message
             response_dict["status"] = "success"
         return response_dict
 
-    def reserve_payment(self, user_id):
+    def reserve_payment(self, user_id, update_order_status=True):
         """
         Params:
             user_id,
@@ -619,7 +588,7 @@ class Order(models.Model):
 
         order = self
         if int(user_id) != self.tourist.user_id:
-            message = _("User, who has initialized payment is not a tourist in the selected order")
+            message = _("User initialized payment is not a tourist in the selected order")
             return {"status": "error", "message": message}
         else:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
@@ -645,32 +614,49 @@ class Order(models.Model):
                 result.transaction.id = uuid_creating()
                 result.transaction.amount = 0
                 result.transaction.currency_iso_code = 'USD'
-
             if result.is_success:
                 data = result.transaction
                 payment_uuid = data.id
                 amount = data.amount
                 currency = data.currency_iso_code
                 currency, created = Currency.objects.get_or_create(name=currency)
-                Payment.objects.get_or_create(order=order, payment_method=payment_method,
+                payment, created = Payment.objects.get_or_create(order=order, payment_method=payment_method,
                                               uuid=payment_uuid, amount=amount, currency=currency)
-                order.status_id = 5 # payment reserved
-                order.payment_status_id = 2 #full payment reserverd
-                order.save(force_update=True)
-
-                #put status "agreed" if order details were approved from chat window by a guide
-                if order.status_id == 10:
-                    order.status_id = 2
+                if update_order_status:
+                    order.status = OrderStatus.objects.get(id=5)  # payment reserved
+                    order.payment_status = PaymentStatus.objects.get(id=2)  # full payment reserved
                     order.save(force_update=True)
-
+                    """This function was moved here from order_creation function in the process of refactoring of
+                    payments process to make a payment reservation before sending any details to a guide in chat."""
+                    self.create_initial_chat_message()
                 message = _("Payment was reserved successfully!")
                 return {"status": "success", "message": message}
             else:
-                return {"status": "error", "message": result.errors}
+                errors_text = ""
+                for error in result.errors.deep_errors:
+                    errors_text += "{}: {} |".format(error.code, error.message)
+                return {"status": "error", "message": errors_text}
+
+    def void_payment(self):
+        """Cancelling pending payment."""
+        """https://developers.braintreepayments.com/reference/request/transaction/void/python"""
+        payments = self.payment_set.filter(is_active=True)
+        for payment in payments.iterator():
+            transaction_id = payment.uuid
+            result = braintree.Transaction.void(transaction_id)
+            if result.is_success:
+                payment.is_active = False
+            else:
+                errors_text = ""
+                for error in result.errors.deep_errors:
+                    errors_text += "{}: {} |".format(error.code, error.message)
+                payment.errors_text = errors_text
+            payment.save(force_update=True)
+        return True
 
     def making_mutual_agreement(self):
         order = self
-        order.status_id = 9 # mutual agreemnt type
+        order.status = OrderStatus.objects.get(id=9)  # mutual agreement type
         order.save(force_update=True)
         return {"result": True}
 
@@ -688,13 +674,6 @@ class Order(models.Model):
             return {"status": "error", "message": message}
 
         dt_now = datetime.datetime.now()
-
-        """AT 26012019: Setting completed status is removed to the payment view"""
-        # if not (self.tour and self.tour.type == "1"):  # not scheduled
-        #     # Marking orders as completed when make_payment function is triggered
-        #     self.status_id = 4  # completed
-        #     self.save(force_update=True)
-
         if pay_without_pre_reservation == True:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
             if payment_method:
@@ -717,15 +696,19 @@ class Order(models.Model):
 
                     """AT 26.01.2020: review why status is completed for such cases. Maybe "agreed" is better? """
                     if new_order_status_id:
-                        self.status_id = new_order_status_id
+                        self.status = OrderStatus.objects.get(id=new_order_status_id)
                     else:
-                        self.status_id = 4  # completed
+                        self.status = OrderStatus.objects.get(id=4)  # completed
                     payment_status = PaymentStatus.objects.get(id=4)  # fully paid
                     self.payment_status = payment_status
                     self.save(force_update=True)
                     message = _("Full payment has been processed!")
                     return {"status": "success", "message": message}
                 else:
+                    errors_text = ""
+                    for error in result.errors.deep_errors:
+                        errors_text += "{}: {} |".format(error.code, error.message)
+                    logger.error(errors_text)
                     message = _("We have not processed full amount! Please check you card balance")
                     return {"status": "error", "message": message}
             else:
@@ -733,7 +716,7 @@ class Order(models.Model):
                 return {"status": "error", "message": message}
 
         elif self.payment_status.id in [2, 3]:
-            payments = self.payment_set.all()
+            payments = self.payment_set.filter(is_active=True, dt_paid__isnull=True)
             """AT 26.01.2020: the previous logic below is not clear, because theoretically all the payments should be 
             blocked at the card beforehand and the code below should only "process" blocked payments."""
             for payment in payments.iterator():
@@ -792,7 +775,7 @@ class Order(models.Model):
             referred_by.generalprofile.tourists_with_purchases_referred_nmb -= 1
             referred_by.generalprofile.save(force_update=True)
 
-    def get_toursit_total_before_discount(self):
+    def get_tourist_total_before_discount(self):
         #for showing amount of tourist payment before a discount (initial total amount + tourists fees)
         if self.coupon:
             return self.total_price + self.discount
@@ -811,6 +794,40 @@ class Order(models.Model):
         nmb_symbols = 5
         return self.uuid[-nmb_symbols:]
 
+    def get_is_guide_saving(self):
+        return getattr(self, "review") and self.review.is_guide_feedback and not self.review.is_tourist_feedback
+
+    def send_notifications(self):
+        self.send_notification_email()
+        self.send_notification_sms()
+        self.send_notification_chat_message()
+        return True
+
+    def send_notification_email(self):
+        data = {"order": self}
+        SendingEmail(data).email_for_order()
+        return True
+
+    def send_notification_sms(self):
+        from utils.sending_sms import SendingSMS
+        sms = SendingSMS()
+        sms.send_order_status_change_notification(order=self, status=self.status)
+        return True
+
+    def send_notification_chat_message(self):
+        from chats.models import Chat
+        from utils.chat_utils import ChatHelper
+        status_name = self.status.name
+        order = self
+        topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
+        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user, guide=order.guide.user,
+                                                   order=order, defaults={"topic": topic})
+        order_title = "Tour %s" % order.tour.name if order.tour else "Tour with %s" % order.guide.user.generalprofile.get_name()
+        message = 'Order  "%s" status has been changed to <b>%s</b>' % (order_title, status_name)
+        chat_helper = ChatHelper()
+        chat_helper.send_order_message_and_notification(chat, message)
+        return True
+
 
 """
 saving ratings from review to Order object
@@ -823,7 +840,6 @@ def order_post_save(sender, instance, created, **kwargs):
         OrderStatusChangeHistory.objects.create(order=instance, status_id=instance.status_id)
 
     if instance.status_id in [4, "4"]: #completed
-
         #saving info for a guide
         guide = instance.guide
         statistic_info = guide.order_set.filter(review__is_tourist_feedback=True)\
@@ -833,7 +849,6 @@ def order_post_save(sender, instance, created, **kwargs):
             guide.orders_with_review_nmb = statistic_info["reviews_nmb"]
             guide.rating = statistic_info["rating"]
             guide.save(force_update=True)
-
 
         #saving info for a tourist
         tourist = instance.tourist
@@ -845,23 +860,15 @@ def order_post_save(sender, instance, created, **kwargs):
             tourist.rating = statistic_info["rating"]
             tourist.save(force_update=True)
 
-    #sening email according to orders changing
-    current_request = CrequestMiddleware.get_request()
-    if current_request:
-        user = current_request.user
-        is_guide_saving = True if instance.guide.user == user else False
-    else:
-        is_guide_saving = False
-
+    # sending notification emails and sms about order status changing
     if created or (instance._original_fields["status"] and int(instance.status_id) != int(instance._original_fields["status"].id)):
-        # print ("pre sending")
-        data = {"order": instance, "is_guide_saving": is_guide_saving}
-        SendingEmail(data).email_for_order()
-
-        if int(instance.status_id) == 2 and instance.tour_scheduled:#agreed
+        if int(instance.status.id) != 1:
+            instance.send_notifications()
+        if int(instance.status.id) == 2 and instance.tour_scheduled:#agreed
             instance.tour_scheduled.seats_booked += instance.number_persons
             instance.tour_scheduled.save(force_update=True)
-        if int(instance._original_fields["status"].id) == 2 and int(instance.status_id) in [3, 6] and instance.tour_scheduled:#if it was agreed and now it is canceled, than reduce booked nmb
+        #  If it was agreed and now it is canceled, than reduce booked nmb
+        if int(instance._original_fields["status"].id) == 2 and int(instance.status.id) in [3, 6] and instance.tour_scheduled:
             instance.tour_scheduled.seats_booked -= instance.number_persons
             instance.tour_scheduled.save(force_update=True)
 
@@ -873,8 +880,14 @@ def order_post_save(sender, instance, created, **kwargs):
         chat_helper = ChatHelper()
         if hasattr(instance, "chat") and instance.chat:
             chat = instance.chat
-            message = _("Order details were changed: hours: %s, persons: %s, tour starts at: %s" % (instance.hours_nmb, instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
+            if instance.tour:
+                message = _("Order details were changed: persons: %s, tour starts at: %s" % (
+                    instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
+            else:
+                message = _("Order details were changed: hours: %s, persons: %s, tour starts at: %s" % (
+                    instance.hours_nmb, instance.number_persons, instance.date_booked_for.strftime("%m/%d/%Y %H:%M:%S")))
             chat_helper.send_order_message_and_notification(chat, message)
+
     if instance._original_fields["status"].id != int(instance.status_id):
         order_title = "Tour %s" % instance.tour.name if instance.tour else "Tour with %s" % instance.guide.user.generalprofile.get_name()
         msg = 'Order "{} with order ID {} status has been changed to <b>{}</b> experience is provided by {}'\
@@ -893,33 +906,6 @@ class OrderStatusChangeHistory(models.Model):
 
     def __str__(self):
         return "%s" % (self.id)
-
-    def send_notifications(self):
-        from chats.models import Chat
-        from utils.chat_utils import ChatHelper
-        status_name = self.status.name
-        order = self.order
-        topic = "Chat with %s" % order.guide.user.generalprofile.get_name()
-        chat, created = Chat.objects.get_or_create(tour_id__isnull=True, tourist=order.tourist.user, guide=order.guide.user,
-                                                   order=order, defaults={"topic": topic})
-        order_title = "Tour %s" % self.order.tour.name if self.order.tour else "Tour with %s" % order.guide.user.generalprofile.get_name()
-        message = 'Order  "%s" status has been changed to <b>%s</b>' % (order_title, status_name)
-        chat_helper = ChatHelper()
-        chat_helper.send_order_message_and_notification(chat, message)
-
-
-@disable_for_loaddata
-def order_status_change_history_post_save(sender, instance, created, **kwargs):
-    if created:
-        instance.send_notifications()
-
-        # sending sms notification for order status changing
-        #TODO: sending email notification can be also moved here from Order post save method
-        from utils.sending_sms import SendingSMS
-        sms = SendingSMS()
-        sms.send_order_status_change_notification(order=instance.order, status=instance.status)
-
-post_save.connect(order_status_change_history_post_save, sender=OrderStatusChangeHistory)
 
 
 class ServiceInOrder(models.Model):

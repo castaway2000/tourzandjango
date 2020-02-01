@@ -5,24 +5,20 @@
 
 {% if request.user == order.guide.user %}
     {% if not order.is_canceled and not order.tour.type == "1" %}
-        {% if order.status.id == 1 %}
-            <div>
+        {% if order.status.id == 5 %}
+            <p>
                 <a href="{% url 'change_order_status' order.uuid 2 %}"
                    class="btn btn-primary">{% trans 'Confirm booking' %}
                 </a>
-            </div>
-        {% elif order.status.id == 2 %}
-            <div class="mt20">
-                <b>{% trans 'Waiting for tourist payment reservation' %}</b>
-            </div>
+            </p>
         {% endif %}
     {% endif %}
 
-    {% if order.status.id == 4 or order.status.id == 5 %}
+    {% if order.status.id == 4 or order.status.id == 2 %}
         <p>
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary">
-                {% if order.status.id == 5 %}
+                {% if order.status.id == 2 %}
                     {% trans 'Mark as completed' %}
                 {% elif not order.review.is_guide_feedback %}
                     {% trans 'Write review' %}
@@ -38,37 +34,25 @@
     {% with order.tour as tour %}
         <div>
             {% if not order.is_canceled %}
-                {% if order.status.id == 1 or order.status.id == 2 %}
+                {% if order.status.id == 5 or order.status.id == 2 %}
                     {% if order.status.id == 2 %}
-
                         <div class="text-left">
-                            <form method="post">{% csrf_token %}
-                                <div class="form-group">
-                                    <p>
-                                        {% trans 'Your guide has approved booking conditions.' %}
-                                        {% trans 'Click the button below to go to checkout page.' %}
-                                    </p>
-                                    <a href="{% url 'order_payment_checkout' order.uuid %}"
-                                        class="btn btn-primary">{% trans 'Checkout' %}</a>
-                                </div>
-                            </form>
+                            <p>
+                                {% trans 'Your guide has approved booking conditions.' %}
+                            </p>
                         </div>
-
-                    {% elif order.status.id == 1 and form %}
+                    {% elif order.status.id == 5 and form %}
                         {% crispy form %}
                         <div class="mt20">
                             <b>{% trans 'Waiting for guide confirmation' %}</b>
                         </div>
-                     {% elif order.status.id == 1 and tour and tour.type == "1" %}
-                        <a href="{% url 'order_payment_checkout' order.uuid %}"
-                                        class="btn btn-primary">{% trans 'Checkout' %}</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
         </div>
     {% endwith %}
 
-    {% if order.status.id == 4 or order.status.id == 5 %}
+    {% if order.status.id == 4 or order.status.id == 2 %}
         <p>
             <a href="{% url 'order_completing' order.uuid %}"
                 class="btn btn-primary">
@@ -76,7 +60,7 @@
                     {% if order.payment_status.id == 4 %}
                         {% trans 'Write review' %}
                     {% else %}
-                        {% trans 'Write review and pay' %}
+                        {% trans 'Mark as completed' %}
                     {% endif %}
                 {% else %}
                     {% trans 'View final details' %}
@@ -84,10 +68,9 @@
             </a>
         </p>
     {% endif %}
-
 {% endif %}
 
-{% if order.status.id == 1 or order.status.id == 2 %}
+{% if order.status.id == 1 or order.status.id == 5 %}
     <div class="text-left mt10">
         <a href="{% url 'cancel_order' order.uuid %}"
             class="btn btn-danger">
