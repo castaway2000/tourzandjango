@@ -1,30 +1,6 @@
 {% load static %}
 {% load i18n %}
 
-
-<p>
-    <b>{% trans 'Payment' %}: </b>
-    {% if order.payment_status.id == 1 %}
-        {% trans 'no payment yet' %}
-    {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
-        {% if order.payment %}
-            {{ order.payment.amount }} {{ order.payment.currency.name }}
-        {% else %}
-            0 {{ order.currency.name }}
-        {% endif %}
-        <br>({{ order.total_price }} USD {% trans 'reserved' %})
-    {% elif order.payment_status.id == 4 %}
-        {% if order.payment %}
-            {{ order.payment.amount }} {{ order.payment.currency.name }}
-        {% else %}
-            0 {{ order.currency.name }}
-        {% endif %}
-        (paid)
-    {% else %}
-        {% trans 'no payment yet' %}
-    {% endif %}
-</p>
-
 {% if order.status_id == 9 %}
     <p>
         <b>{% trans 'What you agree to pay your guide directly' %}:</b><br/>
@@ -48,5 +24,27 @@
     <p>
         <b>{% trans 'Service fee' %}:</b> {{ order.fees_tourist|floatformat:2 }} {{ order.currency.name }}
     </p>
-
 {% endif %}
+
+<p>
+    <b>{% trans 'Paid' %}: </b>
+    {% if order.payment_status.id == 1 %}
+        {% trans 'no payment yet' %}
+    {% elif order.payment_status.id == 2 or order.payment_status.id == 3 %}
+        {% if order.payment %}
+            {{ order.payment.amount }} {{ order.payment.currency.name }}
+        {% else %}
+            0 {{ order.currency.name }}
+        {% endif %}
+        <br>({{ order.total_price }} USD {% trans 'reserved' %})
+    {% elif order.payment_status.id == 4 %}
+        {% if order.payment %}
+            {{ order.payment.amount }} {{ order.payment.currency.name }}
+        {% else %}
+            0 {{ order.currency.name }}
+        {% endif %}
+        (paid)
+    {% else %}
+        {% trans 'no payment yet' %}
+    {% endif %}
+</p>

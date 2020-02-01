@@ -58,9 +58,6 @@ def making_booking(request):
         """
         return HttpResponseRedirect(reverse("authorization_options"))
 
-
-
-    return_dict = dict()
     if request.session.get("pending_order_creation"):
         data_mod = request.session.get("pending_order_creation")
         del request.session["pending_order_creation"]

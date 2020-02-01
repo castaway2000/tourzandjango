@@ -34,6 +34,8 @@ SECRET_KEY = 'd370859b5!ee4ea_9c5e%d11m7qin7lr*c&6#8e@9cf151b3ec'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+SHOW_LOGGING = env.bool("SHOW_LOGGING", default=True)
+SEND_SMS = env.bool("SEND_SMS", default=True)
 
 ALLOWED_HOSTS = ['*']
 ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
@@ -178,33 +180,35 @@ TEMPLATES = [
     },
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+print("SHOW_LOGGING: {}".format(SHOW_LOGGING))
+if SHOW_LOGGING:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
         },
-    },
-    'handlers': {
-        'console': {
-            'level': 'NOTSET',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'NOTSET',
+        'handlers': {
+            'console': {
+                'level': 'NOTSET',
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose'
+            }
         },
-        'django.request': {
-            'handlers': ['console'],
-            'propagate': False,
-            'level': 'ERROR'
+        'loggers': {
+            '': {
+                'handlers': ['console'],
+                'level': 'NOTSET',
+            },
+            'django.request': {
+                'handlers': ['console'],
+                'propagate': False,
+                'level': 'ERROR'
+            }
         }
     }
-}
 
 WSGI_APPLICATION = 'tourzan.wsgi.application'
 
