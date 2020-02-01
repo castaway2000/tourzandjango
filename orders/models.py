@@ -673,7 +673,6 @@ class Order(models.Model):
             message = _("User, who has initialized payment is not a tourist or a guide in the selected order")
             return {"status": "error", "message": message}
 
-        dt_now = datetime.datetime.now()
         if pay_without_pre_reservation == True:
             payment_method = self.tourist.user.generalprofile.get_default_payment_method()
             if payment_method:
@@ -692,13 +691,12 @@ class Order(models.Model):
                     currency = data.currency_iso_code
                     currency, created = Currency.objects.get_or_create(name=currency)
                     Payment.objects.get_or_create(order=self, payment_method=payment_method,
-                                           uuid=payment_uuid, amount=amount, currency=currency)
-
-                    """AT 26.01.2020: review why status is completed for such cases. Maybe "agreed" is better? """
+                                           uuid=payment_uuid, amount=amount, currency=currency,
+                                           dt_paid = datetime.datetime.now())
                     if new_order_status_id:
                         self.status = OrderStatus.objects.get(id=new_order_status_id)
                     else:
-                        self.status = OrderStatus.objects.get(id=4)  # completed
+                        self.status = OrderStatus.objects.get(id=2)  # agreed
                     payment_status = PaymentStatus.objects.get(id=4)  # fully paid
                     self.payment_status = payment_status
                     self.save(force_update=True)
@@ -722,7 +720,7 @@ class Order(models.Model):
             for payment in payments.iterator():
                 transaction_id = payment.uuid
                 braintree.Transaction.submit_for_settlement(transaction_id)
-                payment.dt_paid = dt_now
+                payment.dt_paid = datetime.datetime.now()
                 payment.save(force_update=True)
             payment_status = PaymentStatus.objects.get(id=4)  # fully paid
             self.payment_status = payment_status
