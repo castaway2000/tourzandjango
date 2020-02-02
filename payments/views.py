@@ -154,6 +154,8 @@ def order_payment_checkout(request, order_uuid):
                 payment_processed = order.make_payment(user.id, pay_without_pre_reservation=True, new_order_status_id=2)
             else:
                 payment_processed = order.reserve_payment(user.id)  # method on order model
+                if payment_processed["status"] != "error" and hasattr(order, "chat"):
+                    return HttpResponseRedirect(reverse("livechat_room", kwargs={"chat_uuid": order.chat.uuid}))
             message = payment_processed["message"]
             if payment_processed["status"] == "error":
                 messages.error(request, message)

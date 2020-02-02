@@ -255,22 +255,6 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id})
     if request.POST and form.is_valid():
         return making_booking(request)
-        # data = request.POST
-        # if data.get("text") and user:
-        #     kwargs = dict()
-        #     kwargs["text"] = data.get("text")
-        #     if data.get("name"):
-        #         kwargs["name"] = data.get("name")
-        #
-        #     kwargs["rating"] = 5
-        #
-        #     review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
-        #
-        #     if created:
-        #         #add messages here
-        #         pass
-        #
-        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     page = request.GET.get('page', 1)
     paginator = Paginator(reviews, 10)
