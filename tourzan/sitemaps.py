@@ -23,6 +23,7 @@ class StaticSitemap(Sitemap):
     def location(self, item):
         return reverse(item)
 
+
 class BlogSitemap(Sitemap):
     changefreq = "weekly"
     priority = 0.7
