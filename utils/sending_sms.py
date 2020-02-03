@@ -17,6 +17,7 @@ from datetime import datetime
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from notifications.models import Notification, NotificationSubject
+from django.conf import settings
 
 
 class SendingSMS(object):
@@ -116,32 +117,34 @@ class SendingSMS(object):
         if sms_messages_nmb_today > DAILY_SMS_NMB_LIMIT:
             return {"status": "error", "message": "General SMS limit was reached. Please contact support!"}
 
-        try:
-            #Sending sms function which uses twilio
+        if settings.SEND_SMS:
+            try:
+                #Sending sms function which uses twilio
 
-            self.client.messages.create(
-                to=phone_to,
-                from_=self.from_phone,
-                body=message,
-            )
+                self.client.messages.create(
+                    to=phone_to,
+                    from_=self.from_phone,
+                    body=message,
+                )
 
-            if self.subject == "Verification":
-                SmsSendingHistory.objects.create(user_id=user_id, phone=phone_to, sms_code=self.random_string)
-            elif self.subject:
-                subject, created = NotificationSubject.objects.get_or_create(name=self.subject)
-                kwargs = {
-                    "subject": subject,
-                    "phone": phone_to,
-                    "user_id": user_id,
-                }
-                if self.order:
-                    kwargs["order"] = self.order
-                if self.chat:
-                    kwargs["chat"] = self.chat
-                Notification.objects.create(**kwargs)
+                if self.subject == "Verification":
+                    SmsSendingHistory.objects.create(user_id=user_id, phone=phone_to, sms_code=self.random_string)
+                elif self.subject:
+                    subject, created = NotificationSubject.objects.get_or_create(name=self.subject)
+                    kwargs = {
+                        "subject": subject,
+                        "phone": phone_to,
+                        "user_id": user_id,
+                    }
+                    if self.order:
+                        kwargs["order"] = self.order
+                    if self.chat:
+                        kwargs["chat"] = self.chat
+                    Notification.objects.create(**kwargs)
 
-            return {"status": "success", "message": "Sms was sent successfully!"}
+                return {"status": "success", "message": "Sms was sent successfully!"}
 
-        except TwilioException as exception:
-            print(exception)
-            return {"status": "error", "message": exception}
+            except TwilioException as exception:
+                print(exception)
+                return {"status": "error", "message": exception}
+        return True

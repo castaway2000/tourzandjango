@@ -83,29 +83,38 @@ def upload_path_handler_user_scanned_docs(instance, filename):
 def upload_path_handler_guide_answer_image(instance, filename):
     return "users/%s/guide/profile_image/%s" % (instance.guide.user.id, filename)
 
+
 def upload_path_handler_guide_answer_image_large(instance, filename):
     return "users/%s/guide/profile_image/large_size/%s" % (instance.guide.user.id, filename)
+
 
 def upload_path_handler_guide_answer_image_medium(instance, filename):
     return "users/%s/guide/profile_image/medium_size/%s" % (instance.guide.user.id, filename)
 
+
 def upload_path_handler_guide_answer_image_small(instance, filename):
     return "users/%s/guide/profile_image/small_size/%s" % (instance.guide.user.id, filename)
+
 
 def upload_path_handler_guide_image(instance, filename):
     return "users/%s/guide/profile_image/%s" % (instance.guide.user.id, filename)
 
+
 def upload_path_handler_guide_header_images(instance, filename):
     return "users/%s/guide/header_images/%s" % (instance.user.id, filename)
+
 
 def upload_path_handler_guide_profile_image(instance, filename):
     return "users/%s/guide/profile_image/%s" % (instance.user.id, filename)
 
+
 def upload_path_handler_guide_profile_image_large(instance, filename):
     return "users/%s/guide/profile_image/large/%s" % (instance.user.id, filename)
 
+
 def upload_path_handler_guide_profile_image_medium(instance, filename):
     return "users/%s/guide/profile_image/medium/%s" % (instance.user.id, filename)
+
 
 def upload_path_handler_guide_profile_image_small(instance, filename):
     return "users/%s/guide/profile_image/small/%s" % (instance.user.id, filename)

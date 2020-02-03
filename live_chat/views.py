@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from orders.forms import GuideOrderAdjustForm
 from django.contrib import messages
 from django.utils.translation import ugettext as _
+from django import forms
 
 
 @login_required()
@@ -28,19 +29,15 @@ def livechat_room(request, chat_uuid):
                                                       "user__generalprofile__id").order_by("created")
 
     order = chat.order
-    if order and ((order.tour and order.tour.type=="2") or (not order.tour)):#only dates for private tours or guide hourly booking can be adjusted
+    # only dates for private tours or guide hourly booking can be adjusted
+    if order and ((order.tour and order.tour.type == "2") or (not order.tour)):
         not_scheduled_tour = True
         form = GuideOrderAdjustForm(request.POST or None, instance=order)
-        print(order.status.id)
-        if request.method == "POST" and order.status.id in [1, 2]: #pending or approved by guide
-            if form.is_valid() and not order.status.id == 2: #not approved by guide
-                new_form = form.save(commit=False)
-                new_form.save()
-            elif order.tourist.user == user:
-                if "approve" in request.POST:
-                    return HttpResponseRedirect(reverse("order_payment_checkout", kwargs={"order_uuid": order.uuid}))
-                elif "edit_details" in request.POST:
-                    order.status_id = 1 #pending
-                    order.save(force_update=True)
+        if request.method == "POST" and order.status.id in [1, 5]:  # pending or approved by guide
+            if form.is_valid():  # payment reserved
+                try:
+                    form.save()
+                except Exception as e:
+                    messages.error(request, e)
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'live_chat/room.html', locals())

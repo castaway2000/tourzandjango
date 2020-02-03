@@ -22,368 +22,316 @@
 
 {% block header_stuff %}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/zabuto_calendar/1.6.4/zabuto_calendar.min.css">
 {% endblock %}
 
 
 {% block content %}
-    {% if guide.is_active %}
-        <div class="booking-proposal-container">
-            <div class="mb5">
-                {% if app_id %}
-                    <a class="btn btn-social btn-facebook"
-                       href="https://www.facebook.com/dialog/feed?app_id={{ app_id }}
-                        &link={{ request.build_absolute_uri }}{% if request.user.generalprofile.referral_code %}?ref={{ request.user.generalprofile.referral_code }}{% endif %}
-                        &display=popup">
-                        <i class="fa fa-facebook"></i>{% trans 'Share' %}
-                    </a>
-                {% endif %}
-            </div>
-            {% if request.user != guide.user %}
-                <div class="mb5">
-                    <a class="btn btn-orange" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                        {% trans 'Chat' %}</a>
-                </div>
-                <div>
-                    <a href="#booking_area" class="btn btn-orange btn-booking-proposal">
-                        {% trans 'Book now' %}!
-                    </a>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="guide-action-container">
-            <div class="main-buttons">
-                <a class="btn btn-facebook" href="https://www.facebook.com/dialog/feed?app_id=1389892087910588
-                    &link={{ request.build_absolute_uri }}{% if request.user.generalprofile.referral_code %}?ref={{ request.user.generalprofile.referral_code }}{% endif %}
-                    &display=popup">
-                    <i class="fa fa-facebook"></i> {% trans 'Share' %}
-                </a>
-                <a class="btn btn-orange" href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                    {% trans 'Chat' %}
-                </a>
-                <a href="#booking_area" class="btn btn-orange btn-booking-proposal">{%  trans 'Book now' %}</a>
-            </div>
-            <div class="scroll-top-container">
-                <a href="#profile_container" class="btn btn-orange" id="scroll_top">
-                    <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
-
-    {% endif %}
     {% if subdomain != 'api' %}
-    <div class="container">
-        <div class="breadcrumb-guide-container text-center">
-            <ul class="breadcrumb">
-                <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
-                <li>
-                    <a href="{% url 'country_guides' guide.city.country.slug %}">{{ guide.city.country.name }}</a>
-                </li>
-{#                <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>#}
-                <li>
-                    <a href="{% url 'city_guides' guide.city.country.slug guide.city.slug %}">{{ guide.city.name }}</a>
-                </li>
-                <li class="active">{{ guide.user.generalprofile.get_name }}</li>
-            </ul>
+        <div class="container">
+            <div class="breadcrumb-guide-container text-center">
+                <ul class="breadcrumb">
+                    <li><a href="{% url 'all_countries' %}">{% trans 'All countries' %}</a></li>
+                    <li>
+                        <a href="{% url 'country_guides' guide.city.country.slug %}">{{ guide.city.country.name }}</a>
+                    </li>
+    {#                <li><a href="{% url 'guides' %}?city_input={{ guide.city.original_name }}">{{ guide.city.original_name }}</a>#}
+                    <li>
+                        <a href="{% url 'city_guides' guide.city.country.slug guide.city.slug %}">{{ guide.city.name }}</a>
+                    </li>
+                    <li class="active">{{ guide.user.generalprofile.get_name }}</li>
+                </ul>
+            </div>
         </div>
-    </div>
     {% endif %}
 
     <div class="tour-section-new guide-section">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
-
-                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                         data-src="{{ guide.profile_image_small.url }}" class="img-responsive">
-                    <div class="text-center mt10 mb10">
-                        <div class="guide-name">
-                            {{ guide.user.generalprofile.get_name }}
-                        </div>
-                        {% if guide.user.generalprofile.age > 0 %}
-                            <div>
-                                <span>{{ guide.user.generalprofile.age }} {% trans 'years old' %}</span>
-                            </div>
-                        {% endif %}
-                        {% if guide.user.generalprofile.profession %}
-                            <div>
-                                <span class="profession">{{ guide.user.generalprofile.profession|capfirst|default_if_none:"" }} {% trans 'by profession' %}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-lg-5 col-md-5 col-sm-8 col-xs-12">
-                    <div class="about-me">
-                        <div class="section-title text-left">
-                            {% trans 'About me' %}
-                        </div>
-                        <div>
-                            {% with guide.user.generalprofile.get_languages_for_profile as user_languages %}
-                                {% if user_languages %}
-                                    <div class="mb10">
-                                        <div>{% trans 'Languages' %}: </div>
-                                        {% regroup user_languages by level.name as level_names_list %}
-                                        {% for level_name in level_names_list %}
-                                            <b>{{ level_name.grouper|capfirst }}:</b>
-                                            {% for user_language in level_name.list %}
-                                                <span class="label label-success label-tag">{{ user_language.get_language_display }}</span>
-                                            {% endfor %}
-                                        {% endfor %}
+                <div class="col-lg-2"></div>
+                <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
+                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                 data-src="{{ guide.profile_image_small.url }}" class="img-responsive">
+                            <div class="text-center mt10 mb10">
+                                <div class="guide-name">
+                                    {{ guide.user.generalprofile.get_name }}
+                                </div>
+                                {% if guide.user.generalprofile.age > 0 %}
+                                    <div>
+                                        <span>{{ guide.user.generalprofile.age }} {% trans 'years old' %}</span>
                                     </div>
                                 {% endif %}
-                            {% endwith %}
+                                {% if guide.user.generalprofile.profession %}
+                                    <div>
+                                        <span class="profession">{{ guide.user.generalprofile.profession|capfirst|default_if_none:"" }} {% trans 'by profession' %}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="about-me">
+                                <div class="section-title text-left">
+                                    {% trans 'About me' %}
+                                </div>
+                                <div class="about-me-content">
+                                    {% with guide.user.generalprofile.get_languages_for_profile as user_languages %}
+                                        {% if user_languages %}
+                                            <div class="mb10">
+                                                <div>{% trans 'Languages' %}: </div>
+                                                {% regroup user_languages by level.name as level_names_list %}
+                                                {% for level_name in level_names_list %}
+                                                    <b>{{ level_name.grouper|capfirst }}:</b>
+                                                    {% for user_language in level_name.list %}
+                                                        <span class="label label-success label-tag">{{ user_language.get_language_display }}</span>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
 
-                            {% with guide.user.userinterest_set.all as user_interests %}
-                                {% if user_interests %}
-                                    <div class="">
-                                        <div>{% trans 'Interests' %}: </div>
-                                        <div>
-                                            {% for item in user_interests %}
-                                                <span class="label label-success label-tag">
-                                                    {{ item.interest.name }}
-                                                </span>
-                                            {% endfor %}
+                                    {% with guide.user.userinterest_set.all as user_interests %}
+                                        {% if user_interests %}
+                                            <div class="">
+                                                <div>{% trans 'Interests' %}: </div>
+                                                <div>
+                                                    {% for item in user_interests %}
+                                                        <span class="label label-success label-tag">
+                                                            {{ item.interest.name }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                            <div class="mt10" id="overview">
+                                {{ guide.overview|safe }}
+                            </div>
+                        </div>
+                    </div>
+                    {% if guide_answers %}
+                        <div class="tour-section-new life-in-pictures">
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
+                                    <div class="section-title">
+                                        {% trans 'My life in pictures' %}
+                                    </div>
+                                    <div class="profile-container" id="profile_container">
+                                        {% if guide_answers|length > 1 %}
+                                            <div class="images">
+                                                <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
+                                                    {% for guide_answer in guide_answers %}
+                                                        {% if guide_answer.image_medium %}
+                                                            <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
+                                                                 alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
+                                                                 class="img-responsive"
+                                                                 title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
+                                                        {% elif guide_answer.image %}
+                                                            <img src="{% get_media_prefix %}{{ guide_answer.image }}"
+                                                                 alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
+                                                                 class="img-responsive"
+                                                                 title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="answers mt30">
+
+                                            {% if guide_answers %}
+                                                {% for guide_answer in guide_answers %}
+                                                    <div class="answer-container">
+                                                        <p class="question">
+                                                            <b>{{ guide_answer.get_question_text_with_city|safe }}</b>
+                                                        </p>
+                                                        <p class="answer">{{ guide_answer.text|safe }}</p>
+                                                        {% if guide_answer.image_medium %}
+                                                            <div class="answer-image">
+                                                                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                                     data-src="{{ guide_answer.image_medium.url }}" class="img-responsive">
+                                                            </div>
+                                                        {% elif guide_answer.image %}
+                                                            <div class="answer-image">
+                                                                <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                                     data-src="{{ guide_answer.image.url }}" class="img-responsive">
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
                                         </div>
                                     </div>
-                                {% endif %}
-                            {% endwith %}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mt10" id="overview">
-                        {{ guide.overview|safe }}
-                    </div>
+                    {% endif %}
+
+                    {% if guide.is_active and request.user != guide.user %}
+                        <div class="tour-section-new booking-section">
+                             <div class="row">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <div class="actions-panel">
+                                        <div class="text-center mb50">
+                                            {% if guide != request.user.guideprofile or request.session.current_role != "guide" %}
+                                                <div class="section-subtitle text-center">{% trans 'Do you have any questions?' %}</div>
+                                                <a class="btn btn-orange btn-lg"
+                                                   href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
+                                                    {% trans 'Chat with me' %}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+
+                            <div class="row">
+                                <div class="tour-section-new tour-booking-form pt0 mt-2" id="booking_area">
+                                    <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+                                        <div class="section-title">{% trans 'Booking form' %}</div>
+                                        {% crispy form %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endif %}
+
+                    {% with guide.get_tours as guide_tours %}
+                        {% if guide_tours %}
+                            <div class="tour-section-new my-tours">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="mb20">
+                                            <div class="section-title text-center">{% trans 'My tours' %}</div>
+                                            <div class="row">
+                                                {% for tour in guide.get_tours %}
+                                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                        <div class="guide-tour-item">
+                                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
+                                                                <div class="tour-img-container img-container-background"
+                                                                     style="
+                                                                    {% if tour.image_small %}
+                                                                        background: url('{% get_sized_image tour default_size="small" %}')
+                                                                     {% else %}
+                                                                        background: url('{% static "img/300x300.png" %}')
+                                                                     {% endif %}
+                                                                ">
+                                                                </div></a><div class="tour-info-container">
+                                                                <div class="tour-name text-left">
+                                                                    {{ tour.name }}
+                                                                </div>
+                                                                <p>{% trans 'Duration' %}: {{ tour.hours }}
+                                                                    {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %}</p>
+                                                                <p>{% trans 'Price' %}:
+                                                                    {% if tour.type == "1" %}
+                                                                        {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
+                                                                    {% else %}
+                                                                        {% if tour.payment_type_id == 1 %}
+                                                                            {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
+                                                                        {% elif tour.payment_type_id == 2 %}
+                                                                            {% if not tour.discount %}
+                                                                                {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                                            {% else %}
+                                                                                <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
+                                                                                <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                                            {% endif %}
+                                                                        {% elif tour.payment_type_id == 3 %}
+                                                                            {% blocktrans %}Free!{% endblocktrans %}
+                                                                        {% else  %}
+                                                                            {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                </p>
+                                                                <div class="text-center">
+                                                                    <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary" target="_blank">
+                                                                        {% trans 'View Details' %}
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% if forloop.counter|divisibleby:2 %}
+                                                        </div>
+                                                        <div class="row">
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    {% with guide.get_reviews as reviews %}
+                        {% if reviews %}
+                            <div class="tour-section-new reviews-section">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="review-container">
+                                            <div class="section-title">
+                                                {% trans 'Tourists Reviews' %}
+                                            </div>
+
+                                            <ul class="booking-item-reviews list">
+                                                {% for review in reviews %}
+                                                    {% include 'users/review_representation_guide.html' %}
+                                                {% endfor %}
+                                             </ul>
+
+                                            {% if reviews.has_other_pages %}
+                                                <div class="row wrap">
+                                                    <div class="col-md-5">
+                                                        <p>
+                                                            <small>{{ reviews_total_nmb }} {% blocktrans %}reviews for this tour{% endblocktrans %}.</small>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-7">
+                                                        <ul class="pagination">
+                                                            {% if reviews.has_previous %}
+                                                                <li class="next"><a href="?page={{ reviews.previous_page_number }}">Previous Page</a>
+                                                                </li>
+                                                            {% endif %}
+                                                            {% for i in reviews.paginator.page_range %}
+                                                                {% if reviews.number == i %}
+                                                                    <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                                                                  {% else %}
+                                                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                                                  {% endif %}
+                                                            {% endfor %}
+                                                            {% if reviews.has_next %}
+                                                                <li class="next"><a href="?page={{ reviews.next_page_number }}">Next Page</a></li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="col-lg-3">
+                    {% if guide.is_active %}
+                        {% include "guides/guides_tours_right_menu.html" %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-
-    {% if guide_answers %}
-        <div class="tour-section-new life-in-pictures">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div class="section-title">
-                            {% trans 'My life in pictures' %}
-                        </div>
-                        <div class="profile-container" id="profile_container">
-                            {% if guide_answers|length > 1 %}
-                                <div class="images">
-                                    <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs" data-width="100%">
-                                        {% for guide_answer in guide_answers %}
-                                            {% if guide_answer.image_medium %}
-                                                <img src="{% get_media_prefix %}{{ guide_answer.image_medium }}"
-                                                     alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
-                                                     class="img-responsive"
-                                                     title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
-                                            {% elif guide_answer.image %}
-                                                <img src="{% get_media_prefix %}{{ guide_answer.image }}"
-                                                     alt="Image for {{ guide_answer.guide.user.generalprofile.get_name }}"
-                                                     class="img-responsive"
-                                                     title="Image for {{ guide_answer.guide.user.generalprofile.get_name }}" />
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            <div class="answers mt30">
-
-                                {% if guide_answers %}
-                                    {% for guide_answer in guide_answers %}
-                                        <div class="answer-container">
-                                            <p class="question">
-                                                <b>{{ guide_answer.get_question_text_with_city|safe }}</b>
-                                            </p>
-                                            <p class="answer">{{ guide_answer.text|safe }}</p>
-                                            {% if guide_answer.image_medium %}
-                                                <div class="answer-image">
-                                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                                         data-src="{{ guide_answer.image_medium.url }}" class="img-responsive">
-                                                </div>
-                                            {% elif guide_answer.image %}
-                                                <div class="answer-image">
-                                                    <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                                                         data-src="{{ guide_answer.image.url }}" class="img-responsive">
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    {% if guide.is_active and request.user != guide.user %}
-        <div class="tour-section-new booking-section">
-            <div class="container">
-                 <div class="row">
-                    <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
-                        <div class="actions-panel">
-                            <div class="text-center mb50">
-                                {% if guide != request.user.guideprofile or request.session.current_role != "guide" %}
-        {#                                {% if current_order.status.id == 5 %}#}
-        {#                                    <a class="btn btn-primary btn-lg popup-text btn-order-review" href="#writing_feedback_modal"#}
-        {#                                    data-effect="mfp-zoom-out" data-order_id="{{ current_order.id }}">#}
-        {#                                        {% blocktrans %}Write Review{% endblocktrans %}#}
-        {#                                    </a>#}
-        {#                                {% endif %}#}
-                                    <div class="section-subtitle text-center">{% trans 'Do you have any questions?' %}</div>
-                                    <a class="btn btn-orange btn-lg"
-                                       href="{% url 'chat_creation_guide' guide.uuid %}" target="_blank">
-                                        {% trans 'Chat with me' %}
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                 </div>
-            </div>
-
-            <div class="container">
-                <div class="row">
-                    <div class="tour-section-new tour-booking-form pt0 mt-2" id="booking_area">
-                        <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
-                            <div class="section-title">{% trans 'Booking form' %}</div>
-                            {% crispy form %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    {% endif %}
-
-    {% with guide.get_tours as guide_tours %}
-        {% if guide_tours %}
-            <div class="tour-section-new my-tours">
-                <div class="container ">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mb20">
-                                <div class="section-title text-center">{% trans 'My tours' %}</div>
-                                <div class="row">
-                                    {% for tour in guide.get_tours %}
-                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                                            <div class="guide-tour-item">
-                                                <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" target="_blank">
-                                                    <div class="tour-img-container img-container-background"
-                                                         style="
-                                                        {% if tour.image_small %}
-                                                            background: url('{% get_sized_image tour default_size="small" %}')
-                                                         {% else %}
-                                                            background: url('{% static "img/300x300.png" %}')
-                                                         {% endif %}
-                                                    ">
-                                                    </div></a><div class="tour-info-container">
-                                                    <div class="tour-name text-left">
-                                                        {{ tour.name }}
-                                                    </div>
-                                                    <p>{% trans 'Duration' %}: {{ tour.hours }}
-                                                        {% if tour.hours == 1 %}{% trans 'hour' %}{% else %}{% trans 'hours' %}{% endif %}</p>
-                                                    <p>{% trans 'Price' %}:
-                                                        {% if tour.type == "1" %}
-                                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
-                                                        {% else %}
-                                                            {% if tour.payment_type_id == 1 %}
-                                                                {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
-                                                            {% elif tour.payment_type_id == 2 %}
-                                                                {% if not tour.discount %}
-                                                                    {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
-                                                                {% else %}
-                                                                    <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
-                                                                    <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
-                                                                {% endif %}
-                                                            {% elif tour.payment_type_id == 3 %}
-                                                                {% blocktrans %}Free!{% endblocktrans %}
-                                                            {% else  %}
-                                                                {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
-                                                            {% endif %}
-                                                        {% endif %}
-                                                    </p>
-                                                    <div class="text-center">
-                                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary" target="_blank">
-                                                            {% trans 'View Details' %}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% if forloop.counter|divisibleby:3 %}
-                                            </div>
-                                            <div class="row">
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    {% with guide.get_reviews as reviews %}
-        {% if reviews %}
-            <div class="tour-section-new reviews-section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 col-lg-offset-3">
-                            <div class="review-container">
-                                <div class="section-title">
-                                    {% trans 'Tourists Reviews' %}
-                                </div>
-
-                                <ul class="booking-item-reviews list">
-                                    {% for review in reviews %}
-                                        {% include 'users/review_representation_guide.html' %}
-                                    {% endfor %}
-                                 </ul>
-
-                                {% if reviews.has_other_pages %}
-                                    <div class="row wrap">
-                                        <div class="col-md-5">
-                                            <p>
-                                                <small>{{ reviews_total_nmb }} {% blocktrans %}reviews for this tour{% endblocktrans %}.</small>
-                                            </p>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <ul class="pagination">
-                                                {% if reviews.has_previous %}
-                                                    <li class="next"><a href="?page={{ reviews.previous_page_number }}">Previous Page</a>
-                                                    </li>
-                                                {% endif %}
-                                                {% for i in reviews.paginator.page_range %}
-                                                    {% if reviews.number == i %}
-                                                        <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
-                                                      {% else %}
-                                                        <li><a href="?page={{ i }}">{{ i }}</a></li>
-                                                      {% endif %}
-                                                {% endfor %}
-                                                {% if reviews.has_next %}
-                                                    <li class="next"><a href="?page={{ reviews.next_page_number }}">Next Page</a></li>
-                                                {% endif %}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endwith %}
 
 {% endblock %}
 
 {% block js_stuff %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-
+    <script src="//cdnjs.cloudflare.com/ajax/libs/zabuto_calendar/1.6.4/zabuto_calendar.min.js"></script>
     <script>
         $(document).ready(function(){
             if ($("#id_date") !== undefined){

@@ -149,7 +149,7 @@ def guides(request):
     # even if some filters are not available for the current list of tours
     #if it is one element in tuple, * is not needed
 
-    guides_initial = GuideProfile.objects.filter(is_active=True).order_by(*order_results)
+    guides_initial = GuideProfile.objects.filter(is_active=True)
     # print("base kwargs")
     if hourly_price_kwargs:
         # guides = guides_initial.filter(**base_kwargs).filter(**hourly_price_kwargs).order_by(*order_results)
@@ -165,12 +165,12 @@ def guides(request):
 
     if base_user_interests_kwargs:
         user_interests = UserInterest.objects.filter(**base_user_interests_kwargs)
-        interests_user_ids = [item.user.id for item in user_interests]
+        interests_user_ids = [item["user_id"] for item in user_interests.values()]
         guides = guides.filter(user_id__in=interests_user_ids)
 
     if base_guide_service_kwargs:
         guide_services = GuideService.objects.filter(**base_guide_service_kwargs)
-        guide_services_guides_ids = [item.guide.id for item in guide_services]
+        guide_services_guides_ids = [item["guide_id"] for item in guide_services.values()]
         guides = guides.filter(id__in=guide_services_guides_ids)
 
     items_nmb = guides.count()
@@ -255,22 +255,6 @@ def guide(request, guide_name=None, general_profile_uuid=None, new_view=None):
     form = BookingGuideForm(request.POST or None, guide=guide, initial={"guide_id": guide.id})
     if request.POST and form.is_valid():
         return making_booking(request)
-        # data = request.POST
-        # if data.get("text") and user:
-        #     kwargs = dict()
-        #     kwargs["text"] = data.get("text")
-        #     if data.get("name"):
-        #         kwargs["name"] = data.get("name")
-        #
-        #     kwargs["rating"] = 5
-        #
-        #     review, created = Review.objects.update_or_create(user=user, defaults=kwargs)
-        #
-        #     if created:
-        #         #add messages here
-        #         pass
-        #
-        #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     page = request.GET.get('page', 1)
     paginator = Paginator(reviews, 10)
@@ -649,7 +633,6 @@ def guides_for_clients(request):
 def tours_for_clients(request):
     return render(request, 'guides/tours_for_clients.html', locals())
 
-
 def get_average_rate(request):
     loc = request.GET.get('location')
     rates = None
@@ -661,3 +644,20 @@ def get_average_rate(request):
             print(err)
     rate = {"rates": rates}
     return JsonResponse(rate)
+
+def get_booked_dates(request):
+    data = request.GET
+    print("guide_uuid")
+    guid_uuid = data.get("guide_uuid")
+    print(guid_uuid)
+    guide = GuideProfile.objects.get(uuid=guid_uuid)
+    booked_dates = [
+        {
+            "date": "2020-01-20",
+            "badge": False,
+            "classname": "bg-"
+        },
+    ]
+    return_data = {"booked_dates": booked_dates}
+    print(return_data)
+    return JsonResponse(return_data)

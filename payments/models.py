@@ -219,6 +219,8 @@ class Payment(models.Model):
     uuid = models.CharField(max_length=36, blank=True, null=True, default=None)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     currency = models.ForeignKey(Currency, blank=True, null=True, default=None)
+    errors_text = models.TextField(blank=True, null=True, default=None)
+    is_active = models.BooleanField(default=True)
     dt_paid = models.DateTimeField(blank=True, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)

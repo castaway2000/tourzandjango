@@ -27,6 +27,7 @@
 {% block header_stuff %}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/zabuto_calendar/1.6.4/zabuto_calendar.min.css">
 {% endblock  %}
 
 {% block content %}
@@ -78,7 +79,11 @@
         </div>
     </div>
 
-    <div class="tour-section-new guide-section">
+    <div class="tour-section-new guide-section tour-page">
+        {% if guide.is_active and tour.is_active %}
+            {% include "guides/guides_tours_right_menu.html" %}
+        {% endif %}
+
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2 col-sm-4 col-xs-12">
@@ -109,7 +114,9 @@
     </div>
 
     <div class="tour-section-divider orange">
-        <a href="#" class="book-private-tour">{% trans 'Book a tour for your date' %}&thinsp;&thinsp;> </a>
+        {% if tour.is_active and request.user != tour.guide.user %}
+            <a href="#" class="book-private-tour">{% trans 'Book a tour for your date' %}&thinsp;&thinsp;> </a>
+        {% endif %}
     </div>
 
     {% if tour.overview or tour.included or tour.excluded%}
@@ -195,7 +202,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if forloop.counter|divisibleby:3 %}
+                            {% if forloop.counter|divisibleby:2 %}
                                 </div><!--end row -->
                                 <div class="row">
                             {% endif %}
@@ -331,10 +338,9 @@
 
 {% block js_stuff %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-
+    <script src="//cdnjs.cloudflare.com/ajax/libs/zabuto_calendar/1.6.4/zabuto_calendar.min.js"></script>
     <script>
 
         $(document).ready(function(){

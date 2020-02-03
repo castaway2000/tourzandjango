@@ -3,11 +3,12 @@ from django.template import Context
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 
-from tourzan.settings import FROM_EMAIL
+from tourzan.settings import FROM_EMAIL, NOTIFICATION_EMAILS
 from emails.models import EmailMessage as OwnEmailMessage
 from emails.models import EmailMessageType
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.utils import timezone
 
 
 class SendingEmail(object):
@@ -22,11 +23,11 @@ class SendingEmail(object):
     order = None
     chat = None
 
-    def __init__(self, data):
-        data = data
-        self.data = data
-        self.order = data.get("order")
-        self.is_guide_saving = data.get("is_guide_saving")
+    def __init__(self, data=None):
+        if data:
+            data = data
+            self.data = data
+            self.order = data.get("order")
 
     def sending_email(self, to_user, to_email, subject, message, template_location=None):
         vars = {
@@ -97,14 +98,14 @@ class SendingEmail(object):
 
                 #those one (guide or tourist), who saves an order setting "completed" status write a feedback at the same time
                 #so the idea is avoid sending him a message with asking to "review his experience"
-                if not self.is_guide_saving:
+                if not order.get_is_guide_saving():
                     message_tourist = 'Tour %s was completed!' % (order_naming)
                 else:
                     message_tourist = 'Tour %s was completed! Please review your experience ' \
                         '<a href="https://www.tourzan.com/order_completing_page/%s/" target="_blank">here</a>' % (order_naming, order.uuid)
 
                 subject_guide = 'Order #%s was completed!' % order.uuid
-                if self.is_guide_saving:
+                if order.get_is_guide_saving():
                     message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?uuid=%s" target="_blank">#%s</a> was completed!' % (order.uuid, order.uuid)
                 else:
                     message_guide = 'Order <a href="https://www.tourzan.com/settings/guide/orders/?uuid=%s" target="_blank">#%s</a> was completed! Please review your experience ' \
@@ -216,5 +217,29 @@ class SendingEmail(object):
         to_email = ["notification@tourzan.com"]
         to_user = None
         self.sending_email(to_user, to_email, subject, message)
+
+    def email_orders_payment_batch(self, vars):
+        current_date = timezone.now().date()
+        to_email = NOTIFICATION_EMAILS
+
+        """Preventing of sending too many emails if there is some error"""
+        email_type, created = EmailMessageType.objects.get_or_create(name="Orders payment processing notification")
+        kwargs = {"type": email_type, "email": ''.join(to_email), "created__date": current_date}
+        emails_nmb = OwnEmailMessage.objects.filter(**kwargs).count()
+        if emails_nmb <= 3:
+            kwargs.pop("created__date")
+            OwnEmailMessage.objects.create(**kwargs)
+            subject = "Orders payment processing notification for {}".format(current_date)
+            vars["current_date"] = current_date
+            message = get_template('emails/orders_payment_batch.html').render(vars)
+
+            msg = EmailMessage(
+                subject, message, from_email=self.from_email,
+                to=to_email, bcc=[], reply_to=self.reply_to_emails
+            )
+            msg.content_subtype = 'html'
+            msg.mixed_subtype = 'related'
+            msg.send()
+        return True
 
 
