@@ -11,7 +11,9 @@ from locations.models import City
 from coupons.models import Coupon, CouponUser
 from django.utils.translation import ugettext as _
 from django.db.models import Sum
-from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES, ON_PRODUCTION
+from tourzan.settings import BRAINTREE_MERCHANT_ID, BRAINTREE_PUBLIC_KEY,  BRAINTREE_PRIVATE_KEY, ILLEGAL_COUNTRIES,\
+    ON_PRODUCTION, GOOGLE_RECAPTCHA_SITE_KEY
+from utils.google_recapcha import check_recaptcha
 import braintree
 
 
@@ -38,16 +40,19 @@ def payment_methods(request):
 
 
 @login_required()
+@check_recaptcha
 def payment_methods_adding(request):
     user = request.user
 
     #for using at template js for initializing of braintree form
     request.session['braintree_client_token'] = braintree.ClientToken.generate()
     payment_customer, created = PaymentCustomer.objects.get_or_create(user=user)
+    RECAPTCHA_KEY = GOOGLE_RECAPTCHA_SITE_KEY
 
     if request.POST:
+        print(request.recaptcha_is_valid)
         payment_method_nonce = request.POST.get('payment_method_nonce')
-        if payment_method_nonce:
+        if payment_method_nonce and request.recaptcha_is_valid:
             make_default = True if request.POST.get('is_default') else False
             response_data = payment_customer.payment_method_create(payment_method_nonce, make_default)
 
