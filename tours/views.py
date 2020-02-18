@@ -250,6 +250,7 @@ def guide_tours(request, username):
     context = {}
     return render(request, 'tours/guide_tours.html', context)
 
+
 @never_cache
 def tour(request, slug, tour_uuid, tour_id=None, tour_new=None):
     user = request.user
@@ -771,3 +772,64 @@ def tour_deleting(request, tour_id):
     except:
         messages.success(request, 'You have no permissions for this action!')
     return HttpResponseRedirect(reverse("guide_settings_tours"))
+
+
+def curated_tours_a(request):
+    form = CuratedTourFormA(request.POST)
+    print(form.data)
+    if request.method == 'POST':
+        if form.is_valid():
+            data = form.cleaned_data
+            new_form = form.save(commit=False)
+            new_form.save()
+            request.session['name'] = new_form.name
+            request.session['curated_id'] = new_form.id
+            return HttpResponseRedirect(reverse('curated_tours_b'))
+    return render(request, 'tours/curated_toursA.html', locals())
+
+
+def curated_tours_b(request):
+    form = CuratedTourFormB(request.POST)
+    id = None
+    name = None
+    if 'curated_id' in request.session:
+        name = request.session['name']
+        id = request.session['curated_id']
+        print(name, id)
+    if request.method == 'POST':
+        if form.is_valid() and id is not None:
+            curated_tour = CuratedTours.objects.get(id=id)
+            cd = form.cleaned_data
+            curated_tour.interests = cd['Interests']
+            curated_tour.save()
+        return HttpResponseRedirect(reverse('curated_tours_c'))
+    return render(request, 'tours/curated_toursB.html', locals())
+
+
+def curated_tours_c(request, name=None, id=None):
+    form = CuratedTourFormC(request.POST)
+    id = None
+    name = None
+    if 'curated_id' in request.session:
+        name = request.session['name']
+        id = request.session['curated_id']
+        print(name, id)
+    if form.is_valid() and id is not None:
+        curated_tour = CuratedTours.objects.get(id=id)
+        cd = form.cleaned_data
+        curated_tour.age = cd['age']
+        curated_tour.gender = cd['gender']
+        curated_tour.language = cd['language']
+        curated_tour.save()
+        return HttpResponseRedirect(reverse('curated_tours_results'))
+    return render(request, 'tours/curated_toursC.html', locals())
+
+
+def curated_tours_results(request):
+    id = None
+    name = None
+    if 'curated_id' in request.session:
+        name = request.session['name']
+        id = request.session['curated_id']
+        print(name, id)
+    return render(request, 'tours/curated_tours_results.html', locals())

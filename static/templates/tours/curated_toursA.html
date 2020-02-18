@@ -19,6 +19,7 @@
 {% endblock %}
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="{% static 'css/progressbar.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -40,6 +41,17 @@
             <div class="row">
                 {% crispy form %}
                 <br><br><br>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <ul>
+                      <li class="active" id="progressbar">1</li>
+                      <li id="progressbar">2</li>
+                      <li id="progressbar">3</li>
+                      <li id="progressbar">&#10003;</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
