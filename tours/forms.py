@@ -1,8 +1,9 @@
 from django import forms
 from .models import *
+from locations.models import Country
 from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Field, Submit, HTML, Div
+from crispy_forms.layout import Layout, Fieldset, Field, HTML, Div, MultiField, Submit
 from crispy_forms.bootstrap import FormActions
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -13,6 +14,7 @@ from dateutil.relativedelta import relativedelta
 from utils.general import remove_zeros_from_float
 import string
 from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
+import pycountry
 
 
 class SummernoteWidgetWithCustomToolbar(SummernoteWidget):
@@ -34,6 +36,7 @@ class SummernoteWidgetWithBullets(SummernoteWidget):
             ['para', ['ul', 'ol']]
         ]
         return contexts
+
 
 class PictureWidget(forms.widgets.Widget):
     def render(self, name, value, attrs=None):
@@ -58,6 +61,94 @@ class TourForm(forms.ModelForm):
             if tour_exist:
                 raise forms.ValidationError("This tour name is already in use")
         return self.cleaned_data.get('name')
+
+
+class CuratedTourFormA(forms.ModelForm):
+    COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries)
+    name = forms.CharField(required=True, label='What Is Your Name?')
+    origin = forms.ChoiceField(required=True, label="Where Are You From?", choices=COUNTRY_CHOICES)
+    destination = forms.ModelChoiceField(required=True, queryset=Country.objects.filter(is_active=True).order_by('name'),
+                                         to_field_name='name', label="Where are you going?")
+
+    class Meta:
+        model = CuratedTours
+        fields = ("name", "origin", "destination")
+
+    def __init__(self, *args, **kwargs):
+        super(CuratedTourFormA, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Div(css_class='col-md-4'),
+                Div(MultiField("", 'name', 'origin', 'destination',), css_class='col-md-4'),
+                Div(css_class='col-md-4'),
+                css_class='row'),
+            Div(
+                Div(css_class='col-md-4'),
+                Div(Submit('submit', 'Lets find out what kind of traveler you are!'), css_class='col-md-4'),
+                Div(css_class='col-md-4'),
+                css_class='row'
+            )
+        )
+
+
+class CuratedTourFormB(forms.ModelForm):
+    ICHOICES = (('Adventurer', 'Adventurer'), ('Foodie', 'Foodie'), ('Attraction Junkie', 'Attraction Junkie'),
+                ('Beach Bum', 'Beach Bum'), ('Naturalist', 'Naturalist'), ('Good in Groups', 'Good in Groups'),
+                ('Loves The Nightlife', 'Loves The Nightlife'),
+                ('Spiritualist', 'Spiritualist'), ('History Buff', 'History Buff'), ('Solo Traveler', 'Solo Traveler'))
+    Interests = forms.MultipleChoiceField(required=True, choices=ICHOICES, widget=forms.CheckboxSelectMultiple,
+                                          label="What Kind of Traveler are you?")
+    class Meta:
+        model = CuratedTours
+        fields = ("interests",)
+
+    def __init__(self, *args, **kwargs):
+        super(CuratedTourFormB, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Div(css_class='col-md-4'),
+                Div(Field('Interests'), css_class='col-md-4'),
+                Div(css_class='col-md-4'), css_class='row'),
+            Div(
+                Div(css_class='col-md-4'),
+                Div(Submit('submit', 'Alright lets get to know you better!'), css_class='col-md-4'),
+                Div(css_class='col-md-4'),
+                css_class='row'
+            )
+        )
+
+
+class CuratedTourFormC(forms.ModelForm):
+    CHOICES = (('Male', 'Male'), ('Female', 'Female'), ('Non-binary', 'Non-binary'),
+               ('Trans', 'Trans'), ('Prefer Not To Say', 'Prefer Not To Say'))
+    age = forms.IntegerField(required=True, label='What Is Your Age?', min_value=14)
+    gender = forms.ChoiceField(required=True, label='What Is Your Gender?', choices=CHOICES)
+    language = forms.ChoiceField(required=True, choices=languages_english, label='What is your primary language?')
+
+    class Meta:
+        model = CuratedTours
+        fields = ("age", "gender", "language")
+
+    def __init__(self, *args, **kwargs):
+        super(CuratedTourFormC, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Div(css_class='col-md-4'),
+                Div(MultiField("", 'age', 'gender', 'language'), css_class='col-md-4'),
+                Div(css_class='col-md-4'), css_class='row'),
+            Div(
+                Div(css_class='col-md-4'),
+                Div(Submit('submit', 'Lets See What We Got!'), css_class='col-md-4'),
+                Div(css_class='col-md-4'),
+                css_class='row'
+            )
+        )
 
 
 class TourGeneralForm(forms.ModelForm):
