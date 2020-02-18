@@ -115,7 +115,7 @@ class UserLanguage(models.Model):
         return "%s" % self.language
 
 
-COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries )
+COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries)
 
 
 class GeneralProfile(models.Model):

@@ -55,10 +55,9 @@ def location_guides(request, country_slug=None, city_slug=None):
 
 def country_city_guides(request, country_slug):
     kwargs = dict()
-
-
     try:
         kwargs["slug"] = country_slug
+        print(country_slug)
         obj = get_object_or_404(Country, **kwargs)
     except:
         kwargs["slug"] = str(country_slug).lower()
