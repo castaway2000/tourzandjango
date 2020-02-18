@@ -2,7 +2,14 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
+    url(r'^curated-tours-a/$', views.curated_tours_a, name='curated_tours_a'),
+    url(r'^curated-tours-b/$', views.curated_tours_b, name='curated_tours_b'),
+    url(r'^curated-tours-c/$', views.curated_tours_c, name='curated_tours_c'),
+
+    url(r'^curated-tours-results/$', views.curated_tours_results, name='curated_tours_results'),
+
     url(r'^tours/$', views.tours, name='tours'),
+
     # SEO purposes
     url(r'^tours-by-locals/$', views.tours, name='tours_by_locals'),
     url(r'^affordable-tours/$', views.tours, name='affordable_tours'),

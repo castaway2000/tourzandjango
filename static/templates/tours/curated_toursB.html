@@ -19,6 +19,7 @@
 {% endblock %}
 {% block header_stuff %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="{% static 'css/progressbar.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -27,11 +28,10 @@
                 <br><br>
                 <div class="col-md-2"></div>
                     <div class="col-md-8">
-                        <h1>Lets curate your trip!</h1>
-                        <p>We are going to find you a set of experiences that meet you as an individual.
-                        In order to do this we need to collect some information about you and your trip.
-                        We need this info to pair you with the best mast possible so we can guarantee
-                        you will have an amazing time on your vacation.
+                        <h1>What kind of traveler are you? </h1>
+                        <p> Alright so now we are going to try to pair your interests up with a wide variety of
+                            guide interests. <br/><br/>
+                            Select your kind of travel style.
                         </p>
                     </div>
                <div class="col-md-2"></div>
@@ -40,6 +40,17 @@
             <div class="row">
                 {% crispy form %}
                 <br><br><br>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <ul>
+                      <li id="progressbar">1</li>
+                      <li class="active" id="progressbar">2</li>
+                      <li id="progressbar">3</li>
+                      <li id="progressbar">&#10003;</li>
+                    </ul>
+                </div>
+            </div>
             </div>
         </div>
     </div>

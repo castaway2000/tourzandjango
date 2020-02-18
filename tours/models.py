@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.sitemaps import ping_google
 from django.contrib.auth.models import User
-from locations.models import Location, Currency, City
+from locations.models import Location, Currency, City, Country
 from utils.uploadings import *
 from django.utils.text import slugify
 from utils.general import random_string_creating
@@ -494,3 +495,15 @@ class TourImage(models.Model):
                         self.tour.save(force_update=True)
 
         super(TourImage, self).save(*args, **kwargs)
+
+
+class CuratedTours(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True, default=None)
+    age = models.IntegerField(blank=True, null=True, default=None)
+    gender = models.CharField(max_length=80, blank=True, null=True, default=None)
+    origin = models.CharField(max_length=255, blank=True, null=True, default=None)
+    destination = models.ForeignKey(Country, blank=True, null=True, default=None)
+    interests = ArrayField(models.CharField(max_length=1000, blank=True, null=True, default=None), null=True, default=None, blank=True)
+    language = models.CharField(max_length=255, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
