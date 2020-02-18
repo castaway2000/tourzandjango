@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+{% load crispy_forms_tags %}
+
+
+{% block seo_stuff %}
+    <title>{% trans "Tours By Locals | Tourzan.com"%}</title>
+    <meta name="description" content="Tours by locals curated for the most personal and bespoke
+    experience at a price that's tailored to you. Get the best vacation experience here.">
+
+     <meta property="og:description" content="Tours by locals curated for the most personal and bespoke
+    experience at a price that's tailored to you. Get the best vacation experience here." />
+
+    <meta property="og:title" content="Tours By Locals | Tourzan.com" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+{% endblock %}
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+            <div class="row text-center">
+                <br><br>
+                <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <h1>Lets curate your trip!</h1>
+                        <p>We are going to find you a set of experiences that meet you as an individual.
+                        In order to do this we need to collect some information about you and your trip.
+                        We need this info to pair you with the best mast possible so we can guarantee
+                        you will have an amazing time on your vacation.
+                        </p>
+                    </div>
+               <div class="col-md-2"></div>
+            </div>
+            <div class="row"><br/><br/></div>
+            <div class="row">
+                {% crispy form %}
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js_stuff %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+{#    <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>#}
+{##}
+{#    <script type="text/javascript"#}
+{#            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">#}
+{#    </script>#}
+{#    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>#}
+{% endblock js_stuff %}
