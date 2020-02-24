@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+from import_export.admin import ImportExportModelAdmin
 
 
 class TourIncludedItemInline(admin.TabularInline):
@@ -93,3 +94,13 @@ class ScheduleTemplateItemAdmin(admin.ModelAdmin):
         model = ScheduleTemplateItem
 
 admin.site.register(ScheduleTemplateItem, ScheduleTemplateItemAdmin)
+
+
+class CuratedTourAdmin(ImportExportModelAdmin):
+    resource_class = CuratedTours
+    list_display = [field.name for field in CuratedTours._meta.fields]
+
+    class Meta:
+        model = CuratedTours
+
+admin.site.register(CuratedTours, CuratedTourAdmin)

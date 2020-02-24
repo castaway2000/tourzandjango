@@ -817,6 +817,7 @@ def curated_tours_c(request, name=None, id=None):
     if form.is_valid() and id is not None:
         curated_tour = CuratedTours.objects.get(id=id)
         cd = form.cleaned_data
+        print(cd.items())
         curated_tour.age = cd['age']
         curated_tour.gender = cd['gender']
         curated_tour.language = cd['language']
@@ -826,10 +827,66 @@ def curated_tours_c(request, name=None, id=None):
 
 
 def curated_tours_results(request):
+    time_start = time.time()
     id = None
     name = None
     if 'curated_id' in request.session:
         name = request.session['name']
         id = request.session['curated_id']
-        print(name, id)
+        curate_query = CuratedTours.objects.get(id=id)
+        destination = curate_query.destination
+        language = curate_query.language
+        interests = curate_query.interests
+        age = curate_query.age
+        tours = Tour.objects.filter(city=destination,
+                                    guide__user__userlanguage__language=language,
+                                    guide__user__userinterest__interest__name__in=interests,
+                                    guide__age__range=[age - 5, age + 5]).values()
+        print(tours.count())
+        if tours.count() == 0:
+            tours = Tour.objects.filter(city=destination,
+                                        guide__user__userlanguage__language=language,
+                                        guide__age__range=[age - 5, age + 5]).values()
+            print(tours.count())
+        if tours.count() == 0:
+            tours = Tour.objects.filter(city=destination,
+                                        guide__user__userlanguage__language=language).values()
+            print(tours.count())
+        if tours.count() == 0:
+            tours = Tour.objects.filter(city=destination,
+                                        guide__user__userinterest__interest__name__in=interests,
+                                        guide__age__range=[age - 5, age + 5]).values()
+            print(tours.count())
+        if tours.count() == 0:
+            tours = Tour.objects.filter(city=destination,
+                                        guide__user__userinterest__interest__name__in=interests
+                                        ).values()
+            print(tours.count())
+        # if tours.count() == 0:
+        #     tours = Tour.objects.filter(city=destination).values()
+        if tours.count() == 0:
+            tours = 0
+        if tours != 0:
+            page = request.GET.get('page', 1)
+            paginator = Paginator(tours, 10)
+            try:
+                tours = paginator.page(page)
+                index = tours.number - 1
+                max_index = len(paginator.page_range)
+                start_index = index - 5 if index >= 5 else 0
+                end_index = index + 5 if index <= max_index - 5 else max_index
+                page_range = paginator.page_range[start_index:end_index]
+            except PageNotAnInteger:
+                tours = paginator.page(1)
+            except EmptyPage:
+                tours = paginator.page(paginator.num_pages)
+
+        time_end = time.time()
+        duration = time_end - time_start
+        print(duration)
+        if request.GET.get("ref_id"):
+            return render(request, 'tours/curated_tours_results.html', locals())
+        else:
+            return render(request, 'tours/curated_tours_results.html', locals())
+
     return render(request, 'tours/curated_tours_results.html', locals())

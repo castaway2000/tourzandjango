@@ -502,8 +502,11 @@ class CuratedTours(models.Model):
     age = models.IntegerField(blank=True, null=True, default=None)
     gender = models.CharField(max_length=80, blank=True, null=True, default=None)
     origin = models.CharField(max_length=255, blank=True, null=True, default=None)
-    destination = models.ForeignKey(Country, blank=True, null=True, default=None)
+    destination = models.ForeignKey(City, blank=True, null=True, default=None)
     interests = ArrayField(models.CharField(max_length=1000, blank=True, null=True, default=None), null=True, default=None, blank=True)
-    language = models.CharField(max_length=255, blank=True, null=True, default=None)
+    language = models.CharField(max_length=8, choices=languages_english, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.language
