@@ -1,174 +1,186 @@
-{#{% extends 'base.html' %}#}
-{#{% load static %}#}
-{#{% load i18n %}#}
-{#{% load utils_tags %}#}
-{##}
-{#{% block seo_stuff %}#}
-{#    <title>{% trans "Tours By Locals | Tourzan.com"%}</title>#}
-{#    <meta name="description" content="Tours by locals curated for the most personal and bespoke#}
-{#    experience at a price that's tailored to you. Get the best vacation experience here.">#}
-{##}
-{#     <meta property="og:description" content="Tours by locals curated for the most personal and bespoke#}
-{#    experience at a price that's tailored to you. Get the best vacation experience here." />#}
-{##}
-{#    <meta property="og:title" content="Tours By Locals | Tourzan.com" />#}
-{#    <meta property="og:url" content="{{ request.build_absolute_uri }}" />#}
-{#    <meta property="og:type" content="website" />#}
-{#{% endblock %}#}
-{#{% block header_stuff %}#}
-{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">#}
-{#{% endblock %}#}
-{##}
-{#{% block content %}#}
-{#    <div class="container">#}
-{#     <ul class="booking-list">#}
-{#                    {% for tour in tours %}#}
-{#                    <li>#}
-{#                        <div class="tour-item">#}
-{#                            <div class="row">#}
-{#                                <div class="col-md-3 col-sm-5 col-xs-12">#}
-{#                                    <div class="booking-item-img mb10">#}
-{#                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">#}
-{#                                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="#}
-{#                                                 data-src="{% get_sized_image tour default_size="small" %}">#}
-{#                                        </a>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <div class="col-md-9 col-sm-7 col-xs-12">#}
-{#                                    <div class="tour-name">#}
-{#                                        {{ tour.name }}#}
-{#                                    </div>#}
-{#                                    <div class="tour-guide-name">#}
-{#                                        by {{ tour.guide.user.generalprofile.first_name }}#}
-{#                                    </div>#}
-{##}
-{#                                    {% if tour.city and tour.city.slug and tour.city.country and tour.city.country.slug %}#}
-{#                                        <div class="mb10">#}
-{#                                            <a href="{% url 'country_guides' tour.city.country.slug %}" target="_blank">{{ tour.city.country.name }}</a> |#}
-{#                                            <a href="{% url 'city_guides' tour.city.country.slug tour.city.slug %}" target="_blank">{{ tour.city.name }}</a>#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
-{##}
-{#                                    <div>#}
-{#                                        <b>{% trans 'Type' %}: </b>{{ tour.type_name }} {% trans 'tour' %}#}
-{#                                    </div>#}
-{#                                    <div>#}
-{#                                        <b>{% trans 'Languages' %}</b>:#}
-{#                                        {% with tour.get_languages as tour_languages %}#}
-{#                                        {% if not tour_languages %}#}
-{#                                            <span class="label label-success label-tag">#}
-{#                                                English#}
-{#                                            </span>#}
-{#                                        {% else %}#}
-{#                                            {% for tour_language in tour_languages %}#}
-{#                                                <span class="label label-success label-tag">#}
-{#                                                    {{ tour_language.name }}#}
-{#                                                </span>#}
-{#                                            {% endfor %}#}
-{#                                        {% endif %}#}
-{#                                        {% endwith %}#}
-{#                                    </div>#}
-{#                                    <div>#}
-{#                                        {{ tour.overview|linebreaks|truncatewords_html:30 }}#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <div class="col-md-3 col-md-offset-3 col-sm-7 col-sm-offset-5 col-xs-12">#}
-{##}
-{#                                    {% if tour.rating != 0 %}#}
-{#                                        <div class="tour-rating">#}
-{#                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
-{##}
-{#                                    <p class="tour-price">#}
-{#                                        <b>{% blocktrans %}Price:{% endblocktrans %}</b>#}
-{#                                        {% if tour.type == "1" %}#}
-{#                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}#}
-{#                                        {% else %}#}
-{#                                            {% if tour.payment_type_id == 1 %}#}
-{#                                                {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour#}
-{#                                            {% elif tour.payment_type_id == 2 %}#}
-{#                                                {% if not tour.discount %}#}
-{#                                                    {{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}#}
-{#                                                {% else %}#}
-{#                                                    <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>#}
-{#                                                    <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>#}
-{#                                                {% endif %}#}
-{#                                            {% elif tour.payment_type_id == 3 %}#}
-{#                                                {% blocktrans %}Free!{% endblocktrans %}#}
-{#                                            {% else  %}#}
-{#                                                {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}#}
-{#                                            {% endif %}#}
-{#                                        {% endif %}#}
-{#                                        <br>#}
-{#                                        {% if tour.hours %}#}
-{#                                            <b>{% trans 'Duration' %}: </b> {{ tour.hours }}#}
-{#                                            <br>#}
-{#                                        {% endif %}#}
-{#                                        {% if tour.min_hours %}#}
-{#                                             <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}#}
-{#                                        {% endif %}#}
-{#                                    </p>#}
-{#                                    {% if tour.guide.user.generalprofile.is_verified %}#}
-{#                                        <p>#}
-{#                                            <b>{% trans 'Guide is verified' %}</b>#}
-{#                                        </p>#}
-{#                                    {% endif %}#}
-{#                                    {% if tour.guide.user.generalprofile.is_trusted %}#}
-{#                                        <p>#}
-{#                                            <b>{% trans 'Guide is trusted' %}</b>#}
-{#                                        </p>#}
-{#                                    {% endif %}#}
-{#                                </div>#}
-{#                                <div class="col-lg-12">#}
-{#                                    <div class="text-center">#}
-{#                                        <p>#}
-{#                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary">#}
-{#                                                {% blocktrans %}View details{% endblocktrans %}#}
-{#                                            </a>#}
-{#                                        </p>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </li>#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#        <div class="row">#}
-{#            <div class="col-md-12">#}
-{#                {% if tours.has_other_pages %}#}
-{#                    <ul class="pagination">#}
-{#                        {% if tours.has_previous %}#}
-{#                            <li class="next"><a rel="prev" href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>#}
-{#                            </li>#}
-{#                        {% endif %}#}
-{#                        {% for i in page_range %}#}
-{#                            {% if tours.number == i %}#}
-{#                                <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>#}
-{#                              {% else %}#}
-{#                                <li><a href="?{% url_replace page=i %}">{{ i }}</a></li>#}
-{#                              {% endif %}#}
-{#                        {% endfor %}#}
-{#                        {% if tours.has_next %}#}
-{#                            <li class="next">#}
-{#                                <a rel="next" href="?{% url_replace page=tours.next_page_number %}">#}
-{#                                    {% trans 'Next Page' %} {% trans 'of' %} {{ paginator.num_pages }}#}
-{#                                </a>#}
-{#                            </li>#}
-{#                        {% endif %}#}
-{#                    </ul>#}
-{#                {% endif %}#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-{#{% endblock %}#}
-{##}
-{#{% block js_stuff %}#}
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>#}
-{#    <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>#}
-{##}
-{#    <script type="text/javascript"#}
-{#            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">#}
-{#    </script>#}
-{#    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>#}
-{#{% endblock js_stuff %}#}
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load utils_tags %}
+
+{% block seo_stuff %}
+    <title>{% trans "Curated Tours With Locals | Tourzan.com"%}</title>
+    <meta name="description" content="Tours by locals curated for the most personal and bespoke
+    experience at a price that's tailored to you. Get the best vacation experience here.">
+
+     <meta property="og:description" content="Tours by locals curated for the most personal and bespoke
+    experience at a price that's tailored to you. Get the best vacation experience here." />
+
+    <meta property="og:title" content="Tours By Locals | Tourzan.com" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+{% endblock %}
+{% block header_stuff %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+     <ul class="booking-list">
+     {% if tours != 0 %}
+                    {% for tour in tours %}
+                    <li>
+                        <div class="tour-item">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-5 col-xs-12">
+                                    <div class="booking-item-img mb10">
+                                        <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}">
+                                            <img name='dimg' src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                                                 data-src="{% get_sized_image tour default_size="small" %}">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-9 col-sm-7 col-xs-12">
+                                    <div class="tour-name">
+                                        {{ tour.name }}
+                                    </div>
+                                    <div class="tour-guide-name">
+                                        by {{ tour.guide.user.generalprofile.first_name }}
+                                    </div>
+
+                                    {% if tour.city and tour.city.slug and tour.city.country and tour.city.country.slug %}
+                                        <div class="mb10">
+                                            <a href="{% url 'country_guides' tour.city.country.slug %}" target="_blank">{{ tour.city.country.name }}</a> |
+                                            <a href="{% url 'city_guides' tour.city.country.slug tour.city.slug %}" target="_blank">{{ tour.city.name }}</a>
+                                        </div>
+                                    {% endif %}
+
+                                    <div>
+                                        <b>{% trans 'Type' %}: </b>{{ tour.type_name }} {% trans 'tour' %}
+                                    </div>
+                                    <div>
+                                        <b>{% trans 'Languages' %}</b>:
+                                        {% with tour.get_languages as tour_languages %}
+                                        {% if not tour_languages %}
+                                            <span class="label label-success label-tag">
+                                                English
+                                            </span>
+                                        {% else %}
+                                            {% for tour_language in tour_languages %}
+                                                <span class="label label-success label-tag">
+                                                    {{ tour_language.name }}
+                                                </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div>
+                                        {{ tour.overview|linebreaks|truncatewords_html:30|safe }}
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-md-offset-3 col-sm-7 col-sm-offset-5 col-xs-12">
+
+                                    {% if tour.rating != 0 %}
+                                        <div class="tour-rating">
+                                            <b>{% blocktrans %}Rating: {% endblocktrans %}</b> {{ tour.rating }}
+                                        </div>
+                                    {% endif %}
+
+                                    <p class="tour-price">
+                                        <b>{% blocktrans %}Price:{% endblocktrans %}</b>
+                                        {% if tour.type == "1" %}
+                                            {% trans 'from' %} {{ tour.get_lowest_scheduled_tour_price }} {{ tour.currency.name }}
+                                        {% else %}
+                                            {% if tour.payment_type_id == 1 %}
+                                                {{ tour.price_hourly|floatformat:"-2" }} {{ tour.currency.name }} / hour
+                                            {% elif tour.payment_type_id == 2 %}
+                                                {% if not tour.discount %}
+                                                    {{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}
+                                                {% else %}
+                                                    <span class="text-strike">{{ tour.price|floatformat:"-2"  }}</span>
+                                                    <span>{{ tour.price_final|floatformat:"-2"  }} {{ tour.currency.name }}</span>
+                                                {% endif %}
+                                            {% elif tour.payment_type_id == 3 %}
+                                                {% blocktrans %}Free!{% endblocktrans %}
+                                            {% else  %}
+                                                {{ tour.price|floatformat:"-2"  }} {{ tour.currency.name }}
+                                            {% endif %}
+                                        {% endif %}
+                                        <br>
+                                        {% if tour.hours %}
+                                            <b>{% trans 'Duration' %}: </b> {{ tour.hours }}
+                                            <br>
+                                        {% endif %}
+                                        {% if tour.min_hours %}
+                                             <b>{% blocktrans %}Min hours:{% endblocktrans %}</b> {{ tour.min_hours }}
+                                        {% endif %}
+                                    </p>
+                                    {% if tour.guide.user.generalprofile.is_verified %}
+                                        <p>
+                                            <b>{% trans 'Guide is verified' %}</b>
+                                        </p>
+                                    {% endif %}
+                                    {% if tour.guide.user.generalprofile.is_trusted %}
+                                        <p>
+                                            <b>{% trans 'Guide is trusted' %}</b>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="text-center">
+                                        <p>
+                                            <a href="{% url 'tour_new' tour.slug tour.uuid "new" %}" class="btn btn-primary">
+                                                {% blocktrans %}View details{% endblocktrans %}
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+     {% else %}
+        <li>
+        <div class="tour-item">
+            <div class="row">
+            <div class="col-md-3 col-sm-5 col-xs-12">
+                <p>Seems we cant find an epic match for your trip. Try your hand at finding one in our tours listings.</p>
+            </div>
+            </div>
+        </div>
+        </li>
+     {% endif %}
+     </ul>
+        <div class="row">
+            <div class="col-md-12">
+                {% if tours.has_other_pages %}
+                    <ul class="pagination">
+                        {% if tours.has_previous %}
+                            <li class="next"><a rel="prev" href="?{% url_replace page=tours.previous_page_number %}">{% trans 'Previous Page' %}</a>
+                            </li>
+                        {% endif %}
+                        {% for i in page_range %}
+                            {% if tours.number == i %}
+                                <li class="active"><a href="?{% url_replace page=i %}">{{ i }}</a></li>
+                              {% else %}
+                                <li><a href="?{% url_replace page=i %}">{{ i }}</a></li>
+                              {% endif %}
+                        {% endfor %}
+                        {% if tours.has_next %}
+                            <li class="next">
+                                <a rel="next" href="?{% url_replace page=tours.next_page_number %}">
+                                    {% trans 'Next Page' %} {% trans 'of' %} {{ paginator.num_pages }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js_stuff %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="{% static 'js/custom_scripts/searching_scripts.js' %}"></script>
+
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4M-SKd4ihX9l4W5Dz4ZUWOqHG3seEGYw&libraries=places">
+    </script>
+    <script src="{% static 'js/custom_scripts/google_location_searching.js' %}"></script>
+{% endblock js_stuff %}
