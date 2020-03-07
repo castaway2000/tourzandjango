@@ -9,7 +9,12 @@ class InterestResource(resources.ModelResource):
         model = Interest
 
 
-class InterestAdmin(ImportExportModelAdmin): #admin.ModelAdmin):
+class GroupedInterestResource(resources.ModelResource):
+    class Meta:
+        model = GroupedInterest
+
+
+class InterestAdmin(ImportExportModelAdmin):
     resource_class = InterestResource
     list_display = [field.name for field in Interest._meta.fields]
 
@@ -17,6 +22,16 @@ class InterestAdmin(ImportExportModelAdmin): #admin.ModelAdmin):
         model = Interest
 
 admin.site.register(Interest, InterestAdmin)
+
+
+class GroupedInterestAdmin(ImportExportModelAdmin):
+    resource_class = GroupedInterestResource
+    list_display = [field.name for field in Interest._meta.fields]
+
+    class Meta:
+        model = GroupedInterest
+
+admin.site.register(GroupedInterest, GroupedInterestAdmin)
 
 
 class UserInterestAdmin(admin.ModelAdmin):
