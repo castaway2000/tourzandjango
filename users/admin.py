@@ -26,7 +26,7 @@ admin.site.register(Interest, InterestAdmin)
 
 class GroupedInterestAdmin(ImportExportModelAdmin):
     resource_class = GroupedInterestResource
-    list_display = [field.name for field in Interest._meta.fields]
+    list_display = [field.name for field in GroupedInterest._meta.fields]
 
     class Meta:
         model = GroupedInterest

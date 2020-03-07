@@ -841,33 +841,31 @@ def curated_tours_results(request):
         destination = curate_query.destination
         language = curate_query.language
         grouped_interests = curate_query.interests
-        interests = GroupedInterest.objects.filter(group__in=grouped_interests)\
-            .values_list().order_by('-id').values_list('name', flat=True)
+        interests = list(GroupedInterest.objects.filter(group__in=grouped_interests)
+                         .values_list().order_by('-id').values_list('name', flat=True))
+        all_interests = list(GroupedInterest.objects.filter(group__in=['All'])
+                             .values_list().order_by('-id').values_list('name', flat=True))
+        interests.append(all_interests)
+
         age = curate_query.age
         tours = Tour.objects.filter(city=destination,
                                     guide__user__userlanguage__language=language,
                                     guide__user__userinterest__interest__name__in=interests,
-                                    guide__age__range=[age - 5, age + 5]).values()
-        print(tours.count())
+                                    guide__age__range=[age - 5, age + 5])
         if tours.count() == 0:
             tours = Tour.objects.filter(city=destination,
                                         guide__user__userlanguage__language=language,
-                                        guide__age__range=[age - 5, age + 5]).values()
-            print(tours.count())
+                                        guide__age__range=[age - 5, age + 5])
         if tours.count() == 0:
             tours = Tour.objects.filter(city=destination,
-                                        guide__user__userlanguage__language=language).values()
-            print(tours.count())
+                                        guide__user__userlanguage__language=language)
         if tours.count() == 0:
             tours = Tour.objects.filter(city=destination,
                                         guide__user__userinterest__interest__name__in=interests,
-                                        guide__age__range=[age - 5, age + 5]).values()
-            print(tours.count())
+                                        guide__age__range=[age - 5, age + 5])
         if tours.count() == 0:
             tours = Tour.objects.filter(city=destination,
-                                        guide__user__userinterest__interest__name__in=interests
-                                        ).values()
-            print(tours.count())
+                                        guide__user__userinterest__interest__name__in=interests)
         # if tours.count() == 0:
         #     tours = Tour.objects.filter(city=destination).values()
         if tours.count() == 0:
