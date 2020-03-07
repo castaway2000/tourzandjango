@@ -74,8 +74,6 @@ class CuratedTourFormA(forms.ModelForm):
     origin = forms.ChoiceField(required=True, label="Where Are You From?", choices=COUNTRY_CHOICES)
     destination = MyModelChoiceField(required=True, queryset=City.objects.filter(is_active=True).order_by('name'),
                                      to_field_name='full_location', label="Where are you going?")
-    # destination = forms.ModelChoiceField(required=True, queryset=City.objects.filter(is_active=True).order_by('name'),
-    #                                      to_field_name='full_location', label="Where are you going?")
 
     class Meta:
         model = CuratedTours

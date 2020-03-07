@@ -3,6 +3,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse, get_obj
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Tour
+from users.models import GroupedInterest
 from locations.models import City
 from guides.models import GuideProfile
 from users.models import GeneralProfile
@@ -775,9 +776,9 @@ def tour_deleting(request, tour_id):
 
 
 def curated_tours_a(request):
-    form = CuratedTourFormA(request.POST)
-    print(form.data)
+    form = CuratedTourFormA()
     if request.method == 'POST':
+        form = CuratedTourFormA(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             new_form = form.save(commit=False)
@@ -789,7 +790,7 @@ def curated_tours_a(request):
 
 
 def curated_tours_b(request):
-    form = CuratedTourFormB(request.POST)
+    form = CuratedTourFormB()
     id = None
     name = None
     if 'curated_id' in request.session:
@@ -797,6 +798,7 @@ def curated_tours_b(request):
         id = request.session['curated_id']
         print(name, id)
     if request.method == 'POST':
+        form = CuratedTourFormB(request.POST)
         if form.is_valid() and id is not None:
             curated_tour = CuratedTours.objects.get(id=id)
             cd = form.cleaned_data
@@ -807,22 +809,24 @@ def curated_tours_b(request):
 
 
 def curated_tours_c(request, name=None, id=None):
-    form = CuratedTourFormC(request.POST)
+    form = CuratedTourFormC()
     id = None
     name = None
     if 'curated_id' in request.session:
         name = request.session['name']
         id = request.session['curated_id']
         print(name, id)
-    if form.is_valid() and id is not None:
-        curated_tour = CuratedTours.objects.get(id=id)
-        cd = form.cleaned_data
-        print(cd.items())
-        curated_tour.age = cd['age']
-        curated_tour.gender = cd['gender']
-        curated_tour.language = cd['language']
-        curated_tour.save()
-        return HttpResponseRedirect(reverse('curated_tours_results'))
+    if request.method == 'POST':
+        form = CuratedTourFormC(request.POST)
+        if form.is_valid() and id is not None:
+            curated_tour = CuratedTours.objects.get(id=id)
+            cd = form.cleaned_data
+            print(cd.items())
+            curated_tour.age = cd['age']
+            curated_tour.gender = cd['gender']
+            curated_tour.language = cd['language']
+            curated_tour.save()
+            return HttpResponseRedirect(reverse('curated_tours_results'))
     return render(request, 'tours/curated_toursC.html', locals())
 
 
@@ -836,7 +840,9 @@ def curated_tours_results(request):
         curate_query = CuratedTours.objects.get(id=id)
         destination = curate_query.destination
         language = curate_query.language
-        interests = curate_query.interests
+        grouped_interests = curate_query.interests
+        interests = GroupedInterest.objects.filter(group__in=grouped_interests)\
+            .values_list().order_by('-id').values_list('name', flat=True)
         age = curate_query.age
         tours = Tour.objects.filter(city=destination,
                                     guide__user__userlanguage__language=language,
