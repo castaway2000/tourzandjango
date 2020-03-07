@@ -841,8 +841,12 @@ def curated_tours_results(request):
         destination = curate_query.destination
         language = curate_query.language
         grouped_interests = curate_query.interests
-        interests = GroupedInterest.objects.filter(group__in=grouped_interests)\
-            .values_list().order_by('-id').values_list('name', flat=True)
+        interests = list(GroupedInterest.objects.filter(group__in=grouped_interests)
+                         .values_list().order_by('-id').values_list('name', flat=True))
+        all_interests = list(GroupedInterest.objects.filter(group__in=['All'])
+                             .values_list().order_by('-id').values_list('name', flat=True))
+        interests.append(all_interests)
+
         age = curate_query.age
         tours = Tour.objects.filter(city=destination,
                                     guide__user__userlanguage__language=language,
