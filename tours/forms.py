@@ -63,12 +63,17 @@ class TourForm(forms.ModelForm):
         return self.cleaned_data.get('name')
 
 
+class MyModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.full_location
+
+
 class CuratedTourFormA(forms.ModelForm):
     COUNTRY_CHOICES = ((country.name, country.name) for country in pycountry.countries)
     name = forms.CharField(required=True, label='What Is Your Name?')
     origin = forms.ChoiceField(required=True, label="Where Are You From?", choices=COUNTRY_CHOICES)
-    destination = forms.ModelChoiceField(required=True, queryset=Country.objects.filter(is_active=True).order_by('name'),
-                                         to_field_name='name', label="Where are you going?")
+    destination = MyModelChoiceField(required=True, queryset=City.objects.filter(is_active=True).order_by('name'),
+                                     to_field_name='full_location', label="Where are you going?")
 
     class Meta:
         model = CuratedTours

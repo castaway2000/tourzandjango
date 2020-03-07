@@ -81,6 +81,16 @@ class Interest(models.Model):
         super(Interest, self).save(*args, **kwargs)
 
 
+class GroupedInterest(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    group = models.CharField(max_length=64, blank=True, null=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return "%s" % self.name
+
+
 class UserInterest(models.Model):
     user = models.ForeignKey(User)
     interest = models.ForeignKey(Interest)
