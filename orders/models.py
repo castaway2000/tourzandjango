@@ -421,7 +421,7 @@ class Order(models.Model):
             order.save(force_update=True)
             print('SUCCESS!! >> ', order)
 
-        illegal_country = False
+        illegal_country = True if '*' in ILLEGAL_COUNTRIES[0] else False
         try:
             country = City.objects.filter(id=guide.city_id).values()[0]['full_location'].split(',')[-1].strip()
             for i in ILLEGAL_COUNTRIES:
