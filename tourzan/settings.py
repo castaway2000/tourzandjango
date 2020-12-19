@@ -38,7 +38,7 @@ SHOW_LOGGING = env.bool("SHOW_LOGGING", default=True)
 SEND_SMS = env.bool("SEND_SMS", default=True)
 
 ALLOWED_HOSTS = ['*']
-ILLEGAL_COUNTRIES = ['Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
+ILLEGAL_COUNTRIES = ['*', 'Democratic Republic of the Congo', 'Cuba', 'Iran', 'Iraq',
                      "Côte d'Ivoire", 'North Korea', 'Lebanon', 'Liberia', 'Libya',
                      'Myanmar (Burma)', 'Somalia', 'Sudan', 'Syria', 'Venezuela',
                      'Yemen', 'Zaire', 'Zimbabwe']
