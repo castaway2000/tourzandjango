@@ -615,7 +615,7 @@ def guide_payouts(request):
     general_profile = user.generalprofile
     city = user.guideprofile.city_id
     country = City.objects.filter(id=city).values()[0]['full_location'].split(',')[-1].strip()
-    illegal_country = False
+    illegal_country = True if '*' in ILLEGAL_COUNTRIES[0] else False
     for i in ILLEGAL_COUNTRIES:
         if i == country:
             illegal_country = True
