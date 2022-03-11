@@ -1,5 +1,5 @@
 django==1.11.29
-pillow==4.0.0
+pillow==9.0.1
 django-allauth==0.37.1
 django-crequest==2016.3.16
 django-language-field==0.0.3
