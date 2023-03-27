@@ -51,7 +51,7 @@ pyfcm==1.4.5
 txfcm==0.0.1
 baseapi==0.1.1
 requests-toolbelt==0.8.0
-redis==2.10.6
+redis==4.5.3
 
 django-emoticons==1.2
 django-robots==3.1.0
