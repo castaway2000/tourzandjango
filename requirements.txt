@@ -17,7 +17,7 @@ coreapi==2.3.1
 coreapi-cli==1.0.9
 
 Unidecode==0.4.20
-requests==2.20.0
+requests==2.32.4
 braintree==3.37.2
 
 gunicorn==19.7.1
