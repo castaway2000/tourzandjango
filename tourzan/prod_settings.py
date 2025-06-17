@@ -11,7 +11,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'testingdb',
         'USER': 'tourzandbuser',
-        'PASSWORD': 'TourzanTravelling12#$',
+        'PASSWORD': 'TourzanTravellingP@s$',
         'HOST': 'touzandb.cgeysenvqij7.us-west-2.rds.amazonaws.com',
         'PORT': '',                      # Set to empty string for default.
     }
@@ -21,8 +21,8 @@ DATABASES = {
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # DEFAULT_FILE_STORAGE = 'tourzan.storage_backends.PublicMediaStorageSameLocation'
 
-AWS_ACCESS_KEY_ID = 'AKIAJIYAQ4HEEI6HHQ3Q'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = 'AKIAJIYAQ123455'
+AWS_SECRET_ACCESS_KEY = 'JC3Lpupjl8pDP/Z2sVQch/1/2/3/4/5'
 AWS_STORAGE_BUCKET_NAME = 'tourzan'
 
 AWS_S3_FILE_OVERWRITE = False #to append extra characters to the file with the same name as existing file
@@ -50,5 +50,5 @@ PAYMENT_RAILS_SECRET = os.environ.get('PAYMENT_RAILS_SECRET', '')
 
 FROM_EMAIL = "noreply@tourzan.com"
 
-ONFIDO_TOKEN = os.environ.get('ONFIDO_TOKEN', 'live_ZGcfPjhQQg9u1PbNxJktEr9n7B9W1EMP')
+ONFIDO_TOKEN = os.environ.get('ONFIDO_TOKEN', 'live_ZGcfPjhQQg9u1PbNxJktE1-2-3-4')
 ONFIDO_IS_TEST_MODE = os.environ.get('ONFIDO_IS_TEST_MODE ', False)
