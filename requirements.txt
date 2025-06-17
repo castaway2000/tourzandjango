@@ -20,7 +20,7 @@ Unidecode==0.4.20
 requests==2.20.0
 braintree==3.37.2
 
-gunicorn==19.7.1
+gunicorn==23.0.0
 psycopg2==2.7.1
 
 argon2-cffi==16.3.0
